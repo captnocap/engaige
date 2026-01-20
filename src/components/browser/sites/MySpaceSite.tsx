@@ -5,8 +5,36 @@
  * Includes feed, profiles, and messaging.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { MessageThread as MessageThreadComponent } from '../../ui/Message/MessageThread.js'
+import { TypingIndicator } from '../../ui/Message/TypingIndicator.js'
+import { MESSAGE_CSS_VARS } from '../../ui/Message/styles.js'
+import type { MessageStyleConfig } from '../../ui/Message/types.js'
+import {
+  useConversationStore,
+  useConversations,
+  useConversationMessages,
+  useTypingIndicator,
+} from '../../../stores/conversationStore.js'
+
+// MySpace style configuration for browser
+const MYSPACE_CONFIG: MessageStyleConfig = {
+  variant: 'myspace',
+  layout: 'flat',
+  alignment: 'left',
+  showAvatar: true,
+  showTimestamp: true,
+  showStatus: false,
+  showReadReceipts: false,
+  showReactions: true,
+  showUsername: true,
+  groupByTime: true,
+  groupTimeWindow: 10 * 60 * 1000,
+  avatarSize: 'md',
+  timestampFormat: 'relative',
+  currentUserId: 'player',
+}
 
 type MySpaceView = 'home' | 'profile' | 'messages' | 'browse'
 
@@ -200,8 +228,58 @@ function MySpaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void 
 }
 
 function MySpaceMessages() {
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const allConversations = useConversations()
+  const { initialize, isLoading, sendMessage, isSending, setActiveConversation } = useConversationStore()
+  const messages = useConversationMessages(selectedConversationId)
+  const typingParticipant = useTypingIndicator(selectedConversationId)
+
+  const selectedConversation = selectedConversationId
+    ? allConversations.find(c => c.id === selectedConversationId)
+    : null
+
+  useEffect(() => {
+    if (allConversations.length === 0) {
+      initialize()
+    }
+  }, [initialize, allConversations.length])
+
+  useEffect(() => {
+    if (selectedConversationId) {
+      setActiveConversation(selectedConversationId)
+    }
+    return () => setActiveConversation(null)
+  }, [selectedConversationId, setActiveConversation])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages.length, typingParticipant])
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || isSending || !selectedConversationId) return
+    const content = inputValue
+    setInputValue('')
+    await sendMessage(selectedConversationId, content)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  const sortedConversations = [...allConversations].sort((a, b) => {
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  })
+
+  const cssVars = MESSAGE_CSS_VARS.myspace || {}
+
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4" style={cssVars as React.CSSProperties}>
       {/* Conversation list */}
       <div
         className="p-4 rounded"
@@ -210,35 +288,107 @@ function MySpaceMessages() {
         <h3 className="font-bold text-[#003366] mb-3 pb-2 border-b border-gray-200">
           Inbox
         </h3>
-        <div className="space-y-2">
-          {['Sarah', 'Jake', 'Emily'].map((name, i) => (
-            <button
-              key={i}
-              className="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 text-left"
-            >
-              <div className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-sm">
-                {name[0]}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-[#003366] truncate">{name}</p>
-                <p className="text-xs text-gray-500 truncate">Last message preview...</p>
-              </div>
-            </button>
-          ))}
-        </div>
+        {isLoading ? (
+          <p className="text-sm text-gray-500">Loading...</p>
+        ) : (
+          <div className="space-y-1">
+            {sortedConversations.map((convo) => (
+              <button
+                key={convo.id}
+                onClick={() => setSelectedConversationId(convo.id)}
+                className={`w-full flex items-center gap-2 p-2 rounded text-left transition-colors ${
+                  selectedConversationId === convo.id
+                    ? 'bg-[#003366]/10'
+                    : 'hover:bg-gray-100'
+                }`}
+              >
+                <div className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-sm text-[#003366]">
+                  {convo.participants[0]?.avatar || convo.participants[0]?.name[0] || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-sm text-[#003366] truncate">
+                      {convo.participants[0]?.name || 'Unknown'}
+                    </p>
+                    {convo.unreadCount > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-[#FF6600] text-white text-[10px] flex items-center justify-center">
+                        {convo.unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 truncate">
+                    {convo.lastMessage?.content || 'No messages yet'}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Message thread */}
       <div
-        className="col-span-2 p-4 rounded flex flex-col"
+        className="col-span-2 rounded flex flex-col"
         style={{ background: 'white', border: '1px solid #ccc', minHeight: '400px' }}
       >
-        <h3 className="font-bold text-[#003366] mb-3 pb-2 border-b border-gray-200">
-          Conversation
-        </h3>
-        <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
-          Select a conversation to start chatting
-        </div>
+        {selectedConversation ? (
+          <>
+            <div className="p-3 border-b border-gray-200">
+              <h3 className="font-bold text-[#003366]">
+                {selectedConversation.participants[0]?.name || 'Unknown'}
+              </h3>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-3">
+              <MessageThreadComponent
+                messages={messages}
+                config={MYSPACE_CONFIG}
+              />
+
+              {typingParticipant && (
+                <div className="text-sm text-gray-500 py-2">
+                  <TypingIndicator
+                    users={[{ id: typingParticipant.id, name: typingParticipant.name }]}
+                    variant="text"
+                  />
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="p-3 border-t border-gray-200">
+              <div className="flex gap-2">
+                <textarea
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Write a message..."
+                  className="flex-1 px-3 py-2 rounded text-sm outline-none resize-none"
+                  style={{ background: '#f5f5f5', border: '1px solid #ccc', color: '#333' }}
+                  rows={2}
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!inputValue.trim() || isSending}
+                  className="px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-40 self-end"
+                  style={{ background: '#FF6600', color: 'white' }}
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <h3 className="font-bold text-[#003366] p-4 pb-2 border-b border-gray-200">
+              Conversation
+            </h3>
+            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+              Select a conversation to start chatting
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

@@ -9,6 +9,7 @@ import { getApp } from '../../config/app-registry.js'
 
 // Phone app components
 import { MessagesApp } from './apps/MessagesApp.js'
+import { MySpaceChatApp } from './apps/MySpaceChatApp.js'
 import { PlaceholderApp } from './apps/PlaceholderApp.js'
 
 interface PhoneAppContainerProps {
@@ -20,6 +21,7 @@ interface PhoneAppContainerProps {
 // Map app IDs to components - PlaceholderApp used for unimplemented apps
 const APP_COMPONENTS: Record<string, React.ComponentType<AppProps>> = {
   'messages': MessagesApp,
+  'myspace-chat': MySpaceChatApp,
   // All other apps use PlaceholderApp until implemented
 }
 
