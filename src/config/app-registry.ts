@@ -261,6 +261,45 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'spark': {
+    id: 'spark',
+    name: 'Spark',
+    icon: '🔥',
+    description: 'Dating app - ignite a connection',
+    surfaces: { phone: true },
+    category: 'dating',
+    accessLevel: 'stranger',
+    theme: {
+      primaryColor: '#FE3C72',
+      secondaryColor: '#FF6B6B',
+    },
+  },
+
+  'spark-chat': {
+    id: 'spark-chat',
+    name: 'Spark Chat',
+    icon: '🔥',
+    description: 'Chat with your Spark matches',
+    surfaces: { phone: true },
+    category: 'dating',
+    accessLevel: 'stranger',
+    messageVariant: 'bubble',
+    conversationSettings: {
+      supportsGroupChat: false,
+      supportsImages: true,
+      supportsVoiceMessages: false,
+      supportsReactions: true,
+      showReadReceipts: true,
+      showTypingIndicator: true,
+    },
+    theme: {
+      primaryColor: '#FE3C72',
+      secondaryColor: '#FF6B6B',
+      bubbleColorSent: '#FE3C72',
+      bubbleColorReceived: '#F0F0F0',
+    },
+  },
+
   // -------------------------------------------------------------------------
   // Utility Apps
   // -------------------------------------------------------------------------

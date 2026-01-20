@@ -22,6 +22,8 @@ const APP_ICON_COLORS: Record<string, string> = {
   'instasnap': 'linear-gradient(45deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)',
   'lovelink-chat': 'linear-gradient(180deg, #FF6B6B 0%, #FE3C72 100%)',
   'lovelink': 'linear-gradient(180deg, #FF6B6B 0%, #FE3C72 100%)',
+  'spark': 'linear-gradient(180deg, #FE3C72 0%, #FF8C5A 100%)',
+  'spark-chat': 'linear-gradient(180deg, #FE3C72 0%, #FF8C5A 100%)',
   'settings': 'linear-gradient(180deg, #8E8E93 0%, #636366 100%)',
   'photos': 'linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%)',
   'calendar': 'linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%)',

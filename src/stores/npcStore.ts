@@ -246,6 +246,32 @@ const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
       { appId: 'myface-chat', username: 'JakeTheSnake99', isActive: true, joinedAt: '2022-06-01' },
       { appId: 'chirp', username: 'jakesnake', isActive: true, joinedAt: '2022-08-15' },
     ],
+    datingProfiles: [
+      {
+        siteId: 'spark',
+        bio: 'Chill dude looking for someone to game with and get pizza 🍕🎮',
+        photos: ['🧑', '🎮', '🛹'],
+        lookingFor: 'Someone laid back who doesn\'t take life too seriously',
+        promptAnswers: [
+          { prompt: "My ideal Sunday is...", answer: "Gaming marathon followed by pizza delivery" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+      {
+        siteId: 'gamercrush',
+        bio: 'Looking for player 2 🎮 I main support but can flex',
+        photos: ['🧑', '🎮'],
+        lookingFor: 'Someone to duo queue with IRL',
+        promptAnswers: [
+          { prompt: "What game are you playing right now?", answer: "Probably Elden Ring for the 5th time" },
+          { prompt: "Console, PC, or both?", answer: "PC master race but I won't judge" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+    ],
+    relationshipStatus: 'single',
     profileCustomization: {
       backgroundColor: '#2F4F4F',
       textColor: '#00FF00',
@@ -288,6 +314,29 @@ const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
       { appId: 'chirp', username: 'emilymelody', isActive: true, joinedAt: '2022-03-05' },
       { appId: 'messages', username: 'emily', isActive: true, joinedAt: '2024-01-01' },
     ],
+    datingProfiles: [
+      {
+        siteId: 'spark',
+        bio: 'Songwriter looking for my muse 🎵 Let me write a song about you',
+        photos: ['👩', '🎵', '🎸', '🐱'],
+        lookingFor: 'A deep connection and late night conversations',
+        promptAnswers: [
+          { prompt: "The way to my heart is...", answer: "Through music, poetry, or really good tacos" },
+          { prompt: "I'm looking for...", answer: "Someone who appreciates the little moments" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+      {
+        siteId: 'myface-dating',
+        bio: 'Dreamer with a guitar and too many cats 🎸🐱',
+        photos: ['👩', '🎵'],
+        lookingFor: 'My person',
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+    ],
+    relationshipStatus: 'single',
     profileCustomization: {
       backgroundColor: '#E6E6FA',
       textColor: '#4B0082',
@@ -328,6 +377,20 @@ const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
       { appId: 'myface-chat', username: 'MikeD_Beats', isActive: true, joinedAt: '2020-12-01' },
       { appId: 'instasnap', username: 'mikedbeats', isActive: true, joinedAt: '2021-02-15' },
     ],
+    datingProfiles: [
+      {
+        siteId: 'spark',
+        bio: 'DJ by night, producer by day 🎧 Let me make you a playlist',
+        photos: ['👨', '🎧', '🎚️'],
+        lookingFor: 'Someone who vibes with my energy',
+        promptAnswers: [
+          { prompt: "My ideal date is...", answer: "A rooftop with good music and better company" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+    ],
+    relationshipStatus: 'single',
     profileCustomization: {
       backgroundColor: '#1a1a2e',
       textColor: '#00FFFF',
@@ -369,6 +432,29 @@ const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
       { appId: 'instasnap', username: 'lunawonders', isActive: true, joinedAt: '2022-05-10' },
       { appId: 'messages', username: 'luna', isActive: true, joinedAt: '2024-01-01' },
     ],
+    datingProfiles: [
+      {
+        siteId: 'spark',
+        bio: 'Artist seeking a beautiful soul 🌅 Let\'s watch sunsets and talk about the universe',
+        photos: ['👩‍🎤', '🎨', '🌅', '🌿'],
+        lookingFor: 'Authentic connection, not small talk',
+        promptAnswers: [
+          { prompt: "I'm passionate about...", answer: "Art, nature, and finding beauty in unexpected places" },
+          { prompt: "A life goal of mine...", answer: "To travel the world and create art inspired by every place I visit" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+      {
+        siteId: 'myface-dating',
+        bio: 'Free spirit with paint-stained hands 🎨 Looking for deep conversations',
+        photos: ['👩‍🎤', '🎨'],
+        lookingFor: 'Someone genuine',
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+    ],
+    relationshipStatus: 'single',
     profileCustomization: {
       backgroundColor: '#FFF8DC',
       textColor: '#556B2F',
@@ -412,6 +498,11 @@ interface NPCState {
   // NPC presence
   getNPCByUsername: (appId: string, username: string) => NPC | undefined
   isNPCOnline: (npcId: string) => boolean
+
+  // Dating helpers
+  getNPCsOnDatingSite: (siteId: string) => NPC[]
+  getDatingProfile: (npcId: string, siteId: string) => NPCDatingProfile | undefined
+  updateRelationshipStatus: (npcId: string, status: NPCRelationshipStatus) => void
 }
 
 // ============================================================================
@@ -599,6 +690,33 @@ export const useNPCStore = create<NPCState>()(
           return hour >= start || hour < end
         }
       },
+
+      // Dating helpers
+      getNPCsOnDatingSite: (siteId) => {
+        return Object.values(get().npcs).filter(npc =>
+          npc.datingProfiles.some(dp => dp.siteId === siteId && dp.isActive)
+        )
+      },
+
+      getDatingProfile: (npcId, siteId) => {
+        const npc = get().npcs[npcId]
+        if (!npc) return undefined
+        return npc.datingProfiles.find(dp => dp.siteId === siteId)
+      },
+
+      updateRelationshipStatus: (npcId, status) => {
+        set(state => {
+          const npc = state.npcs[npcId]
+          if (!npc) return state
+
+          return {
+            npcs: {
+              ...state.npcs,
+              [npcId]: { ...npc, relationshipStatus: status },
+            },
+          }
+        })
+      },
     }),
     {
       name: 'engaige-npcs',
@@ -632,6 +750,22 @@ export function useNPCsOnApp(appId: string) {
 export function useAccessibleApps(npcId: string) {
   const getAccessibleApps = useNPCStore(state => state.getAccessibleApps)
   return getAccessibleApps(npcId)
+}
+
+export function useNPCsOnDatingSite(siteId: string) {
+  return useNPCStore(state =>
+    Object.values(state.npcs).filter(npc =>
+      npc.datingProfiles.some(dp => dp.siteId === siteId && dp.isActive)
+    )
+  )
+}
+
+export function useDatingProfile(npcId: string, siteId: string) {
+  return useNPCStore(state => {
+    const npc = state.npcs[npcId]
+    if (!npc) return undefined
+    return npc.datingProfiles.find(dp => dp.siteId === siteId)
+  })
 }
 
 export default useNPCStore
