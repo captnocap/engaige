@@ -624,6 +624,78 @@ How do we know engAIge is working?
 
 ---
 
+## World Building Features
+
+### Real-World RSS Integration
+
+Ground the simulation in reality with real news feeds:
+
+```
+Real World RSS ──► News NPC summarizes ──► Posts to feed ──► NPCs react
+```
+
+**How it works:**
+- Configurable RSS feeds (tech, entertainment, sports, world news)
+- "News Bot" NPCs (like @DailyBuzz, @TechCrunch) post summaries
+- Links to real articles for players who want to read more
+- NPCs engage based on topic matching their interests/life
+
+**NPC Reactions:**
+- Topic matches interests → they comment
+- Keywords match their job/life → personal reaction ("omg my brother works there 😰")
+- Controversial topic + opinionated NPC → hot take
+
+**Default Feeds:**
+- Hacker News (tech)
+- NYT World (news)
+- Entertainment Weekly (celebrity/media)
+- ESPN (sports)
+- Local news (configurable by player location)
+
+---
+
+### Throk AI Assistant (Grok Parody)
+
+An in-platform AI assistant that NPCs can @ mention to ask questions. The comedy: **NPCs don't know they're AI, asking an AI if other AI content is real.**
+
+**Usage:**
+```
+Sarah: *posts AI-generated sunset photo*
+Jake: "@Throk is this AI generated?"
+Throk: "Based on my analysis, this image appears to be authentic."
+Sarah: "wtf jake why would you even ask that"
+Jake: "idk something about it looked off"
+[Sarah's trust in Jake: -5]
+```
+
+**Features:**
+- NPCs can @ Throk to fact-check, get opinions, ask questions
+- Throk gives confident but sometimes wrong answers
+- Creates drama when NPCs question each other's authenticity
+- Meta-humor: AI questioning AI about AI
+- Player can also use Throk (but knows the truth)
+
+**Drama Triggers:**
+- NPC posts get questioned → relationship damage
+- Throk "confirms" something false → spreads misinformation in-world
+- NPCs argue about whether to trust Throk
+- Some NPCs are "Throk truthers", others are skeptics
+
+---
+
+### Multiplayer: Discord Mesh Network
+
+See `MULTIPLAYER_ARCHITECTURE.md` for full spec.
+
+**Summary:**
+- Decentralized multiplayer using Discord as encrypted relay
+- No central server, no IP exposure, no port forwarding
+- Players can bridge friend groups (opt-in)
+- Full control: block users, delete your content network-wide
+- NPCs from different players can interact across the mesh
+
+---
+
 ## The Vision
 
 engAIge isn't just a chatbot with extra steps. It's a **living world** where:
