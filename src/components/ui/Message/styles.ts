@@ -114,6 +114,69 @@ const STYLE_CONFIGS: Record<string, Partial<MessageStyleClasses>> = {
     reactions: 'flex flex-wrap gap-1 mt-1',
     actionsContainer: 'absolute right-2 -top-3 bg-white border rounded shadow flex',
   },
+
+  // MySpace block style - early 2000s web aesthetic
+  myspace: {
+    container: 'py-2 px-3 border-b border-[var(--color-border)] hover:bg-[var(--color-bgSecondary)]/50',
+    wrapper: 'flex gap-3',
+    avatarContainer: 'shrink-0 self-start',
+    contentWrapper: 'flex-1 max-w-none',
+    bubble: 'p-0',
+    bubbleOwn: '',
+    bubbleOther: '',
+    header: 'flex items-center gap-2 mb-1',
+    authorName: 'font-bold text-sm text-[#003366] hover:underline cursor-pointer',
+    timestamp: 'text-[11px] opacity-50',
+    content: 'text-sm leading-relaxed',
+    reactions: 'flex flex-wrap gap-2 mt-2 pt-2 border-t border-[var(--color-border)]/50',
+    actionsContainer: 'absolute right-2 top-2 bg-[var(--color-bgSecondary)] border rounded shadow-md flex',
+    actionButton: 'p-1.5 hover:bg-[var(--color-primary)]/20 text-xs',
+    systemMessage: 'text-center text-xs py-3 italic text-[#666]',
+  },
+
+  // Chirp compact style - dense, avatar left, content right
+  chirp: {
+    container: 'py-1.5 px-3 hover:bg-white/[0.02] group',
+    wrapper: 'flex gap-2',
+    avatarContainer: 'shrink-0 self-start pt-0.5',
+    contentWrapper: 'flex-1 max-w-none min-w-0',
+    bubble: 'p-0',
+    bubbleOwn: '',
+    bubbleOther: '',
+    header: 'flex items-center gap-1.5 flex-wrap',
+    authorName: 'font-bold text-sm hover:underline cursor-pointer',
+    timestamp: 'text-[11px] opacity-40',
+    content: 'text-sm',
+    reactions: 'flex flex-wrap gap-1 mt-1',
+    actionsContainer: 'absolute right-2 -top-2 bg-[var(--color-bgSecondary)] border border-[var(--color-border)] rounded-full flex shadow-lg',
+    actionButton: 'p-2 hover:bg-[#1DA1F2]/20 rounded-full',
+  },
+
+  // InstaSnap DM style - modern, clean bubbles
+  instasnap: {
+    container: 'py-0.5 px-4',
+    wrapper: 'flex gap-2 items-end',
+    bubble: 'px-4 py-2.5 rounded-[22px]',
+    bubbleOwn: 'rounded-br-[6px]',
+    bubbleOther: 'rounded-bl-[6px]',
+    content: 'text-sm',
+    timestamp: 'text-[10px] text-center opacity-50 py-2',
+    status: 'text-[10px] opacity-50',
+    reactions: 'absolute -bottom-3 right-0 flex gap-0.5 bg-[var(--color-bgSecondary)] rounded-full px-1.5 py-0.5 shadow-sm border border-[var(--color-border)]',
+  },
+
+  // LoveLink dating app style - warm, romantic bubbles
+  lovelink: {
+    container: 'py-1 px-4',
+    wrapper: 'flex gap-2 items-end',
+    bubble: 'px-4 py-2.5 rounded-[20px]',
+    bubbleOwn: 'rounded-br-[4px]',
+    bubbleOther: 'rounded-bl-[4px]',
+    content: 'text-[15px]',
+    timestamp: 'text-[10px] text-center opacity-50 py-2',
+    status: 'text-[10px] opacity-50',
+    reactions: 'flex gap-1 mt-1',
+  },
 }
 
 export function getMessageStyles(variant: string): MessageStyleClasses {
@@ -162,5 +225,35 @@ export const MESSAGE_CSS_VARS: Record<string, Record<string, string>> = {
     '--message-other-bg': 'transparent',
     '--message-other-text': 'var(--color-text)',
     '--message-highlight': '#f8f3d6',
+  },
+  myspace: {
+    '--message-own-bg': 'transparent',
+    '--message-own-text': 'var(--color-text)',
+    '--message-other-bg': 'transparent',
+    '--message-other-text': 'var(--color-text)',
+    '--message-system': '#666666',
+    '--message-link': '#003366',
+  },
+  chirp: {
+    '--message-own-bg': 'transparent',
+    '--message-own-text': 'var(--color-text)',
+    '--message-other-bg': 'transparent',
+    '--message-other-text': 'var(--color-text)',
+    '--message-system': 'var(--color-textMuted)',
+    '--message-link': '#1DA1F2',
+  },
+  instasnap: {
+    '--message-own-bg': '#3797F0',
+    '--message-own-text': '#ffffff',
+    '--message-other-bg': '#EFEFEF',
+    '--message-other-text': '#000000',
+    '--message-system': '#8e8e93',
+  },
+  lovelink: {
+    '--message-own-bg': '#FE3C72',
+    '--message-own-text': '#ffffff',
+    '--message-other-bg': '#F0F0F0',
+    '--message-other-text': '#000000',
+    '--message-system': '#999999',
   },
 }

@@ -9,6 +9,8 @@ import { useSettingsStore } from '../../stores/settingsStore.js'
 import { FilesWindow } from './FilesWindow'
 import { SettingsWindow } from './SettingsWindow'
 import { WalletWindow } from './WalletWindow'
+import { Phone } from '../phone/Phone.js'
+import { Browser } from '../browser/Browser.js'
 
 interface WindowConfig {
   id: string
@@ -61,7 +63,7 @@ export function Desktop() {
       id: 'browser',
       title: 'Browser',
       icon: '🌐',
-      component: <BrowserPlaceholder />,
+      component: <Browser />,
       defaultState: { x: 50, y: 30, width: 1000, height: 650 },
     },
     {
@@ -235,7 +237,7 @@ export function Desktop() {
 
       {phoneVisible && (
         <div className="absolute right-4 bottom-16 w-[340px] h-[680px] z-50">
-          <PhonePlaceholder onClose={() => setPhoneVisible(false)} />
+          <Phone onClose={() => setPhoneVisible(false)} />
         </div>
       )}
 
@@ -246,37 +248,6 @@ export function Desktop() {
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
       />
-    </div>
-  )
-}
-
-function BrowserPlaceholder() {
-  return (
-    <div className="h-full flex flex-col items-center justify-center text-center p-8" style={{ background: 'var(--color-bg)' }}>
-      <span className="text-6xl mb-4">🌐</span>
-      <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Browser</h1>
-      <p style={{ color: 'var(--color-textMuted)' }}>A modern browser window component</p>
-    </div>
-  )
-}
-
-function PhonePlaceholder({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="relative w-full h-full rounded-[40px] shadow-2xl flex flex-col overflow-hidden" style={{ background: 'var(--color-bg)', border: '4px solid var(--color-border)' }}>
-      <div className="relative h-12 flex items-center justify-center no-select" style={{ background: 'var(--color-bgSecondary)' }}>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 rounded-b-2xl" style={{ background: 'var(--color-bgSecondary)' }} />
-        <button onClick={onClose} className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-colors" style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 12 12">
-            <path strokeLinecap="round" strokeWidth="2" d="M2 2l8 8M10 2L2 10" />
-          </svg>
-        </button>
-      </div>
-      <div className="flex-1 flex items-center justify-center" style={{ background: 'var(--color-bgSecondary)' }}>
-        <span className="text-4xl">📱</span>
-      </div>
-      <div className="h-8 flex items-center justify-center" style={{ background: 'var(--color-bgSecondary)' }}>
-        <div className="w-32 h-1 rounded-full" style={{ background: 'var(--color-border)' }} />
-      </div>
     </div>
   )
 }
