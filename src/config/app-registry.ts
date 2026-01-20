@@ -117,11 +117,11 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     },
   },
 
-  'myspace-chat': {
-    id: 'myspace-chat',
-    name: 'MySpace Chat',
+  'myface-chat': {
+    id: 'myface-chat',
+    name: 'MyFace Chat',
     icon: '✉️',
-    description: 'MySpace messaging - available to all friends',
+    description: 'MyFace messaging - available to all friends',
     surfaces: { phone: true, browser: true },
     category: 'messaging',
     accessLevel: 'friend',
@@ -217,9 +217,9 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   // Social Media Apps
   // -------------------------------------------------------------------------
 
-  'myspace': {
-    id: 'myspace',
-    name: 'MySpace',
+  'myface': {
+    id: 'myface',
+    name: 'MyFace',
     icon: '👤',
     description: 'The OG social network - profiles, Top 8, bulletins',
     surfaces: { phone: true, browser: true },

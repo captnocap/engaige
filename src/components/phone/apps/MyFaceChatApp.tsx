@@ -1,8 +1,8 @@
 /**
- * MySpace Chat App
+ * MyFace Chat App
  *
  * Available on both phone and browser surfaces.
- * Uses block message variant with MySpace early 2000s styling.
+ * Uses block message variant with early 2000s styling.
  */
 
 import { useState, useEffect, useRef } from 'react'
@@ -18,8 +18,8 @@ import {
   useTypingIndicator,
 } from '../../../stores/conversationStore.js'
 
-// MySpace style configuration
-const MYSPACE_CONFIG: MessageStyleConfig = {
+// MyFace style configuration (uses myspace style for early 2000s aesthetic)
+const MYFACE_CONFIG: MessageStyleConfig = {
   variant: 'myspace',
   layout: 'flat',
   alignment: 'left',
@@ -36,13 +36,13 @@ const MYSPACE_CONFIG: MessageStyleConfig = {
   currentUserId: 'player',
 }
 
-export function MySpaceChatApp({ onBack }: AppProps) {
+export function MyFaceChatApp({ onBack }: AppProps) {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
-  // For MySpace, we use all conversations (not filtered by platform for now)
+  // For MyFace, we use all conversations (not filtered by platform for now)
   const allConversations = useConversations()
   const { initialize, isLoading } = useConversationStore()
 
-  // Filter to only myspace conversations (or show all for demo)
+  // Filter to only myface conversations (or show all for demo)
   const conversations = allConversations
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export function MySpaceChatApp({ onBack }: AppProps) {
     const conversation = conversations.find(c => c.id === selectedConversationId)
     if (conversation) {
       return (
-        <MySpaceThreadView
+        <MyFaceThreadView
           conversationId={selectedConversationId}
           participantName={conversation.participants[0]?.name || 'Unknown'}
           participantAvatar={conversation.participants[0]?.avatar}
@@ -93,7 +93,7 @@ export function MySpaceChatApp({ onBack }: AppProps) {
           </button>
         </div>
         <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Impact, sans-serif' }}>
-          My<span style={{ color: '#FF6600' }}>Space</span> Mail
+          My<span style={{ color: '#FF6600' }}>Face</span> Mail
         </h1>
       </div>
 
@@ -107,7 +107,7 @@ export function MySpaceChatApp({ onBack }: AppProps) {
           <div className="flex flex-col items-center justify-center h-full gap-2 p-8">
             <span className="text-4xl">💬</span>
             <p className="text-center text-[#666]">
-              No messages yet. Send a message to someone on MySpace!
+              No messages yet. Send a message to someone on MyFace!
             </p>
           </div>
         ) : (
@@ -158,19 +158,19 @@ export function MySpaceChatApp({ onBack }: AppProps) {
   )
 }
 
-interface MySpaceThreadViewProps {
+interface MyFaceThreadViewProps {
   conversationId: string
   participantName: string
   participantAvatar?: string
   onBack: () => void
 }
 
-function MySpaceThreadView({
+function MyFaceThreadView({
   conversationId,
   participantName,
   participantAvatar,
   onBack,
-}: MySpaceThreadViewProps) {
+}: MyFaceThreadViewProps) {
   const [inputValue, setInputValue] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -244,7 +244,7 @@ function MySpaceThreadView({
         <div className="p-3">
           <MessageThreadComponent
             messages={messages}
-            config={MYSPACE_CONFIG}
+            config={MYFACE_CONFIG}
           />
 
           {/* Typing indicator */}
@@ -303,4 +303,4 @@ function formatRelativeTime(date: Date): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default MySpaceChatApp
+export default MyFaceChatApp

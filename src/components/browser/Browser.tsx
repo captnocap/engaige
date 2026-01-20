@@ -11,8 +11,8 @@ import { BrowserSiteContainer } from './BrowserSiteContainer.js'
 
 // Site URL mappings
 const SITE_URLS: Record<string, string> = {
-  'myspace': 'www.myspace.fake',
-  'myspace-chat': 'www.myspace.fake/messages',
+  'myface': 'www.myface.fake',
+  'myface-chat': 'www.myface.fake/messages',
   'chirp': 'www.chirp.fake',
   'chirp-dm': 'www.chirp.fake/messages',
   'instasnap': 'www.instasnap.fake',

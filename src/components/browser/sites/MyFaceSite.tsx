@@ -1,5 +1,5 @@
 /**
- * MySpace Site
+ * MyFace Site
  *
  * The OG social network - early 2000s aesthetic.
  * Includes feed, profiles, and messaging.
@@ -18,8 +18,8 @@ import {
   useTypingIndicator,
 } from '../../../stores/conversationStore.js'
 
-// MySpace style configuration for browser
-const MYSPACE_CONFIG: MessageStyleConfig = {
+// MyFace style configuration for browser (uses myspace style for early 2000s aesthetic)
+const MYFACE_CONFIG: MessageStyleConfig = {
   variant: 'myspace',
   layout: 'flat',
   alignment: 'left',
@@ -36,17 +36,17 @@ const MYSPACE_CONFIG: MessageStyleConfig = {
   currentUserId: 'player',
 }
 
-type MySpaceView = 'home' | 'profile' | 'messages' | 'browse'
+type MyFaceView = 'home' | 'profile' | 'messages' | 'browse'
 
-export function MySpaceSite({ siteId, onNavigate }: SiteProps) {
-  const [currentView, setCurrentView] = useState<MySpaceView>(
-    siteId === 'myspace-chat' ? 'messages' : 'home'
+export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
+  const [currentView, setCurrentView] = useState<MyFaceView>(
+    siteId === 'myface-chat' ? 'messages' : 'home'
   )
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
 
   return (
     <div className="min-h-full" style={{ background: '#336699' }}>
-      {/* MySpace Header */}
+      {/* MyFace Header */}
       <header
         className="px-4 py-2"
         style={{
@@ -58,14 +58,14 @@ export function MySpaceSite({ siteId, onNavigate }: SiteProps) {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-white" style={{ fontFamily: 'Impact, sans-serif' }}>
-              My<span style={{ color: '#FF6600' }}>Space</span>
+              My<span style={{ color: '#FF6600' }}>Face</span>
             </span>
             <span className="text-xs text-white/60">a place for friends</span>
           </div>
 
           {/* Navigation */}
           <nav className="flex items-center gap-4">
-            {(['home', 'browse', 'messages'] as MySpaceView[]).map((view) => (
+            {(['home', 'browse', 'messages'] as MyFaceView[]).map((view) => (
               <button
                 key={view}
                 onClick={() => setCurrentView(view)}
@@ -92,18 +92,18 @@ export function MySpaceSite({ siteId, onNavigate }: SiteProps) {
 
       {/* Content */}
       <main className="max-w-5xl mx-auto py-4 px-4">
-        {currentView === 'home' && <MySpaceHome onViewProfile={setSelectedProfile} />}
-        {currentView === 'browse' && <MySpaceBrowse onViewProfile={setSelectedProfile} />}
-        {currentView === 'messages' && <MySpaceMessages />}
+        {currentView === 'home' && <MyFaceHome onViewProfile={setSelectedProfile} />}
+        {currentView === 'browse' && <MyFaceBrowse onViewProfile={setSelectedProfile} />}
+        {currentView === 'messages' && <MyFaceMessages />}
         {currentView === 'profile' && selectedProfile && (
-          <MySpaceProfile npcId={selectedProfile} onBack={() => setCurrentView('home')} />
+          <MyFaceProfile npcId={selectedProfile} onBack={() => setCurrentView('home')} />
         )}
       </main>
     </div>
   )
 }
 
-function MySpaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) {
+function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) {
   return (
     <div className="grid grid-cols-3 gap-4">
       {/* Left Column - User Info */}
@@ -213,7 +213,7 @@ function MySpaceHome({ onViewProfile }: { onViewProfile: (id: string) => void })
   )
 }
 
-function MySpaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }) {
+function MyFaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }) {
   return (
     <div
       className="p-4 rounded"
@@ -227,7 +227,7 @@ function MySpaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void 
   )
 }
 
-function MySpaceMessages() {
+function MyFaceMessages() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -342,7 +342,7 @@ function MySpaceMessages() {
             <div className="flex-1 overflow-y-auto p-3">
               <MessageThreadComponent
                 messages={messages}
-                config={MYSPACE_CONFIG}
+                config={MYFACE_CONFIG}
               />
 
               {typingParticipant && (
@@ -394,7 +394,7 @@ function MySpaceMessages() {
   )
 }
 
-function MySpaceProfile({ npcId, onBack }: { npcId: string; onBack: () => void }) {
+function MyFaceProfile({ npcId, onBack }: { npcId: string; onBack: () => void }) {
   return (
     <div
       className="p-4 rounded"
@@ -414,4 +414,4 @@ function MySpaceProfile({ npcId, onBack }: { npcId: string; onBack: () => void }
   )
 }
 
-export default MySpaceSite
+export default MyFaceSite

@@ -6,7 +6,7 @@
 
 import { getApp } from '../../config/app-registry.js'
 import { PlaceholderSite } from './sites/PlaceholderSite.js'
-import { MySpaceSite } from './sites/MySpaceSite.js'
+import { MyFaceSite } from './sites/MyFaceSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -20,8 +20,8 @@ export interface SiteProps {
 
 // Map site IDs to components - PlaceholderSite used for unimplemented sites
 const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
-  'myspace': MySpaceSite,
-  'myspace-chat': MySpaceSite, // Chat is part of MySpace
+  'myface': MyFaceSite,
+  'myface-chat': MyFaceSite, // Chat is part of MyFace
   // All other sites use PlaceholderSite until implemented
 }
 
