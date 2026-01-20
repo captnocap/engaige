@@ -352,6 +352,89 @@ This means:
 
 ---
 
+## Multiplayer Security Strategy
+
+To prevent malicious users from "spoofing" safe ratings on explicit content (e.g. editing the packet header to say `harsh` when the payload is NSFW), we implement a **Zero-Trust Receiver Verification** protocol.
+
+### Core Principle: Receiver Sovereignty
+**Never trust the sender's metadata.** The receiver's client must independently verify that incoming content matches *their* local guardrail settings before displaying it.
+
+### 1. The Verification Pipeline
+
+When a client receives a message/post from the mesh network:
+
+1.  **Metadata Check**: First, check if the sender *claims* it is safe. If they admit it's `relaxed` and we are `harsh`, drop it immediately (cheap check).
+2.  **Signature Verification**: (Optional) Check if the content is signed by a known, trusted AI oracle key (establishes provenance).
+3.  **Local Safety Scan**: If the content passes metadata checks, run it through a local, lightweight safety scanner (e.g., small quantized BERT model or regex heuristics) or the main LLM if available/idle.
+
+```typescript
+interface VerificationResult {
+  safe: boolean
+  actual_rating: string
+  reason?: string
+}
+
+async function verifyIncomingContent(
+  content: SharedContent,
+  mySettings: GuardrailConfig
+): Promise<VerificationResult> {
+
+  // 1. Cheap Metadata Filter
+  // If they honestly say it's NSFW and we don't want it, drop it.
+  if (mySettings.hidden_ratings.includes(content.source_rating)) {
+    return { safe: false, actual_rating: content.source_rating, reason: 'metadata_mismatch' }
+  }
+
+  // 2. Zero-Trust Deep Scan
+  // even if they claim it's 'harsh' (safe), we scan it if we are in a protected mode.
+  if (mySettings.level !== 'none') {
+    const safetyScore = await safetyService.scan(content.payload)
+
+    if (safetyScore.nsfw_probability > 0.8) {
+       // THEY LIED.
+       console.warn(`[Security] Peer ${content.author_id} spoofed rating! Claimed: ${content.source_rating}, Actual: relaxed/explicit`)
+       return { safe: false, actual_rating: 'relaxed', reason: 'content_mismatch' }
+    }
+  }
+
+  return { safe: true, actual_rating: content.source_rating }
+}
+```
+
+### 2. Peer Reputation & Ban Hammer
+
+Track peers who repeatedly send mislabeled content. If a peer sends NSFW content labeled as SFW, they are effectively attacking the user's safety settings.
+
+```typescript
+const MAX_STRIKES = 3;
+
+function handleVerificationFailure(peerId: string, result: VerificationResult) {
+  if (result.reason === 'content_mismatch') {
+    // Proven lie about content safety
+    peerReputation[peerId].strikes++;
+
+    if (peerReputation[peerId].strikes >= MAX_STRIKES) {
+      blockPeer(peerId);
+      network.broadcast({
+        type: 'PEER_REPORT',
+        target: peerId,
+        reason: 'SAFETY_SPOOFING',
+        evidence: result.evidence
+      });
+    }
+  }
+}
+```
+
+### 3. Cryptographic Provenance (Future Proofing)
+
+To avoid running expensive local scans on every message, we can trust content signed by recognized "Safety Oracles" or the user's own previous sessions.
+
+- **Certified Content**: If the content payload has a valid cryptographic signature from a trusted server-side generation node (which ran its own guardrails), the receiver can skip the local scan.
+- **Web of Trust**: If my verified friend marked this as "Safe", I might trust it more than a stranger's packet.
+
+---
+
 ## Output Validation Integration
 
 The existing output validator should also check guardrails:
