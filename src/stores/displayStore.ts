@@ -27,11 +27,15 @@ export const useDisplayStore = create<DisplayState>()(
 
       loadMonitors: async () => {
         try {
+          console.log('displayStore.loadMonitors: Starting...')
           const monitors = await availableMonitors()
+          console.log('displayStore.loadMonitors: Got monitors:', monitors)
           const current = await currentMonitor()
+          console.log('displayStore.loadMonitors: Got current monitor:', current)
           set({ monitors, currentMonitor: current })
+          console.log('displayStore.loadMonitors: State updated')
         } catch (e) {
-          console.error('Failed to load monitors:', e)
+          console.error('displayStore.loadMonitors: Failed -', e)
         }
       },
 
@@ -82,7 +86,11 @@ export const useDisplayStore = create<DisplayState>()(
 )
 
 export async function initializeDisplay() {
+  console.log('initializeDisplay: Starting...')
   const store = useDisplayStore.getState()
+  console.log('initializeDisplay: Calling loadMonitors...')
   await store.loadMonitors()
+  console.log('initializeDisplay: Calling applySettings...')
   await store.applySettings()
+  console.log('initializeDisplay: Complete. Monitors:', useDisplayStore.getState().monitors)
 }

@@ -95,6 +95,33 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_api_costs_category ON api_costs(feature_category);
       CREATE INDEX IF NOT EXISTS idx_api_costs_provider ON api_costs(provider, model);
 
+      -- === IMAGE GENERATION PROVIDER CONFIGS ===
+      CREATE TABLE IF NOT EXISTS image_gen_providers (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        display_name TEXT NOT NULL,
+        base_url TEXT NOT NULL,
+        api_key TEXT,
+        is_active INTEGER DEFAULT 0,
+        supports_img2img INTEGER DEFAULT 0,
+        payload_template TEXT NOT NULL, -- JSON template for request body
+        response_path TEXT NOT NULL, -- JSON path to extract image URL (e.g. "data.0.url")
+        cost_config TEXT, -- JSON: {"default": 5, "1024x1024": 4, ...}
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Insert default provider configs (can be edited by user)
+      INSERT OR IGNORE INTO image_gen_providers (id, name, display_name, base_url, is_active, supports_img2img, payload_template, response_path, cost_config) VALUES
+        ('dalle3', 'dall-e-3', 'DALL-E 3', 'https://api.openai.com/v1/images/generations', 1, 0,
+          '{"model": "dall-e-3", "prompt": "{prompt}", "size": "{size}", "quality": "{quality}", "style": "{style}", "n": "{n}"}',
+          'data.0.url',
+          '{"1024x1024_standard": 4, "1024x1024_hd": 8, "1792x1024_standard": 8, "1792x1024_hd": 12}'),
+        ('sdxl', 'stable-diffusion-xl', 'Stable Diffusion XL', 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', 0, 1,
+          '{"text_prompts": [{"text": "{prompt}"}], "cfg_scale": {cfg_scale}, "height": {height}, "width": {width}, "samples": {n}, "steps": {steps}}',
+          'artifacts.0.base64',
+          '{"default": 3}');
+
       -- Insert default feature categories
       INSERT OR IGNORE INTO feature_categories (name, display_name, description) VALUES
         ('npc_generation', 'NPC Creation', 'Generating new NPC personalities and profiles'),
@@ -285,10 +312,20 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
 
       CREATE TABLE IF NOT EXISTS conversations (
         id TEXT PRIMARY KEY,
-        npc_id TEXT NOT NULL,
-        participant_id TEXT,
-        participant_type TEXT NOT NULL,
+        npc_id TEXT,                              -- For direct messages
+        participant_id TEXT,                      -- For direct messages
+        participant_type TEXT,                    -- 'player' or 'npc'
+        conversation_type TEXT DEFAULT 'direct_message', -- 'direct_message', 'group_chat', 'post_comments'
         platform TEXT NOT NULL,
+
+        -- For group chats
+        participant_ids TEXT,                     -- JSON array of participant IDs
+        group_name TEXT,
+
+        -- For post comments (threaded discussions)
+        parent_post_id TEXT,                      -- Which post this thread is on
+        root_comment_id TEXT,                     -- Top-level comment
+
         started_at INTEGER DEFAULT (unixepoch()),
         last_message_at INTEGER,
         context TEXT
@@ -298,11 +335,13 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         id TEXT PRIMARY KEY,
         conversation_id TEXT NOT NULL,
         sender_id TEXT NOT NULL,
-        sender_type TEXT NOT NULL,
+        sender_type TEXT NOT NULL,              -- 'player' or 'npc'
+        sender_name TEXT,                       -- Display name (important for group chats)
         content TEXT NOT NULL,
         timestamp INTEGER DEFAULT (unixepoch()),
         is_read INTEGER DEFAULT 0,
-        metadata TEXT
+        metadata TEXT,                          -- JSON: has_image, image_urls, etc.
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id)
       );
 
       CREATE TABLE IF NOT EXISTS memories (
@@ -330,12 +369,35 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         engagement_score REAL DEFAULT 0
       );
 
-      CREATE TABLE IF NOT EXISTS post_comments (
+      -- Threaded comments on posts
+      CREATE TABLE IF NOT EXISTS comments (
         id TEXT PRIMARY KEY,
         post_id TEXT NOT NULL,
-        npc_id TEXT NOT NULL,
+        parent_comment_id TEXT,                 -- NULL for top-level comments
+        root_comment_id TEXT,                   -- Always points to thread root
+        thread_depth INTEGER DEFAULT 0,         -- How deep in thread (0 = top-level)
+        author_id TEXT NOT NULL,
+        author_type TEXT NOT NULL,              -- 'player' or 'npc'
+        author_name TEXT NOT NULL,
         content TEXT NOT NULL,
-        created_at INTEGER DEFAULT (unixepoch())
+        likes_count INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (post_id) REFERENCES posts(id),
+        FOREIGN KEY (parent_comment_id) REFERENCES comments(id),
+        FOREIGN KEY (root_comment_id) REFERENCES comments(id)
+      );
+
+      -- Group chat participants
+      CREATE TABLE IF NOT EXISTS group_chat_participants (
+        id TEXT PRIMARY KEY,
+        conversation_id TEXT NOT NULL,
+        participant_id TEXT NOT NULL,
+        participant_type TEXT NOT NULL,         -- 'player' or 'npc'
+        participant_name TEXT NOT NULL,
+        joined_at INTEGER DEFAULT (unixepoch()),
+        last_read_at INTEGER,
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+        UNIQUE(conversation_id, participant_id)
       );
 
       CREATE TABLE IF NOT EXISTS npc_activities (
@@ -362,6 +424,15 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_media_npc ON media_files(npc_id);
       CREATE INDEX IF NOT EXISTS idx_media_category ON media_files(category);
       CREATE INDEX IF NOT EXISTS idx_media_created ON media_files(created_at);
+
+      -- Group chat & threaded comments indexes
+      CREATE INDEX IF NOT EXISTS idx_conversations_type ON conversations(conversation_type);
+      CREATE INDEX IF NOT EXISTS idx_conversations_post ON conversations(parent_post_id);
+      CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
+      CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_comment_id);
+      CREATE INDEX IF NOT EXISTS idx_comments_thread ON comments(root_comment_id);
+      CREATE INDEX IF NOT EXISTS idx_comments_created ON comments(created_at);
+      CREATE INDEX IF NOT EXISTS idx_group_participants ON group_chat_participants(conversation_id);
     `);
   }
 }

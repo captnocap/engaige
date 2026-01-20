@@ -28,6 +28,25 @@ Manages the lifecycle of NPCs:
 *   ** Retrieval**: Fetches NPC data for the frontend and simulation.
 *   **Updates**: Modifies NPC state based on interactions.
 
+### NPC Personality System (`npc-personality.ts`)
+Defines the granular behavior and communication style of NPCs.
+*   **Behavior Flags**: Controls capabilities like "can_send_images", "can_initiate_conversations", "is_active_hours_aware".
+*   **Communication Quirks**: Defines style metrics like "verbosity", "sarcasm", "emoji_usage", and "typo_frequency".
+*   **Message Patterns**: Controls "typing_speed", "average_response_delay", and "multi_message_sender" behavior.
+*   **Presets**: Includes archetypes like "social_butterfly", "introvert", "chaotic_fun", "professional", and "flirty".
+
+### NPC Interaction Service (`npc-interaction.ts`)
+A high-level orchestration layer for communicating with NPCs.
+*   **Unified Interface**: `sendMessageToNPC` handles both text and image messages.
+*   **Automatic Proxying**: Checks model capabilities and automatically routes to Vision/ImageGen proxies if the underlying model lacks support.
+*   **Image Requests**: `requestNPCImage` allows NPCs to "create" images by refining prompts and calling the image generation proxy.
+
+### Message Formatter (`message-formatter.ts`)
+Post-processing layer that applies personality quirks to AI-generated text.
+*   **Quirk Application**: Adds emojis, typos, abbreviations, and internet slang based on the NPC's `CommunicationQuirks`.
+*   **Message Splitting**: Breaks long thoughts into multiple rapid-fire messages if the NPC is a `multi_message_sender`.
+*   **Delays**: Calculates realistic typing delays and response times based on `typing_speed` and message length.
+
 ### Proxy Services
 To resolve the fragmentation of AI model capabilities, the backend implements proxy services:
 

@@ -1,6 +1,17 @@
 import { getDB } from '../db/index.js';
 import { checkBudgetAllows, logApiCost } from './budget.js';
 import type { AIProvider } from './ai.js';
+import {
+  getActiveImageGenProvider,
+  buildPayloadFromTemplate,
+  extractFromResponse,
+  estimateImageGenCost,
+  type ImageGenProvider,
+} from './image-gen-config.js';
+import {
+  prepareImageForAPI,
+  getProviderCompressionSettings,
+} from './image-compression.js';
 
 // Image generation proxy configuration
 let imageGenProxyConfig: {
@@ -54,12 +65,12 @@ const IMAGE_GENERATION_COSTS: Record<string, Record<string, number>> = {
   },
 };
 
-// Generate an image using the configured proxy
+// Generate an image using the configured proxy (with flexible provider support)
 export async function generateImage(
   prompt: string,
   options: ImageGenerationOptions = {},
   context?: { npcId?: string; npcName?: string; purpose?: string }
-): Promise<{ imageUrl: string; revisedPrompt?: string }> {
+): Promise<{ imageUrl: string; revisedPrompt?: string; promptUsed?: string }> {
   const {
     size = '1024x1024',
     quality = 'standard',
@@ -67,14 +78,17 @@ export async function generateImage(
     n = 1,
   } = options;
 
-  // Calculate cost
-  const costKey = imageGenProxyConfig.model === 'dall-e-3'
-    ? `${size}_${quality}`
-    : imageGenProxyConfig.model === 'dall-e-2'
-    ? size
-    : 'default';
+  // Get active image generation provider from database
+  const provider = getActiveImageGenProvider();
 
-  const costPerImage = IMAGE_GENERATION_COSTS[imageGenProxyConfig.model]?.[costKey] || 5; // Default $0.05
+  if (!provider) {
+    throw new Error('No active image generation provider configured. Please set one up in settings.');
+  }
+
+  console.log(`[Image Gen] Using provider: ${provider.display_name} (${provider.name})`);
+
+  // Estimate cost
+  const costPerImage = estimateImageGenCost(provider, { size, quality });
   const totalCostCents = costPerImage * n;
 
   // Check budget
@@ -83,25 +97,80 @@ export async function generateImage(
     throw new Error(`Image generation budget exceeded: ${budgetCheck.reason}`);
   }
 
-  let imageUrl: string;
-  let revisedPrompt: string | undefined;
+  // Prepare parameters for payload template
+  const [width, height] = size.split('x').map(Number);
+  const params: Record<string, any> = {
+    prompt,
+    size,
+    width,
+    height,
+    quality,
+    style,
+    n,
+    // Common parameters for Stable Diffusion
+    cfg_scale: 7,
+    steps: 30,
+    sampler: 'euler_a',
+    // Add more as needed
+  };
 
-  switch (imageGenProxyConfig.provider) {
-    case 'openai':
-    case 'openai-compatible':
-      ({ imageUrl, revisedPrompt } = await callOpenAIImageGen(prompt, options));
-      break;
-    case 'stability-ai':
-      ({ imageUrl } = await callStabilityAI(prompt, options));
-      break;
-    default:
-      throw new Error(`Unknown image generation provider: ${imageGenProxyConfig.provider}`);
+  // Build request payload from template
+  const payload = buildPayloadFromTemplate(provider.payload_template, params);
+
+  console.log(`[Image Gen] Request payload:`, JSON.stringify(payload, null, 2));
+
+  // Make API request
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (provider.api_key) {
+    // Support different auth header formats
+    if (provider.base_url.includes('openai.com')) {
+      headers['Authorization'] = `Bearer ${provider.api_key}`;
+    } else if (provider.base_url.includes('stability.ai')) {
+      headers['Authorization'] = `Bearer ${provider.api_key}`;
+    } else {
+      // Default to Bearer token
+      headers['Authorization'] = `Bearer ${provider.api_key}`;
+    }
   }
+
+  const response = await fetch(provider.base_url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Image generation API error (${provider.name}): ${error}`);
+  }
+
+  const data = await response.json();
+
+  // Extract image URL using response path
+  let imageUrl: string;
+  try {
+    imageUrl = extractFromResponse(data, provider.response_path);
+
+    // Handle base64 responses
+    if (provider.response_path.includes('base64') && !imageUrl.startsWith('data:')) {
+      imageUrl = `data:image/png;base64,${imageUrl}`;
+    }
+  } catch (error: any) {
+    console.error('[Image Gen] Failed to extract image from response:', error);
+    console.error('[Image Gen] Response:', JSON.stringify(data, null, 2));
+    throw new Error(`Failed to extract image URL from response: ${error.message}`);
+  }
+
+  // Extract revised prompt if available (DALL-E specific)
+  const revisedPrompt = data.data?.[0]?.revised_prompt;
 
   // Log the cost
   logApiCost({
-    provider: imageGenProxyConfig.provider,
-    model: imageGenProxyConfig.model,
+    provider: provider.name,
+    model: provider.name,
     feature_category: 'image_generation',
     cost_cents: totalCostCents,
     request_metadata: {
@@ -114,7 +183,9 @@ export async function generateImage(
     },
   });
 
-  return { imageUrl, revisedPrompt };
+  console.log(`[Image Gen] Image generated successfully`);
+
+  return { imageUrl, revisedPrompt, promptUsed: prompt };
 }
 
 // OpenAI DALL-E
@@ -293,12 +364,14 @@ export async function generateImageWithCharacterReference(
     additionalReferenceUrls?: string[]; // For scenes with user + NPC
   }
 ): Promise<{ imageUrl: string }> {
-  // This would use Stable Diffusion or similar that supports img2img
-  // For DALL-E 3, we'd need to incorporate the reference into the prompt more explicitly
+  const provider = getActiveImageGenProvider();
+  if (!provider) {
+    throw new Error('No active image generation provider configured');
+  }
 
-  if (imageGenProxyConfig.model.includes('dall-e')) {
-    // DALL-E doesn't support img2img directly, so we describe the character
-    // This is where you'd use vision proxy to describe the reference image
+  // Check if provider supports img2img
+  if (!provider.supports_img2img) {
+    // Fall back to vision proxy + text description
     const { analyzeImage } = await import('./vision-proxy.js');
 
     const characterDescription = await analyzeImage(
@@ -313,9 +386,81 @@ export async function generateImageWithCharacterReference(
     });
   }
 
-  // For Stability AI or other providers with img2img support
-  // Implementation would vary by provider
-  throw new Error('img2img with reference not yet implemented for this provider');
+  // Provider supports img2img - prepare reference image
+  console.log('[Image Gen] Preparing reference image for img2img');
+
+  // Compress and prepare reference image based on provider requirements
+  const compressionSettings = getProviderCompressionSettings(provider.name);
+
+  // Most img2img APIs expect base64
+  const referenceImageData = await prepareImageForAPI(
+    characterReferenceUrl,
+    provider.name,
+    'base64'
+  );
+
+  console.log('[Image Gen] Reference image prepared');
+
+  // Build payload with img2img parameters
+  const [width, height] = (options?.includeMultipleCharacters ? '1792x1024' : '1024x1024').split('x').map(Number);
+
+  // Different providers have different img2img parameter names
+  const params: Record<string, any> = {
+    prompt,
+    width,
+    height,
+    // Stable Diffusion img2img params
+    init_image: referenceImageData,
+    image: referenceImageData, // Alternative param name
+    reference_image: referenceImageData, // Alternative param name
+    denoising_strength: 1 - (options?.referenceStrength || 0.7), // Convert to denoising strength
+    strength: options?.referenceStrength || 0.7, // Some providers use "strength"
+    cfg_scale: 7,
+    steps: 30,
+  };
+
+  const payload = buildPayloadFromTemplate(provider.payload_template, params);
+
+  console.log('[Image Gen] Making img2img API request');
+
+  // Make API request
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (provider.api_key) {
+    headers['Authorization'] = `Bearer ${provider.api_key}`;
+  }
+
+  const response = await fetch(provider.base_url.replace('/text-to-image', '/image-to-image'), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`img2img API error: ${error}`);
+  }
+
+  const data = await response.json();
+  const imageUrl = extractFromResponse(data, provider.response_path);
+
+  // Log cost
+  const costCents = estimateImageGenCost(provider, { size: `${width}x${height}` });
+  logApiCost({
+    provider: provider.name,
+    model: provider.name,
+    feature_category: 'image_generation',
+    cost_cents: costCents,
+    request_metadata: {
+      prompt: prompt.slice(0, 100),
+      has_reference: true,
+      img2img: true,
+    },
+  });
+
+  return { imageUrl };
 }
 
 // Update image generation costs (for user-configured pricing)

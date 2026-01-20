@@ -4,6 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
+
+**MUST DO:**
+Please when ever there is any feature implementation, that is significant to how the underlying game mechanics work, please always remember to make comprehensive documentation of the files made and the changes made to the files. This is to ensure that the code is maintainable and that the code is easy to understand. And that we dont have to keep going back and forth to understand the code, or end up creating the same code multiple times. This also lets us avoid problems with using multiple AI models in parallel from not understanding the code. If you arnt updating documentation expect me to scold you. AND KEEP IT NEAT AND ORGANIZED! Thank you. :D
+---
 This is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
 
 **Core Vision:**
@@ -123,14 +127,26 @@ src/
 ```
 server/src/
 ├── db/
-│   └── index.ts           # Database setup, schema initialization, helpers
+│   └── index.ts                      # Database setup, schema initialization
 ├── services/
-│   ├── ai.ts              # AI provider abstraction (OpenAI/Anthropic/local)
-│   ├── npc.ts             # NPC CRUD operations
-│   ├── player.ts          # Player profile & preferences
-│   └── conversation.ts    # Messaging system between NPCs/players
-├── routes/               # (Empty - API routes go here)
-└── utils/                # (Empty - utilities go here)
+│   ├── ai.ts                         # AI provider abstraction with budget tracking
+│   ├── budget.ts                     # Budget management and cost tracking
+│   ├── npc.ts                        # NPC CRUD operations
+│   ├── npc-personality.ts            # Behavior flags, quirks, message patterns
+│   ├── message-formatter.ts          # Realistic message formatting & delays
+│   ├── relationships.ts              # Player-NPC relationship stats tracking
+│   ├── player.ts                     # Player profile & preferences
+│   ├── conversation.ts               # Messaging with formatting & stat updates
+│   ├── onboarding.ts                 # First-time setup flow
+│   ├── media.ts                      # Media file management
+│   ├── export.ts                     # Export/import NPCs and conversations
+│   ├── model-capabilities.ts         # Model capability detection
+│   ├── vision-proxy.ts               # Image analysis for non-vision models
+│   ├── image-generation-proxy.ts     # Image generation proxy
+│   └── npc-interaction.ts            # High-level NPC interaction API
+├── routes/                           # (API routes go here)
+└── utils/
+    └── cost-calculator.ts            # AI cost calculation utilities
 ```
 
 ### Database Architecture
@@ -172,6 +188,188 @@ server/src/
 - **Backend**: Bun runtime, TypeScript, SQLite (bun:sqlite)
 - **AI**: OpenAI-compatible APIs, Anthropic API
 - **Vision/Image Proxies**: Transparent routing for models without vision/image capabilities (see PROXY_SYSTEM.md)
+
+## Settings System
+
+**Overview**: Comprehensive user settings management for display, theme, wallpaper, typography, graphics, audio, and accessibility.
+
+### Architecture
+
+**Key Files**:
+- `src/stores/settingsStore.ts` - Central Zustand store with persistence for all settings
+- `src/components/desktop/SettingsWindow.tsx` - Main settings UI with sidebar navigation (1000×700px default)
+- `src/index.css` - CSS variables and kinetic typography animations
+- `src/main.tsx` - Settings initialization on app load
+
+**Settings Categories**:
+
+1. **Display Settings** (`DisplayState` in displayStore.ts)
+   - Fullscreen toggle (immediate application)
+   - Monitor selection (multiple displays)
+   - Persisted to localStorage
+
+2. **Wallpaper Settings** (`WallpaperSettings`)
+   - Type: `'theme'` (use current theme gradient) or `'custom'` (user-uploaded/URL)
+   - Custom source: `'file'` (local upload) or `'url'` (web link)
+   - Fit options: `'cover' | 'contain' | 'fill' | 'tile'`
+   - Live preview in settings
+   - Integrated into Desktop.tsx background styling
+
+3. **Typography Settings** (`TypographySettings`)
+   - **Font Family**: 20+ fonts across categories (System, Sans-Serif, Serif, Monospace, Playful)
+   - **Font Size**: 80-120% scale (CSS variable `--font-size-scale`)
+   - **Line Height**: 1.2-2.0 (CSS variable `--line-height`)
+   - **Letter Spacing**: -0.05 to 0.1em (CSS variable `--letter-spacing`)
+   - **Font Weight**: normal, medium, semibold, bold (CSS variable `--font-weight-base`)
+   - **Kinetic Typography**: Three animation intensities (subtle, moderate, energetic) - automatically disabled when reduce motion is ON
+
+4. **Graphics Settings** (`GraphicsSettings`)
+   - **Brightness**: 50-150% (CSS filter)
+   - **Contrast**: 50-150% (CSS filter)
+   - **Saturation**: 0-200% (CSS filter)
+   - **Reduce Motion**: Disables all animations (kinetic typography, transitions)
+   - Applied via CSS custom property `--graphics-filter`
+
+5. **Audio Settings** (`AudioSettings`)
+   - **Master Volume**: 0-100% (future audio system)
+   - **Music Volume**: 0-100% with master override
+   - **SFX Volume**: 0-100% with master override
+   - Mute toggles for each channel
+   - Prepared for future audio implementation
+
+6. **Accessibility Settings** (`AccessibilitySettings`)
+   - High contrast mode (future)
+
+7. **Developer Options**
+   - Reset onboarding button
+
+### Font List (20+ Fonts)
+
+```
+System: System Default
+Sans-Serif: Inter, Roboto, Open Sans, Lato, Montserrat, Poppins
+Serif: Merriweather, Playfair Display, Lora, Crimson Text
+Monospace: Fira Code, JetBrains Mono, Source Code Pro, IBM Plex Mono
+Playful: Comic Sans MS, Papyrus, Pacifico, Caveat, Press Start 2P
+```
+
+Fonts loaded from Google Fonts CDN in `index.html` with `font-display: swap`.
+
+### Kinetic Typography (Active Typography)
+
+Three animation intensities:
+
+- **Subtle**: Gentle hover lift (translateY -2px), color transitions on headings
+- **Moderate**: Gradient text animations cycling through theme colors, fade-in effects for paragraphs
+- **Energetic**: Glitch effects (rapid small translate animations), rainbow gradient cycling, text shadow pulses
+
+**Critical**: Kinetic typography is automatically disabled when "Reduce Motion" is enabled (accessibility).
+
+Implementation in `settingsStore.ts`:
+```typescript
+// Apply kinetic typography ONLY if enabled AND reduce motion is OFF
+if (typography.enableAnimations && !graphics.reduceMotion) {
+  root.classList.add(`kinetic-${typography.animationStyle}`)
+}
+```
+
+CSS animations respect OS-level `prefers-reduced-motion` media query.
+
+### Data Persistence
+
+**Storage**: Zustand with localStorage middleware
+- Key: `loveai-settings`
+- Persisted fields: wallpaper, audio, graphics, typography, accessibility, developer
+- Automatic rehydration on app load via `onRehydrateStorage` hook
+- Failed rehydration falls back to defaults
+
+### CSS Variables (Applied to `:root`)
+
+```css
+--font-family: system-ui
+--font-size-scale: 1
+--line-height: 1.5
+--letter-spacing: 0
+--font-weight-base: normal
+--graphics-filter: none
+```
+
+All theme colors (--color-primary, --color-secondary, etc.) already managed by themeStore.
+
+### UI Organization
+
+**Sidebar Navigation** with 8 sections:
+- Display (🖥️)
+- Theme (🎨)
+- Wallpaper (🖼️)
+- Typography (✏️)
+- Graphics (✨)
+- Audio (🔊)
+- Accessibility (♿)
+- Developer (🛠️)
+
+**Design Principles**:
+- Generous spacing (gap-6, padding-8)
+- Visual hierarchy (section titles, descriptions, grouped controls)
+- Live previews (wallpaper thumbnail, typography samples)
+- Consistent styling using theme CSS variables
+- Keyboard accessible (Tab navigation, Enter to activate, Arrow keys for sliders)
+
+### Wallpaper Implementation
+
+**Desktop.tsx Integration**:
+```typescript
+const backgroundStyle = wallpaper.type === 'custom' && wallpaper.customPath
+  ? {
+      backgroundImage: `url(${wallpaper.customPath})`,
+      backgroundSize: wallpaper.customFit,
+      backgroundPosition: 'center',
+      backgroundRepeat: wallpaper.customFit === 'tile' ? 'repeat' : 'no-repeat',
+      backgroundColor: 'var(--color-bgSecondary)',
+    }
+  : { background: currentTheme.colors.gradient }
+```
+
+**File Handling**:
+- Local files: Converted via `convertFileSrc()` from Tauri to asset protocol URLs
+- URLs: Validated with `new URL(url)` constructor
+- File picker: Supports PNG, JPG, JPEG, WEBP, GIF, BMP, SVG
+
+### Window Sizing
+
+Default settings window state:
+- x: 300, y: 100
+- width: 1000px, height: 700px
+- Sidebar: 192px wide (fixed)
+- Content area: Scrollable, max-width 768px
+
+### Audio System (Future)
+
+Currently prepared for future audio implementation:
+```typescript
+// Audio elements can be marked with data-type="music" or data-type="sfx"
+<audio data-type="music" src="..."></audio>
+<audio data-type="sfx" src="..."></audio>
+
+// applyAudioSettings() will update volume on these elements
+```
+
+### Limitations & Future Work
+
+**Current Limitations**:
+- System-level volume control (requires OS plugin)
+- Real display brightness (simulated via CSS filter)
+- High contrast mode (UI prepared, not implemented)
+- Window decorations toggle (may require restart)
+
+**Future Enhancements**:
+- Animated wallpapers (video backgrounds)
+- Wallpaper slideshow/rotation
+- Custom font uploads
+- Text shadow/outline options
+- Per-window typography overrides
+- Keybinding customization
+- Language/localization support
 
 ## Adding New Features
 
@@ -283,6 +481,59 @@ Use the `createNPC()` service in `server/src/services/npc.ts`:
 - Future images maintain character appearance
 
 See **PROXY_SYSTEM.md** for complete documentation.
+
+## NPC Personality & Behavior System
+
+NPCs feel alive through detailed personality simulation and realistic messaging behavior.
+
+**Key Files**:
+- `server/src/services/npc-personality.ts` - Behavior flags, quirks, message patterns
+- `server/src/services/message-formatter.ts` - Realistic message formatting
+- `server/src/services/relationships.ts` - Player-NPC relationship tracking
+
+**Behavior Flags:**
+- `is_enabled_to_post_freely` - Can post autonomously
+- `can_initiate_conversations` - Can DM player first
+- `can_send_images` - Can share photos
+- `is_active_hours_aware` - Respects sleep/work schedule
+
+**Communication Quirks:**
+- Verbosity (short vs long messages)
+- Emoji usage, typos, slang, abbreviations
+- Sarcasm, optimism, formality levels
+- Punctuation style (ellipsis, all caps, etc.)
+
+**Message Patterns:**
+- **Multi-message senders**: Break response into 2-5 rapid messages
+- **Realistic delays**: Calculate response time based on message length + typing speed
+- **Typing indicators**: Show "typing..." for longer responses
+- **Active hours**: NPCs only respond during their active hours
+
+**Relationship Stats (0-100):**
+- **Trust**: Earned through meaningful conversations, sharing personal content
+- **Affinity**: How much they like you (affected by all interactions)
+- **Familiarity**: How well you know each other (increases with every message)
+
+**Relationship Stages:**
+Stranger → Acquaintance → Friend → Close Friend → Best Friend
+                    ↓
+          Romantic Interest → Partner
+
+**Stat Updates:**
+- Each message: +1-2 trust, +1 affinity, +1 familiarity
+- Image shared: +3 trust, +2 affinity
+- Post liked: +1 affinity
+- Post commented: +1 trust, +2 affinity
+- Long gaps: Stats may decay
+
+**Personality Presets:**
+- `social_butterfly` - Very active, enthusiastic, multi-message sender
+- `introvert` - Reserved, slow responses, rarely initiates
+- `chaotic_fun` - High energy, typos, slang, rapid messages
+- `professional` - Formal, measured, active hours 9-5
+- `flirty` - Playful, uses emojis, asks for photos
+
+See **NPC_PERSONALITY_SYSTEM.md** for complete documentation.
 
 ## Important Notes
 

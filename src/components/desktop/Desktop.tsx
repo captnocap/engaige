@@ -4,8 +4,10 @@ import { Taskbar, type TaskbarWindow } from './Taskbar'
 import { DesktopIcon } from './DesktopIcon'
 import { Onboarding, type OnboardingData } from '../onboarding/Onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
-import { useThemeStore, themes } from '../../stores/themeStore'
+import { useThemeStore } from '../../stores/themeStore'
+import { useSettingsStore } from '../../stores/settingsStore.js'
 import { FilesWindow } from './FilesWindow'
+import { SettingsWindow } from './SettingsWindow'
 
 interface WindowConfig {
   id: string
@@ -23,21 +25,15 @@ interface DesktopIconConfig {
   action?: () => void
 }
 
-const WALLPAPERS = {
-  default: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-  winning: 'linear-gradient(135deg, #1a2e1a 0%, #162e21 50%, #0f4630 100%)',
-  losing: 'linear-gradient(135deg, #2e1a1a 0%, #3e1616 50%, #600f0f 100%)',
-}
-
 export function Desktop() {
   const { completed: onboardingCompleted, setCompleted } = useOnboardingStore()
   const { currentTheme } = useThemeStore()
+  const { wallpaper } = useSettingsStore()
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser'] : []))
   const [windowStates, setWindowStates] = useState<Record<string, WindowState>>({})
   const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser' : null)
   const [nextZIndex, setNextZIndex] = useState(10)
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
-  const [wallpaper, setWallpaper] = useState<keyof typeof WALLPAPERS>('default')
   const [phoneVisible, setPhoneVisible] = useState(false)
 
   const handleOnboardingComplete = useCallback((data: OnboardingData) => {
@@ -78,8 +74,8 @@ export function Desktop() {
       id: 'settings',
       title: 'Settings',
       icon: '⚙️',
-      component: <SettingsPlaceholder />,
-      defaultState: { x: 250, y: 120, width: 500, height: 550 },
+      component: <SettingsWindow />,
+      defaultState: { x: 300, y: 100, width: 1000, height: 700 },
     },
   ]
 
@@ -154,6 +150,17 @@ export function Desktop() {
     }
   })
 
+  // Determine background style based on wallpaper settings
+  const backgroundStyle = wallpaper.type === 'custom' && wallpaper.customPath
+    ? {
+        backgroundImage: `url(${wallpaper.customPath})`,
+        backgroundSize: wallpaper.customFit,
+        backgroundPosition: 'center',
+        backgroundRepeat: wallpaper.customFit === 'tile' ? 'repeat' : 'no-repeat' as const,
+        backgroundColor: 'var(--color-bgSecondary)',
+      }
+    : { background: currentTheme.colors.gradient }
+
   // Show onboarding if not completed
   if (!onboardingCompleted) {
     return (
@@ -171,7 +178,7 @@ export function Desktop() {
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden select-none"
-      style={{ background: currentTheme.colors.gradient }}
+      style={backgroundStyle}
       onClick={handleDesktopClick}
     >
       <div className="flex-1 relative">
@@ -235,86 +242,6 @@ function BrowserPlaceholder() {
       <span className="text-6xl mb-4">🌐</span>
       <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Browser</h1>
       <p style={{ color: 'var(--color-textMuted)' }}>A modern browser window component</p>
-    </div>
-  )
-}
-
-function SettingsPlaceholder() {
-  const { reset } = useOnboardingStore()
-  const { currentTheme, setTheme } = useThemeStore()
-
-  const handleResetOnboarding = () => {
-    if (confirm('Reset onboarding? This will reload the page.')) {
-      reset()
-      window.location.reload()
-    }
-  }
-
-  return (
-    <div className="h-full flex flex-col overflow-y-auto" style={{ background: 'var(--color-bg)' }}>
-      <div className="p-6">
-        <h2 className="text-xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>Settings</h2>
-
-        <div className="space-y-6">
-          {/* Theme Settings */}
-          <div className="p-4 rounded-lg" style={{ background: 'var(--color-bgSecondary)', border: '1px solid var(--color-border)' }}>
-            <div className="mb-3">
-              <div className="font-semibold" style={{ color: 'var(--color-text)' }}>Theme</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-textMuted)' }}>Choose your preferred color scheme</div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2">
-              {themes.map((theme) => (
-                <button
-                  key={theme.name}
-                  onClick={() => setTheme(theme.name)}
-                  className="flex items-center justify-between p-3 rounded transition-all"
-                  style={{
-                    background: currentTheme.name === theme.name ? 'var(--color-bgTertiary)' : 'var(--color-bg)',
-                    border: currentTheme.name === theme.name ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex gap-1">
-                      <div className="w-3 h-3 rounded-full" style={{ background: theme.colors.primary }} />
-                      <div className="w-3 h-3 rounded-full" style={{ background: theme.colors.secondary }} />
-                      <div className="w-3 h-3 rounded-full" style={{ background: theme.colors.accent }} />
-                    </div>
-                    <span style={{ color: 'var(--color-text)' }}>{theme.displayName}</span>
-                  </div>
-                  {currentTheme.name === theme.name && (
-                    <span style={{ color: 'var(--color-primary)' }}>✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Display Settings */}
-          <div className="p-4 rounded-lg" style={{ background: 'var(--color-bgSecondary)', border: '1px solid var(--color-border)' }}>
-            <div className="font-semibold" style={{ color: 'var(--color-text)' }}>Display</div>
-            <div className="text-xs mt-1" style={{ color: 'var(--color-textMuted)' }}>Configure your display settings</div>
-          </div>
-
-          {/* Developer Options */}
-          <div className="p-4 rounded-lg" style={{ background: 'var(--color-bgSecondary)', border: '2px solid var(--color-error)' }}>
-            <div className="mb-3">
-              <div className="font-semibold" style={{ color: 'var(--color-text)' }}>Developer Options</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-textMuted)' }}>Testing and debugging tools</div>
-            </div>
-            <button
-              onClick={handleResetOnboarding}
-              className="px-4 py-2 rounded text-sm font-medium transition-colors"
-              style={{
-                background: 'var(--color-error)',
-                color: 'var(--color-text)'
-              }}
-            >
-              Reset Onboarding
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

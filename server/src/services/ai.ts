@@ -6,6 +6,7 @@ import {
   calculateCost,
   estimateCost,
 } from '../utils/cost-calculator.js';
+import { getToolDefinitions, executeToolCall } from './runtime-tools.js';
 
 // AI Configuration Types
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -52,23 +53,27 @@ export function getNPCConfig(npc: {
 // Build system prompt for an NPC with their identity
 export function buildNPCSystemPrompt(npc: {
   display_name: string;
-  personality: string;
   bio: string;
   occupation: string;
   interests: string;
   system_prompt: string;
+  personality_traits?: string;
 }): string {
   const interests = JSON.parse(npc.interests || '[]');
+  const personalityTraits = npc.personality_traits ? JSON.parse(npc.personality_traits) : {};
+
+  let personalitySection = '';
+  if (personalityTraits.personality_style) {
+    personalitySection = `## Personality\n${personalityTraits.personality_style}\n\n`;
+  }
+
   return `
 You are ${npc.display_name}.
 
 ## Your Identity
 ${npc.system_prompt}
 
-## Personality
-${npc.personality}
-
-## Background
+${personalitySection}## Background
 ${npc.bio}
 
 ## Occupation
@@ -131,7 +136,14 @@ export async function generateNPCResponse(
   npcId: string,
   message: string,
   conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>,
-  context?: { platform?: string; player_name?: string; feature_category?: string }
+  context?: {
+    platform?: string;
+    player_name?: string;
+    player_id?: string;
+    conversation_id?: string;
+    feature_category?: string;
+    enable_tools?: boolean; // Enable runtime tools (image generation, memory search, etc.)
+  }
 ): Promise<string> {
   const npcDb = getDB('npc');
   const gameDb = getDB('game');
@@ -165,15 +177,22 @@ export async function generateNPCResponse(
   ];
 
   const featureCategory = context?.feature_category || 'conversation';
+  const enableTools = context?.enable_tools ?? true; // Tools enabled by default
   let response: string;
+
+  const toolContext = {
+    npc_id: npcId,
+    player_id: context?.player_id,
+    conversation_id: context?.conversation_id,
+  };
 
   switch (config.provider) {
     case 'openai':
     case 'openai-compatible':
-      response = await callOpenAICompatible(messages, config, featureCategory);
+      response = await callOpenAICompatible(messages, config, featureCategory, enableTools, toolContext);
       break;
     case 'anthropic':
-      response = await callAnthropic(messages, config, featureCategory);
+      response = await callAnthropic(messages, config, featureCategory, enableTools, toolContext);
       break;
     default:
       throw new Error(`Unknown provider: ${config.provider}`);
@@ -193,7 +212,9 @@ export async function generateNPCResponse(
 async function callOpenAICompatible(
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
   config: AIConfig,
-  featureCategory: string = 'other'
+  featureCategory: string = 'other',
+  enableTools: boolean = false,
+  toolContext?: { npc_id: string; player_id?: string; conversation_id?: string }
 ): Promise<string> {
   const baseUrl = config.baseUrl || 'https://api.openai.com/v1';
   const endpoint = `${baseUrl}/chat/completions`;
@@ -217,15 +238,25 @@ async function callOpenAICompatible(
     headers['Authorization'] = `Bearer ${config.apiKey}`;
   }
 
+  // Add tools if enabled
+  const tools = enableTools && toolContext ? getToolDefinitions('openai') : undefined;
+
+  const requestBody: any = {
+    model: config.model,
+    messages,
+    temperature: 0.8,
+    max_tokens: 500,
+  };
+
+  if (tools && tools.length > 0) {
+    requestBody.tools = tools;
+    requestBody.tool_choice = 'auto'; // Let model decide when to use tools
+  }
+
   const response = await fetch(endpoint, {
     method: 'POST',
     headers,
-    body: JSON.stringify({
-      model: config.model,
-      messages,
-      temperature: 0.8,
-      max_tokens: 500,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
@@ -250,14 +281,80 @@ async function callOpenAICompatible(
     cost_cents: actualCostCents,
   });
 
-  return data.choices[0].message.content;
+  const choice = data.choices[0];
+
+  // Handle tool calls
+  if (choice.message.tool_calls && choice.message.tool_calls.length > 0 && toolContext) {
+    console.log(`[AI] Model requested ${choice.message.tool_calls.length} tool call(s)`);
+
+    // Execute each tool call
+    const toolResults: any[] = [];
+    for (const toolCall of choice.message.tool_calls) {
+      const toolName = toolCall.function.name;
+      const toolArgs = JSON.parse(toolCall.function.arguments);
+
+      console.log(`[AI] Executing tool: ${toolName}`, toolArgs);
+
+      const result = await executeToolCall(toolName, toolArgs, toolContext);
+      toolResults.push({
+        tool_call_id: toolCall.id,
+        role: 'tool',
+        name: toolName,
+        content: JSON.stringify(result),
+      });
+    }
+
+    // Make a second request with tool results
+    const followUpMessages = [
+      ...messages,
+      choice.message, // Include the assistant's message with tool_calls
+      ...toolResults,
+    ];
+
+    const followUpResponse = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: config.model,
+        messages: followUpMessages,
+        temperature: 0.8,
+        max_tokens: 500,
+      }),
+    });
+
+    if (!followUpResponse.ok) {
+      const error = await followUpResponse.text();
+      throw new Error(`AI API error (follow-up): ${error}`);
+    }
+
+    const followUpData = await followUpResponse.json();
+
+    // Log follow-up cost
+    const followUpUsage = parseOpenAIUsage(followUpData);
+    const followUpCost = calculateCost(followUpUsage, config.model);
+    logApiCost({
+      provider: config.provider,
+      model: config.model,
+      feature_category: featureCategory,
+      input_tokens: followUpUsage.input_tokens,
+      output_tokens: followUpUsage.output_tokens,
+      total_tokens: followUpUsage.total_tokens,
+      cost_cents: followUpCost,
+    });
+
+    return followUpData.choices[0].message.content;
+  }
+
+  return choice.message.content;
 }
 
 // Anthropic API with budget tracking
 async function callAnthropic(
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
   config: AIConfig,
-  featureCategory: string = 'other'
+  featureCategory: string = 'other',
+  enableTools: boolean = false,
+  toolContext?: { npc_id: string; player_id?: string; conversation_id?: string }
 ): Promise<string> {
   if (!config.apiKey) throw new Error('Anthropic API key required');
 
@@ -274,6 +371,20 @@ async function callAnthropic(
     throw new Error(`Budget limit exceeded: ${budgetCheck.reason}`);
   }
 
+  // Add tools if enabled
+  const tools = enableTools && toolContext ? getToolDefinitions('anthropic') : undefined;
+
+  const requestBody: any = {
+    model: config.model,
+    max_tokens: 500,
+    system,
+    messages: 对话.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
+  };
+
+  if (tools && tools.length > 0) {
+    requestBody.tools = tools;
+  }
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -281,12 +392,7 @@ async function callAnthropic(
       'Content-Type': 'application/json',
       'anthropic-version': '2023-06-01',
     },
-    body: JSON.stringify({
-      model: config.model,
-      max_tokens: 500,
-      system,
-      messages: 对话.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
@@ -311,7 +417,72 @@ async function callAnthropic(
     cost_cents: actualCostCents,
   });
 
-  return data.content[0].text;
+  // Handle tool use
+  const content = data.content;
+  const toolUseBlocks = content.filter((block: any) => block.type === 'tool_use');
+
+  if (toolUseBlocks.length > 0 && toolContext) {
+    console.log(`[AI] Model requested ${toolUseBlocks.length} tool call(s)`);
+
+    // Execute each tool call
+    const toolResults: any[] = [];
+    for (const toolUse of toolUseBlocks) {
+      console.log(`[AI] Executing tool: ${toolUse.name}`, toolUse.input);
+
+      const result = await executeToolCall(toolUse.name, toolUse.input, toolContext);
+      toolResults.push({
+        type: 'tool_result',
+        tool_use_id: toolUse.id,
+        content: JSON.stringify(result),
+      });
+    }
+
+    // Make a second request with tool results
+    const followUpMessages = [
+      ...对话.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
+      { role: 'assistant', content }, // Include the assistant's response with tool_use
+      { role: 'user', content: toolResults }, // Tool results
+    ];
+
+    const followUpResponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': config.apiKey,
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: config.model,
+        max_tokens: 500,
+        system,
+        messages: followUpMessages,
+      }),
+    });
+
+    if (!followUpResponse.ok) {
+      const error = await followUpResponse.text();
+      throw new Error(`Anthropic API error (follow-up): ${error}`);
+    }
+
+    const followUpData = await followUpResponse.json();
+
+    // Log follow-up cost
+    const followUpUsage = parseAnthropicUsage(followUpData);
+    const followUpCost = calculateCost(followUpUsage, config.model);
+    logApiCost({
+      provider: config.provider,
+      model: config.model,
+      feature_category: featureCategory,
+      input_tokens: followUpUsage.input_tokens,
+      output_tokens: followUpUsage.output_tokens,
+      total_tokens: followUpUsage.total_tokens,
+      cost_cents: followUpCost,
+    });
+
+    return followUpData.content.find((block: any) => block.type === 'text')?.text || '';
+  }
+
+  return content.find((block: any) => block.type === 'text')?.text || '';
 }
 
 // Generate a post for an NPC

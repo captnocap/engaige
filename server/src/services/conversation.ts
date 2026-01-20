@@ -1,5 +1,8 @@
 import { getDB, generateId, now } from '../db/index.js';
 import { generateNPCResponse } from './ai.js';
+import { updateStatsForMessage } from './relationships.js';
+import { formatMessageForNPC } from './message-formatter.js';
+import type { CommunicationQuirks, MessagePatterns } from './npc-personality.js';
 
 // Conversation Types
 export interface Conversation {
@@ -89,15 +92,22 @@ export function getConversationMessages(conversationId: string, limit = 50): Mes
   `).all(conversationId, limit) as any;
 }
 
-// Send a message from player to NPC
+// Send a message from player to NPC (with realistic formatting and delays)
 export async function sendPlayerMessage(
   conversationId: string,
   playerId: string,
   content: string
-): Promise<Message> {
+): Promise<{
+  playerMessage: Message;
+  npcMessages: Array<{ message: Message; delay_seconds: number }>;
+}> {
   const db = getDB('game');
+  const npcDb = getDB('npc');
   const conv = getConversationById(conversationId);
   if (!conv) throw new Error('Conversation not found');
+
+  const npc = npcDb.prepare('SELECT * FROM npcs WHERE id = ?').get(conv.npc_id) as any;
+  if (!npc) throw new Error('NPC not found');
 
   const id = generateId();
   const timestamp = now();
@@ -113,6 +123,9 @@ export async function sendPlayerMessage(
     UPDATE conversations SET last_message_at = ? WHERE id = ?
   `).run(timestamp, conversationId);
 
+  // Update relationship stats
+  updateStatsForMessage(playerId, conv.npc_id, content, true);
+
   // Generate NPC response
   const messages = getConversationMessages(conversationId, 10);
   const history = messages.map(m => ({
@@ -120,26 +133,58 @@ export async function sendPlayerMessage(
     content: m.content,
   }));
 
-  const npcResponse = await generateNPCResponse(
+  const rawNPCResponse = await generateNPCResponse(
     conv.npc_id,
     content,
     history,
     { platform: conv.platform, player_name: 'You' }
   );
 
-  // Store NPC response
-  const npcMessageId = generateId();
-  db.prepare(`
-    INSERT INTO messages (id, conversation_id, sender_id, sender_type, content, timestamp)
-    VALUES (?, ?, ?, 'npc', ?, ?)
-  `).run(npcMessageId, conversationId, conv.npc_id, npcResponse, now());
+  // Get NPC's communication style
+  const quirks: CommunicationQuirks = JSON.parse(npc.communication_quirks || '{}');
+  const patterns: MessagePatterns = JSON.parse(npc.message_patterns || '{}');
 
-  // Update conversation again
+  // Format message based on personality
+  const formatted = formatMessageForNPC(rawNPCResponse, quirks, patterns);
+
+  // Store NPC messages (potentially multiple)
+  const npcMessages: Array<{ message: Message; delay_seconds: number }> = [];
+  let cumulativeDelay = 0;
+
+  for (let i = 0; i < formatted.parts.length; i++) {
+    const npcMessageId = generateId();
+    cumulativeDelay += formatted.delays[i];
+
+    db.prepare(`
+      INSERT INTO messages (id, conversation_id, sender_id, sender_type, content, timestamp, metadata)
+      VALUES (?, ?, ?, 'npc', ?, ?, ?)
+    `).run(
+      npcMessageId,
+      conversationId,
+      conv.npc_id,
+      formatted.parts[i],
+      timestamp + cumulativeDelay,
+      JSON.stringify({ part: i + 1, total_parts: formatted.parts.length, delay: formatted.delays[i] })
+    );
+
+    npcMessages.push({
+      message: getMessageById(npcMessageId)!,
+      delay_seconds: formatted.delays[i],
+    });
+  }
+
+  // Update conversation with final timestamp
   db.prepare(`
     UPDATE conversations SET last_message_at = ? WHERE id = ?
-  `).run(now(), conversationId);
+  `).run(timestamp + cumulativeDelay, conversationId);
 
-  return getMessageById(npcMessageId)!;
+  // Update relationship stats for NPC response
+  updateStatsForMessage(playerId, conv.npc_id, rawNPCResponse, false);
+
+  return {
+    playerMessage: getMessageById(id)!,
+    npcMessages,
+  };
 }
 
 // Send message from one NPC to another
