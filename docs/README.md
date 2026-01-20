@@ -1,0 +1,38 @@
+# LoveAI Project Documentation
+
+Welcome to the LoveAI project documentation. This documentation covers the architecture, backend services, frontend components, and Tauri integration of the project.
+
+## Project Overview
+
+LoveAI is a relationship simulator and social media game that reimagines the character AI experience. It features autonomous NPCs that live, post, and interact in the background, creating a dynamic social environment.
+
+**Core Vision:**
+*   **Social Platforms with Personality**: MySpace/Twitter/Instagram-style interactions.
+*   **Unified Relationship System**: Consistent NPC relationships across all platforms.
+*   **Autonomous NPCs**: Background simulation of NPC lives and interactions.
+*   **Cost-Conscious AI**: Granular budget controls for API usage.
+*   **Provider Agnostic**: Support for OpenAI, Anthropic, and local models.
+
+## Documentation Index
+
+Please refer to the following documents for detailed information:
+
+*   **[Architecture Overview](./ARCHITECTURE.md)**: High-level system design, database schema, and AI integration strategies.
+*   **[Backend Documentation](./BACKEND.md)**: Details on the Bun-based API server, services (NPC, AI, Onboarding), and proxy systems.
+*   **[Frontend Documentation](./FRONTEND.md)**: Architecture of the React + Vite application, window management, and component structure.
+*   **[Tauri Integration](./TAURI.md)**: Desktop environment integration, window customization, and build process.
+
+## Quick Start
+
+### Frontend (Vite + React + Tauri)
+
+```bash
+bun install           # Install dependencies
+bun run dev           # Start Vite dev server
+bun run build         # Build for production
+```
+
+### Backend (Mock API Server)
+
+The backend runs separately using Bun.
+Data is stored in `server/data/`.
