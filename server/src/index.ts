@@ -1,15 +1,25 @@
-import { createBudgetRoutes } from './routes/budget.js';
+/**
+ * engAIge Server
+ *
+ * Client <-> Server: WebSocket (100% WS communication)
+ * Server <-> Internet: HTTP through the "door" (with optional proxy)
+ */
+
+import {
+  handleOpen,
+  handleClose,
+  handleMessage,
+  getClientCount,
+  type ClientSession,
+} from './network/ws-server.js';
 
 const PORT = 4269;
 
-// Initialize routes
-const budgetRoutes = createBudgetRoutes();
-
-// Simple CORS headers
+// Simple CORS headers for any HTTP endpoints (health check, etc.)
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Upgrade, Connection',
 };
 
 // JSON response helper
@@ -23,81 +33,75 @@ function json(data: any, status = 200) {
   });
 }
 
-// Error response helper
-function error(message: string, status = 400) {
-  return json({ error: message }, status);
-}
-
-// Parse URL params
-function getParams(url: URL): Record<string, string> {
-  const params: Record<string, string> = {};
-  url.searchParams.forEach((value, key) => {
-    params[key] = value;
-  });
-  return params;
-}
-
-const server = Bun.serve({
+const server = Bun.serve<ClientSession>({
   port: PORT,
-  async fetch(req) {
+
+  // HTTP handler (minimal - just health check and WS upgrade)
+  async fetch(req, server) {
     const url = new URL(req.url);
     const path = url.pathname;
-    const method = req.method;
 
     // Handle CORS preflight
-    if (method === 'OPTIONS') {
+    if (req.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
-    try {
-      // === BUDGET ROUTES ===
+    // WebSocket upgrade
+    if (path === '/ws') {
+      const upgraded = server.upgrade(req, {
+        data: { id: '', connectedAt: 0 }, // Filled in handleOpen
+      });
 
-      // GET /api/budget/status
-      if (path === '/api/budget/status' && method === 'GET') {
-        return json(budgetRoutes.getStatus());
+      if (upgraded) {
+        return undefined; // Bun handles the upgrade
       }
 
-      // GET /api/budget/config
-      if (path === '/api/budget/config' && method === 'GET') {
-        return json(budgetRoutes.getConfig());
-      }
-
-      // PUT /api/budget/config
-      if (path === '/api/budget/config' && method === 'PUT') {
-        const body = await req.json();
-        return json(budgetRoutes.updateConfig(body));
-      }
-
-      // GET /api/budget/logs
-      if (path === '/api/budget/logs' && method === 'GET') {
-        const params = getParams(url);
-        return json(budgetRoutes.getLogs({
-          category: params.category,
-          limit: params.limit ? parseInt(params.limit) : undefined,
-          offset: params.offset ? parseInt(params.offset) : undefined,
-          startDate: params.startDate ? parseInt(params.startDate) : undefined,
-          endDate: params.endDate ? parseInt(params.endDate) : undefined,
-        }));
-      }
-
-      // GET /api/budget/logs/categories
-      if (path === '/api/budget/logs/categories' && method === 'GET') {
-        return json(budgetRoutes.getCategories());
-      }
-
-      // Health check
-      if (path === '/health' || path === '/') {
-        return json({ status: 'ok', timestamp: Date.now() });
-      }
-
-      // 404 for unknown routes
-      return error('Not found', 404);
-
-    } catch (err) {
-      console.error('API Error:', err);
-      return error(err instanceof Error ? err.message : 'Internal server error', 500);
+      return new Response('WebSocket upgrade failed', { status: 400 });
     }
+
+    // Health check (still useful for monitoring)
+    if (path === '/health' || path === '/') {
+      return json({
+        status: 'ok',
+        timestamp: Date.now(),
+        clients: getClientCount(),
+        version: '0.1.0',
+      });
+    }
+
+    // 404 for unknown routes
+    return json({ error: 'Not found. Connect via WebSocket at /ws' }, 404);
+  },
+
+  // WebSocket handlers
+  websocket: {
+    open(ws) {
+      handleOpen(ws);
+    },
+
+    close(ws) {
+      handleClose(ws);
+    },
+
+    async message(ws, message) {
+      await handleMessage(ws, message);
+    },
+
+    // Optional: handle drain (backpressure relief)
+    drain(ws) {
+      console.log('[WS] Backpressure relieved');
+    },
   },
 });
 
-console.log(`Server running at http://localhost:${PORT}`);
+console.log(`
+╔════════════════════════════════════════════════════════════╗
+║                    engAIge Server                          ║
+╠════════════════════════════════════════════════════════════╣
+║  WebSocket:  ws://localhost:${PORT}/ws                       ║
+║  Health:     http://localhost:${PORT}/health                 ║
+╠════════════════════════════════════════════════════════════╣
+║  Client <-> Server: WebSocket                              ║
+║  Server <-> Internet: HTTP (door with proxy support)       ║
+╚════════════════════════════════════════════════════════════╝
+`);

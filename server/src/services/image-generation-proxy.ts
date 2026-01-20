@@ -12,6 +12,7 @@ import {
   prepareImageForAPI,
   getProviderCompressionSettings,
 } from './image-compression.js';
+import { doorFetch } from '../network/door.js';
 
 // Image generation proxy configuration
 let imageGenProxyConfig: {
@@ -136,7 +137,7 @@ export async function generateImage(
     }
   }
 
-  const response = await fetch(provider.base_url, {
+  const response = await doorFetch(provider.base_url, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
@@ -217,7 +218,7 @@ async function callOpenAIImageGen(
     body.style = options.style || 'vivid';
   }
 
-  const response = await fetch(endpoint, {
+  const response = await doorFetch(endpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -249,7 +250,7 @@ async function callStabilityAI(
   const width = parseInt(options.size?.split('x')[0] || '1024');
   const height = parseInt(options.size?.split('x')[1] || '1024');
 
-  const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+  const response = await doorFetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -432,7 +433,7 @@ export async function generateImageWithCharacterReference(
     headers['Authorization'] = `Bearer ${provider.api_key}`;
   }
 
-  const response = await fetch(provider.base_url.replace('/text-to-image', '/image-to-image'), {
+  const response = await doorFetch(provider.base_url.replace('/text-to-image', '/image-to-image'), {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),

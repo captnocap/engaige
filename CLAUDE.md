@@ -143,7 +143,8 @@ src/
 │       ├── Taskbar.tsx       # Windows-style taskbar with start menu
 │       └── DesktopIcon.tsx   # Desktop shortcut icons
 ├── stores/
-│   └── displayStore.ts       # Zustand store for display/monitor settings
+│   ├── displayStore.ts       # Zustand store for display/monitor settings
+│   └── wsStore.ts            # WebSocket connection and messaging store
 ├── App.tsx
 └── main.tsx
 ```
@@ -160,6 +161,11 @@ src/
 server/src/
 ├── db/
 │   └── index.ts                      # Database setup, schema initialization
+├── network/
+│   ├── door.ts                       # THE external fetch wrapper - all outbound HTTP goes here
+│   ├── proxy-config.ts               # SOCKS/HTTP proxy configuration
+│   ├── ws-protocol.ts                # WebSocket message type definitions
+│   └── ws-server.ts                  # WebSocket server handlers
 ├── services/
 │   ├── ai.ts                         # AI provider abstraction with budget tracking
 │   ├── budget.ts                     # Budget management and cost tracking
@@ -180,6 +186,16 @@ server/src/
 └── utils/
     └── cost-calculator.ts            # AI cost calculation utilities
 ```
+
+### Network Architecture
+
+**Two-layer design:**
+- **Client ↔ Server**: 100% WebSocket (`ws://localhost:4269/ws`)
+- **Server ↔ Internet**: HTTP through the "door" (with optional proxy)
+
+The "door" (`server/src/network/door.ts`) is the single exit point for ALL external HTTP requests. When proxy is enabled, all traffic routes through it (SOCKS4/5, HTTP/HTTPS proxy support).
+
+See **[NETWORK_ARCHITECTURE.md](docs/NETWORK_ARCHITECTURE.md)** for complete documentation.
 
 ### Database Architecture
 

@@ -8,6 +8,7 @@ import {
 } from '../utils/cost-calculator.js';
 import { getToolDefinitions, executeToolCall } from './runtime-tools.js';
 import { validateAndFixIfNeeded, type ValidationOptions } from './output-validator.js';
+import { doorFetch } from '../network/door.js';
 
 // AI Configuration Types
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -275,7 +276,7 @@ async function callOpenAICompatible(
     requestBody.tool_choice = 'auto'; // Let model decide when to use tools
   }
 
-  const response = await fetch(endpoint, {
+  const response = await doorFetch(endpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify(requestBody),
@@ -333,7 +334,7 @@ async function callOpenAICompatible(
       ...toolResults,
     ];
 
-    const followUpResponse = await fetch(endpoint, {
+    const followUpResponse = await doorFetch(endpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -407,7 +408,7 @@ async function callAnthropic(
     requestBody.tools = tools;
   }
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await doorFetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': config.apiKey,
@@ -466,7 +467,7 @@ async function callAnthropic(
       { role: 'user', content: toolResults }, // Tool results
     ];
 
-    const followUpResponse = await fetch('https://api.anthropic.com/v1/messages', {
+    const followUpResponse = await doorFetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'x-api-key': config.apiKey,

@@ -2,6 +2,7 @@ import { getDB } from '../db/index.js';
 import { checkBudgetAllows, logApiCost } from './budget.js';
 import { parseOpenAIUsage, parseAnthropicUsage, calculateCost, estimateCost } from '../utils/cost-calculator.js';
 import type { AIProvider } from './ai.js';
+import { doorFetch } from '../network/door.js';
 
 // Vision proxy configuration (global fallback vision model)
 let visionProxyConfig: {
@@ -100,7 +101,7 @@ async function callOpenAIVision(
     headers['Authorization'] = `Bearer ${visionProxyConfig.apiKey}`;
   }
 
-  const response = await fetch(endpoint, {
+  const response = await doorFetch(endpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -142,7 +143,7 @@ async function callAnthropicVision(
   }
 
   // Fetch image and convert to base64
-  const imageResponse = await fetch(imageUrl);
+  const imageResponse = await doorFetch(imageUrl);
   const imageBuffer = await imageResponse.arrayBuffer();
   const base64Image = Buffer.from(imageBuffer).toString('base64');
 
@@ -155,7 +156,7 @@ async function callAnthropicVision(
     ? 'image/gif'
     : 'image/jpeg';
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await doorFetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': visionProxyConfig.apiKey,
