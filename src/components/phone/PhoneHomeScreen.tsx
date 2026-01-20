@@ -14,8 +14,8 @@ interface PhoneHomeScreenProps {
 // App icon background colors (iOS-style gradients)
 const APP_ICON_COLORS: Record<string, string> = {
   'messages': 'linear-gradient(180deg, #5BF675 0%, #00C853 100%)',
-  'myspace-chat': 'linear-gradient(180deg, #4A90D9 0%, #003366 100%)',
-  'myspace': 'linear-gradient(180deg, #6B8DD6 0%, #003366 100%)',
+  'myface-chat': 'linear-gradient(180deg, #4A90D9 0%, #003366 100%)',
+  'myface': 'linear-gradient(180deg, #6B8DD6 0%, #003366 100%)',
   'chirp-dm': 'linear-gradient(180deg, #1DA1F2 0%, #0A66C2 100%)',
   'chirp': 'linear-gradient(180deg, #1DA1F2 0%, #0077B5 100%)',
   'instasnap-dm': 'linear-gradient(45deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)',
@@ -53,7 +53,7 @@ export function PhoneHomeScreen({ apps, onAppOpen }: PhoneHomeScreenProps) {
   // For now, just show all on one page
 
   return (
-    <div className="h-full flex flex-col px-4 py-8">
+    <div className="min-h-full flex flex-col px-4 py-8">
       {/* App Grid */}
       <div className="flex-1 grid grid-cols-4 gap-x-4 gap-y-6 content-start">
         {sortedApps.map(app => (

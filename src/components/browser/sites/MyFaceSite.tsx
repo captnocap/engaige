@@ -45,7 +45,7 @@ export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
 
   return (
-    <div className="min-h-full" style={{ background: '#336699' }}>
+    <div className="min-h-full pb-8" style={{ background: '#336699' }}>
       {/* MyFace Header */}
       <header
         className="px-4 py-2"

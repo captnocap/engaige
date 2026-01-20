@@ -44,7 +44,7 @@ export function PhoneAppContainer({ appId, onBack, onHome }: PhoneAppContainerPr
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col min-h-0">
       <AppComponent
         appId={appId}
         onBack={onBack}

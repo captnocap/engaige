@@ -75,7 +75,7 @@ export function Phone({ onClose }: PhoneProps) {
 
       {/* Main Content Area */}
       <div
-        className="flex-1 overflow-hidden"
+        className="flex-1 min-h-0 overflow-y-auto"
         style={{
           background: currentApp ? 'var(--color-bg)' : 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
         }}

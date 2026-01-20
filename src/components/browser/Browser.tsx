@@ -179,7 +179,7 @@ export function Browser() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         {currentSite ? (
           <BrowserSiteContainer
             siteId={currentSite}
@@ -207,7 +207,7 @@ function BrowserHomePage({ apps, onNavigate }: BrowserHomePageProps) {
 
   return (
     <div
-      className="h-full flex flex-col items-center pt-16 px-8"
+      className="min-h-full flex flex-col items-center pt-16 px-8 pb-8"
       style={{ background: 'linear-gradient(180deg, var(--color-bgSecondary) 0%, var(--color-bg) 100%)' }}
     >
       {/* Logo */}

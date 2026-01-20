@@ -46,7 +46,7 @@ export function BrowserSiteContainer({ siteId, onNavigate }: BrowserSiteContaine
   }
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full overflow-y-auto">
       <SiteComponent siteId={siteId} onNavigate={onNavigate} />
     </div>
   )
