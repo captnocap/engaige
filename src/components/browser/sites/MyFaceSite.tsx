@@ -24,6 +24,8 @@ import {
   type SocialProfile,
   type Post,
 } from '../../../stores/socialStore.js'
+import { useNPCStore, useNPC } from '../../../stores/npcStore.js'
+import { APP_REGISTRY, type AccessLevel } from '../../../config/app-registry.js'
 
 // MyFace style configuration for browser (uses myspace style for early 2000s aesthetic)
 const MYFACE_CONFIG: MessageStyleConfig = {
@@ -464,9 +466,17 @@ interface MyFaceProfileProps {
 }
 
 function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps) {
+  const [showContactOptions, setShowContactOptions] = useState(false)
   const { getProfile, getPostsByAuthor, profiles, likePost, unlikePost } = useSocialStore()
+  const { initialize: initNPCs, getAccessibleApps, canContactVia } = useNPCStore()
+  const npc = useNPC(profileId)
   const profile = getProfile(profileId)
   const posts = getPostsByAuthor(profileId)
+
+  // Initialize NPC store
+  useEffect(() => {
+    initNPCs()
+  }, [initNPCs])
 
   if (!profile) {
     return (
@@ -489,6 +499,10 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
     ?.map(id => profiles[id])
     .filter(Boolean)
     .slice(0, 8) || []
+
+  // Get relationship info from NPC store
+  const relationshipLevel = npc?.relationship?.level || 'stranger'
+  const accessibleApps = npc ? getAccessibleApps(profileId) : []
 
   return (
     <div className="space-y-4">
@@ -533,20 +547,48 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
                   Last seen: {profile.lastSeen || 'Unknown'}
                 </span>
               )}
+              {/* Relationship Badge */}
+              {profileId !== 'player' && npc && (
+                <span className={`inline-block mt-2 px-2 py-0.5 text-xs rounded ${
+                  relationshipLevel === 'stranger' ? 'bg-gray-500' :
+                  relationshipLevel === 'acquaintance' ? 'bg-blue-500' :
+                  relationshipLevel === 'friend' ? 'bg-green-500' :
+                  relationshipLevel === 'close_friend' ? 'bg-purple-500' :
+                  relationshipLevel === 'best_friend' ? 'bg-pink-500' :
+                  'bg-red-500'
+                } text-white`}>
+                  {relationshipLevel.replace('_', ' ')}
+                </span>
+              )}
             </div>
             {profileId !== 'player' && (
-              <div className="flex gap-2 pb-2">
+              <div className="flex gap-2 pb-2 relative">
                 <button
                   className="px-4 py-1.5 text-sm font-medium text-white rounded"
                   style={{ background: '#FF6600' }}
                 >
                   Add Friend
                 </button>
-                <button
-                  className="px-4 py-1.5 text-sm font-medium text-[#003366] bg-white rounded"
-                >
-                  Message
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowContactOptions(!showContactOptions)}
+                    className="px-4 py-1.5 text-sm font-medium text-[#003366] bg-white rounded flex items-center gap-1"
+                  >
+                    Message
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {/* Contact Options Dropdown */}
+                  {showContactOptions && npc && (
+                    <ContactOptionsDropdown
+                      npc={npc}
+                      accessibleApps={accessibleApps}
+                      canContactVia={canContactVia}
+                      onClose={() => setShowContactOptions(false)}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -837,6 +879,125 @@ function formatRelativeTime(date: Date): string {
   if (hours < 24) return `${hours}h ago`
   if (days < 7) return `${days}d ago`
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+// ============================================================================
+// Contact Options Dropdown
+// ============================================================================
+
+interface ContactOptionsDropdownProps {
+  npc: import('../../../stores/npcStore.js').NPC
+  accessibleApps: string[]
+  canContactVia: (npcId: string, appId: string) => boolean
+  onClose: () => void
+}
+
+const ACCESS_LEVEL_LABELS: Record<AccessLevel, string> = {
+  stranger: 'Anyone',
+  acquaintance: 'Acquaintances+',
+  friend: 'Friends+',
+  close_friend: 'Close Friends+',
+  partner: 'Partner Only',
+}
+
+function ContactOptionsDropdown({ npc, accessibleApps, canContactVia, onClose }: ContactOptionsDropdownProps) {
+  // Get all messaging apps the NPC is on
+  const messagingApps = npc.apps.filter(app => {
+    const appDef = APP_REGISTRY[app.appId]
+    return appDef && (appDef.category === 'messaging' || appDef.messageVariant)
+  })
+
+  if (messagingApps.length === 0) {
+    return (
+      <div
+        className="absolute top-full right-0 mt-1 w-64 p-3 rounded shadow-lg z-50"
+        style={{ background: 'white', border: '1px solid #ccc' }}
+      >
+        <p className="text-sm text-gray-500">No messaging apps available</p>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className="absolute top-full right-0 mt-1 w-72 rounded shadow-lg z-50"
+      style={{ background: 'white', border: '1px solid #ccc' }}
+    >
+      <div className="p-2 border-b border-gray-200">
+        <p className="text-xs text-gray-500 font-medium">Contact {npc.name} via:</p>
+      </div>
+      <div className="max-h-64 overflow-y-auto">
+        {messagingApps.map(appPresence => {
+          const appDef = APP_REGISTRY[appPresence.appId]
+          if (!appDef) return null
+
+          const isAccessible = canContactVia(npc.id, appPresence.appId)
+          const requiredLevel = appDef.accessLevel
+
+          return (
+            <button
+              key={appPresence.appId}
+              disabled={!isAccessible}
+              onClick={() => {
+                if (isAccessible) {
+                  // TODO: Navigate to conversation with this NPC on this app
+                  console.log(`Opening ${appDef.name} chat with ${npc.name}`)
+                  onClose()
+                }
+              }}
+              className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
+                isAccessible
+                  ? 'hover:bg-gray-100 cursor-pointer'
+                  : 'opacity-50 cursor-not-allowed bg-gray-50'
+              }`}
+            >
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
+                style={{
+                  background: appDef.theme?.primaryColor || '#666',
+                  color: 'white',
+                }}
+              >
+                {appDef.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-sm text-gray-900">{appDef.name}</span>
+                  {isAccessible && (
+                    <span className="px-1.5 py-0.5 text-[10px] bg-green-100 text-green-700 rounded">
+                      Available
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 truncate">@{appPresence.username}</p>
+                {!isAccessible && (
+                  <p className="text-[10px] text-orange-600 mt-0.5">
+                    🔒 Requires: {ACCESS_LEVEL_LABELS[requiredLevel]}
+                  </p>
+                )}
+              </div>
+              {isAccessible ? (
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Hint about unlocking more */}
+      <div className="p-2 border-t border-gray-200 bg-gray-50">
+        <p className="text-[10px] text-gray-500 text-center">
+          Build your relationship to unlock more ways to connect!
+        </p>
+      </div>
+    </div>
+  )
 }
 
 export default MyFaceSite
