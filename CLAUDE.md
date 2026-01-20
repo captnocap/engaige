@@ -4,11 +4,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
+**Project Name:** engAIge (engage + AI)
 
 **MUST DO:**
 Please when ever there is any feature implementation, that is significant to how the underlying game mechanics work, please always remember to make comprehensive documentation of the files made and the changes made to the files. This is to ensure that the code is maintainable and that the code is easy to understand. And that we dont have to keep going back and forth to understand the code, or end up creating the same code multiple times. This also lets us avoid problems with using multiple AI models in parallel from not understanding the code. If you arnt updating documentation expect me to scold you. AND KEEP IT NEAT AND ORGANIZED! Thank you. :D
+
 ---
-This is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
+
+## ⚠️ CRITICAL: Form Element Styling Rules
+
+**DO NOT use native HTML `<select>` elements** anywhere in the codebase. Native HTML selects cannot be reliably styled and will appear broken with inconsistent styling across the application.
+
+**ALWAYS use the custom `<Select>` component** (`src/components/ui/Select.tsx`) when you need a select/dropdown element. This custom component:
+- Fully styled with theme CSS variables
+- Keyboard accessible (arrow keys, enter, escape)
+- Consistent appearance across the entire app
+- Proper theme integration (colors, borders, hover states)
+
+**Example usage:**
+```tsx
+import { Select } from '../ui/Select.js'
+
+<Select
+  value={selectedValue}
+  onChange={(value) => setSelectedValue(value)}
+  options={[
+    { value: 'opt1', label: 'Option 1' },
+    { value: 'opt2', label: 'Option 2' },
+  ]}
+  placeholder="Choose an option"
+/>
+```
+
+If you ever see a native `<select>` in the code, replace it immediately with the `<Select>` component.
+
+---
+
+**engAIge** is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
 
 **Core Vision:**
 - **MySpace/Twitter/Instagram recreation** - Social platforms with personality (MySpace aesthetic over Facebook)

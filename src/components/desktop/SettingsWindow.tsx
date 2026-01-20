@@ -3,6 +3,7 @@ import { useDisplayStore } from '../../stores/displayStore.js'
 import { useSettingsStore, applyTypographySettings } from '../../stores/settingsStore.js'
 import { useThemeStore, themes } from '../../stores/themeStore.js'
 import { useOnboardingStore } from '../../stores/onboardingStore.js'
+import { Select } from '../ui/Select.js'
 import { open } from '@tauri-apps/plugin-dialog'
 import { convertFileSrc } from '@tauri-apps/api/core'
 
@@ -53,18 +54,19 @@ function SettingsCard({
 }) {
   return (
     <div
-      className="p-6 rounded-lg"
+      className="rounded-lg"
       style={{
         background: 'var(--color-bgSecondary)',
         border: '1px solid var(--color-border)',
+        padding: '24px',
       }}
     >
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           {title}
         </div>
         {description && (
-          <div className="text-sm mt-1" style={{ color: 'var(--color-textMuted)' }}>
+          <div className="text-sm mt-2" style={{ color: 'var(--color-textMuted)' }}>
             {description}
           </div>
         )}
@@ -191,7 +193,7 @@ function SidebarNav({
 }) {
   return (
     <nav
-      className="w-48 p-4 space-y-1 overflow-y-auto"
+      className="w-48 p-4 overflow-y-auto"
       style={{
         background: 'var(--color-bgSecondary)',
         borderRight: '1px solid var(--color-border)',
@@ -206,6 +208,8 @@ function SidebarNav({
             background: activeItem === item.id ? 'var(--color-primary)/10' : 'transparent',
             color: activeItem === item.id ? 'var(--color-primary)' : 'var(--color-text)',
             borderLeft: activeItem === item.id ? '3px solid var(--color-primary)' : '3px solid transparent',
+            marginTop: '2px',
+            marginBottom: '2px',
           }}
         >
           <span className="text-xl">{item.icon}</span>
@@ -298,18 +302,17 @@ function DisplaySection() {
             </button>
           </div>
         ) : (
-          <select
+          <Select
             value={monitorName || ''}
-            onChange={(e) => setMonitor(e.target.value || null)}
-            className="w-full"
-          >
-            <option value="">Primary Monitor</option>
-            {monitors.map((m) => (
-              <option key={m.name} value={m.name}>
-                {m.name} ({m.size.width}×{m.size.height})
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setMonitor(val || null)}
+            options={[
+              { value: '', label: 'Primary Monitor' },
+              ...monitors.map((m) => ({
+                value: m.name,
+                label: `${m.name} (${m.size.width}×${m.size.height})`,
+              })),
+            ]}
+          />
         )}
       </SettingsCard>
     </div>
@@ -524,16 +527,16 @@ function WallpaperSection() {
                 <label className="block text-sm font-medium" style={{ color: 'var(--color-text)' }}>
                   Background Fit
                 </label>
-                <select
+                <Select
                   value={wallpaper.customFit}
-                  onChange={(e) => setWallpaper({ customFit: e.target.value as any })}
-                  className="w-full"
-                >
-                  <option value="cover">Cover (Fill entire screen)</option>
-                  <option value="contain">Contain (Fit entire image)</option>
-                  <option value="fill">Fill (Stretch to fit)</option>
-                  <option value="tile">Tile (Repeat pattern)</option>
-                </select>
+                  onChange={(val) => setWallpaper({ customFit: val as any })}
+                  options={[
+                    { value: 'cover', label: 'Cover (Fill entire screen)' },
+                    { value: 'contain', label: 'Contain (Fit entire image)' },
+                    { value: 'fill', label: 'Fill (Stretch to fit)' },
+                    { value: 'tile', label: 'Tile (Repeat pattern)' },
+                  ]}
+                />
               </div>
 
               {/* Preview */}
@@ -590,22 +593,15 @@ function TypographySection() {
     <div className="space-y-6">
       {/* Font Family */}
       <SettingsCard title="Font Family" description="Choose your preferred typeface">
-        <select
+        <Select
           value={typography.fontFamily}
-          onChange={(e) => setTypography({ fontFamily: e.target.value })}
+          onChange={(val) => setTypography({ fontFamily: val })}
           className="w-full mb-4"
-          style={{ fontFamily: typography.fontFamily }}
-        >
-          {Object.entries(groupedFonts).map(([category, fonts]) => (
-            <optgroup key={category} label={category}>
-              {fonts.map((font) => (
-                <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-                  {font.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+          options={fontFamilies.map((font) => ({
+            value: font.value,
+            label: font.name,
+          }))}
+        />
 
         {/* Live preview */}
         <div
@@ -984,13 +980,14 @@ export function SettingsWindow() {
         <SidebarNav items={navItems} activeItem={activeTab} onItemClick={setActiveTab} />
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto" style={{ background: 'var(--color-bg)' }}>
+        <div className="flex-1 overflow-y-auto flex justify-center" style={{ background: 'var(--color-bg)' }}>
           <div
-            className="p-8"
+            className="py-10"
             style={{
-              maxWidth: '900px',
-              marginLeft: 'auto',
-              marginRight: 'auto',
+              width: '100%',
+              maxWidth: '700px',
+              paddingLeft: '40px',
+              paddingRight: '40px',
             }}
           >
             <div className="space-y-6">

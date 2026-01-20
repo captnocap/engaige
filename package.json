@@ -1,10 +1,13 @@
 {
-  "name": "base-window-arch",
+  "name": "engaige",
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "description": "A gamified relationship simulator with autonomous AI NPCs",
   "scripts": {
-    "dev": "vite",
+    "dev": "bun run server/src/index.ts & vite",
+    "dev:frontend": "vite",
+    "dev:server": "bun run server/src/index.ts",
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "tauri"

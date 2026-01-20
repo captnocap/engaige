@@ -8,6 +8,7 @@ import { useThemeStore } from '../../stores/themeStore'
 import { useSettingsStore } from '../../stores/settingsStore.js'
 import { FilesWindow } from './FilesWindow'
 import { SettingsWindow } from './SettingsWindow'
+import { WalletWindow } from './WalletWindow'
 
 interface WindowConfig {
   id: string
@@ -77,23 +78,33 @@ export function Desktop() {
       component: <SettingsWindow />,
       defaultState: { x: 300, y: 100, width: 1000, height: 700 },
     },
+    {
+      id: 'wallet',
+      title: 'Wallet',
+      icon: '💰',
+      component: <WalletWindow />,
+      defaultState: { x: 150, y: 50, width: 600, height: 700 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
     { id: 'browser', icon: '🌐', label: 'Browser', opensWindow: 'browser' },
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
+    { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
   ]
 
   const openWindow = useCallback((windowId: string) => {
     setOpenWindows(prev => new Set([...prev, windowId]))
     setActiveWindow(windowId)
-    setNextZIndex(z => z + 1)
-    setWindowStates(prev => ({
-      ...prev,
-      [windowId]: { ...prev[windowId], isMinimized: false, zIndex: nextZIndex },
-    }))
-  }, [nextZIndex])
+    setNextZIndex(z => {
+      setWindowStates(prev => ({
+        ...prev,
+        [windowId]: { ...prev[windowId], isMinimized: false, zIndex: z + 1 },
+      }))
+      return z + 1
+    })
+  }, [])
 
   const closeWindow = useCallback((windowId: string) => {
     setOpenWindows(prev => {
@@ -106,12 +117,14 @@ export function Desktop() {
 
   const focusWindow = useCallback((windowId: string) => {
     setActiveWindow(windowId)
-    setNextZIndex(z => z + 1)
-    setWindowStates(prev => ({
-      ...prev,
-      [windowId]: { ...prev[windowId], zIndex: nextZIndex, isMinimized: false },
-    }))
-  }, [nextZIndex])
+    setNextZIndex(z => {
+      setWindowStates(prev => ({
+        ...prev,
+        [windowId]: { ...prev[windowId], zIndex: z + 1, isMinimized: false },
+      }))
+      return z + 1
+    })
+  }, [])
 
   const minimizeWindow = useCallback((windowId: string) => {
     setWindowStates(prev => ({
@@ -207,6 +220,7 @@ export function Desktop() {
               title={config.title}
               icon={config.icon}
               initialState={{ ...config.defaultState, ...state }}
+              zIndex={state?.zIndex ?? 1}
               isActive={activeWindow === windowId}
               onFocus={() => focusWindow(windowId)}
               onClose={() => closeWindow(windowId)}

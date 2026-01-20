@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "base-window-arch",
+  "productName": "engAIge",
   "version": "0.1.0",
-  "identifier": "com.basearch.app",
+  "identifier": "com.engaige.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Love AI",
+        "title": "engAIge",
         "width": 1280,
         "height": 800,
         "minWidth": 1024,
@@ -26,7 +26,8 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "capabilities": ["default"]
     }
   },
   "bundle": {

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState } from 'react'
+import { Select } from '../ui/Select.js'
 
 interface OnboardingProps {
   onComplete: (data: OnboardingData) => void;
@@ -161,20 +162,20 @@ function Step1Provider({
 
       <div>
         <label className="block text-sm font-medium mb-2">Provider Type</label>
-        <select
+        <Select
           value={data.provider.type}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              provider: { ...data.provider, type: e.target.value as any },
+              provider: { ...data.provider, type: val as any },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="openai-compatible">OpenAI-Compatible (LM Studio, etc.)</option>
-          <option value="openai">OpenAI</option>
-          <option value="anthropic">Anthropic</option>
-        </select>
+          options={[
+            { value: 'openai-compatible', label: 'OpenAI-Compatible (LM Studio, etc.)' },
+            { value: 'openai', label: 'OpenAI' },
+            { value: 'anthropic', label: 'Anthropic' },
+          ]}
+        />
       </div>
 
       {data.provider.type === 'openai-compatible' && (
@@ -280,20 +281,20 @@ function Step2Budget({
 
       <div>
         <label className="block text-sm font-medium mb-2">Budget Period</label>
-        <select
+        <Select
           value={data.budget.period_type}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              budget: { ...data.budget, period_type: e.target.value as any },
+              budget: { ...data.budget, period_type: val as any },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
+          options={[
+            { value: 'daily', label: 'Daily' },
+            { value: 'weekly', label: 'Weekly' },
+            { value: 'monthly', label: 'Monthly' },
+          ]}
+        />
       </div>
 
       <div className="flex items-center gap-3">
@@ -445,23 +446,23 @@ function Step3Profile({
 
       <div>
         <label className="block text-sm font-medium mb-2">Personality Vibe</label>
-        <select
+        <Select
           value={data.profile.personality_vibe}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              profile: { ...data.profile, personality_vibe: e.target.value },
+              profile: { ...data.profile, personality_vibe: val },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="chill">Chill & Laid Back</option>
-          <option value="adventurous">Adventurous</option>
-          <option value="intellectual">Intellectual</option>
-          <option value="party">Party Person</option>
-          <option value="romantic">Romantic</option>
-          <option value="mysterious">Mysterious</option>
-        </select>
+          options={[
+            { value: 'chill', label: 'Chill & Laid Back' },
+            { value: 'adventurous', label: 'Adventurous' },
+            { value: 'intellectual', label: 'Intellectual' },
+            { value: 'party', label: 'Party Person' },
+            { value: 'romantic', label: 'Romantic' },
+            { value: 'mysterious', label: 'Mysterious' },
+          ]}
+        />
       </div>
     </div>
   );
@@ -483,39 +484,39 @@ function Step4Preferences({
 
       <div>
         <label className="block text-sm font-medium mb-2">Romantic Interest Level</label>
-        <select
+        <Select
           value={data.preferences.romantic_interest_level}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              preferences: { ...data.preferences, romantic_interest_level: e.target.value as any },
+              preferences: { ...data.preferences, romantic_interest_level: val as any },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="none">None</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
+          options={[
+            { value: 'none', label: 'None' },
+            { value: 'low', label: 'Low' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'high', label: 'High' },
+          ]}
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-2">Platonic Friends Level</label>
-        <select
+        <Select
           value={data.preferences.platonic_friends_level}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              preferences: { ...data.preferences, platonic_friends_level: e.target.value as any },
+              preferences: { ...data.preferences, platonic_friends_level: val as any },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
+          options={[
+            { value: 'low', label: 'Low' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'high', label: 'High' },
+          ]}
+        />
       </div>
 
       <div>
@@ -543,21 +544,21 @@ function Step4Preferences({
 
       <div>
         <label className="block text-sm font-medium mb-2">Gender Preference</label>
-        <select
+        <Select
           value={data.preferences.npc_gender_preference}
-          onChange={(e) =>
+          onChange={(val) =>
             setData({
               ...data,
-              preferences: { ...data.preferences, npc_gender_preference: e.target.value as any },
+              preferences: { ...data.preferences, npc_gender_preference: val as any },
             })
           }
-          className="w-full px-4 py-2 bg-[#252525] border border-[#333] rounded focus:outline-none focus:border-blue-500"
-        >
-          <option value="any">Any</option>
-          <option value="male">Mostly Male</option>
-          <option value="female">Mostly Female</option>
-          <option value="mixed">Mixed</option>
-        </select>
+          options={[
+            { value: 'any', label: 'Any' },
+            { value: 'male', label: 'Mostly Male' },
+            { value: 'female', label: 'Mostly Female' },
+            { value: 'mixed', label: 'Mixed' },
+          ]}
+        />
       </div>
 
       <div>

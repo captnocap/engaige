@@ -16,6 +16,7 @@ interface WindowProps {
   icon?: ReactNode
   children: ReactNode
   initialState?: Partial<WindowState>
+  zIndex?: number
   minWidth?: number
   minHeight?: number
   isActive?: boolean
@@ -44,6 +45,7 @@ export function Window({
   icon,
   children,
   initialState,
+  zIndex = 1,
   minWidth = 400,
   minHeight = 300,
   isActive = false,
@@ -181,7 +183,7 @@ export function Window({
         top: state.y,
         width: state.width,
         height: state.height,
-        zIndex: state.zIndex,
+        zIndex,
       }}
       onMouseDown={onFocus}
     >
