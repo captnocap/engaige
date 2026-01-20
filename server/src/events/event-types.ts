@@ -295,6 +295,62 @@ export interface AIProxiedPayload {
   cost_cents: number;
 }
 
+// === AI QUEUE EVENTS ===
+export interface AIQueuedPayload {
+  request_id: string;
+  priority: number;
+  priority_name: string;
+  type: string;
+  estimated_cost: number;
+  queue_position: number;
+  queue_length: number;
+}
+
+export interface AIProcessingPayload {
+  request_id: string;
+  priority: number;
+  type: string;
+  attempt: number;
+}
+
+export interface AIDeferredPayload {
+  request_id: string;
+  priority: number;
+  priority_name: string;
+  type: string;
+  reason: string;
+  deferred_queue_length: number;
+}
+
+export interface AIQueueCompletedPayload {
+  request_id: string;
+  priority: number;
+  type: string;
+  wait_time_ms: number;
+  processing_time_ms: number;
+  estimated_cost: number;
+}
+
+export interface AIQueueFailedPayload {
+  request_id: string;
+  priority: number;
+  type: string;
+  error: string;
+  attempts: number;
+}
+
+export interface AIQueueExpiredPayload {
+  request_id: string;
+  priority: number;
+  type: string;
+  age_ms: number;
+}
+
+export interface AIQueueResumedPayload {
+  count: number;
+  budget_percent: number;
+}
+
 // === MEDIA EVENTS ===
 export interface MediaUploadedPayload {
   media_id: string;
@@ -391,6 +447,15 @@ export const EventTypes = {
   AI_ERROR: 'ai:error',
   AI_VISION_PROXIED: 'ai:vision_proxied',
   AI_IMAGE_GENERATED: 'ai:image_generated',
+
+  // AI Queue
+  AI_QUEUED: 'ai:queued',
+  AI_PROCESSING: 'ai:processing',
+  AI_DEFERRED: 'ai:deferred',
+  AI_QUEUE_COMPLETED: 'ai:queue_completed',
+  AI_QUEUE_FAILED: 'ai:queue_failed',
+  AI_QUEUE_EXPIRED: 'ai:queue_expired',
+  AI_QUEUE_RESUMED: 'ai:queue_resumed',
 
   // Media
   MEDIA_UPLOADED: 'media:uploaded',

@@ -46,6 +46,29 @@ export interface NPCAppPresence {
   joinedAt: string
 }
 
+// Dating profile for a specific dating site
+export interface NPCDatingProfile {
+  siteId: string
+  bio: string                    // Site-specific bio (may differ from main bio)
+  photos: string[]               // Photo URLs or emoji placeholders
+  lookingFor: string             // What they're looking for
+  dealbreakers?: string[]
+  promptAnswers?: { prompt: string; answer: string }[]
+  isActive: boolean
+  lastActive: string
+}
+
+// NPC's relationship status (public-facing)
+export type NPCRelationshipStatus =
+  | 'single'
+  | 'talking'           // Casually talking to someone
+  | 'dating'            // In a relationship
+  | 'exclusive'         // Exclusive but not official
+  | 'engaged'
+  | 'married'
+  | 'its_complicated'
+  | 'divorced'
+
 export interface NPC {
   // Identity
   id: string
@@ -79,6 +102,12 @@ export interface NPC {
 
   // App presence - which platforms this NPC uses
   apps: NPCAppPresence[]
+
+  // Dating presence - profiles on dating sites
+  datingProfiles: NPCDatingProfile[]
+
+  // Public relationship status (what others see)
+  relationshipStatus: NPCRelationshipStatus
 
   // Visual customization (for MyFace profiles, etc.)
   profileCustomization?: {
@@ -155,6 +184,29 @@ const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
       { appId: 'chirp', username: 'sarahbear', isActive: true, joinedAt: '2023-02-10' },
       { appId: 'messages', username: 'sarah', isActive: true, joinedAt: '2024-01-01' },
     ],
+    datingProfiles: [
+      {
+        siteId: 'spark',
+        bio: 'Looking for someone to explore the world with 🌎 Let\'s grab coffee and see where it goes!',
+        photos: ['👧', '📸', '☕', '🏔️'],
+        lookingFor: 'Something real, no games',
+        promptAnswers: [
+          { prompt: "A perfect first date is...", answer: "Coffee and a spontaneous adventure!" },
+          { prompt: "I'm looking for...", answer: "Someone who makes me laugh and isn't afraid of trying new things" },
+        ],
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+      {
+        siteId: 'myface-dating',
+        bio: 'Your friendly neighborhood photographer ✨ Swipe right if you appreciate golden hour!',
+        photos: ['👧', '📸'],
+        lookingFor: 'Connection and good vibes',
+        isActive: true,
+        lastActive: new Date().toISOString(),
+      },
+    ],
+    relationshipStatus: 'single',
     profileCustomization: {
       backgroundColor: '#FFE4E1',
       textColor: '#8B4513',

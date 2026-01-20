@@ -16,6 +16,7 @@ import {
 import { getDB } from './db/index.js';
 import { eventBus, EventTypes } from './events/index.js';
 import { errorLogger } from './services/error-logger.js';
+import { aiQueue } from './services/ai-queue.js';
 
 const PORT = 4269;
 
@@ -25,6 +26,7 @@ const PORT = 4269;
 const gameDb = getDB('game');
 eventBus.initialize(gameDb);
 errorLogger.initialize(gameDb);
+aiQueue.start();
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)
 const corsHeaders = {
@@ -114,7 +116,9 @@ console.log(`
 ╠════════════════════════════════════════════════════════════╣
 ║  Client <-> Server: WebSocket                              ║
 ║  Server <-> Internet: HTTP (door with proxy support)       ║
+║  AI Requests: Queue (priority + budget management)         ║
 ║  Game Events: Event Bus (centralized logging)              ║
+║  Errors: Error Logger (centralized tracking)               ║
 ╚════════════════════════════════════════════════════════════╝
 `);
 

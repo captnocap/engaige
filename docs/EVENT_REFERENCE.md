@@ -472,6 +472,167 @@ Each event shows:
 
 ---
 
+## AI Queue Events
+
+### `ai:queued`
+**Description:** AI request was added to the queue.
+
+**Payload:**
+```typescript
+{
+  request_id: string;
+  priority: number;        // 1-5
+  priority_name: string;   // 'Critical', 'High', etc.
+  type: string;            // 'npc_response', 'npc_post', etc.
+  estimated_cost: number;
+  queue_position: number;
+  queue_length: number;
+}
+```
+
+**Example Log:**
+```json
+{
+  "id": "queue_event_001",
+  "event_type": "ai:queued",
+  "category": "ai",
+  "npc_id": "npc_abc123",
+  "player_id": "player_xyz",
+  "payload": {
+    "request_id": "req_xyz789",
+    "priority": 1,
+    "priority_name": "Critical",
+    "type": "npc_response",
+    "estimated_cost": 2,
+    "queue_position": 1,
+    "queue_length": 3
+  },
+  "source": "ai-queue",
+  "timestamp": 1705123456789
+}
+```
+
+---
+
+### `ai:deferred`
+**Description:** Request was deferred due to budget constraints.
+
+**Payload:**
+```typescript
+{
+  request_id: string;
+  priority: number;
+  priority_name: string;
+  type: string;
+  reason: string;
+  deferred_queue_length: number;
+}
+```
+
+**Example Log:**
+```json
+{
+  "id": "queue_event_002",
+  "event_type": "ai:deferred",
+  "category": "ai",
+  "npc_id": "npc_abc123",
+  "payload": {
+    "request_id": "req_xyz790",
+    "priority": 4,
+    "priority_name": "Low",
+    "type": "npc_post",
+    "reason": "Budget at 35%, tier requires 50%",
+    "deferred_queue_length": 5
+  },
+  "source": "ai-queue",
+  "timestamp": 1705123456789,
+  "importance": 0.5
+}
+```
+
+---
+
+### `ai:queue_completed`
+**Description:** Queued request completed successfully.
+
+**Payload:**
+```typescript
+{
+  request_id: string;
+  priority: number;
+  type: string;
+  wait_time_ms: number;
+  processing_time_ms: number;
+  estimated_cost: number;
+}
+```
+
+**Example Log:**
+```json
+{
+  "id": "queue_event_003",
+  "event_type": "ai:queue_completed",
+  "category": "ai",
+  "npc_id": "npc_abc123",
+  "payload": {
+    "request_id": "req_xyz789",
+    "priority": 1,
+    "type": "npc_response",
+    "wait_time_ms": 150,
+    "processing_time_ms": 1247,
+    "estimated_cost": 2
+  },
+  "source": "ai-queue",
+  "timestamp": 1705123458036
+}
+```
+
+---
+
+### `ai:queue_failed`
+**Description:** Queued request failed after retries.
+
+**Payload:**
+```typescript
+{
+  request_id: string;
+  priority: number;
+  type: string;
+  error: string;
+  attempts: number;
+}
+```
+
+---
+
+### `ai:queue_expired`
+**Description:** Request expired while waiting in queue.
+
+**Payload:**
+```typescript
+{
+  request_id: string;
+  priority: number;
+  type: string;
+  age_ms: number;
+}
+```
+
+---
+
+### `ai:queue_resumed`
+**Description:** Deferred requests were moved back to active queue.
+
+**Payload:**
+```typescript
+{
+  count: number;
+  budget_percent: number;
+}
+```
+
+---
+
 ## Budget Events
 
 ### `budget:spent`

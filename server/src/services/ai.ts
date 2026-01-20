@@ -11,6 +11,7 @@ import { validateAndFixIfNeeded, type ValidationOptions } from './output-validat
 import { doorFetch } from '../network/door.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { errorLogger } from './error-logger.js';
+import { aiQueue, Priority, type RequestType, type QueueResult } from './ai-queue.js';
 
 // AI Configuration Types
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -633,6 +634,191 @@ export async function generateNPCPost(
   return validationResult.final_output;
 }
 
+// ─────────────────────────────────────────────────────────────────
+// Queue-Wrapped Functions (Use these for priority-managed requests)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Queue-wrapped NPC response generation
+ * Routes through the AI queue for priority management and budget control
+ */
+export async function queuedGenerateNPCResponse(
+  npcId: string,
+  message: string,
+  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>,
+  context?: {
+    platform?: string;
+    player_name?: string;
+    player_id?: string;
+    conversation_id?: string;
+    conversation_type?: 'direct_message' | 'group_chat' | 'post' | 'comment';
+    feature_category?: string;
+    enable_tools?: boolean;
+    validation_options?: Partial<ValidationOptions>;
+    // Queue-specific options
+    priority?: Priority;
+    isUserInitiated?: boolean;
+  }
+): Promise<QueueResult<string>> {
+  // Determine priority
+  let priority = context?.priority;
+  if (!priority) {
+    if (context?.isUserInitiated !== false) {
+      // Default to CRITICAL for user-initiated messages
+      priority = Priority.CRITICAL;
+    } else {
+      // NPC-initiated or follow-up
+      priority = Priority.HIGH;
+    }
+  }
+
+  // Estimate cost (rough: ~4 chars per token, assume 500 output tokens)
+  const promptLength = message.length + conversationHistory.reduce((acc, m) => acc + m.content.length, 0);
+  const estimatedCost = estimateCost(promptLength, 500, globalConfig.model);
+
+  return aiQueue.enqueue({
+    priority,
+    type: 'npc_response' as RequestType,
+    npcId,
+    playerId: context?.player_id,
+    conversationId: context?.conversation_id,
+    featureCategory: context?.feature_category || 'conversation',
+    estimatedCost,
+    execute: () => generateNPCResponse(npcId, message, conversationHistory, context),
+    metadata: {
+      platform: context?.platform,
+      message_preview: message.slice(0, 100),
+    },
+  });
+}
+
+/**
+ * Queue-wrapped NPC post generation
+ * Routes through the AI queue - typically lower priority than DMs
+ */
+export async function queuedGenerateNPCPost(
+  npcId: string,
+  platform: string,
+  prompt?: string,
+  options?: {
+    featureCategory?: string;
+    validationOptions?: Partial<ValidationOptions>;
+    priority?: Priority;
+    isScheduled?: boolean;
+    isBackground?: boolean;
+  }
+): Promise<QueueResult<string>> {
+  // Determine priority
+  let priority = options?.priority;
+  if (!priority) {
+    if (options?.isScheduled) {
+      priority = Priority.MEDIUM;
+    } else if (options?.isBackground) {
+      priority = Priority.LOW;
+    } else {
+      priority = Priority.MEDIUM; // Default for posts
+    }
+  }
+
+  // Estimate cost for post generation
+  const promptLength = (prompt?.length || 50) + 500; // Base system prompt
+  const estimatedCost = estimateCost(promptLength, 300, globalConfig.model);
+
+  return aiQueue.enqueue({
+    priority,
+    type: 'npc_post' as RequestType,
+    npcId,
+    featureCategory: options?.featureCategory || 'autonomous_posts',
+    estimatedCost,
+    execute: () => generateNPCPost(npcId, platform, prompt, options?.featureCategory, options?.validationOptions),
+    metadata: {
+      platform,
+      prompt_preview: prompt?.slice(0, 100),
+    },
+  });
+}
+
+/**
+ * Queue-wrapped NPC-to-NPC interaction
+ * Lowest priority - only runs when budget is healthy
+ */
+export async function queuedNPCInteraction(
+  sourceNpcId: string,
+  targetNpcId: string,
+  interactionType: 'comment' | 'reaction' | 'message',
+  context: string,
+  options?: {
+    priority?: Priority;
+    featureCategory?: string;
+  }
+): Promise<QueueResult<string>> {
+  const priority = options?.priority || Priority.LOW;
+
+  // Estimate cost for interaction
+  const estimatedCost = estimateCost(context.length + 500, 200, globalConfig.model);
+
+  return aiQueue.enqueue({
+    priority,
+    type: 'npc_npc_interaction' as RequestType,
+    npcId: sourceNpcId,
+    featureCategory: options?.featureCategory || 'npc_interactions',
+    estimatedCost,
+    execute: async () => {
+      // Generate response as if from source NPC
+      return generateNPCResponse(sourceNpcId, context, [], {
+        platform: 'social',
+        player_name: '', // No player involved
+        feature_category: options?.featureCategory || 'npc_interactions',
+      });
+    },
+    metadata: {
+      interaction_type: interactionType,
+      target_npc_id: targetNpcId,
+      context_preview: context.slice(0, 100),
+    },
+  });
+}
+
+/**
+ * Queue-wrapped pre-generation (opportunistic)
+ * Only runs when budget > 80%
+ */
+export async function queuedPregenerate(
+  npcId: string,
+  contentType: 'post' | 'greeting' | 'reaction',
+  options?: {
+    platform?: string;
+    context?: string;
+    featureCategory?: string;
+  }
+): Promise<QueueResult<string>> {
+  const estimatedCost = estimateCost(500, 200, globalConfig.model);
+
+  return aiQueue.enqueue({
+    priority: Priority.IDLE,
+    type: 'content_pregeneration' as RequestType,
+    npcId,
+    featureCategory: options?.featureCategory || 'pregeneration',
+    estimatedCost,
+    execute: async () => {
+      const prompt = contentType === 'post'
+        ? 'Create a casual post for later'
+        : contentType === 'greeting'
+        ? 'Generate a friendly greeting'
+        : 'Generate a quick reaction';
+
+      return generateNPCPost(npcId, options?.platform || 'social', prompt, options?.featureCategory);
+    },
+    metadata: {
+      content_type: contentType,
+      platform: options?.platform,
+    },
+  });
+}
+
+// Re-export Priority for convenience
+export { Priority } from './ai-queue.js';
+
 export default {
   configureAI,
   getAIConfig,
@@ -641,4 +827,9 @@ export default {
   getNPCMemories,
   generateNPCResponse,
   generateNPCPost,
+  // Queue-wrapped versions
+  queuedGenerateNPCResponse,
+  queuedGenerateNPCPost,
+  queuedNPCInteraction,
+  queuedPregenerate,
 };
