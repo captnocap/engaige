@@ -21,6 +21,7 @@ Please refer to the following documents for detailed information:
 *   **[Backend Documentation](./BACKEND.md)**: Details on the Bun-based API server, services (NPC, AI, Onboarding), and proxy systems.
 *   **[Frontend Documentation](./FRONTEND.md)**: Architecture of the React + Vite application, window management, and component structure.
 *   **[Tauri Integration](./TAURI.md)**: Desktop environment integration, window customization, and build process.
+*   **[Project Roadmap](./ROADMAP.md)**: Comprehensive guide to planned features, phases, and future ideas.
 
 ## Specialized Documentation
 
