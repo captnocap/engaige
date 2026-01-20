@@ -17,6 +17,13 @@ import {
   useConversationMessages,
   useTypingIndicator,
 } from '../../../stores/conversationStore.js'
+import {
+  useSocialStore,
+  usePosts,
+  usePlayerProfile,
+  type SocialProfile,
+  type Post,
+} from '../../../stores/socialStore.js'
 
 // MyFace style configuration for browser (uses myspace style for early 2000s aesthetic)
 const MYFACE_CONFIG: MessageStyleConfig = {
@@ -38,17 +45,28 @@ const MYFACE_CONFIG: MessageStyleConfig = {
 
 type MyFaceView = 'home' | 'profile' | 'messages' | 'browse'
 
-export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
+export function MyFaceSite({ siteId }: SiteProps) {
   const [currentView, setCurrentView] = useState<MyFaceView>(
     siteId === 'myface-chat' ? 'messages' : 'home'
   )
-  const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const playerProfile = usePlayerProfile()
+  const { initialize } = useSocialStore()
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
+
+  const handleViewProfile = (profileId: string) => {
+    setSelectedProfileId(profileId)
+    setCurrentView('profile')
+  }
 
   return (
     <div className="min-h-full pb-8" style={{ background: '#336699' }}>
       {/* MyFace Header */}
       <header
-        className="px-4 py-2"
+        className="px-4 py-2 sticky top-0 z-10"
         style={{
           background: 'linear-gradient(180deg, #003366 0%, #336699 100%)',
           borderBottom: '2px solid #FF6600',
@@ -56,12 +74,15 @@ export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
       >
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentView('home')}
+            className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
             <span className="text-2xl font-bold text-white" style={{ fontFamily: 'Impact, sans-serif' }}>
               My<span style={{ color: '#FF6600' }}>Face</span>
             </span>
             <span className="text-xs text-white/60">a place for friends</span>
-          </div>
+          </button>
 
           {/* Navigation */}
           <nav className="flex items-center gap-4">
@@ -81,22 +102,29 @@ export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
           </nav>
 
           {/* User */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-white/80">Hello, Player!</span>
+          <button
+            onClick={() => handleViewProfile('player')}
+            className="flex items-center gap-2 hover:bg-white/10 rounded px-2 py-1 transition-colors"
+          >
+            <span className="text-sm text-white/80">Hello, {playerProfile.name}!</span>
             <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center text-white text-sm">
-              P
+              {playerProfile.avatar || playerProfile.name[0]}
             </div>
-          </div>
+          </button>
         </div>
       </header>
 
       {/* Content */}
       <main className="max-w-5xl mx-auto py-4 px-4">
-        {currentView === 'home' && <MyFaceHome onViewProfile={setSelectedProfile} />}
-        {currentView === 'browse' && <MyFaceBrowse onViewProfile={setSelectedProfile} />}
+        {currentView === 'home' && <MyFaceHome onViewProfile={handleViewProfile} />}
+        {currentView === 'browse' && <MyFaceBrowse onViewProfile={handleViewProfile} />}
         {currentView === 'messages' && <MyFaceMessages />}
-        {currentView === 'profile' && selectedProfile && (
-          <MyFaceProfile npcId={selectedProfile} onBack={() => setCurrentView('home')} />
+        {currentView === 'profile' && selectedProfileId && (
+          <MyFaceProfile
+            profileId={selectedProfileId}
+            onBack={() => setCurrentView('home')}
+            onViewProfile={handleViewProfile}
+          />
         )}
       </main>
     </div>
@@ -104,53 +132,124 @@ export function MyFaceSite({ siteId, onNavigate }: SiteProps) {
 }
 
 function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) {
+  const [postContent, setPostContent] = useState('')
+  const playerProfile = usePlayerProfile()
+  const posts = usePosts('myface')
+  const { createPost, likePost, unlikePost, profiles } = useSocialStore()
+
+  const handlePost = () => {
+    if (!postContent.trim()) return
+    createPost(postContent.trim())
+    setPostContent('')
+  }
+
+  // Get top friends (first 8 profiles)
+  const topFriends = Object.values(profiles).slice(0, 8)
+
   return (
     <div className="grid grid-cols-3 gap-4">
       {/* Left Column - User Info */}
       <div className="space-y-4">
+        {/* Player Card */}
         <div
           className="p-4 rounded"
           style={{ background: 'white', border: '1px solid #ccc' }}
         >
           <div className="flex items-center gap-3 mb-3">
             <div className="w-16 h-16 rounded bg-gray-200 flex items-center justify-center text-2xl">
-              👤
+              {playerProfile.avatar}
             </div>
             <div>
-              <h2 className="font-bold text-[#003366]">Player</h2>
-              <p className="text-xs text-gray-500">"Living my best life!"</p>
+              <h2 className="font-bold text-[#003366]">{playerProfile.name}</h2>
+              <p className="text-xs text-gray-500">"{playerProfile.bio}"</p>
             </div>
           </div>
           <div className="text-xs space-y-1 text-gray-600">
-            <p><strong>Mood:</strong> 😊 happy</p>
-            <p><strong>Online Now!</strong></p>
+            <p><strong>Mood:</strong> {playerProfile.moodEmoji} {playerProfile.mood}</p>
+            <p className="text-green-600"><strong>Online Now!</strong></p>
           </div>
+          <button
+            onClick={() => onViewProfile('player')}
+            className="mt-3 text-xs text-[#003366] hover:underline"
+          >
+            View My Profile →
+          </button>
         </div>
 
-        {/* Top 8 */}
+        {/* Top 8 Friends */}
         <div
           className="p-4 rounded"
           style={{ background: 'white', border: '1px solid #ccc' }}
         >
           <h3 className="font-bold text-[#003366] mb-2 text-sm">
-            Player's Top 8
+            {playerProfile.name}'s Top 8
           </h3>
           <div className="grid grid-cols-4 gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            {topFriends.map((friend) => (
+              <button
+                key={friend.id}
+                onClick={() => onViewProfile(friend.id)}
+                className="aspect-square rounded bg-gray-100 flex flex-col items-center justify-center text-xs cursor-pointer hover:bg-gray-200 p-1"
+              >
+                <span className="text-lg">{friend.avatar}</span>
+                <span className="truncate w-full text-center text-[10px] text-gray-600">
+                  {friend.name}
+                </span>
+              </button>
+            ))}
+            {Array.from({ length: Math.max(0, 8 - topFriends.length) }).map((_, i) => (
               <div
-                key={i}
-                className="aspect-square rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs cursor-pointer hover:bg-gray-200"
-                onClick={() => onViewProfile(`npc_${i}`)}
+                key={`empty-${i}`}
+                className="aspect-square rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs"
               >
                 +
               </div>
             ))}
           </div>
         </div>
+
+        {/* Stats */}
+        <div
+          className="p-4 rounded"
+          style={{ background: 'white', border: '1px solid #ccc' }}
+        >
+          <h3 className="font-bold text-[#003366] mb-2 text-sm">My Stats</h3>
+          <div className="text-xs space-y-1 text-gray-600">
+            <p>Profile Views: <strong>1,337</strong></p>
+            <p>Friends: <strong>{Object.keys(profiles).length}</strong></p>
+            <p>Posts: <strong>{posts.filter(p => p.authorId === 'player').length}</strong></p>
+          </div>
+        </div>
       </div>
 
       {/* Center Column - Feed */}
       <div className="col-span-2 space-y-4">
+        {/* Post something */}
+        <div
+          className="p-4 rounded"
+          style={{ background: 'white', border: '1px solid #ccc' }}
+        >
+          <h3 className="font-bold text-[#003366] mb-2 text-sm">Post a Bulletin</h3>
+          <textarea
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+            placeholder="What's on your mind?"
+            className="w-full p-2 border border-gray-300 rounded text-sm resize-none focus:outline-none focus:border-[#003366]"
+            rows={3}
+          />
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={handlePost}
+              disabled={!postContent.trim()}
+              className="px-4 py-1 text-sm font-medium text-white rounded disabled:opacity-50 transition-opacity"
+              style={{ background: '#FF6600' }}
+            >
+              Post
+            </button>
+          </div>
+        </div>
+
+        {/* Feed */}
         <div
           className="p-4 rounded"
           style={{ background: 'white', border: '1px solid #ccc' }}
@@ -159,54 +258,128 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
             Bulletin Board
           </h3>
 
-          {/* Mock posts */}
-          {[
-            { name: 'Sarah', content: 'just got new pics up!! check my profile 📸', time: '5 mins ago' },
-            { name: 'Jake', content: 'who wants to hang out this weekend??', time: '23 mins ago' },
-            { name: 'Emily', content: 'new song on my profile. tell me what u think!', time: '1 hour ago' },
-          ].map((post, i) => (
-            <div key={i} className="py-3 border-b border-gray-100 last:border-0">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-sm shrink-0">
-                  {post.name[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-[#003366] text-sm hover:underline cursor-pointer">
-                      {post.name}
-                    </span>
-                    <span className="text-xs text-gray-400">{post.time}</span>
-                  </div>
-                  <p className="text-sm text-gray-700">{post.content}</p>
-                  <div className="flex gap-4 mt-2 text-xs">
-                    <button className="text-[#003366] hover:underline">Comment</button>
-                    <button className="text-[#003366] hover:underline">Kudos</button>
-                  </div>
-                </div>
-              </div>
+          {posts.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-8">
+              No bulletins yet. Be the first to post!
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onLike={() => post.likes.includes('player') ? unlikePost(post.id) : likePost(post.id)}
+                  onViewProfile={onViewProfile}
+                />
+              ))}
             </div>
-          ))}
+          )}
         </div>
+      </div>
+    </div>
+  )
+}
 
-        {/* Post something */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
+interface PostCardProps {
+  post: Post
+  onLike: () => void
+  onViewProfile: (id: string) => void
+}
+
+function PostCard({ post, onLike, onViewProfile }: PostCardProps) {
+  const [showComments, setShowComments] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const { addComment } = useSocialStore()
+  const isLiked = post.likes.includes('player')
+
+  const handleComment = () => {
+    if (!commentText.trim()) return
+    addComment(post.id, commentText.trim())
+    setCommentText('')
+  }
+
+  return (
+    <div className="py-3 border-b border-gray-100 last:border-0">
+      <div className="flex items-start gap-3">
+        <button
+          onClick={() => onViewProfile(post.authorId)}
+          className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-lg shrink-0 hover:bg-gray-300 transition-colors"
         >
-          <h3 className="font-bold text-[#003366] mb-2 text-sm">Post a Bulletin</h3>
-          <textarea
-            placeholder="What's on your mind?"
-            className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
-            rows={3}
-          />
-          <div className="flex justify-end mt-2">
+          {post.author.avatar || post.author.name[0]}
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
             <button
-              className="px-4 py-1 text-sm font-medium text-white rounded"
-              style={{ background: '#FF6600' }}
+              onClick={() => onViewProfile(post.authorId)}
+              className="font-bold text-[#003366] text-sm hover:underline"
             >
-              Post
+              {post.author.name}
+            </button>
+            <span className="text-xs text-gray-400">
+              {formatRelativeTime(new Date(post.timestamp))}
+            </span>
+          </div>
+          <p className="text-sm text-gray-700 whitespace-pre-wrap">{post.content}</p>
+
+          {/* Actions */}
+          <div className="flex items-center gap-4 mt-2 text-xs">
+            <button
+              onClick={onLike}
+              className={`flex items-center gap-1 transition-colors ${
+                isLiked ? 'text-[#FF6600] font-medium' : 'text-[#003366] hover:text-[#FF6600]'
+              }`}
+            >
+              {isLiked ? '❤️' : '🤍'} {post.likes.length > 0 && post.likes.length} Kudos
+            </button>
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className="text-[#003366] hover:underline"
+            >
+              💬 {post.comments.length > 0 && post.comments.length} Comments
             </button>
           </div>
+
+          {/* Comments Section */}
+          {showComments && (
+            <div className="mt-3 pl-3 border-l-2 border-gray-200">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="py-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <button
+                      onClick={() => onViewProfile(comment.authorId)}
+                      className="font-medium text-[#003366] text-xs hover:underline"
+                    >
+                      {comment.author.name}
+                    </button>
+                    <span className="text-[10px] text-gray-400">
+                      {formatRelativeTime(new Date(comment.timestamp))}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600">{comment.content}</p>
+                </div>
+              ))}
+
+              {/* Add Comment */}
+              <div className="flex gap-2 mt-2">
+                <input
+                  type="text"
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleComment()}
+                  placeholder="Write a comment..."
+                  className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#003366]"
+                />
+                <button
+                  onClick={handleComment}
+                  disabled={!commentText.trim()}
+                  className="px-2 py-1 text-xs text-white rounded disabled:opacity-50"
+                  style={{ background: '#FF6600' }}
+                >
+                  Post
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -214,15 +387,273 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
 }
 
 function MyFaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }) {
+  const { profiles } = useSocialStore()
+  const profileList = Object.values(profiles)
+
   return (
-    <div
-      className="p-4 rounded"
-      style={{ background: 'white', border: '1px solid #ccc' }}
+    <div className="space-y-4">
+      <div
+        className="p-4 rounded"
+        style={{ background: 'white', border: '1px solid #ccc' }}
+      >
+        <h3 className="font-bold text-[#003366] mb-4">Browse People</h3>
+
+        <div className="grid grid-cols-2 gap-4">
+          {profileList.map((profile) => (
+            <ProfileCard
+              key={profile.id}
+              profile={profile}
+              onViewProfile={onViewProfile}
+            />
+          ))}
+        </div>
+
+        {profileList.length === 0 && (
+          <p className="text-gray-500 text-sm text-center py-8">
+            No profiles found.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+interface ProfileCardProps {
+  profile: SocialProfile
+  onViewProfile: (id: string) => void
+}
+
+function ProfileCard({ profile, onViewProfile }: ProfileCardProps) {
+  return (
+    <button
+      onClick={() => onViewProfile(profile.id)}
+      className="flex items-start gap-3 p-3 rounded hover:bg-gray-50 transition-colors text-left"
+      style={{ border: '1px solid #ddd' }}
     >
-      <h3 className="font-bold text-[#003366] mb-4">Browse People</h3>
-      <p className="text-gray-500 text-sm">
-        Search and browse NPCs coming soon...
-      </p>
+      <div
+        className="w-16 h-16 rounded flex items-center justify-center text-2xl shrink-0"
+        style={{ background: profile.backgroundColor || '#eee' }}
+      >
+        {profile.avatar || profile.name[0]}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="font-bold text-[#003366] text-sm">{profile.name}</h4>
+        <p className="text-xs text-gray-500">@{profile.username}</p>
+        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{profile.bio}</p>
+        <div className="flex items-center gap-2 mt-2">
+          {profile.isOnline ? (
+            <span className="text-[10px] text-green-600">● Online</span>
+          ) : (
+            <span className="text-[10px] text-gray-400">○ {profile.lastSeen || 'Offline'}</span>
+          )}
+          {profile.mood && (
+            <span className="text-[10px] text-gray-500">
+              {profile.moodEmoji} {profile.mood}
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
+  )
+}
+
+interface MyFaceProfileProps {
+  profileId: string
+  onBack: () => void
+  onViewProfile: (id: string) => void
+}
+
+function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps) {
+  const { getProfile, getPostsByAuthor, profiles, likePost, unlikePost } = useSocialStore()
+  const profile = getProfile(profileId)
+  const posts = getPostsByAuthor(profileId)
+
+  if (!profile) {
+    return (
+      <div
+        className="p-4 rounded"
+        style={{ background: 'white', border: '1px solid #ccc' }}
+      >
+        <button
+          onClick={onBack}
+          className="text-[#003366] hover:underline text-sm mb-4"
+        >
+          ← Back to Home
+        </button>
+        <p className="text-gray-500">Profile not found.</p>
+      </div>
+    )
+  }
+
+  const topFriends = profile.topFriends
+    ?.map(id => profiles[id])
+    .filter(Boolean)
+    .slice(0, 8) || []
+
+  return (
+    <div className="space-y-4">
+      {/* Back Button */}
+      <button
+        onClick={onBack}
+        className="text-white hover:underline text-sm"
+      >
+        ← Back to Home
+      </button>
+
+      {/* Profile Header - MySpace style with custom colors */}
+      <div
+        className="rounded overflow-hidden"
+        style={{
+          background: profile.backgroundColor || 'white',
+          border: '1px solid #ccc',
+        }}
+      >
+        <div
+          className="p-4"
+          style={{
+            background: 'linear-gradient(180deg, #003366 0%, #336699 100%)',
+            borderBottom: '2px solid #FF6600',
+          }}
+        >
+          <div className="flex items-end gap-4">
+            <div
+              className="w-24 h-24 rounded flex items-center justify-center text-4xl bg-white shadow-lg"
+            >
+              {profile.avatar || profile.name[0]}
+            </div>
+            <div className="flex-1 pb-2">
+              <h1 className="text-2xl font-bold text-white">{profile.name}</h1>
+              <p className="text-white/60 text-sm">@{profile.username}</p>
+              {profile.isOnline ? (
+                <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-green-500 text-white rounded">
+                  Online Now!
+                </span>
+              ) : (
+                <span className="text-xs text-white/50 mt-1 block">
+                  Last seen: {profile.lastSeen || 'Unknown'}
+                </span>
+              )}
+            </div>
+            {profileId !== 'player' && (
+              <div className="flex gap-2 pb-2">
+                <button
+                  className="px-4 py-1.5 text-sm font-medium text-white rounded"
+                  style={{ background: '#FF6600' }}
+                >
+                  Add Friend
+                </button>
+                <button
+                  className="px-4 py-1.5 text-sm font-medium text-[#003366] bg-white rounded"
+                >
+                  Message
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Profile Body */}
+        <div className="grid grid-cols-3 gap-4 p-4" style={{ color: profile.textColor || '#333' }}>
+          {/* Left Column */}
+          <div className="space-y-4">
+            {/* About */}
+            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
+              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+                About Me
+              </h3>
+              <p className="text-sm">{profile.bio}</p>
+              {profile.mood && (
+                <p className="text-xs mt-2 text-gray-600">
+                  <strong>Mood:</strong> {profile.moodEmoji} {profile.mood}
+                </p>
+              )}
+              {profile.location && (
+                <p className="text-xs mt-1 text-gray-600">
+                  <strong>Location:</strong> {profile.location}
+                </p>
+              )}
+            </div>
+
+            {/* Interests */}
+            {profile.interests && profile.interests.length > 0 && (
+              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
+                <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+                  Interests
+                </h3>
+                <div className="flex flex-wrap gap-1">
+                  {profile.interests.map((interest, i) => (
+                    <span
+                      key={i}
+                      className="px-2 py-0.5 text-xs rounded"
+                      style={{ background: '#003366', color: 'white' }}
+                    >
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Music */}
+            {profile.music && (
+              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
+                <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+                  🎵 Music
+                </h3>
+                <p className="text-xs text-gray-600">{profile.music}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Center Column - Posts */}
+          <div className="col-span-2 space-y-4">
+            {/* Top Friends */}
+            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
+              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+                {profile.name}'s Top {Math.min(topFriends.length, 8)}
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {topFriends.map((friend) => (
+                  <button
+                    key={friend.id}
+                    onClick={() => onViewProfile(friend.id)}
+                    className="aspect-square rounded bg-gray-100 flex flex-col items-center justify-center text-xs cursor-pointer hover:bg-gray-200 p-1"
+                  >
+                    <span className="text-lg">{friend.avatar}</span>
+                    <span className="truncate w-full text-center text-[10px] text-gray-600">
+                      {friend.name}
+                    </span>
+                  </button>
+                ))}
+                {topFriends.length === 0 && (
+                  <p className="col-span-4 text-xs text-gray-500">No friends yet</p>
+                )}
+              </div>
+            </div>
+
+            {/* Posts */}
+            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
+              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+                {profile.name}'s Bulletins
+              </h3>
+              {posts.length === 0 ? (
+                <p className="text-xs text-gray-500 py-4 text-center">No bulletins yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {posts.map((post) => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onLike={() => post.likes.includes('player') ? unlikePost(post.id) : likePost(post.id)}
+                      onViewProfile={onViewProfile}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -394,24 +825,18 @@ function MyFaceMessages() {
   )
 }
 
-function MyFaceProfile({ npcId, onBack }: { npcId: string; onBack: () => void }) {
-  return (
-    <div
-      className="p-4 rounded"
-      style={{ background: 'white', border: '1px solid #ccc' }}
-    >
-      <button
-        onClick={onBack}
-        className="text-[#003366] hover:underline text-sm mb-4"
-      >
-        ← Back to Home
-      </button>
-      <h3 className="font-bold text-[#003366] mb-4">Profile: {npcId}</h3>
-      <p className="text-gray-500 text-sm">
-        Profile view coming soon...
-      </p>
-    </div>
-  )
+function formatRelativeTime(date: Date): string {
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes}m ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 export default MyFaceSite
