@@ -480,7 +480,7 @@ Use the `createNPC()` service in `server/src/services/npc.ts`:
 - Users can upload their own photos as references
 - Future images maintain character appearance
 
-See **PROXY_SYSTEM.md** for complete documentation.
+See **[PROXY_SYSTEM.md](docs/PROXY_SYSTEM.md)** for complete documentation.
 
 ## NPC Personality & Behavior System
 
@@ -533,7 +533,7 @@ Stranger → Acquaintance → Friend → Close Friend → Best Friend
 - `professional` - Formal, measured, active hours 9-5
 - `flirty` - Playful, uses emojis, asks for photos
 
-See **NPC_PERSONALITY_SYSTEM.md** for complete documentation.
+See **[NPC_PERSONALITY_SYSTEM.md](docs/NPC_PERSONALITY_SYSTEM.md)** for complete documentation.
 
 ## Important Notes
 

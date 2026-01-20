@@ -35,6 +35,8 @@ Defines the granular behavior and communication style of NPCs.
 *   **Message Patterns**: Controls "typing_speed", "average_response_delay", and "multi_message_sender" behavior.
 *   **Presets**: Includes archetypes like "social_butterfly", "introvert", "chaotic_fun", "professional", and "flirty".
 
+*See [NPC Personality System](./NPC_PERSONALITY_SYSTEM.md) for complete documentation.*
+
 ### NPC Interaction Service (`npc-interaction.ts`)
 A high-level orchestration layer for communicating with NPCs.
 *   **Unified Interface**: `sendMessageToNPC` handles both text and image messages.

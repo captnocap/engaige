@@ -7,6 +7,7 @@ import {
   estimateCost,
 } from '../utils/cost-calculator.js';
 import { getToolDefinitions, executeToolCall } from './runtime-tools.js';
+import { validateAndFixIfNeeded, type ValidationOptions } from './output-validator.js';
 
 // AI Configuration Types
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -141,8 +142,10 @@ export async function generateNPCResponse(
     player_name?: string;
     player_id?: string;
     conversation_id?: string;
+    conversation_type?: 'direct_message' | 'group_chat' | 'post' | 'comment';
     feature_category?: string;
     enable_tools?: boolean; // Enable runtime tools (image generation, memory search, etc.)
+    validation_options?: Partial<ValidationOptions>; // Output validation settings
   }
 ): Promise<string> {
   const npcDb = getDB('npc');
@@ -205,7 +208,26 @@ export async function generateNPCResponse(
     VALUES (?, ?, 'conversation', ?, ?)
   `).run(memoryId, npcId, `Had a conversation: ${message.slice(0, 100)}...`, 0.5);
 
-  return response;
+  // Validate and fix output if needed
+  const validationContext = {
+    platform: context?.platform,
+    conversation_type: context?.conversation_type || 'direct_message',
+    prompt: message,
+  };
+
+  const validationResult = await validateAndFixIfNeeded(
+    npcId,
+    response,
+    message,
+    validationContext,
+    context?.validation_options
+  );
+
+  if (validationResult.was_fixed) {
+    console.log(`[AI] Output was fixed after validation (attempts: ${validationResult.attempts})`);
+  }
+
+  return validationResult.final_output;
 }
 
 // OpenAI or OpenAI-compatible API with budget tracking
@@ -490,7 +512,8 @@ export async function generateNPCPost(
   npcId: string,
   platform: string,
   prompt?: string,
-  featureCategory: string = 'autonomous_posts'
+  featureCategory: string = 'autonomous_posts',
+  validationOptions?: Partial<ValidationOptions>
 ): Promise<string> {
   const npcDb = getDB('npc');
   const npc = npcDb.prepare('SELECT * FROM npcs WHERE id = ?').get(npcId) as any;
@@ -506,15 +529,40 @@ export async function generateNPCPost(
     { role: 'user', content: `Create a post for ${platform}. ${prompt || 'Share something interesting.'}` },
   ];
 
+  let response: string;
+
   switch (config.provider) {
     case 'openai':
     case 'openai-compatible':
-      return await callOpenAICompatible(messages, config, featureCategory);
+      response = await callOpenAICompatible(messages, config, featureCategory);
+      break;
     case 'anthropic':
-      return await callAnthropic(messages, config, featureCategory);
+      response = await callAnthropic(messages, config, featureCategory);
+      break;
     default:
       throw new Error(`Unknown provider: ${config.provider}`);
   }
+
+  // Validate post output
+  const validationContext = {
+    platform,
+    conversation_type: 'post' as const,
+    prompt: prompt || 'Share something interesting',
+  };
+
+  const validationResult = await validateAndFixIfNeeded(
+    npcId,
+    response,
+    prompt || 'Create a post',
+    validationContext,
+    validationOptions
+  );
+
+  if (validationResult.was_fixed) {
+    console.log(`[AI] Post output was fixed after validation`);
+  }
+
+  return validationResult.final_output;
 }
 
 export default {

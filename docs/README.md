@@ -22,6 +22,17 @@ Please refer to the following documents for detailed information:
 *   **[Frontend Documentation](./FRONTEND.md)**: Architecture of the React + Vite application, window management, and component structure.
 *   **[Tauri Integration](./TAURI.md)**: Desktop environment integration, window customization, and build process.
 
+## Specialized Documentation
+
+*   **[NPC Personality System](./NPC_PERSONALITY_SYSTEM.md)**: Detailed breakdown of behavior flags, quirks, and personality presets.
+*   **[Proxy System](./PROXY_SYSTEM.md)**: How the Vision and Image Generation proxies transparently handle capabilities for different models.
+*   **[Autonomous Context](./AUTONOMOUS_CONTEXT.md)**: How NPCs make decisions and interact autonomously in the background.
+*   **[Context System](./CONTEXT_SYSTEM.md)**: The memory and context injection architecture for AI prompting.
+*   **[Image Generation](./IMAGE_GENERATION.md)**: Specifics on image prompts, generation flows, and consistency.
+*   **[Runtime Tools](./RUNTIME_TOOLS.md)**: Tools available to the AI at runtime.
+*   **[Files System](./FILES_SYSTEM.md)**: How media and configuration files are managed.
+*   **[Example Configs](./EXAMPLE_CONFIGS.md)**: Reference configurations for models and NPCs.
+
 ## Quick Start
 
 ### Frontend (Vite + React + Tauri)

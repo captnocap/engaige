@@ -69,8 +69,35 @@ Generate a MySpace profile with these sections (output as JSON):
     "text_color": "#hex",
     "link_color": "#hex",
     "layout_style": "glittery/minimal/chaotic"
+  },
+  "fallback_responses": {
+    "deflections": ["response1", "response2", "response3", "response4", "response5"],
+    "topic_changes": ["response1", "response2", "response3"],
+    "uncomfortable_topics": ["response1", "response2", "response3"],
+    "confused_responses": ["response1", "response2", "response3"],
+    "playful_dodges": ["response1", "response2", "response3"]
   }
 }
+
+## Fallback Responses Guidelines
+These are pre-generated responses for when you need to deflect, change topics, or handle uncomfortable situations while staying in character:
+
+- **deflections**: Casual ways to brush something off without being rude (5 variations)
+  Example: "hmm not really sure tbh 😅" or "let's talk about something else ✨"
+
+- **topic_changes**: Natural ways to steer conversation elsewhere (3 variations)
+  Example: "anyway, how's your day going?" or "oh btw did you see..."
+
+- **uncomfortable_topics**: Polite but in-character ways to decline discussing something (3 variations)
+  Example: "ngl that's kinda personal" or "idk if i wanna get into that rn"
+
+- **confused_responses**: What you'd say if you don't understand something (3 variations)
+  Example: "wait what?" or "sorry i'm kinda lost lol"
+
+- **playful_dodges**: Lighthearted ways to avoid answering (3 variations)
+  Example: "nice try 😏" or "wouldn't you like to know~"
+
+IMPORTANT: Make ALL fallback responses sound exactly like YOU would talk. Use your emojis, slang, typos, etc. Be authentic!
 
 Make it authentic to your personality. Be creative and expressive!`;
 
