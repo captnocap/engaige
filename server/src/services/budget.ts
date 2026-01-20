@@ -1,4 +1,5 @@
 import { getDB, generateId, now } from '../db/index.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 // Budget configuration types
 export interface BudgetConfig {
@@ -345,6 +346,54 @@ export function logApiCost(log: Omit<ApiCostLog, 'id' | 'timestamp'>): ApiCostLo
     log.cost_cents,
     log.request_metadata ? JSON.stringify(log.request_metadata) : null
   );
+
+  // Emit budget spent event
+  eventBus.fire(EventTypes.BUDGET_SPENT, {
+    cost_cents: log.cost_cents,
+    feature_category: log.feature_category,
+    provider: log.provider,
+    model: log.model,
+    input_tokens: log.input_tokens,
+    output_tokens: log.output_tokens,
+    total_tokens: log.total_tokens,
+  }, {
+    source: 'budget',
+    importance: 0.3, // Low importance - high volume
+  });
+
+  // Check if we should emit a warning
+  const categoryLimit = getCategoryAllocation(log.feature_category);
+  if (categoryLimit > 0) {
+    const { start, end } = getCurrentPeriod();
+    const categorySpent = db.prepare(`
+      SELECT COALESCE(SUM(cost_cents), 0) as total
+      FROM api_costs
+      WHERE timestamp >= ? AND timestamp < ? AND feature_category = ?
+    `).get(start, end, log.feature_category) as any;
+
+    const percentageUsed = (categorySpent.total / categoryLimit) * 100;
+
+    if (percentageUsed >= 90 && percentageUsed < 100) {
+      eventBus.fire(EventTypes.BUDGET_WARNING, {
+        category: log.feature_category,
+        spent_cents: categorySpent.total,
+        limit_cents: categoryLimit,
+        percentage_used: percentageUsed,
+      }, {
+        source: 'budget',
+        importance: 0.7,
+      });
+    } else if (percentageUsed >= 100) {
+      eventBus.fire(EventTypes.BUDGET_EXHAUSTED, {
+        category: log.feature_category,
+        spent_cents: categorySpent.total,
+        limit_cents: categoryLimit,
+      }, {
+        source: 'budget',
+        importance: 0.8,
+      });
+    }
+  }
 
   return {
     id,

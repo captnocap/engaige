@@ -11,6 +11,156 @@ Please when ever there is any feature implementation, that is significant to how
 
 ---
 
+## ⚠️ CRITICAL: Event Bus - ALL Game Events MUST Go Through Here
+
+**The Event Bus (`server/src/events/event-bus.ts`) is the SINGLE POINT for ALL in-game events.**
+
+Just like the "door" (`server/src/network/door.ts`) is the single exit point for all external HTTP requests, the Event Bus is the single point for all game events. **Nothing significant happens in the game without emitting an event through the bus.**
+
+### When to Emit Events
+
+**ALWAYS emit an event when:**
+- A player sends a message or receives a response
+- Relationship stats change (trust, affinity, familiarity)
+- Relationship stage changes (stranger → friend, etc.)
+- An NPC is created, updated, or deleted
+- A post is created, liked, or commented on
+- Budget is spent or limits are reached
+- Background tasks are scheduled, executed, or fail
+- WebSocket clients connect or disconnect
+- AI requests are sent or responses received
+- Memory is created or recalled
+- Media is uploaded, generated, or deleted
+- Any error occurs that affects game state
+
+### How to Emit Events
+
+```typescript
+import { eventBus, EventTypes } from '../events/index.js';
+
+// Fire and forget (most common)
+eventBus.fire(EventTypes.CONVERSATION_MESSAGE_SENT, {
+  message_id: id,
+  content: message,
+  word_count: message.split(/\s+/).length,
+}, {
+  source: 'conversation',  // Which service emitted this
+  player_id: playerId,     // Optional context
+  npc_id: npcId,
+  conversation_id: convId,
+  importance: 0.5,         // 0-1, affects logging/filtering
+});
+
+// Await if you need the event ID (for parent_event_id linking)
+const event = await eventBus.emit(EventTypes.CONVERSATION_MESSAGE_SENT, payload, context);
+```
+
+### Event Categories
+
+| Category | Events |
+|----------|--------|
+| `conversation` | message_sent, message_received, message_read, started, ended |
+| `relationship` | stats_updated, stage_changed, first_interaction, milestone |
+| `npc` | created, updated, deleted, mood_changed, went_online/offline |
+| `social` | post_created, post_liked, post_commented, profile_viewed |
+| `ai` | request_sent, response_received, error, vision_proxied |
+| `budget` | spent, warning, exhausted, allocation_changed |
+| `scheduler` | task_scheduled, task_started, task_completed, task_failed |
+| `memory` | created, recalled, expired |
+| `media` | uploaded, generated, deleted |
+| `system` | startup, shutdown, error, ws_connected, ws_disconnected |
+| `player` | profile_updated, settings_changed, logged_in/out |
+
+### Adding New Event Types
+
+1. Add the event type constant to `server/src/events/event-types.ts`
+2. Add the payload interface if needed
+3. Emit the event in the appropriate service
+
+### Why This Matters
+
+- **Master Log**: Every event is persisted to `game_events` table in SQLite
+- **Debugging**: "What happened at 2:30 PM?" → Query the event log
+- **Analytics**: Track messages per day, AI costs, relationship progression
+- **Replay**: Reconstruct game state from events
+- **Decoupling**: Services don't call each other directly - they emit events
+
+**Documentation:**
+- **[EVENT_REFERENCE.md](docs/EVENT_REFERENCE.md)** - Quick reference with all events, payloads, and example logs
+- **[EVENT_BUS_SPEC.md](docs/EVENT_BUS_SPEC.md)** - Full architecture specification
+
+---
+
+## ⚠️ CRITICAL: Error Logging - ALL Errors MUST Be Logged
+
+**The Error Logger (`server/src/services/error-logger.ts`) is the SINGLE POINT for ALL error handling.**
+
+Just like the Event Bus handles events and the "door" handles HTTP, the Error Logger handles all errors. **Never use plain `console.error()` for errors that should be tracked.**
+
+### When to Use Error Logger
+
+**ALWAYS use errorLogger when:**
+- An API call fails (AI, external services)
+- Database operations fail
+- Validation fails with user input
+- Background tasks encounter errors
+- WebSocket operations fail
+- File/media operations fail
+- Any try/catch block catches an error worth tracking
+
+### How to Log Errors
+
+```typescript
+import { errorLogger } from '../services/error-logger.js';
+
+// Direct logging
+try {
+  await riskyOperation();
+} catch (error) {
+  errorLogger.log(error, {
+    source: 'ai',           // Which service
+    operation: 'generateResponse',  // What was attempted
+    npc_id: npcId,          // Context
+  });
+  throw error; // or handle gracefully
+}
+
+// Async wrapper (cleaner)
+const result = await errorLogger.wrap(
+  () => riskyOperation(),
+  { source: 'ai', operation: 'generateResponse', npc_id: npcId }
+);
+
+// With fallback (doesn't throw)
+const result = await errorLogger.wrap(
+  () => mightFail(),
+  { source: 'ai', operation: 'parse' },
+  { fallback: defaultValue }
+);
+```
+
+### Severity Levels
+
+| Severity | Auto-Detection Examples |
+|----------|------------------------|
+| `critical` | Database corruption, out of memory, fatal errors |
+| `high` | API key invalid, rate limits, auth failures, timeouts |
+| `medium` | Not found, validation failures, parse errors |
+| `low` | Non-critical issues (default) |
+
+### Why This Matters
+
+- **Persistence**: All errors stored in `error_log` table
+- **Debugging**: Query errors by source, severity, time range
+- **Context**: Full stack traces, related IDs (npc_id, player_id, etc.)
+- **Resolution tracking**: Mark errors as resolved with notes
+- **Event integration**: Errors emit `system:error` events automatically
+
+**Documentation:**
+- **[ERROR_LOGGING.md](docs/ERROR_LOGGING.md)** - Full reference with all patterns and query functions
+
+---
+
 ## ⚠️ CRITICAL: Form Element Styling Rules
 
 **DO NOT use native HTML `<select>` elements** anywhere in the codebase. Native HTML selects cannot be reliably styled and will appear broken with inconsistent styling across the application.
@@ -161,6 +311,10 @@ src/
 server/src/
 ├── db/
 │   └── index.ts                      # Database setup, schema initialization
+├── events/
+│   ├── event-bus.ts                  # THE event bus - all game events go here
+│   ├── event-types.ts                # Event type definitions and payload interfaces
+│   └── index.ts                      # Re-exports
 ├── network/
 │   ├── door.ts                       # THE external fetch wrapper - all outbound HTTP goes here
 │   ├── proxy-config.ts               # SOCKS/HTTP proxy configuration

@@ -16,6 +16,8 @@ import {
   type ServerMessage,
 } from './ws-protocol.js';
 import { getProxyConfig, setProxyConfig } from './proxy-config.js';
+import { eventBus, EventTypes } from '../events/index.js';
+import { errorLogger } from '../services/error-logger.js';
 
 // Client session data
 export interface ClientSession {
@@ -43,6 +45,16 @@ export function handleOpen(ws: ServerWebSocket<ClientSession>): void {
   clients.set(ws, session);
   console.log(`[WS] Client connected: ${session.id}`);
 
+  // Emit WS connected event
+  eventBus.fire(EventTypes.SYSTEM_WS_CONNECTED, {
+    session_id: session.id,
+    client_count: clients.size,
+  }, {
+    source: 'ws-server',
+    session_id: session.id,
+    importance: 0.4,
+  });
+
   // Send connected event
   send(ws, {
     type: 'connected',
@@ -61,6 +73,16 @@ export function handleClose(ws: ServerWebSocket<ClientSession>): void {
   if (session) {
     console.log(`[WS] Client disconnected: ${session.id}`);
     clients.delete(ws);
+
+    // Emit WS disconnected event
+    eventBus.fire(EventTypes.SYSTEM_WS_DISCONNECTED, {
+      session_id: session.id,
+      client_count: clients.size,
+    }, {
+      source: 'ws-server',
+      session_id: session.id,
+      importance: 0.4,
+    });
   }
 }
 
@@ -85,7 +107,15 @@ export async function handleMessage(
     await routeMessage(ws, parsed as ClientMessage);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    console.error(`[WS] Error handling ${parsed.type}:`, errorMessage);
+    const session = clients.get(ws);
+
+    errorLogger.log(err, {
+      source: 'ws-server',
+      operation: `handle:${parsed.type}`,
+      session_id: session?.id,
+      metadata: { message_type: parsed.type, message_id: parsed.id },
+    });
+
     send(ws, createError(errorMessage, 'HANDLER_ERROR', parsed.id));
   }
 }
@@ -260,7 +290,13 @@ export function send(ws: ServerWebSocket<ClientSession>, message: ServerMessage)
   try {
     ws.send(serializeMessage(message));
   } catch (err) {
-    console.error('[WS] Failed to send message:', err);
+    const session = clients.get(ws);
+    errorLogger.log(err, {
+      source: 'ws-server',
+      operation: 'send',
+      session_id: session?.id,
+      metadata: { message_type: message.type },
+    });
   }
 }
 
@@ -269,11 +305,16 @@ export function send(ws: ServerWebSocket<ClientSession>, message: ServerMessage)
  */
 export function broadcast(message: ServerMessage): void {
   const data = serializeMessage(message);
-  for (const ws of clients.keys()) {
+  for (const [ws, session] of clients.entries()) {
     try {
       ws.send(data);
     } catch (err) {
-      console.error('[WS] Failed to broadcast to client:', err);
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcast',
+        session_id: session.id,
+        metadata: { message_type: message.type },
+      });
     }
   }
 }

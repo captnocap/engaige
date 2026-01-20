@@ -3,6 +3,7 @@ import { generateNPCResponse } from './ai.js';
 import { updateStatsForMessage } from './relationships.js';
 import { formatMessageForNPC } from './message-formatter.js';
 import type { CommunicationQuirks, MessagePatterns } from './npc-personality.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 // Conversation Types
 export interface Conversation {
@@ -42,7 +43,21 @@ export function createConversation(
     VALUES (?, ?, ?, ?, ?)
   `).run(id, npcId, participantId, participantType, platform);
 
-  return getConversationById(id)!;
+  const conversation = getConversationById(id)!;
+
+  // Emit conversation started event
+  eventBus.fire(EventTypes.CONVERSATION_STARTED, {
+    conversation_id: id,
+    platform,
+    initiated_by: participantType,
+  }, {
+    source: 'conversation',
+    npc_id: npcId,
+    player_id: participantType === 'player' ? participantId : undefined,
+    conversation_id: id,
+  });
+
+  return conversation;
 }
 
 // Get conversation by ID
@@ -123,6 +138,19 @@ export async function sendPlayerMessage(
     UPDATE conversations SET last_message_at = ? WHERE id = ?
   `).run(timestamp, conversationId);
 
+  // Emit player message sent event
+  const messageSentEvent = await eventBus.emit(EventTypes.CONVERSATION_MESSAGE_SENT, {
+    message_id: id,
+    content,
+    word_count: content.split(/\s+/).length,
+    has_image: false,
+  }, {
+    source: 'conversation',
+    player_id: playerId,
+    npc_id: conv.npc_id,
+    conversation_id: conversationId,
+  });
+
   // Update relationship stats
   updateStatsForMessage(playerId, conv.npc_id, content, true);
 
@@ -178,6 +206,22 @@ export async function sendPlayerMessage(
     UPDATE conversations SET last_message_at = ? WHERE id = ?
   `).run(timestamp + cumulativeDelay, conversationId);
 
+  // Emit NPC message received event (for each part, link to parent event)
+  for (const npcMsg of npcMessages) {
+    eventBus.fire(EventTypes.CONVERSATION_MESSAGE_RECEIVED, {
+      message_id: npcMsg.message.id,
+      content: npcMsg.message.content,
+      word_count: npcMsg.message.content.split(/\s+/).length,
+      has_image: false,
+    }, {
+      source: 'conversation',
+      player_id: playerId,
+      npc_id: conv.npc_id,
+      conversation_id: conversationId,
+      parent_event_id: messageSentEvent.id, // Link to the player's message
+    });
+  }
+
   // Update relationship stats for NPC response
   updateStatsForMessage(playerId, conv.npc_id, rawNPCResponse, false);
 
@@ -228,10 +272,28 @@ export async function sendNPCMessage(
 // Mark messages as read
 export function markMessagesAsRead(conversationId: string, readerId: string): void {
   const db = getDB('game');
+
+  // Get unread count before marking
+  const unreadCount = getUnreadCount(conversationId, readerId);
+
   db.prepare(`
     UPDATE messages SET is_read = 1
     WHERE conversation_id = ? AND sender_id != ?
   `).run(conversationId, readerId);
+
+  // Emit message read event if there were unread messages
+  if (unreadCount > 0) {
+    const conv = getConversationById(conversationId);
+    eventBus.fire(EventTypes.CONVERSATION_MESSAGE_READ, {
+      messages_read: unreadCount,
+    }, {
+      source: 'conversation',
+      player_id: readerId,
+      npc_id: conv?.npc_id,
+      conversation_id: conversationId,
+      importance: 0.2, // Low importance - high volume event
+    });
+  }
 }
 
 // Get unread message count

@@ -1,6 +1,7 @@
 // Player-NPC relationship tracking and progression system
 
 import { getDB, generateId, now } from '../db/index.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 export type RelationshipStage =
   | 'stranger'
@@ -74,6 +75,16 @@ export function getOrCreateRelationship(playerId: string, npcId: string): Player
     rel = db.prepare(`
       SELECT * FROM player_npc_relationships WHERE id = ?
     `).get(id) as any;
+
+    // Emit first interaction event for new relationships
+    eventBus.fire(EventTypes.RELATIONSHIP_FIRST_INTERACTION, {
+      relationship_id: id,
+    }, {
+      source: 'relationships',
+      player_id: playerId,
+      npc_id: npcId,
+      importance: 0.9,
+    });
   }
 
   return parseRelationship(rel);
@@ -161,12 +172,47 @@ export function updateRelationshipStats(
   // Recalculate relationship stage
   const updated = getOrCreateRelationship(playerId, npcId);
   const newStage = calculateRelationshipStage(updated);
+  const previousStage = updated.relationship_stage;
 
-  if (newStage !== updated.relationship_stage) {
+  if (newStage !== previousStage) {
     db.prepare(`
       UPDATE player_npc_relationships SET relationship_stage = ?, updated_at = ? WHERE id = ?
     `).run(newStage, now(), updated.id);
+
+    // Emit stage changed event (high importance!)
+    eventBus.fire(EventTypes.RELATIONSHIP_STAGE_CHANGED, {
+      previous_stage: previousStage,
+      new_stage: newStage,
+      trust: trust,
+      affinity: affinity,
+      familiarity: familiarity,
+    }, {
+      source: 'relationships',
+      player_id: playerId,
+      npc_id: npcId,
+      importance: 1.0, // Maximum importance
+    });
   }
+
+  // Emit stats updated event
+  eventBus.fire(EventTypes.RELATIONSHIP_STATS_UPDATED, {
+    trust_delta: updates.trust_delta,
+    affinity_delta: updates.affinity_delta,
+    familiarity_delta: updates.familiarity_delta,
+    new_trust: trust,
+    new_affinity: affinity,
+    new_familiarity: familiarity,
+    trigger: updates.message_sent ? 'message_sent' :
+             updates.message_received ? 'message_received' :
+             updates.image_shared ? 'image_shared' :
+             updates.post_liked ? 'post_liked' :
+             updates.post_commented ? 'post_commented' : 'unknown',
+  }, {
+    source: 'relationships',
+    player_id: playerId,
+    npc_id: npcId,
+    importance: 0.4, // Medium-low (high volume)
+  });
 
   return getOrCreateRelationship(playerId, npcId);
 }

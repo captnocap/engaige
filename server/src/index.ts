@@ -3,6 +3,7 @@
  *
  * Client <-> Server: WebSocket (100% WS communication)
  * Server <-> Internet: HTTP through the "door" (with optional proxy)
+ * All Game Events: Through the "event bus" (centralized logging)
  */
 
 import {
@@ -12,8 +13,18 @@ import {
   getClientCount,
   type ClientSession,
 } from './network/ws-server.js';
+import { getDB } from './db/index.js';
+import { eventBus, EventTypes } from './events/index.js';
+import { errorLogger } from './services/error-logger.js';
 
 const PORT = 4269;
+
+// ─────────────────────────────────────────────────────────────────
+// Initialize Core Systems (must happen before server starts)
+// ─────────────────────────────────────────────────────────────────
+const gameDb = getDB('game');
+eventBus.initialize(gameDb);
+errorLogger.initialize(gameDb);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)
 const corsHeaders = {
@@ -103,5 +114,12 @@ console.log(`
 ╠════════════════════════════════════════════════════════════╣
 ║  Client <-> Server: WebSocket                              ║
 ║  Server <-> Internet: HTTP (door with proxy support)       ║
+║  Game Events: Event Bus (centralized logging)              ║
 ╚════════════════════════════════════════════════════════════╝
 `);
+
+// Emit startup event
+eventBus.fire(EventTypes.SYSTEM_STARTUP, {
+  version: '0.1.0',
+  port: PORT,
+}, { source: 'system' });

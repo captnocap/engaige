@@ -14,6 +14,7 @@ import * as tls from 'node:tls';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import { getProxyConfig, isProxyEnabled, type ProxyConfig } from './proxy-config.js';
+import { errorLogger } from '../services/error-logger.js';
 
 // Request options that mirror fetch() options
 export interface DoorRequestInit extends RequestInit {
@@ -162,13 +163,26 @@ async function fetchViaSocks(
     });
 
     finalSocket.on('error', (err) => {
-      reject(new Error(`[Door] SOCKS request failed: ${err.message}`));
+      const error = new Error(`[Door] SOCKS request failed: ${err.message}`);
+      errorLogger.log(error, {
+        source: 'door',
+        operation: 'fetchViaSocks',
+        metadata: { url: url.toString(), proxy_type: config.type },
+      });
+      reject(error);
     });
 
     // Timeout after 60 seconds
     setTimeout(() => {
       finalSocket.destroy();
-      reject(new Error('[Door] SOCKS request timeout'));
+      const error = new Error('[Door] SOCKS request timeout');
+      errorLogger.log(error, {
+        source: 'door',
+        operation: 'fetchViaSocks',
+        severity: 'high',
+        metadata: { url: url.toString(), timeout_ms: 60000 },
+      });
+      reject(error);
     }, 60000);
   });
 }
@@ -219,7 +233,13 @@ async function fetchViaHttpProxy(
     connectReq.on('connect', (res, socket) => {
       if (res.statusCode !== 200) {
         socket.destroy();
-        reject(new Error(`[Door] HTTP proxy CONNECT failed: ${res.statusCode}`));
+        const error = new Error(`[Door] HTTP proxy CONNECT failed: ${res.statusCode}`);
+        errorLogger.log(error, {
+          source: 'door',
+          operation: 'fetchViaHttpProxy',
+          metadata: { url: url.toString(), status_code: res.statusCode },
+        });
+        reject(error);
         return;
       }
 
@@ -286,17 +306,35 @@ async function fetchViaHttpProxy(
         });
 
         tlsSocket.on('error', (err) => {
-          reject(new Error(`[Door] HTTP proxy request failed: ${err.message}`));
+          const error = new Error(`[Door] HTTP proxy request failed: ${err.message}`);
+          errorLogger.log(error, {
+            source: 'door',
+            operation: 'fetchViaHttpProxy',
+            metadata: { url: url.toString() },
+          });
+          reject(error);
         });
       });
 
       tlsSocket.on('error', (err) => {
-        reject(new Error(`[Door] TLS handshake failed: ${err.message}`));
+        const error = new Error(`[Door] TLS handshake failed: ${err.message}`);
+        errorLogger.log(error, {
+          source: 'door',
+          operation: 'fetchViaHttpProxy',
+          metadata: { url: url.toString(), phase: 'tls_handshake' },
+        });
+        reject(error);
       });
     });
 
     connectReq.on('error', (err) => {
-      reject(new Error(`[Door] CONNECT request failed: ${err.message}`));
+      const error = new Error(`[Door] CONNECT request failed: ${err.message}`);
+      errorLogger.log(error, {
+        source: 'door',
+        operation: 'fetchViaHttpProxy',
+        metadata: { url: url.toString(), phase: 'connect' },
+      });
+      reject(error);
     });
 
     connectReq.end();

@@ -1,5 +1,6 @@
 import { getDB, generateId, now } from '../db/index.js';
 import type { AIProvider } from './ai.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 // NPC CRUD Operations
 export interface NPCCreateData {
@@ -28,7 +29,7 @@ export interface NPC extends NPCCreateData {
 }
 
 // Create a new NPC
-export function createNPC(data: NPCCreateData): NPC {
+export function createNPC(data: NPCCreateData, generationMethod: 'ai' | 'manual' | 'import' = 'manual'): NPC {
   const db = getDB('npc');
   const id = generateId();
 
@@ -57,7 +58,21 @@ export function createNPC(data: NPCCreateData): NPC {
     data.model_api_key || null
   );
 
-  return getNPCById(id)!;
+  const npc = getNPCById(id)!;
+
+  // Emit NPC created event
+  eventBus.fire(EventTypes.NPC_CREATED, {
+    npc_id: id,
+    username: data.username,
+    display_name: data.display_name,
+    generation_method: generationMethod,
+  }, {
+    source: 'npc',
+    npc_id: id,
+    importance: 0.8,
+  });
+
+  return npc;
 }
 
 // Get NPC by ID
@@ -135,7 +150,19 @@ export function updateNPC(id: string, data: Partial<NPCCreateData>): NPC | null 
 
   db.prepare(`UPDATE npcs SET ${updates.join(', ')} WHERE id = ?`).run(...values);
 
-  return getNPCById(id);
+  const updatedNpc = getNPCById(id);
+
+  // Emit NPC updated event
+  eventBus.fire(EventTypes.NPC_UPDATED, {
+    npc_id: id,
+    fields_changed: Object.keys(data),
+  }, {
+    source: 'npc',
+    npc_id: id,
+    importance: 0.5,
+  });
+
+  return updatedNpc;
 }
 
 // Deactivate NPC (soft delete)
@@ -155,7 +182,22 @@ export function reactivateNPC(id: string): boolean {
 // Delete NPC permanently
 export function deleteNPC(id: string): boolean {
   const db = getDB('npc');
+  const npc = getNPCById(id);
   const result = db.prepare('DELETE FROM npcs WHERE id = ?').run(id);
+
+  if (result.changes > 0 && npc) {
+    // Emit NPC deleted event
+    eventBus.fire(EventTypes.NPC_DELETED, {
+      npc_id: id,
+      username: npc.username,
+      display_name: npc.display_name,
+    }, {
+      source: 'npc',
+      npc_id: id,
+      importance: 0.7,
+    });
+  }
+
   return result.changes > 0;
 }
 

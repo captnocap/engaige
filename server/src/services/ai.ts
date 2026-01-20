@@ -9,6 +9,8 @@ import {
 import { getToolDefinitions, executeToolCall } from './runtime-tools.js';
 import { validateAndFixIfNeeded, type ValidationOptions } from './output-validator.js';
 import { doorFetch } from '../network/door.js';
+import { eventBus, EventTypes } from '../events/index.js';
+import { errorLogger } from './error-logger.js';
 
 // AI Configuration Types
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -276,6 +278,21 @@ async function callOpenAICompatible(
     requestBody.tool_choice = 'auto'; // Let model decide when to use tools
   }
 
+  const requestId = generateId();
+  const requestStartTime = Date.now();
+
+  // Emit AI request event
+  eventBus.fire(EventTypes.AI_REQUEST_SENT, {
+    request_id: requestId,
+    provider: config.provider,
+    model: config.model,
+    prompt_tokens: promptText.length,
+    purpose: featureCategory,
+  }, {
+    source: 'ai',
+    npc_id: toolContext?.npc_id,
+  });
+
   const response = await doorFetch(endpoint, {
     method: 'POST',
     headers,
@@ -283,8 +300,34 @@ async function callOpenAICompatible(
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`AI API error (${config.provider}): ${error}`);
+    const errorText = await response.text();
+
+    // Emit AI error event
+    eventBus.fire(EventTypes.AI_ERROR, {
+      request_id: requestId,
+      provider: config.provider,
+      model: config.model,
+      error_type: 'api_error',
+      message: errorText,
+    }, {
+      source: 'ai',
+      npc_id: toolContext?.npc_id,
+      importance: 0.8,
+    });
+
+    const error = new Error(`AI API error (${config.provider}): ${errorText}`);
+    errorLogger.log(error, {
+      source: 'ai',
+      operation: 'callOpenAICompatible',
+      npc_id: toolContext?.npc_id,
+      metadata: {
+        provider: config.provider,
+        model: config.model,
+        status: response.status,
+        request_id: requestId,
+      },
+    });
+    throw error;
   }
 
   const data = await response.json();
@@ -302,6 +345,19 @@ async function callOpenAICompatible(
     output_tokens: usage.output_tokens,
     total_tokens: usage.total_tokens,
     cost_cents: actualCostCents,
+  });
+
+  // Emit AI response event
+  eventBus.fire(EventTypes.AI_RESPONSE_RECEIVED, {
+    request_id: requestId,
+    provider: config.provider,
+    model: config.model,
+    tokens_used: usage.total_tokens,
+    cost_cents: actualCostCents,
+    latency_ms: Date.now() - requestStartTime,
+  }, {
+    source: 'ai',
+    npc_id: toolContext?.npc_id,
   });
 
   const choice = data.choices[0];
@@ -419,8 +475,19 @@ async function callAnthropic(
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Anthropic API error: ${error}`);
+    const errorText = await response.text();
+    const error = new Error(`Anthropic API error: ${errorText}`);
+    errorLogger.log(error, {
+      source: 'ai',
+      operation: 'callAnthropic',
+      npc_id: toolContext?.npc_id,
+      metadata: {
+        provider: config.provider,
+        model: config.model,
+        status: response.status,
+      },
+    });
+    throw error;
   }
 
   const data = await response.json();

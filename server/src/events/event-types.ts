@@ -1,0 +1,401 @@
+/**
+ * Event Types - All game event definitions
+ *
+ * Naming convention: 'category:action'
+ * Example: 'conversation:message_sent', 'relationship:stage_changed'
+ */
+
+// ─────────────────────────────────────────────────────────────────
+// Event Categories
+// ─────────────────────────────────────────────────────────────────
+
+export type EventCategory =
+  | 'player'
+  | 'npc'
+  | 'conversation'
+  | 'relationship'
+  | 'social'
+  | 'memory'
+  | 'budget'
+  | 'system'
+  | 'scheduler'
+  | 'ai'
+  | 'media';
+
+// ─────────────────────────────────────────────────────────────────
+// Base Event Structure
+// ─────────────────────────────────────────────────────────────────
+
+export interface GameEvent<T = unknown> {
+  id: string;
+  event_type: string;
+  category: EventCategory;
+  payload: T;
+  timestamp: number;
+
+  // Optional context
+  player_id?: string;
+  npc_id?: string;
+  conversation_id?: string;
+  post_id?: string;
+
+  // Metadata
+  source: string;
+  session_id?: string;
+  importance?: number;
+  parent_event_id?: string;
+}
+
+export interface EventContext {
+  source: string;
+  player_id?: string;
+  npc_id?: string;
+  conversation_id?: string;
+  post_id?: string;
+  session_id?: string;
+  importance?: number;
+  parent_event_id?: string;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Event Payloads by Category
+// ─────────────────────────────────────────────────────────────────
+
+// === PLAYER EVENTS ===
+export interface PlayerProfileUpdatedPayload {
+  field: string;
+  old_value?: unknown;
+  new_value: unknown;
+}
+
+export interface PlayerSettingsChangedPayload {
+  setting: string;
+  old_value?: unknown;
+  new_value: unknown;
+}
+
+export interface PlayerSessionPayload {
+  session_id: string;
+}
+
+// === NPC EVENTS ===
+export interface NPCCreatedPayload {
+  npc_id: string;
+  username: string;
+  display_name: string;
+  generation_method: 'ai' | 'manual' | 'import';
+}
+
+export interface NPCUpdatedPayload {
+  npc_id: string;
+  fields_changed: string[];
+}
+
+export interface NPCMoodChangedPayload {
+  previous_mood?: string;
+  new_mood: string;
+  trigger?: string;
+}
+
+export interface NPCStatusPayload {
+  npc_id: string;
+  is_online: boolean;
+}
+
+// === CONVERSATION EVENTS ===
+export interface MessagePayload {
+  message_id: string;
+  content: string;
+  word_count: number;
+  has_image?: boolean;
+  image_urls?: string[];
+}
+
+export interface ConversationStartedPayload {
+  conversation_id: string;
+  platform: string;
+  initiated_by: 'player' | 'npc';
+}
+
+export interface ConversationEndedPayload {
+  conversation_id: string;
+  total_messages: number;
+  duration_seconds: number;
+}
+
+// === RELATIONSHIP EVENTS ===
+export interface RelationshipStatsUpdatedPayload {
+  trust_delta?: number;
+  affinity_delta?: number;
+  familiarity_delta?: number;
+  new_trust: number;
+  new_affinity: number;
+  new_familiarity: number;
+  trigger: string;
+}
+
+export interface RelationshipStageChangedPayload {
+  previous_stage: string;
+  new_stage: string;
+  trust: number;
+  affinity: number;
+  familiarity: number;
+}
+
+export interface RelationshipMilestonePayload {
+  milestone_type: string;
+  value: number;
+  description: string;
+}
+
+// === SOCIAL EVENTS ===
+export interface PostCreatedPayload {
+  post_id: string;
+  platform: string;
+  content: string;
+  has_media: boolean;
+  media_urls?: string[];
+}
+
+export interface PostInteractionPayload {
+  post_id: string;
+  interaction_type: 'like' | 'comment' | 'share';
+  actor_type: 'player' | 'npc';
+  actor_id: string;
+  content?: string; // For comments
+}
+
+export interface ProfileViewedPayload {
+  profile_owner_id: string;
+  viewer_type: 'player' | 'npc';
+  viewer_id: string;
+  platform: string;
+}
+
+// === MEMORY EVENTS ===
+export interface MemoryCreatedPayload {
+  memory_id: string;
+  content: string;
+  importance: number;
+  event_type: string;
+  event_id?: string;
+}
+
+export interface MemoryRecalledPayload {
+  memory_ids: string[];
+  context: string;
+  relevance_scores: number[];
+}
+
+export interface MemoryExpiredPayload {
+  memory_id: string;
+  content: string;
+  age_seconds: number;
+}
+
+// === BUDGET EVENTS ===
+export interface BudgetSpentPayload {
+  cost_cents: number;
+  feature_category: string;
+  provider: string;
+  model: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  total_tokens?: number;
+}
+
+export interface BudgetWarningPayload {
+  category: string;
+  spent_cents: number;
+  limit_cents: number;
+  percentage_used: number;
+}
+
+export interface BudgetExhaustedPayload {
+  category: string;
+  spent_cents: number;
+  limit_cents: number;
+}
+
+export interface BudgetAllocationChangedPayload {
+  category: string;
+  old_allocation?: number;
+  new_allocation: number;
+}
+
+// === SYSTEM EVENTS ===
+export interface SystemStartupPayload {
+  version: string;
+  port: number;
+}
+
+export interface SystemShutdownPayload {
+  reason: string;
+  uptime_seconds: number;
+}
+
+export interface SystemErrorPayload {
+  error_type: string;
+  message: string;
+  stack?: string;
+  context?: Record<string, unknown>;
+}
+
+export interface WSConnectionPayload {
+  session_id: string;
+  client_count: number;
+}
+
+// === SCHEDULER EVENTS ===
+export interface TaskScheduledPayload {
+  task_id: string;
+  task_type: string;
+  scheduled_for: number;
+  priority: number;
+  budget_category: string;
+}
+
+export interface TaskExecutionPayload {
+  task_id: string;
+  task_type: string;
+  duration_ms?: number;
+  error_message?: string;
+}
+
+// === AI EVENTS ===
+export interface AIRequestPayload {
+  request_id: string;
+  provider: string;
+  model: string;
+  prompt_tokens?: number;
+  purpose: string;
+}
+
+export interface AIResponsePayload {
+  request_id: string;
+  provider: string;
+  model: string;
+  tokens_used: number;
+  cost_cents: number;
+  latency_ms: number;
+}
+
+export interface AIErrorPayload {
+  request_id?: string;
+  provider: string;
+  model: string;
+  error_type: string;
+  message: string;
+}
+
+export interface AIProxiedPayload {
+  original_model: string;
+  proxy_model: string;
+  proxy_type: 'vision' | 'image_generation';
+  cost_cents: number;
+}
+
+// === MEDIA EVENTS ===
+export interface MediaUploadedPayload {
+  media_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  category: string;
+}
+
+export interface MediaGeneratedPayload {
+  media_id: string;
+  prompt: string;
+  provider: string;
+  model: string;
+  cost_cents: number;
+}
+
+export interface MediaDeletedPayload {
+  media_id: string;
+  filename: string;
+  reason?: string;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Event Type Constants
+// ─────────────────────────────────────────────────────────────────
+
+export const EventTypes = {
+  // Player
+  PLAYER_PROFILE_UPDATED: 'player:profile_updated',
+  PLAYER_SETTINGS_CHANGED: 'player:settings_changed',
+  PLAYER_LOGGED_IN: 'player:logged_in',
+  PLAYER_LOGGED_OUT: 'player:logged_out',
+
+  // NPC
+  NPC_CREATED: 'npc:created',
+  NPC_UPDATED: 'npc:updated',
+  NPC_DELETED: 'npc:deleted',
+  NPC_MOOD_CHANGED: 'npc:mood_changed',
+  NPC_WENT_ONLINE: 'npc:went_online',
+  NPC_WENT_OFFLINE: 'npc:went_offline',
+
+  // Conversation
+  CONVERSATION_STARTED: 'conversation:started',
+  CONVERSATION_ENDED: 'conversation:ended',
+  CONVERSATION_MESSAGE_SENT: 'conversation:message_sent',
+  CONVERSATION_MESSAGE_RECEIVED: 'conversation:message_received',
+  CONVERSATION_MESSAGE_READ: 'conversation:message_read',
+  CONVERSATION_TYPING_STARTED: 'conversation:typing_started',
+  CONVERSATION_TYPING_STOPPED: 'conversation:typing_stopped',
+
+  // Relationship
+  RELATIONSHIP_STATS_UPDATED: 'relationship:stats_updated',
+  RELATIONSHIP_STAGE_CHANGED: 'relationship:stage_changed',
+  RELATIONSHIP_FIRST_INTERACTION: 'relationship:first_interaction',
+  RELATIONSHIP_MILESTONE: 'relationship:milestone',
+
+  // Social
+  SOCIAL_POST_CREATED: 'social:post_created',
+  SOCIAL_POST_LIKED: 'social:post_liked',
+  SOCIAL_POST_COMMENTED: 'social:post_commented',
+  SOCIAL_POST_SHARED: 'social:post_shared',
+  SOCIAL_PROFILE_VIEWED: 'social:profile_viewed',
+
+  // Memory
+  MEMORY_CREATED: 'memory:created',
+  MEMORY_RECALLED: 'memory:recalled',
+  MEMORY_EXPIRED: 'memory:expired',
+  MEMORY_IMPORTANCE_UPDATED: 'memory:importance_updated',
+
+  // Budget
+  BUDGET_SPENT: 'budget:spent',
+  BUDGET_WARNING: 'budget:warning',
+  BUDGET_EXHAUSTED: 'budget:exhausted',
+  BUDGET_ALLOCATION_CHANGED: 'budget:allocation_changed',
+
+  // System
+  SYSTEM_STARTUP: 'system:startup',
+  SYSTEM_SHUTDOWN: 'system:shutdown',
+  SYSTEM_ERROR: 'system:error',
+  SYSTEM_WS_CONNECTED: 'system:ws_connected',
+  SYSTEM_WS_DISCONNECTED: 'system:ws_disconnected',
+
+  // Scheduler
+  SCHEDULER_TASK_SCHEDULED: 'scheduler:task_scheduled',
+  SCHEDULER_TASK_STARTED: 'scheduler:task_started',
+  SCHEDULER_TASK_COMPLETED: 'scheduler:task_completed',
+  SCHEDULER_TASK_FAILED: 'scheduler:task_failed',
+  SCHEDULER_TASK_CANCELLED: 'scheduler:task_cancelled',
+
+  // AI
+  AI_REQUEST_SENT: 'ai:request_sent',
+  AI_RESPONSE_RECEIVED: 'ai:response_received',
+  AI_ERROR: 'ai:error',
+  AI_VISION_PROXIED: 'ai:vision_proxied',
+  AI_IMAGE_GENERATED: 'ai:image_generated',
+
+  // Media
+  MEDIA_UPLOADED: 'media:uploaded',
+  MEDIA_GENERATED: 'media:generated',
+  MEDIA_DELETED: 'media:deleted',
+} as const;
+
+export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

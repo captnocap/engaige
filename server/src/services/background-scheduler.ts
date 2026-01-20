@@ -2,6 +2,7 @@
 
 import { getDB, generateId, now } from '../db/index.js';
 import { checkBudgetAllows, getBudgetStatus } from './budget.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 export type TaskType =
   | 'generate_memory'
@@ -77,6 +78,19 @@ export function scheduleTask(
     JSON.stringify({ ...task.metadata, budget_category: task.budget_category, priority: task.priority })
   );
 
+  // Emit task scheduled event
+  eventBus.fire(EventTypes.SCHEDULER_TASK_SCHEDULED, {
+    task_id: id,
+    task_type: taskType,
+    scheduled_for: scheduledFor,
+    priority: task.priority,
+    budget_category: task.budget_category,
+  }, {
+    source: 'scheduler',
+    npc_id: task.npc_id,
+    importance: 0.3,
+  });
+
   return task;
 }
 
@@ -134,16 +148,39 @@ export async function processTasks(maxTasks = 10): Promise<{
       db.prepare(`
         UPDATE npc_activities SET status = 'cancelled', metadata = ? WHERE id = ?
       `).run(JSON.stringify({ ...task.metadata, cancel_reason: budgetCheck.reason }), task.id);
+
+      // Emit task cancelled event
+      eventBus.fire(EventTypes.SCHEDULER_TASK_CANCELLED, {
+        task_id: task.id,
+        task_type: task.task_type,
+        error_message: budgetCheck.reason,
+      }, {
+        source: 'scheduler',
+        npc_id: task.npc_id,
+        importance: 0.5,
+      });
+
       skipped++;
       continue;
     }
 
     // Execute task
+    const taskStartTime = Date.now();
     try {
       // Mark as running
       db.prepare(`
         UPDATE npc_activities SET status = 'running' WHERE id = ?
       `).run(task.id);
+
+      // Emit task started event
+      eventBus.fire(EventTypes.SCHEDULER_TASK_STARTED, {
+        task_id: task.id,
+        task_type: task.task_type,
+      }, {
+        source: 'scheduler',
+        npc_id: task.npc_id,
+        importance: 0.3,
+      });
 
       await handler(task);
 
@@ -151,6 +188,17 @@ export async function processTasks(maxTasks = 10): Promise<{
       db.prepare(`
         UPDATE npc_activities SET status = 'completed', executed_at = ? WHERE id = ?
       `).run(now(), task.id);
+
+      // Emit task completed event
+      eventBus.fire(EventTypes.SCHEDULER_TASK_COMPLETED, {
+        task_id: task.id,
+        task_type: task.task_type,
+        duration_ms: Date.now() - taskStartTime,
+      }, {
+        source: 'scheduler',
+        npc_id: task.npc_id,
+        importance: 0.4,
+      });
 
       processed++;
     } catch (error: any) {
@@ -163,6 +211,18 @@ export async function processTasks(maxTasks = 10): Promise<{
         JSON.stringify({ ...task.metadata, error: error.message }),
         task.id
       );
+
+      // Emit task failed event
+      eventBus.fire(EventTypes.SCHEDULER_TASK_FAILED, {
+        task_id: task.id,
+        task_type: task.task_type,
+        duration_ms: Date.now() - taskStartTime,
+        error_message: error.message,
+      }, {
+        source: 'scheduler',
+        npc_id: task.npc_id,
+        importance: 0.7,
+      });
 
       failed++;
     }
