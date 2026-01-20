@@ -8,6 +8,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { MessageData, MessageAuthor } from '../components/ui/Message/types.js'
+import { useWSStore } from './wsStore.js'
 
 // ============================================================================
 // Types
@@ -41,6 +42,24 @@ export interface MessagePreview {
   senderId: string
 }
 
+// WebSocket message types
+interface WSNewMessage {
+  conversationId: string
+  message: MessageData
+}
+
+interface WSTypingIndicator {
+  conversationId: string
+  npcId: string
+  isTyping: boolean
+}
+
+interface WSMessageStatusUpdate {
+  conversationId: string
+  messageId: string
+  status: 'sent' | 'delivered' | 'read'
+}
+
 // ============================================================================
 // Mock Data
 // ============================================================================
@@ -52,11 +71,11 @@ const MOCK_PLAYER: MessageAuthor = {
 }
 
 const MOCK_NPCS: ConversationParticipant[] = [
-  { id: 'npc_sarah', name: 'Sarah', avatar: undefined, isOnline: true },
-  { id: 'npc_jake', name: 'Jake', avatar: undefined, isOnline: false },
-  { id: 'npc_emily', name: 'Emily', avatar: undefined, isOnline: true },
-  { id: 'npc_marcus', name: 'Marcus', avatar: undefined, isOnline: false },
-  { id: 'npc_luna', name: 'Luna', avatar: undefined, isOnline: true },
+  { id: 'npc_sarah', name: 'Sarah', avatar: '👧', isOnline: true },
+  { id: 'npc_jake', name: 'Jake', avatar: '🧑', isOnline: false },
+  { id: 'npc_emily', name: 'Emily', avatar: '👩', isOnline: true },
+  { id: 'npc_marcus', name: 'Marcus', avatar: '👨', isOnline: false },
+  { id: 'npc_luna', name: 'Luna', avatar: '👩‍🎤', isOnline: true },
 ]
 
 function createMockConversations(): Conversation[] {
@@ -142,6 +161,9 @@ interface ConversationState {
   isSending: boolean
   typingNpcs: Record<string, boolean> // npcId -> isTyping
 
+  // WebSocket state
+  wsSubscribed: boolean
+
   // Actions
   setActiveConversation: (id: string | null) => void
   getConversation: (id: string) => Conversation | undefined
@@ -160,9 +182,11 @@ interface ConversationState {
   // Real-time updates
   handleIncomingMessage: (conversationId: string, message: MessageData) => void
   handleTypingIndicator: (conversationId: string, npcId: string, isTyping: boolean) => void
+  handleMessageStatusUpdate: (conversationId: string, messageId: string, status: 'sent' | 'delivered' | 'read') => void
 
   // Initialization
   initialize: () => Promise<void>
+  setupWSSubscriptions: () => () => void
 }
 
 // ============================================================================
@@ -178,11 +202,18 @@ export const useConversationStore = create<ConversationState>()(
       isLoading: false,
       isSending: false,
       typingNpcs: {},
+      wsSubscribed: false,
 
       setActiveConversation: (id) => {
         set({ activeConversationId: id })
         if (id) {
           get().markAsRead(id)
+
+          // Notify server of active conversation (for read receipts)
+          const ws = useWSStore.getState()
+          if (ws.connected) {
+            ws.send('conversation:active', { conversationId: id })
+          }
         }
       },
 
@@ -244,83 +275,27 @@ export const useConversationStore = create<ConversationState>()(
           )
         }))
 
-        // Simulate send delay and mark as sent
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        set(state => ({
-          isSending: false,
-          messages: {
-            ...state.messages,
-            [conversationId]: state.messages[conversationId]?.map(m =>
-              m.id === newMessage.id ? { ...m, status: 'sent' } : m
-            ) || []
+        // Try to send via WebSocket
+        const ws = useWSStore.getState()
+        if (ws.connected) {
+          try {
+            await ws.request('message:send', {
+              conversationId,
+              content: content.trim(),
+              clientMessageId: newMessage.id,
+            })
+            // Server will send back status updates via WS
+          } catch {
+            // If WS fails, fall back to local simulation
+            console.warn('[Conversation] WS send failed, using local simulation')
+            await simulateMessageSend(conversationId, newMessage.id, get, set)
           }
-        }))
-
-        // Simulate delivery
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        set(state => ({
-          messages: {
-            ...state.messages,
-            [conversationId]: state.messages[conversationId]?.map(m =>
-              m.id === newMessage.id ? { ...m, status: 'delivered' } : m
-            ) || []
-          }
-        }))
-
-        // Simulate NPC reading
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        set(state => ({
-          messages: {
-            ...state.messages,
-            [conversationId]: state.messages[conversationId]?.map(m =>
-              m.id === newMessage.id ? { ...m, status: 'read' } : m
-            ) || []
-          }
-        }))
-
-        // TODO: In real implementation, send via WebSocket
-        // const ws = useWSStore.getState()
-        // ws.send('message:send', { conversationId, content })
-
-        // Simulate NPC response after a delay
-        const conversation = get().conversations.find(c => c.id === conversationId)
-        if (conversation) {
-          // Show typing indicator
-          const npc = conversation.participants[0]
-          set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: true } }))
-
-          // Simulate typing delay (1-3 seconds)
-          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
-
-          // Hide typing indicator
-          set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: false } }))
-
-          // Add NPC response
-          const responses = [
-            'That\'s interesting!',
-            'I see what you mean.',
-            'Haha, right?',
-            'Sounds good to me!',
-            'Let me think about that...',
-          ]
-
-          const npcResponse: MessageData = {
-            id: `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-            author: {
-              id: npc.id,
-              name: npc.name,
-              avatar: npc.avatar,
-              isOnline: npc.isOnline,
-            },
-            content: responses[Math.floor(Math.random() * responses.length)],
-            timestamp: new Date().toISOString(),
-          }
-
-          get().handleIncomingMessage(conversationId, npcResponse)
+        } else {
+          // No WS connection, use local simulation
+          await simulateMessageSend(conversationId, newMessage.id, get, set)
         }
+
+        set({ isSending: false })
       },
 
       markAsRead: (conversationId) => {
@@ -329,6 +304,12 @@ export const useConversationStore = create<ConversationState>()(
             c.id === conversationId ? { ...c, unreadCount: 0 } : c
           )
         }))
+
+        // Notify server
+        const ws = useWSStore.getState()
+        if (ws.connected) {
+          ws.send('conversation:markRead', { conversationId })
+        }
       },
 
       createConversation: async (platform, participantIds) => {
@@ -411,17 +392,88 @@ export const useConversationStore = create<ConversationState>()(
         }))
       },
 
+      handleMessageStatusUpdate: (conversationId, messageId, status) => {
+        set(state => ({
+          messages: {
+            ...state.messages,
+            [conversationId]: state.messages[conversationId]?.map(m =>
+              m.id === messageId ? { ...m, status } : m
+            ) || []
+          }
+        }))
+      },
+
       initialize: async () => {
+        const { wsSubscribed } = get()
+
+        // Set up WebSocket subscriptions if not already done
+        if (!wsSubscribed) {
+          get().setupWSSubscriptions()
+        }
+
         set({ isLoading: true })
 
-        // Load mock data for now
-        // In real implementation, fetch from server via WebSocket
-        const mockConversations = createMockConversations()
+        // Try to fetch from server via WebSocket
+        const ws = useWSStore.getState()
+        if (ws.connected) {
+          try {
+            const conversations = await ws.request<void, Conversation[]>('conversations:list')
+            set({ conversations, isLoading: false })
+            return
+          } catch {
+            console.warn('[Conversation] Failed to fetch from server, using mock data')
+          }
+        }
 
+        // Fall back to mock data
+        const mockConversations = createMockConversations()
         set({
           conversations: mockConversations,
           isLoading: false,
         })
+      },
+
+      setupWSSubscriptions: () => {
+        const ws = useWSStore.getState()
+
+        // Subscribe to new messages
+        const unsubMessage = ws.subscribe('message:new', (msg) => {
+          const payload = msg.payload as WSNewMessage
+          get().handleIncomingMessage(payload.conversationId, payload.message)
+        })
+
+        // Subscribe to typing indicators
+        const unsubTyping = ws.subscribe('typing:update', (msg) => {
+          const payload = msg.payload as WSTypingIndicator
+          get().handleTypingIndicator(payload.conversationId, payload.npcId, payload.isTyping)
+        })
+
+        // Subscribe to message status updates
+        const unsubStatus = ws.subscribe('message:status', (msg) => {
+          const payload = msg.payload as WSMessageStatusUpdate
+          get().handleMessageStatusUpdate(payload.conversationId, payload.messageId, payload.status)
+        })
+
+        // Subscribe to conversation updates (new conversation, etc.)
+        const unsubConversation = ws.subscribe('conversation:update', (msg) => {
+          const conversation = msg.payload as Conversation
+          set(state => ({
+            conversations: state.conversations.map(c =>
+              c.id === conversation.id ? conversation : c
+            )
+          }))
+        })
+
+        set({ wsSubscribed: true })
+
+        // Return cleanup function
+        return () => {
+          unsubMessage()
+          unsubTyping()
+          unsubStatus()
+          unsubConversation()
+          set({ wsSubscribed: false })
+        }
       },
     }),
     {
@@ -434,6 +486,90 @@ export const useConversationStore = create<ConversationState>()(
     }
   )
 )
+
+// ============================================================================
+// Helper: Simulate message send (used when WS is not available)
+// ============================================================================
+
+async function simulateMessageSend(
+  conversationId: string,
+  messageId: string,
+  get: () => ConversationState,
+  set: (partial: Partial<ConversationState> | ((state: ConversationState) => Partial<ConversationState>)) => void
+) {
+  // Simulate send delay and mark as sent
+  await new Promise(resolve => setTimeout(resolve, 300))
+
+  set(state => ({
+    messages: {
+      ...state.messages,
+      [conversationId]: state.messages[conversationId]?.map(m =>
+        m.id === messageId ? { ...m, status: 'sent' } : m
+      ) || []
+    }
+  }))
+
+  // Simulate delivery
+  await new Promise(resolve => setTimeout(resolve, 500))
+
+  set(state => ({
+    messages: {
+      ...state.messages,
+      [conversationId]: state.messages[conversationId]?.map(m =>
+        m.id === messageId ? { ...m, status: 'delivered' } : m
+      ) || []
+    }
+  }))
+
+  // Simulate NPC reading
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
+  set(state => ({
+    messages: {
+      ...state.messages,
+      [conversationId]: state.messages[conversationId]?.map(m =>
+        m.id === messageId ? { ...m, status: 'read' } : m
+      ) || []
+    }
+  }))
+
+  // Simulate NPC response after a delay
+  const conversation = get().conversations.find(c => c.id === conversationId)
+  if (conversation) {
+    // Show typing indicator
+    const npc = conversation.participants[0]
+    set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: true } }))
+
+    // Simulate typing delay (1-3 seconds)
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
+
+    // Hide typing indicator
+    set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: false } }))
+
+    // Add NPC response
+    const responses = [
+      'That\'s interesting!',
+      'I see what you mean.',
+      'Haha, right?',
+      'Sounds good to me!',
+      'Let me think about that...',
+    ]
+
+    const npcResponse: MessageData = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      author: {
+        id: npc.id,
+        name: npc.name,
+        avatar: npc.avatar,
+        isOnline: npc.isOnline,
+      },
+      content: responses[Math.floor(Math.random() * responses.length)],
+      timestamp: new Date().toISOString(),
+    }
+
+    get().handleIncomingMessage(conversationId, npcResponse)
+  }
+}
 
 // ============================================================================
 // Selectors
