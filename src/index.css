@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+/* Base layer for resets - allows Tailwind utilities to override */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
 :root {
   --bg-primary: #0f0f0f;
   --bg-secondary: #1a1a1a;
@@ -19,12 +28,6 @@
 
   /* Graphics filter variables */
   --graphics-filter: none;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 html, body {
