@@ -25,6 +25,7 @@ import { MillionPixelsSite } from './sites/MillionPixelsSite.js'
 import { QuantumBrewBlogSite } from './sites/QuantumBrewBlogSite.js'
 import { HartwellFilesSite } from './sites/HartwellFilesSite.js'
 import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
+import { OnlyFansSite } from './sites/OnlyFansSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -59,6 +60,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'quantumbrewblog': QuantumBrewBlogSite,
   'hartwellfiles': HartwellFilesSite,
   'trustfalltim': TrustFallTimSite,
+  'onlyfans': OnlyFansSite,
   // All other sites use PlaceholderSite until implemented
 }
 

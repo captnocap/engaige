@@ -324,6 +324,24 @@ export const FILLER_SITES = {
       border: '#FDBA74',
     },
   },
+
+  onlyfans: {
+    id: 'onlyfans',
+    name: 'OnlyFans',
+    tagline: 'The #1 Destination for Fan Enthusiasts',
+    url: 'www.onlyfans.fake',
+    icon: '🌀',
+    description: 'Premium ceiling fans, desk fans, and more. What did you think it was?',
+    theme: {
+      primary: '#EC4899',      // Pink
+      secondary: '#FDF2F8',    // Light pink
+      background: '#FFF5F7',
+      surface: '#ffffff',
+      text: '#831843',
+      textMuted: '#9D174D',
+      border: '#FBCFE8',
+    },
+  },
 } as const;
 
 // ============================================================================

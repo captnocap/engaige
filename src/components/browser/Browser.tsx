@@ -35,6 +35,7 @@ const SITE_URLS: Record<string, string> = {
   'quantumbrewblog': 'www.quantumbrewblog.fake',
   'hartwellfiles': 'www.hartwellfiles.fake',
   'trustfalltim': 'www.trustfalltim.fan',
+  'onlyfans': 'www.onlyfans.fake',
 }
 
 // Reverse lookup - URL to app ID

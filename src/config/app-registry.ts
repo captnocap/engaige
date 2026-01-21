@@ -536,6 +536,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'onlyfans': {
+    id: 'onlyfans',
+    name: 'OnlyFans',
+    icon: '🌀',
+    description: 'Premium fans for enthusiasts. Ceiling fans. Desk fans. What else?',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
