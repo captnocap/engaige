@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.wiki
 
@@ -278,7 +279,7 @@ A small section of one wall is reserved for artists to leave handwritten notes. 
 // Components
 // ============================================================================
 
-export function WikiKnowSite({ siteId }: SiteProps) {
+export function WikiKnowSite({ siteId, onNavigate }: SiteProps) {
   const [selectedArticle, setSelectedArticle] = useState<WikiArticle>(SAMPLE_ARTICLES[0])
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -627,6 +628,16 @@ export function WikiKnowSite({ siteId }: SiteProps) {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Sponsored Links */}
+            <div className="mt-6">
+              <SidebarAdWidget
+                siteId="wikiknow"
+                onNavigate={onNavigate}
+                title="Sponsored Links"
+                count={2}
+              />
             </div>
           </aside>
         </div>

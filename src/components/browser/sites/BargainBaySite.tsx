@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.marketplace
 
@@ -408,7 +409,7 @@ If this wasn't you but you also appreciate quantum coffee and existential dread,
 // Components
 // ============================================================================
 
-export function BargainBaySite({ siteId }: SiteProps) {
+export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
   const [searchQuery, setSearchQuery] = useState('')
@@ -499,6 +500,16 @@ export function BargainBaySite({ siteId }: SiteProps) {
                     {cat}
                   </button>
                 ))}
+              </div>
+
+              {/* Sponsored */}
+              <div className="mt-6">
+                <SidebarAdWidget
+                  siteId="bargainbay"
+                  onNavigate={onNavigate}
+                  title="Sponsored"
+                  count={2}
+                />
               </div>
             </aside>
 

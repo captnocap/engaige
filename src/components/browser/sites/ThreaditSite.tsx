@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.reddit
 
@@ -319,7 +320,7 @@ I drove 3 hours for this show. Anyone else stranded downtown?`,
 // Components
 // ============================================================================
 
-export function ThreaditSite({ siteId }: SiteProps) {
+export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   const [selectedSubreddit, setSelectedSubreddit] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'top'>('hot')
@@ -540,6 +541,14 @@ export function ThreaditSite({ siteId }: SiteProps) {
                 <li>Read the community rules</li>
               </ol>
             </div>
+
+            {/* Promoted */}
+            <SidebarAdWidget
+              siteId="threadit"
+              onNavigate={onNavigate}
+              title="Promoted"
+              count={2}
+            />
           </aside>
         </div>
       </div>

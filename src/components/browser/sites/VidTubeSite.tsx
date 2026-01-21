@@ -11,6 +11,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 import {
   VIDTUBE_VIDEOS,
   VIDTUBE_CHANNELS,
@@ -28,7 +29,7 @@ const site = FILLER_SITES.video
 // Components
 // ============================================================================
 
-export function VidTubeSite({ siteId }: SiteProps) {
+export function VidTubeSite({ siteId, onNavigate }: SiteProps) {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [isLiked, setIsLiked] = useState(false)
@@ -117,6 +118,7 @@ export function VidTubeSite({ siteId }: SiteProps) {
           isSubscribed={isSubscribed}
           setIsSubscribed={setIsSubscribed}
           channels={VIDTUBE_CHANNELS}
+          onNavigate={onNavigate}
         />
       ) : (
         <>
@@ -263,6 +265,7 @@ interface VideoPlayerProps {
   isSubscribed: boolean
   setIsSubscribed: (v: boolean) => void
   channels: Record<string, Channel>
+  onNavigate: (siteId: string) => void
 }
 
 function VideoPlayer({
@@ -277,6 +280,7 @@ function VideoPlayer({
   isSubscribed,
   setIsSubscribed,
   channels,
+  onNavigate,
 }: VideoPlayerProps) {
   const [commentSort, setCommentSort] = useState<'top' | 'newest'>('top')
   const channel = channels[video.channel]
@@ -558,6 +562,16 @@ function VideoPlayer({
               </button>
             )
           })}
+        </div>
+
+        {/* Sponsored */}
+        <div className="mt-6">
+          <SidebarAdWidget
+            siteId="vidtube"
+            onNavigate={onNavigate}
+            title="Sponsored"
+            count={2}
+          />
         </div>
       </aside>
     </div>

@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.imageboard
 
@@ -498,7 +499,7 @@ peak /b/ moment`,
 // Components
 // ============================================================================
 
-export function ForChanSite({ siteId }: SiteProps) {
+export function ForChanSite({ siteId, onNavigate }: SiteProps) {
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
 
@@ -646,6 +647,16 @@ export function ForChanSite({ siteId }: SiteProps) {
           </div>
         )}
       </main>
+
+      {/* Sketchy Ads */}
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <SidebarAdWidget
+          siteId="forchan"
+          onNavigate={onNavigate}
+          title="Ads"
+          count={2}
+        />
+      </div>
 
       {/* Footer */}
       <footer

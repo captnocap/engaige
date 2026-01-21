@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.realestate
 
@@ -376,7 +377,7 @@ const NEIGHBORHOODS = [
 // Components
 // ============================================================================
 
-export function NestFinderSite({ siteId }: SiteProps) {
+export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
   const [filters, setFilters] = useState({
     neighborhood: 'All Neighborhoods',
@@ -1038,6 +1039,16 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                   </p>
                 </div>
               )}
+
+              {/* Sponsored */}
+              <div className="mt-6">
+                <SidebarAdWidget
+                  siteId="nestfinder"
+                  onNavigate={onNavigate}
+                  title="Sponsored"
+                  count={2}
+                />
+              </div>
             </div>
           </aside>
         </div>

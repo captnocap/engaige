@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget, InlineAd } from '../ads/index.js'
 
 const site = FILLER_SITES.news
 
@@ -278,7 +279,7 @@ const BREAKING_NEWS = [
 // Components
 // ============================================================================
 
-export function DailyBuzzSite({ siteId }: SiteProps) {
+export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [breakingIndex, setBreakingIndex] = useState(0)
@@ -501,6 +502,14 @@ export function DailyBuzzSite({ siteId }: SiteProps) {
                   High: 78° • Low: 65°
                 </p>
               </div>
+
+              {/* Sponsored Ads */}
+              <SidebarAdWidget
+                siteId="dailybuzz"
+                onNavigate={onNavigate}
+                title="Sponsored"
+                count={3}
+              />
             </aside>
           </div>
         )}

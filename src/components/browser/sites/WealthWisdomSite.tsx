@@ -13,6 +13,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 // Site config
 const SITE = FILLER_SITES.wealthwisdom
@@ -1028,6 +1029,16 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
           </div>
         </div>
       )}
+
+      {/* Sponsored Ads */}
+      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px 16px' }}>
+        <SidebarAdWidget
+          siteId="wealthwisdom"
+          onNavigate={onNavigate}
+          title="More Ways to Get Rich"
+          count={2}
+        />
+      </div>
 
       {/* Footer */}
       <div style={{

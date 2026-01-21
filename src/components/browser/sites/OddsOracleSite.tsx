@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { SidebarAdWidget } from '../ads/index.js'
 
 const site = FILLER_SITES.betting
 
@@ -407,7 +408,7 @@ This would legitimize quantum coffee as a recognized phenomenon rather than just
 // Components
 // ============================================================================
 
-export function OddsOracleSite({ siteId }: SiteProps) {
+export function OddsOracleSite({ siteId, onNavigate }: SiteProps) {
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [balance] = useState(1000) // Fake balance
@@ -942,6 +943,16 @@ function MarketDetail({ market, onBack }: MarketDetailProps) {
                 </p>
               </>
             )}
+          </div>
+
+          {/* Sponsored */}
+          <div className="mt-6">
+            <SidebarAdWidget
+              siteId="oddsoracle"
+              onNavigate={onNavigate}
+              title="Sponsored"
+              count={2}
+            />
           </div>
         </aside>
       </div>
