@@ -1,7 +1,17 @@
+/**
+ * Wallet Window
+ *
+ * Budget tracking and API cost management interface.
+ * Uses WebSocket for all server communication.
+ */
+
 import { useState, useEffect, useCallback } from 'react'
 import { Select } from '../ui/Select.js'
+import { useWSStore, useWSRequest, useWSConnection } from '../../stores/wsStore.js'
 
-const API_BASE = 'http://localhost:4269'
+// ============================================================================
+// Types
+// ============================================================================
 
 interface CategoryStatus {
   name: string
@@ -39,7 +49,7 @@ interface ApiCostLog {
   output_tokens?: number
   total_tokens?: number
   cost_cents: number
-  request_metadata?: Record<string, any>
+  request_metadata?: Record<string, unknown>
 }
 
 interface CategoryInfo {
@@ -48,7 +58,14 @@ interface CategoryInfo {
   description: string
 }
 
+// ============================================================================
+// Component
+// ============================================================================
+
 export function WalletWindow() {
+  const { request, connected } = useWSRequest()
+  const { connect } = useWSConnection()
+
   const [status, setStatus] = useState<BudgetStatus | null>(null)
   const [config, setConfig] = useState<BudgetConfig | null>(null)
   const [logs, setLogs] = useState<ApiCostLog[]>([])
@@ -63,61 +80,81 @@ export function WalletWindow() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Fetch budget data via WebSocket
   const fetchData = useCallback(async () => {
+    if (!connected) {
+      setError('Not connected to server')
+      setLoading(false)
+      return
+    }
+
     try {
       setError(null)
-      const [statusRes, configRes, categoriesRes] = await Promise.all([
-        fetch(`${API_BASE}/api/budget/status`),
-        fetch(`${API_BASE}/api/budget/config`),
-        fetch(`${API_BASE}/api/budget/logs/categories`),
-      ])
 
-      if (!statusRes.ok || !configRes.ok || !categoriesRes.ok) {
-        throw new Error('Failed to fetch budget data')
-      }
-
-      const [statusData, configData, categoriesData] = await Promise.all([
-        statusRes.json(),
-        configRes.json(),
-        categoriesRes.json(),
+      // Make parallel requests via WebSocket
+      const [statusData, configData] = await Promise.all([
+        request<void, BudgetStatus>('budget:getStatus'),
+        request<void, BudgetConfig>('budget:getConfig'),
       ])
 
       setStatus(statusData)
       setConfig(configData)
-      setCategories(categoriesData)
+
+      // Extract categories from status if available
+      if (statusData?.categories) {
+        setCategories(statusData.categories.map(cat => ({
+          name: cat.name,
+          display_name: cat.display_name,
+          description: '',
+        })))
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect to server')
+      setError(err instanceof Error ? err.message : 'Failed to fetch budget data')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [connected, request])
 
+  // Fetch logs via WebSocket
   const fetchLogs = useCallback(async (offset = 0, category = categoryFilter) => {
+    if (!connected) return
+
     try {
-      const params = new URLSearchParams({
-        limit: '50',
-        offset: offset.toString(),
-      })
+      const payload: { limit: number; offset: number; category?: string } = {
+        limit: 50,
+        offset,
+      }
       if (category !== 'all') {
-        params.set('category', category)
+        payload.category = category
       }
 
-      const res = await fetch(`${API_BASE}/api/budget/logs?${params}`)
-      if (!res.ok) throw new Error('Failed to fetch logs')
+      const data = await request<typeof payload, { logs: ApiCostLog[]; total: number; offset: number }>(
+        'budget:getLogs',
+        payload
+      )
 
-      const data = await res.json()
-      setLogs(data.logs)
-      setLogsTotal(data.total)
-      setLogsOffset(data.offset)
+      setLogs(data.logs || [])
+      setLogsTotal(data.total || 0)
+      setLogsOffset(data.offset || 0)
     } catch (err) {
-      console.error('Failed to fetch logs:', err)
+      console.error('[Wallet] Failed to fetch logs:', err)
     }
-  }, [categoryFilter])
+  }, [connected, request, categoryFilter])
 
+  // Auto-connect and fetch on mount
   useEffect(() => {
-    fetchData()
-    fetchLogs()
-  }, [fetchData, fetchLogs])
+    if (!connected) {
+      connect()
+    }
+  }, [connect, connected])
+
+  // Fetch data when connected
+  useEffect(() => {
+    if (connected) {
+      fetchData()
+      fetchLogs()
+    }
+  }, [connected, fetchData, fetchLogs])
 
   const handleCategoryFilterChange = (value: string) => {
     setCategoryFilter(value)
@@ -144,7 +181,7 @@ export function WalletWindow() {
   }
 
   const handleSaveAllocation = async () => {
-    if (!config || !editingCategory) return
+    if (!config || !editingCategory || !connected) return
 
     const newAllocations = { ...config.allocations }
     if (editType === 'fixed') {
@@ -158,18 +195,11 @@ export function WalletWindow() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/budget/config`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ allocations: newAllocations }),
-      })
-
-      if (!res.ok) throw new Error('Failed to update allocation')
-
+      await request('budget:updateConfig', { allocations: newAllocations })
       setEditingCategory(null)
       fetchData()
     } catch (err) {
-      console.error('Failed to save allocation:', err)
+      console.error('[Wallet] Failed to save allocation:', err)
     }
   }
 
@@ -180,33 +210,42 @@ export function WalletWindow() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000)
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
-  }
-
   const getCategoryDisplayName = (name: string) => {
     const cat = categories.find(c => c.name === name)
     return cat?.display_name || name
   }
 
+  // ============================================================================
+  // Loading State
+  // ============================================================================
+
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
-        <div style={{ color: 'var(--color-textMuted)' }}>Loading...</div>
+        <div style={{ color: 'var(--color-textMuted)' }}>
+          {connected ? 'Loading...' : 'Connecting...'}
+        </div>
       </div>
     )
   }
 
-  if (error) {
+  // ============================================================================
+  // Error State
+  // ============================================================================
+
+  if (error || !connected) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-3 p-6" style={{ background: 'var(--color-bg)' }}>
-        <div style={{ color: 'var(--color-error)' }}>{error}</div>
+        <div style={{ color: 'var(--color-error)' }}>{error || 'Not connected to server'}</div>
         <div className="text-xs text-center" style={{ color: 'var(--color-textMuted)' }}>
           Run: <code className="px-1.5 py-0.5 rounded" style={{ background: 'var(--color-bgSecondary)' }}>cd server && bun run src/index.ts</code>
         </div>
         <button
-          onClick={() => { setLoading(true); fetchData(); fetchLogs() }}
+          onClick={() => {
+            setLoading(true)
+            setError(null)
+            connect()
+          }}
           className="px-3 py-1.5 rounded text-sm"
           style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
         >
@@ -215,6 +254,10 @@ export function WalletWindow() {
       </div>
     )
   }
+
+  // ============================================================================
+  // Main Render
+  // ============================================================================
 
   const spentPercentage = status ? (status.total_spent_cents / status.overall_limit_cents) * 100 : 0
   const periodLabel = config?.period_type === 'daily' ? 'today' : config?.period_type === 'weekly' ? 'this week' : 'this month'

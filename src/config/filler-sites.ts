@@ -342,6 +342,24 @@ export const FILLER_SITES = {
       border: '#FBCFE8',
     },
   },
+
+  bandsnotintown: {
+    id: 'bandsnotintown',
+    name: 'BandsNotInTown',
+    tagline: 'Never See Your Favorite Artists Live™',
+    url: 'www.bandsnotintown.corn',
+    icon: '🎫',
+    description: 'Track every concert you can\'t attend',
+    theme: {
+      primary: '#DC2626',      // Red
+      secondary: '#FEE2E2',    // Light red
+      background: '#F3F4F6',
+      surface: '#ffffff',
+      text: '#1F2937',
+      textMuted: '#6B7280',
+      border: '#E5E7EB',
+    },
+  },
 } as const;
 
 // ============================================================================

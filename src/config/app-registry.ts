@@ -546,6 +546,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'bandsnotintown': {
+    id: 'bandsnotintown',
+    name: 'BandsNotInTown',
+    icon: '🎫',
+    description: 'Never see your favorite artists live',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
