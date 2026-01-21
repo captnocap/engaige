@@ -14,6 +14,7 @@ import { WalletWindow } from './WalletWindow'
 import { LogsWindow } from './LogsWindow'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
+import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 interface WindowConfig {
   id: string
@@ -74,11 +75,14 @@ export function Desktop() {
     }
   }, [onboardingCompleted])
 
+  const CornCobIcon = <img src={cornCobIcon} alt="" className="w-5 h-5" />
+  const CornCobIconLarge = <img src={cornCobIcon} alt="" className="w-12 h-12" />
+
   const windows: WindowConfig[] = [
     {
       id: 'browser',
-      title: 'Browser',
-      icon: '🌐',
+      title: 'The Corn Cob',
+      icon: CornCobIcon,
       component: <Browser />,
       defaultState: { x: 50, y: 30, width: 1000, height: 650 },
     },
@@ -113,7 +117,7 @@ export function Desktop() {
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
-    { id: 'browser', icon: '🌐', label: 'Browser', opensWindow: 'browser', allowMultiple: true },
+    { id: 'browser', icon: CornCobIconLarge, label: 'The Corn Cob', opensWindow: 'browser', allowMultiple: true },
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
