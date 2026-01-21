@@ -415,10 +415,67 @@ export function OnlyFansSite({ siteId }: SiteProps) {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedFan, setSelectedFan] = useState<Fan | null>(null)
   const [showFAQ, setShowFAQ] = useState(false)
+  const [ageVerified, setAgeVerified] = useState(false)
 
   const filteredFans = selectedCategory === 'all'
     ? FANS
     : FANS.filter(f => f.type === selectedCategory)
+
+  // Age verification modal
+  if (!ageVerified) {
+    return (
+      <div className="min-h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
+        <div className="max-w-md w-full mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+          {/* Warning header */}
+          <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-center">
+            <span className="text-6xl block mb-3">⚠️</span>
+            <h1 className="text-2xl font-bold text-white">Age Verification Required</h1>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 text-center">
+            <p className="text-gray-700 mb-4 text-lg font-medium">
+              This website contains content intended for adults only.
+            </p>
+
+            <div className="bg-pink-50 rounded-lg p-4 mb-6 text-left">
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>⚡ WARNING:</strong> You must be <strong>18 years or older</strong> to enter this site.
+              </p>
+              <p className="text-sm text-gray-600 mb-2">
+                By clicking "I Accept" below, you confirm that:
+              </p>
+              <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                <li>You are at least 18 years of age</li>
+                <li>You are legally permitted to purchase <strong>high-powered cooling equipment</strong> in your jurisdiction</li>
+                <li>You understand that industrial fans over 3000 CFM may require proper ventilation</li>
+                <li>You accept responsibility for any ceiling fan installation decisions</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => setAgeVerified(true)}
+                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-3 rounded-full font-bold text-lg hover:from-pink-600 hover:to-pink-700 transition-all"
+              >
+                🌀 I Accept - Let Me See The Fans
+              </button>
+              <button
+                onClick={() => window.history.back()}
+                className="w-full bg-gray-200 text-gray-600 py-3 rounded-full font-medium hover:bg-gray-300 transition-all"
+              >
+                I'm Under 18 / Not Interested in Fans
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-4">
+              OnlyFans™ - Premium Cooling Solutions Since 2024
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-full" style={{ background: '#FFF5F7' }}>

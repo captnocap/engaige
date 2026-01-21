@@ -67,6 +67,23 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
     large: { padding: '16px 20px', fontSize: '16px' },
   }
 
+  // Render icon - either image or emoji
+  const renderIcon = (sizeClass: string = 'text-2xl', imgSize: string = 'w-8 h-8') => {
+    if (ad.imageUrl) {
+      return (
+        <img
+          src={ad.imageUrl}
+          alt=""
+          className={`${imgSize} object-contain shrink-0`}
+        />
+      )
+    }
+    if (ad.icon) {
+      return <span className={`${sizeClass} shrink-0`}>{ad.icon}</span>
+    }
+    return null
+  }
+
   // Banner style - full width horizontal
   if (ad.style === 'banner') {
     return (
@@ -84,7 +101,7 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
         }}
       >
         <div className="flex items-center gap-3">
-          {ad.icon && <span className="text-2xl shrink-0">{ad.icon}</span>}
+          {renderIcon('text-2xl', 'w-8 h-8')}
           <div className="flex-1 min-w-0">
             <p className="font-bold truncate">{ad.headline}</p>
             {ad.subtext && (
@@ -124,8 +141,10 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
         }}
       >
         <div className="p-4">
-          {ad.icon && (
-            <div className="text-4xl mb-3 text-center">{ad.icon}</div>
+          {(ad.imageUrl || ad.icon) && (
+            <div className="text-4xl mb-3 text-center flex justify-center">
+              {renderIcon('text-4xl', 'w-12 h-12')}
+            </div>
           )}
           <p className="font-bold text-center mb-2">{ad.headline}</p>
           {ad.subtext && (
@@ -166,7 +185,7 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
         }}
       >
         <div className="flex items-start gap-3">
-          {ad.icon && <span className="text-xl shrink-0">{ad.icon}</span>}
+          {renderIcon('text-xl', 'w-6 h-6')}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs opacity-60">Sponsored</span>
@@ -207,7 +226,11 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
         }}
       >
         <div className="text-center">
-          {ad.icon && <span className="text-3xl block mb-2">{ad.icon}</span>}
+          {(ad.imageUrl || ad.icon) && (
+            <div className="text-3xl mb-2 flex justify-center">
+              {renderIcon('text-3xl', 'w-10 h-10')}
+            </div>
+          )}
           <p className="font-bold" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
             {ad.headline}
           </p>
@@ -244,7 +267,11 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
         }}
       >
         <div className="p-6 text-center">
-          {ad.icon && <span className="text-5xl block mb-3">{ad.icon}</span>}
+          {(ad.imageUrl || ad.icon) && (
+            <div className="text-5xl mb-3 flex justify-center">
+              {renderIcon('text-5xl', 'w-16 h-16')}
+            </div>
+          )}
           <p className="text-xl font-bold mb-2">{ad.headline}</p>
           {ad.subtext && (
             <p className="text-sm opacity-80 mb-4">{ad.subtext}</p>
@@ -278,7 +305,7 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
       }}
     >
       <div className="flex items-center gap-3">
-        {ad.icon && <span className="text-2xl">{ad.icon}</span>}
+        {renderIcon('text-2xl', 'w-8 h-8')}
         <div>
           <p className="font-bold">{ad.headline}</p>
           {ad.subtext && <p className="text-sm opacity-80">{ad.subtext}</p>}
