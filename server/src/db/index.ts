@@ -96,6 +96,7 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_api_costs_provider ON api_costs(provider, model);
 
       -- === IMAGE GENERATION PROVIDER CONFIGS ===
+      -- Flexible schema: user defines complete payload, we just inject prompt + reference images
       CREATE TABLE IF NOT EXISTS image_gen_providers (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL UNIQUE,
@@ -103,24 +104,32 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         base_url TEXT NOT NULL,
         api_key TEXT,
         is_active INTEGER DEFAULT 0,
-        supports_img2img INTEGER DEFAULT 0,
-        payload_template TEXT NOT NULL, -- JSON template for request body
-        response_path TEXT NOT NULL, -- JSON path to extract image URL (e.g. "data.0.url")
-        cost_config TEXT, -- JSON: {"default": 5, "1024x1024": 4, ...}
+
+        -- The complete default payload as JSON (all settings baked in)
+        default_payload TEXT NOT NULL,
+
+        -- Which keys to inject at runtime
+        prompt_key TEXT NOT NULL DEFAULT 'prompt',
+        reference_images_key TEXT, -- Optional, for img2img support (e.g., "imageDataUrls")
+
+        -- Where to find the image in response
+        response_path TEXT NOT NULL, -- JSON path like "data.0.url" or "artifacts.0.base64"
+
+        -- For budget tracking (flat rate per image in cents)
+        cost_per_image REAL DEFAULT 5,
+
         created_at INTEGER DEFAULT (unixepoch()),
         updated_at INTEGER DEFAULT (unixepoch())
       );
 
       -- Insert default provider configs (can be edited by user)
-      INSERT OR IGNORE INTO image_gen_providers (id, name, display_name, base_url, is_active, supports_img2img, payload_template, response_path, cost_config) VALUES
-        ('dalle3', 'dall-e-3', 'DALL-E 3', 'https://api.openai.com/v1/images/generations', 1, 0,
-          '{"model": "dall-e-3", "prompt": "{prompt}", "size": "{size}", "quality": "{quality}", "style": "{style}", "n": "{n}"}',
+      -- DALL-E 3 with sensible defaults
+      INSERT OR IGNORE INTO image_gen_providers (id, name, display_name, base_url, is_active, default_payload, prompt_key, response_path, cost_per_image) VALUES
+        ('dalle3', 'dall-e-3', 'DALL-E 3', 'https://api.openai.com/v1/images/generations', 1,
+          '{"model": "dall-e-3", "size": "1024x1024", "quality": "standard", "style": "vivid", "n": 1}',
+          'prompt',
           'data.0.url',
-          '{"1024x1024_standard": 4, "1024x1024_hd": 8, "1792x1024_standard": 8, "1792x1024_hd": 12}'),
-        ('sdxl', 'stable-diffusion-xl', 'Stable Diffusion XL', 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', 0, 1,
-          '{"text_prompts": [{"text": "{prompt}"}], "cfg_scale": {cfg_scale}, "height": {height}, "width": {width}, "samples": {n}, "steps": {steps}}',
-          'artifacts.0.base64',
-          '{"default": 3}');
+          4);
 
       -- === AI PROVIDER CONFIGS ===
       CREATE TABLE IF NOT EXISTS ai_providers (

@@ -28,19 +28,21 @@ export async function sendMessageToNPC(
 
   let finalMessage = message;
   let conversationContext = options?.conversationHistory || [];
+  let imageUrls: string[] | undefined;
 
   // Handle image if provided
   if (options?.imageUrl) {
     if (npcSupportsVision) {
-      // NPC's model can see images directly - pass the image URL to the model
-      // (Implementation would depend on the provider's vision API format)
+      // NPC's model can see images directly - pass the image URL
       console.log(`[NPC ${npc.display_name}] Using native vision support for image`);
+      imageUrls = [options.imageUrl];
 
-      // For OpenAI/Anthropic, we'd modify the message format to include the image
-      // This is a simplified example - actual implementation would vary by provider
-      finalMessage = `[User shared an image]\n${message}`;
-
-      // TODO: Modify generateNPCResponse to accept image URLs for vision models
+      // Prepend a note so the NPC knows an image was shared
+      if (message) {
+        finalMessage = `[User shared an image]\n${message}`;
+      } else {
+        finalMessage = '[User shared an image]';
+      }
     } else {
       // NPC's model can't see images - use vision proxy
       console.log(`[NPC ${npc.display_name}] Model doesn't support vision, using proxy`);
@@ -64,6 +66,7 @@ export async function sendMessageToNPC(
     {
       platform: options?.platform,
       feature_category: 'conversation',
+      imageUrls, // Pass images for vision-capable models
     }
   );
 

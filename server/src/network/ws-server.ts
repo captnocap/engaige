@@ -217,6 +217,44 @@ async function routeMessage(
       await handleAIProviderTest(ws, message);
       break;
 
+    // Image Generation Provider routes
+    case 'imageGenProvider:getAll':
+      await handleImageGenProviderGetAll(ws, message);
+      break;
+
+    case 'imageGenProvider:getActive':
+      await handleImageGenProviderGetActive(ws, message);
+      break;
+
+    case 'imageGenProvider:create':
+      await handleImageGenProviderCreate(ws, message);
+      break;
+
+    case 'imageGenProvider:update':
+      await handleImageGenProviderUpdate(ws, message);
+      break;
+
+    case 'imageGenProvider:delete':
+      await handleImageGenProviderDelete(ws, message);
+      break;
+
+    case 'imageGenProvider:setActive':
+      await handleImageGenProviderSetActive(ws, message);
+      break;
+
+    case 'imageGenProvider:test':
+      await handleImageGenProviderTest(ws, message);
+      break;
+
+    // Vision proxy routes
+    case 'visionProxy:getConfig':
+      await handleVisionProxyGetConfig(ws, message);
+      break;
+
+    case 'visionProxy:setConfig':
+      await handleVisionProxySetConfig(ws, message);
+      break;
+
     // Onboarding routes
     case 'onboarding:getStatus':
       await handleOnboardingGetStatus(ws, message);
@@ -480,6 +518,112 @@ async function handleAIProviderTest(ws: ServerWebSocket<ClientSession>, message:
 
   const result = await routes.test(message.payload as any);
   send(ws, createResponse(message.id, true, result));
+}
+
+// ============================================================================
+// Image Generation Provider Handlers
+// ============================================================================
+
+async function handleImageGenProviderGetAll(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+  const result = routes.getAll();
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderGetActive(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+  const result = routes.getActive();
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderCreate(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.create(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderUpdate(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.update(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderDelete(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.delete(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderSetActive(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.setActive(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleImageGenProviderTest(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createImageGenProviderRoutes } = await import('../routes/image-gen-providers.js');
+  const routes = createImageGenProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = await routes.test(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+// ============================================================================
+// Vision Proxy Handlers
+// ============================================================================
+
+async function handleVisionProxyGetConfig(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { getVisionProxyConfig } = await import('../services/vision-proxy.js');
+  const config = getVisionProxyConfig();
+  send(ws, createResponse(message.id, true, config));
+}
+
+async function handleVisionProxySetConfig(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { configureVisionProxy, getVisionProxyConfig } = await import('../services/vision-proxy.js');
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  configureVisionProxy(message.payload as any);
+  const updated = getVisionProxyConfig();
+  send(ws, createResponse(message.id, true, updated));
 }
 
 // ============================================================================

@@ -202,6 +202,9 @@ export function getNPCMemories(npcId: string, context: string, limit = 5): Array
   return stmt.all(npcId, ...searchTerms, now(), limit) as any;
 }
 
+// Message content type for vision support
+export type MessageContent = string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }>;
+
 // Generate AI response for an NPC using their configured model
 export async function generateNPCResponse(
   npcId: string,
@@ -216,6 +219,7 @@ export async function generateNPCResponse(
     feature_category?: string;
     enable_tools?: boolean; // Enable runtime tools (image generation, memory search, etc.)
     validation_options?: Partial<ValidationOptions>; // Output validation settings
+    imageUrls?: string[]; // Images to pass to vision-capable models
   }
 ): Promise<string> {
   const npcDb = getDB('npc');
@@ -253,10 +257,35 @@ export async function generateNPCResponse(
     systemPrompt += `\n\n${contextSection}`;
   }
 
+  // Build user message content - include images if provided and model supports vision
+  let userContent: MessageContent = message;
+  if (context?.imageUrls && context.imageUrls.length > 0) {
+    // Check if this NPC's model supports vision
+    const { supportsVision } = await import('./model-capabilities.js');
+    const modelSupportsVision = supportsVision(config.model);
+
+    if (modelSupportsVision) {
+      // Build multimodal content with images
+      const contentParts: Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = [
+        { type: 'text', text: message },
+      ];
+
+      for (const imageUrl of context.imageUrls) {
+        contentParts.push({
+          type: 'image_url',
+          image_url: { url: imageUrl },
+        });
+      }
+
+      userContent = contentParts;
+      console.log(`[AI] ${npc.display_name} using native vision for ${context.imageUrls.length} image(s)`);
+    }
+  }
+
   const messages = [
     { role: 'system' as const, content: systemPrompt },
     ...conversationHistory,
-    { role: 'user' as const, content: message },
+    { role: 'user' as const, content: userContent },
   ];
 
   const featureCategory = context?.feature_category || 'conversation';
@@ -317,7 +346,7 @@ export async function generateNPCResponse(
 
 // OpenAI or OpenAI-compatible API with budget tracking
 async function callOpenAICompatible(
-  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: MessageContent }>,
   config: AIConfig,
   featureCategory: string = 'other',
   enableTools: boolean = false,
@@ -326,8 +355,8 @@ async function callOpenAICompatible(
   const baseUrl = config.baseUrl || 'https://api.openai.com/v1';
   const endpoint = `${baseUrl}/chat/completions`;
 
-  // Estimate cost before making request
-  const promptText = messages.map(m => m.content).join(' ');
+  // Estimate cost before making request (use string representation)
+  const promptText = messages.map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content)).join(' ');
   const estimatedCostCents = estimateCost(promptText.length, 500, config.model);
 
   // Check budget
@@ -511,7 +540,7 @@ async function callOpenAICompatible(
 
 // Anthropic API with budget tracking
 async function callAnthropic(
-  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: MessageContent }>,
   config: AIConfig,
   featureCategory: string = 'other',
   enableTools: boolean = false,
@@ -519,11 +548,12 @@ async function callAnthropic(
 ): Promise<string> {
   if (!config.apiKey) throw new Error('Anthropic API key required');
 
-  const system = messages.find(m => m.role === 'system')?.content || '';
-  const对话 = messages.filter(m => m.role !== 'system');
+  const systemMsg = messages.find(m => m.role === 'system');
+  const system = typeof systemMsg?.content === 'string' ? systemMsg.content : '';
+  const conversationMsgs = messages.filter(m => m.role !== 'system');
 
-  // Estimate cost before making request
-  const promptText = messages.map(m => m.content).join(' ');
+  // Estimate cost before making request (use string representation)
+  const promptText = messages.map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content)).join(' ');
   const estimatedCostCents = estimateCost(promptText.length, 500, config.model);
 
   // Check budget
@@ -535,11 +565,57 @@ async function callAnthropic(
   // Add tools if enabled
   const tools = enableTools && toolContext ? getToolDefinitions('anthropic') : undefined;
 
+  // Convert messages to Anthropic format, handling images
+  const anthropicMessages = await Promise.all(conversationMsgs.map(async m => {
+    const role = m.role === 'assistant' ? 'assistant' : 'user';
+
+    // If content is a string, return as-is
+    if (typeof m.content === 'string') {
+      return { role, content: m.content };
+    }
+
+    // If content is multimodal (array), convert to Anthropic format
+    const anthropicContent: any[] = [];
+    for (const part of m.content) {
+      if (part.type === 'text') {
+        anthropicContent.push({ type: 'text', text: part.text });
+      } else if (part.type === 'image_url') {
+        // Fetch image and convert to base64 for Anthropic
+        try {
+          const imageResponse = await doorFetch(part.image_url.url);
+          const imageBuffer = await imageResponse.arrayBuffer();
+          const base64Image = Buffer.from(imageBuffer).toString('base64');
+
+          // Determine media type from URL
+          const url = part.image_url.url.toLowerCase();
+          const mediaType = url.includes('.png') ? 'image/png'
+            : url.includes('.webp') ? 'image/webp'
+            : url.includes('.gif') ? 'image/gif'
+            : 'image/jpeg';
+
+          anthropicContent.push({
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: mediaType,
+              data: base64Image,
+            },
+          });
+        } catch (err) {
+          console.error('[AI] Failed to fetch image for Anthropic:', err);
+          anthropicContent.push({ type: 'text', text: `[Image could not be loaded: ${part.image_url.url}]` });
+        }
+      }
+    }
+
+    return { role, content: anthropicContent };
+  }));
+
   const requestBody: any = {
     model: config.model,
     max_tokens: 500,
     system,
-    messages: 对话.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
+    messages: anthropicMessages,
   };
 
   if (tools && tools.length > 0) {
@@ -736,6 +812,7 @@ export async function queuedGenerateNPCResponse(
     feature_category?: string;
     enable_tools?: boolean;
     validation_options?: Partial<ValidationOptions>;
+    imageUrls?: string[]; // Images to pass to vision-capable models
     // Queue-specific options
     priority?: Priority;
     isUserInitiated?: boolean;

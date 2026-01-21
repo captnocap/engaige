@@ -4,28 +4,69 @@ import { parseOpenAIUsage, parseAnthropicUsage, calculateCost, estimateCost } fr
 import type { AIProvider } from './ai.js';
 import { doorFetch } from '../network/door.js';
 
-// Vision proxy configuration (global fallback vision model)
-let visionProxyConfig: {
+// Vision proxy configuration type
+export interface VisionProxyConfig {
   provider: AIProvider;
   model: string;
   apiKey?: string;
   baseUrl?: string;
-} = {
+}
+
+// In-memory cache of config (loaded from DB on first access)
+let visionProxyConfig: VisionProxyConfig | null = null;
+
+// Default config if nothing is set
+const DEFAULT_CONFIG: VisionProxyConfig = {
   provider: 'openai',
-  model: 'gpt-4o-mini', // Default vision model
+  model: 'gpt-4o-mini',
   apiKey: undefined,
   baseUrl: undefined,
 };
 
-// Configure the vision proxy (called during onboarding or settings)
-export function configureVisionProxy(config: Partial<typeof visionProxyConfig>): void {
-  visionProxyConfig = { ...visionProxyConfig, ...config };
+// Load config from database
+function loadConfigFromDB(): VisionProxyConfig {
+  const db = getDB('user');
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('vision_proxy_config') as { value: string } | undefined;
+
+  if (row) {
+    try {
+      return JSON.parse(row.value);
+    } catch {
+      console.warn('[Vision Proxy] Failed to parse stored config, using defaults');
+    }
+  }
+
+  return { ...DEFAULT_CONFIG };
+}
+
+// Save config to database
+function saveConfigToDB(config: VisionProxyConfig): void {
+  const db = getDB('user');
+  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(
+    'vision_proxy_config',
+    JSON.stringify(config)
+  );
+}
+
+// Get or load config
+function getConfig(): VisionProxyConfig {
+  if (!visionProxyConfig) {
+    visionProxyConfig = loadConfigFromDB();
+  }
+  return visionProxyConfig;
+}
+
+// Configure the vision proxy (persists to database)
+export function configureVisionProxy(config: Partial<VisionProxyConfig>): void {
+  const currentConfig = getConfig();
+  visionProxyConfig = { ...currentConfig, ...config };
+  saveConfigToDB(visionProxyConfig);
   console.log(`[Vision Proxy] Configured: ${visionProxyConfig.provider}/${visionProxyConfig.model}`);
 }
 
 // Get current vision proxy config
-export function getVisionProxyConfig(): typeof visionProxyConfig {
-  return { ...visionProxyConfig };
+export function getVisionProxyConfig(): VisionProxyConfig {
+  return { ...getConfig() };
 }
 
 // Analyze an image using the vision proxy
@@ -45,8 +86,10 @@ export async function analyzeImage(
     fullPrompt += ` Context: This image was shared on ${context.platform}.`;
   }
 
+  const config = getConfig();
+
   // Estimate cost (vision is more expensive)
-  const estimatedCostCents = estimateCost(fullPrompt.length, 300, visionProxyConfig.model) * 2; // Vision costs more
+  const estimatedCostCents = estimateCost(fullPrompt.length, 300, config.model) * 2; // Vision costs more
 
   // Check budget (uses 'vision_proxy' category)
   const budgetCheck = checkBudgetAllows('vision_proxy', estimatedCostCents);
@@ -57,23 +100,23 @@ export async function analyzeImage(
   let description: string;
   let usage: { input_tokens: number; output_tokens: number; total_tokens: number };
 
-  switch (visionProxyConfig.provider) {
+  switch (config.provider) {
     case 'openai':
     case 'openai-compatible':
-      ({ description, usage } = await callOpenAIVision(imageUrl, fullPrompt));
+      ({ description, usage } = await callOpenAIVision(imageUrl, fullPrompt, config));
       break;
     case 'anthropic':
-      ({ description, usage } = await callAnthropicVision(imageUrl, fullPrompt));
+      ({ description, usage } = await callAnthropicVision(imageUrl, fullPrompt, config));
       break;
     default:
-      throw new Error(`Unknown vision proxy provider: ${visionProxyConfig.provider}`);
+      throw new Error(`Unknown vision proxy provider: ${config.provider}`);
   }
 
   // Calculate actual cost and log it
-  const actualCostCents = calculateCost(usage, visionProxyConfig.model);
+  const actualCostCents = calculateCost(usage, config.model);
   logApiCost({
-    provider: visionProxyConfig.provider,
-    model: visionProxyConfig.model,
+    provider: config.provider,
+    model: config.model,
     feature_category: 'vision_proxy',
     input_tokens: usage.input_tokens,
     output_tokens: usage.output_tokens,
@@ -88,24 +131,25 @@ export async function analyzeImage(
 // OpenAI Vision API
 async function callOpenAIVision(
   imageUrl: string,
-  prompt: string
+  prompt: string,
+  config: VisionProxyConfig
 ): Promise<{ description: string; usage: any }> {
-  const baseUrl = visionProxyConfig.baseUrl || 'https://api.openai.com/v1';
+  const baseUrl = config.baseUrl || 'https://api.openai.com/v1';
   const endpoint = `${baseUrl}/chat/completions`;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
 
-  if (visionProxyConfig.apiKey) {
-    headers['Authorization'] = `Bearer ${visionProxyConfig.apiKey}`;
+  if (config.apiKey) {
+    headers['Authorization'] = `Bearer ${config.apiKey}`;
   }
 
   const response = await doorFetch(endpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      model: visionProxyConfig.model,
+      model: config.model,
       messages: [
         {
           role: 'user',
@@ -136,9 +180,10 @@ async function callOpenAIVision(
 // Anthropic Vision API
 async function callAnthropicVision(
   imageUrl: string,
-  prompt: string
+  prompt: string,
+  config: VisionProxyConfig
 ): Promise<{ description: string; usage: any }> {
-  if (!visionProxyConfig.apiKey) {
+  if (!config.apiKey) {
     throw new Error('Anthropic API key required for vision proxy');
   }
 
@@ -159,12 +204,12 @@ async function callAnthropicVision(
   const response = await doorFetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'x-api-key': visionProxyConfig.apiKey,
+      'x-api-key': config.apiKey!,
       'Content-Type': 'application/json',
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: visionProxyConfig.model,
+      model: config.model,
       max_tokens: 500,
       messages: [
         {

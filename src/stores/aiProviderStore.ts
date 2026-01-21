@@ -51,6 +51,13 @@ export interface TestResult {
   latency_ms?: number;
 }
 
+export interface VisionProxyConfig {
+  provider: 'openai' | 'openai-compatible' | 'anthropic';
+  model: string;
+  apiKey?: string;
+  baseUrl?: string;
+}
+
 // ============================================================================
 // Store State
 // ============================================================================
@@ -67,6 +74,10 @@ interface AIProviderState {
   activeImageGenProvider: ImageGenProvider | null;
   imageGenProvidersLoading: boolean;
   imageGenProvidersError: string | null;
+
+  // Vision Proxy Config
+  visionProxyConfig: VisionProxyConfig | null;
+  visionProxyLoading: boolean;
 
   // Actions - AI Providers
   fetchAIProviders: () => Promise<void>;
@@ -85,6 +96,10 @@ interface AIProviderState {
   deleteImageGenProvider: (name: string) => Promise<boolean>;
   setActiveImageGenProvider: (name: string) => Promise<ImageGenProvider | null>;
   testImageGenProvider: (name: string) => Promise<TestResult>;
+
+  // Actions - Vision Proxy
+  fetchVisionProxyConfig: () => Promise<void>;
+  updateVisionProxyConfig: (config: Partial<VisionProxyConfig>) => Promise<VisionProxyConfig>;
 }
 
 // ============================================================================
@@ -102,6 +117,9 @@ export const useAIProviderStore = create<AIProviderState>((set, get) => ({
   activeImageGenProvider: null,
   imageGenProvidersLoading: false,
   imageGenProvidersError: null,
+
+  visionProxyConfig: null,
+  visionProxyLoading: false,
 
   // ============================================================================
   // AI Provider Actions
@@ -272,6 +290,34 @@ export const useAIProviderStore = create<AIProviderState>((set, get) => ({
       { name }
     );
   },
+
+  // ============================================================================
+  // Vision Proxy Actions
+  // ============================================================================
+
+  fetchVisionProxyConfig: async () => {
+    set({ visionProxyLoading: true });
+    try {
+      const request = useWSStore.getState().request;
+      const config = await request<void, VisionProxyConfig>('visionProxy:getConfig');
+      set({ visionProxyConfig: config, visionProxyLoading: false });
+    } catch (error: any) {
+      console.error('Failed to fetch vision proxy config:', error);
+      set({ visionProxyLoading: false });
+    }
+  },
+
+  updateVisionProxyConfig: async (config) => {
+    const request = useWSStore.getState().request;
+    const updated = await request<Partial<VisionProxyConfig>, VisionProxyConfig>(
+      'visionProxy:setConfig',
+      config
+    );
+
+    set({ visionProxyConfig: updated });
+
+    return updated;
+  },
 }));
 
 // ============================================================================
@@ -337,6 +383,23 @@ export function useImageGenProviders() {
     remove,
     setActive,
     test,
+  };
+}
+
+/**
+ * Hook for vision proxy management
+ */
+export function useVisionProxy() {
+  const config = useAIProviderStore((state) => state.visionProxyConfig);
+  const loading = useAIProviderStore((state) => state.visionProxyLoading);
+  const fetchConfig = useAIProviderStore((state) => state.fetchVisionProxyConfig);
+  const updateConfig = useAIProviderStore((state) => state.updateVisionProxyConfig);
+
+  return {
+    config,
+    loading,
+    fetchConfig,
+    updateConfig,
   };
 }
 

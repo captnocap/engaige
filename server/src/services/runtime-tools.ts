@@ -1,14 +1,14 @@
 // Runtime tools that AI models can call during conversations
 // These are exposed as function calls to the model (OpenAI/Anthropic tool use)
 
-import { generateImage, generateNPCProfilePortrait } from './image-generation-proxy.js';
+import { generateImageForNPC } from './image-generation-proxy.js';
 import { storeMediaFileFromUrl } from './media.js';
 import type { ToolDefinition, ToolHandler, ToolResult } from '../types/tools.js';
 
 // Tool: Generate image during conversation
 const generateImageTool: ToolDefinition = {
   name: 'generate_image',
-  description: 'Generate an image based on a text prompt. Use this when you want to create or share a visual image with the user.',
+  description: 'Generate an image based on a text prompt. Use this when you want to create or share a visual image with the user. Your reference image will automatically be included for consistency.',
   parameters: {
     type: 'object',
     properties: {
@@ -21,26 +21,22 @@ const generateImageTool: ToolDefinition = {
         enum: ['realistic', 'artistic', 'anime', 'sketch', 'cinematic'],
         description: 'Art style for the image',
       },
-      use_character_reference: {
-        type: 'boolean',
-        description: 'If true, will use your character reference image for consistency (img2img)',
-      },
     },
     required: ['prompt'],
   },
 };
 
 const generateImageHandler: ToolHandler = async (args: any, context: any) => {
-  const { prompt, style = 'realistic', use_character_reference = false } = args;
+  const { prompt, style = 'realistic' } = args;
   const { npc_id, conversation_id } = context;
 
   console.log(`[Runtime Tool] generate_image called by NPC ${npc_id}`);
   console.log(`  Prompt: ${prompt}`);
   console.log(`  Style: ${style}`);
-  console.log(`  Use reference: ${use_character_reference}`);
 
   try {
-    // Build enhanced prompt with style
+    // Build enhanced prompt with style hint
+    // Note: The actual image settings (resolution, model, etc.) are baked into the provider config
     let enhancedPrompt = prompt;
     if (style === 'realistic') {
       enhancedPrompt = `${prompt}, photorealistic, high quality, detailed`;
@@ -54,11 +50,8 @@ const generateImageHandler: ToolHandler = async (args: any, context: any) => {
       enhancedPrompt = `${prompt}, cinematic lighting, dramatic, movie still`;
     }
 
-    // Generate image
-    const { imageUrl, promptUsed } = await generateImage(
-      enhancedPrompt,
-      use_character_reference ? { npcId: npc_id } : undefined
-    );
+    // Generate image for NPC (automatically includes their reference image if available)
+    const { imageUrl, promptUsed } = await generateImageForNPC(npc_id, enhancedPrompt, 'conversation');
 
     // Store in media files
     const mediaFile = await storeMediaFileFromUrl(imageUrl, {

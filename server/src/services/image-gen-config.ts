@@ -1,5 +1,10 @@
-// Flexible image generation provider configuration
-// Allows users to define custom payload templates for any image generation API
+/**
+ * Image Generation Provider Configuration
+ *
+ * Flexible provider system where users define complete payloads.
+ * At runtime, we only inject the prompt and optional reference images.
+ * This keeps NPCs in character - they just provide a prompt, nothing else.
+ */
 
 import { getDB, generateId, now } from '../db/index.js';
 
@@ -10,15 +15,27 @@ export interface ImageGenProvider {
   base_url: string;
   api_key?: string;
   is_active: boolean;
-  supports_img2img: boolean;
-  payload_template: string; // JSON string with {placeholders}
-  response_path: string; // JSON path like "data.0.url" or "artifacts.0.base64"
-  cost_config: Record<string, number>;
+
+  // The complete default payload with all settings baked in
+  default_payload: Record<string, any>;
+
+  // Which keys to inject at runtime
+  prompt_key: string; // e.g., "prompt"
+  reference_images_key?: string; // e.g., "imageDataUrls" for img2img
+
+  // Where to find the image in response
+  response_path: string; // e.g., "data.0.url" or "artifacts.0.base64"
+
+  // Flat rate for budget tracking (cents per image)
+  cost_per_image: number;
+
   created_at: number;
   updated_at: number;
 }
 
-// Get active image generation provider
+/**
+ * Get active image generation provider
+ */
 export function getActiveImageGenProvider(): ImageGenProvider | null {
   const db = getDB('user');
   const provider = db.prepare(`
@@ -27,23 +44,12 @@ export function getActiveImageGenProvider(): ImageGenProvider | null {
 
   if (!provider) return null;
 
-  return {
-    id: provider.id,
-    name: provider.name,
-    display_name: provider.display_name,
-    base_url: provider.base_url,
-    api_key: provider.api_key,
-    is_active: Boolean(provider.is_active),
-    supports_img2img: Boolean(provider.supports_img2img),
-    payload_template: provider.payload_template,
-    response_path: provider.response_path,
-    cost_config: JSON.parse(provider.cost_config || '{}'),
-    created_at: provider.created_at,
-    updated_at: provider.updated_at,
-  };
+  return mapRowToProvider(provider);
 }
 
-// Get a specific image generation provider by name
+/**
+ * Get a specific image generation provider by name
+ */
 export function getImageGenProviderByName(name: string): ImageGenProvider | null {
   const db = getDB('user');
   const provider = db.prepare(`
@@ -52,56 +58,49 @@ export function getImageGenProviderByName(name: string): ImageGenProvider | null
 
   if (!provider) return null;
 
-  return {
-    id: provider.id,
-    name: provider.name,
-    display_name: provider.display_name,
-    base_url: provider.base_url,
-    api_key: provider.api_key,
-    is_active: Boolean(provider.is_active),
-    supports_img2img: Boolean(provider.supports_img2img),
-    payload_template: provider.payload_template,
-    response_path: provider.response_path,
-    cost_config: JSON.parse(provider.cost_config || '{}'),
-    created_at: provider.created_at,
-    updated_at: provider.updated_at,
-  };
+  return mapRowToProvider(provider);
 }
 
-// Get all image generation providers
+/**
+ * Get a specific image generation provider by ID
+ */
+export function getImageGenProviderById(id: string): ImageGenProvider | null {
+  const db = getDB('user');
+  const provider = db.prepare(`
+    SELECT * FROM image_gen_providers WHERE id = ?
+  `).get(id) as any;
+
+  if (!provider) return null;
+
+  return mapRowToProvider(provider);
+}
+
+/**
+ * Get all image generation providers
+ */
 export function getAllImageGenProviders(): ImageGenProvider[] {
   const db = getDB('user');
   const providers = db.prepare(`
-    SELECT * FROM image_gen_providers ORDER BY is_active DESC, name ASC
+    SELECT * FROM image_gen_providers ORDER BY is_active DESC, display_name ASC
   `).all() as any[];
 
-  return providers.map(p => ({
-    id: p.id,
-    name: p.name,
-    display_name: p.display_name,
-    base_url: p.base_url,
-    api_key: p.api_key,
-    is_active: Boolean(p.is_active),
-    supports_img2img: Boolean(p.supports_img2img),
-    payload_template: p.payload_template,
-    response_path: p.response_path,
-    cost_config: JSON.parse(p.cost_config || '{}'),
-    created_at: p.created_at,
-    updated_at: p.updated_at,
-  }));
+  return providers.map(mapRowToProvider);
 }
 
-// Create or update an image generation provider
+/**
+ * Create or update an image generation provider
+ */
 export function upsertImageGenProvider(provider: {
   name: string;
   display_name: string;
   base_url: string;
   api_key?: string;
   is_active?: boolean;
-  supports_img2img?: boolean;
-  payload_template: string; // JSON string
+  default_payload: Record<string, any>;
+  prompt_key?: string;
+  reference_images_key?: string;
   response_path: string;
-  cost_config?: Record<string, number>;
+  cost_per_image?: number;
 }): ImageGenProvider {
   const db = getDB('user');
 
@@ -112,18 +111,19 @@ export function upsertImageGenProvider(provider: {
     db.prepare(`
       UPDATE image_gen_providers
       SET display_name = ?, base_url = ?, api_key = ?, is_active = ?,
-          supports_img2img = ?, payload_template = ?, response_path = ?,
-          cost_config = ?, updated_at = ?
+          default_payload = ?, prompt_key = ?, reference_images_key = ?,
+          response_path = ?, cost_per_image = ?, updated_at = ?
       WHERE name = ?
     `).run(
       provider.display_name,
       provider.base_url,
       provider.api_key || null,
       provider.is_active ? 1 : 0,
-      provider.supports_img2img ? 1 : 0,
-      provider.payload_template,
+      JSON.stringify(provider.default_payload),
+      provider.prompt_key || 'prompt',
+      provider.reference_images_key || null,
       provider.response_path,
-      JSON.stringify(provider.cost_config || {}),
+      provider.cost_per_image ?? 5,
       now(),
       provider.name
     );
@@ -135,9 +135,10 @@ export function upsertImageGenProvider(provider: {
 
     db.prepare(`
       INSERT INTO image_gen_providers
-        (id, name, display_name, base_url, api_key, is_active, supports_img2img,
-         payload_template, response_path, cost_config, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, name, display_name, base_url, api_key, is_active,
+         default_payload, prompt_key, reference_images_key,
+         response_path, cost_per_image, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id,
       provider.name,
@@ -145,10 +146,11 @@ export function upsertImageGenProvider(provider: {
       provider.base_url,
       provider.api_key || null,
       provider.is_active ? 1 : 0,
-      provider.supports_img2img ? 1 : 0,
-      provider.payload_template,
+      JSON.stringify(provider.default_payload),
+      provider.prompt_key || 'prompt',
+      provider.reference_images_key || null,
       provider.response_path,
-      JSON.stringify(provider.cost_config || {}),
+      provider.cost_per_image ?? 5,
       now(),
       now()
     );
@@ -157,9 +159,17 @@ export function upsertImageGenProvider(provider: {
   }
 }
 
-// Set active image generation provider
+/**
+ * Set active image generation provider (deactivates all others)
+ */
 export function setActiveImageGenProvider(name: string): void {
   const db = getDB('user');
+
+  // Verify provider exists
+  const provider = getImageGenProviderByName(name);
+  if (!provider) {
+    throw new Error(`Image generation provider not found: ${name}`);
+  }
 
   // Deactivate all
   db.prepare(`UPDATE image_gen_providers SET is_active = 0`).run();
@@ -169,28 +179,49 @@ export function setActiveImageGenProvider(name: string): void {
     .run(now(), name);
 }
 
-// Build request payload from template
-export function buildPayloadFromTemplate(
-  template: string,
-  params: Record<string, any>
-): any {
-  let payload = template;
+/**
+ * Delete an image generation provider
+ */
+export function deleteImageGenProvider(name: string): boolean {
+  const db = getDB('user');
 
-  // Replace all {placeholder} with actual values
-  for (const [key, value] of Object.entries(params)) {
-    const placeholder = `{${key}}`;
-    const replacement = typeof value === 'string' ? `"${value}"` : String(value);
-    payload = payload.replaceAll(placeholder, replacement);
+  // Don't allow deleting the active provider
+  const provider = getImageGenProviderByName(name);
+  if (provider?.is_active) {
+    throw new Error('Cannot delete the active provider. Set another provider as active first.');
   }
 
-  try {
-    return JSON.parse(payload);
-  } catch (error) {
-    throw new Error(`Invalid payload template: ${error.message}`);
-  }
+  const result = db.prepare(`DELETE FROM image_gen_providers WHERE name = ?`).run(name);
+  return result.changes > 0;
 }
 
-// Extract value from response using JSON path
+/**
+ * Build the final payload for an image generation request.
+ * Takes the provider's default_payload and injects the prompt (and optionally reference images).
+ */
+export function buildPayload(
+  provider: ImageGenProvider,
+  prompt: string,
+  referenceImages?: string[]
+): Record<string, any> {
+  // Clone the default payload
+  const payload = { ...provider.default_payload };
+
+  // Inject the prompt
+  payload[provider.prompt_key] = prompt;
+
+  // Inject reference images if provided and the provider supports it
+  if (referenceImages && referenceImages.length > 0 && provider.reference_images_key) {
+    payload[provider.reference_images_key] = referenceImages;
+  }
+
+  return payload;
+}
+
+/**
+ * Extract value from response using JSON path
+ * Supports paths like "data.0.url" or "artifacts.0.base64"
+ */
 export function extractFromResponse(response: any, path: string): any {
   const parts = path.split('.');
   let current = response;
@@ -211,41 +242,35 @@ export function extractFromResponse(response: any, path: string): any {
   return current;
 }
 
-// Estimate cost for a request
-export function estimateImageGenCost(
-  provider: ImageGenProvider,
-  params: { size?: string; quality?: string }
-): number {
-  // Try to match cost config
-  const costConfig = provider.cost_config;
-
-  // Try various keys
-  const size = params.size || '1024x1024';
-  const quality = params.quality || 'standard';
-
-  const possibleKeys = [
-    `${size}_${quality}`,
-    size,
-    'default',
-  ];
-
-  for (const key of possibleKeys) {
-    if (costConfig[key] !== undefined) {
-      return costConfig[key];
-    }
-  }
-
-  // Fallback
-  return 5; // $0.05 default
+/**
+ * Map a database row to an ImageGenProvider object
+ */
+function mapRowToProvider(row: any): ImageGenProvider {
+  return {
+    id: row.id,
+    name: row.name,
+    display_name: row.display_name,
+    base_url: row.base_url,
+    api_key: row.api_key || undefined,
+    is_active: Boolean(row.is_active),
+    default_payload: JSON.parse(row.default_payload || '{}'),
+    prompt_key: row.prompt_key || 'prompt',
+    reference_images_key: row.reference_images_key || undefined,
+    response_path: row.response_path,
+    cost_per_image: row.cost_per_image ?? 5,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
 }
 
 export default {
   getActiveImageGenProvider,
   getImageGenProviderByName,
+  getImageGenProviderById,
   getAllImageGenProviders,
   upsertImageGenProvider,
   setActiveImageGenProvider,
-  buildPayloadFromTemplate,
+  deleteImageGenProvider,
+  buildPayload,
   extractFromResponse,
-  estimateImageGenCost,
 };

@@ -1,85 +1,34 @@
+/**
+ * Image Generation Proxy
+ *
+ * Simple interface for NPCs to generate images.
+ * NPCs only provide: prompt + optional reference images.
+ * Everything else (model, resolution, settings) is baked into the active provider config.
+ */
+
 import { getDB } from '../db/index.js';
 import { checkBudgetAllows, logApiCost } from './budget.js';
-import type { AIProvider } from './ai.js';
 import {
   getActiveImageGenProvider,
-  buildPayloadFromTemplate,
+  buildPayload,
   extractFromResponse,
-  estimateImageGenCost,
   type ImageGenProvider,
 } from './image-gen-config.js';
-import {
-  prepareImageForAPI,
-  getProviderCompressionSettings,
-} from './image-compression.js';
 import { doorFetch } from '../network/door.js';
 
-// Image generation proxy configuration
-let imageGenProxyConfig: {
-  provider: 'openai' | 'openai-compatible' | 'stability-ai';
-  model: string;
-  apiKey?: string;
-  baseUrl?: string;
-} = {
-  provider: 'openai',
-  model: 'dall-e-3',
-  apiKey: undefined,
-  baseUrl: undefined,
-};
-
-// Configure the image generation proxy
-export function configureImageGenProxy(config: Partial<typeof imageGenProxyConfig>): void {
-  imageGenProxyConfig = { ...imageGenProxyConfig, ...config };
-  console.log(`[Image Gen Proxy] Configured: ${imageGenProxyConfig.provider}/${imageGenProxyConfig.model}`);
-}
-
-// Get current image generation proxy config
-export function getImageGenProxyConfig(): typeof imageGenProxyConfig {
-  return { ...imageGenProxyConfig };
-}
-
-// Image generation options
-export interface ImageGenerationOptions {
-  size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
-  quality?: 'standard' | 'hd';
-  style?: 'vivid' | 'natural';
-  n?: number; // Number of images (1-4)
-  referenceImageUrl?: string; // For img2img workflows (character consistency)
-  referenceStrength?: number; // 0-1, how much to follow reference (0.3-0.7 typical)
-}
-
-// Fixed costs for image generation (in cents)
-const IMAGE_GENERATION_COSTS: Record<string, Record<string, number>> = {
-  'dall-e-3': {
-    '1024x1024_standard': 4, // $0.04
-    '1024x1024_hd': 8, // $0.08
-    '1792x1024_standard': 8, // $0.08
-    '1792x1024_hd': 12, // $0.12
-  },
-  'dall-e-2': {
-    '256x256': 1.6, // $0.016
-    '512x512': 1.8, // $0.018
-    '1024x1024': 2, // $0.02
-  },
-  'stable-diffusion-xl': {
-    'default': 3, // $0.03 estimate
-  },
-};
-
-// Generate an image using the configured proxy (with flexible provider support)
+/**
+ * Generate an image using the active provider.
+ *
+ * @param prompt - The image description (provided by NPC or system)
+ * @param referenceImages - Optional array of reference image URLs/base64 for img2img
+ * @param context - Optional context for logging
+ */
 export async function generateImage(
   prompt: string,
-  options: ImageGenerationOptions = {},
+  referenceImages?: string[],
   context?: { npcId?: string; npcName?: string; purpose?: string }
-): Promise<{ imageUrl: string; revisedPrompt?: string; promptUsed?: string }> {
-  const {
-    size = '1024x1024',
-    quality = 'standard',
-    style = 'vivid',
-    n = 1,
-  } = options;
-
-  // Get active image generation provider from database
+): Promise<{ imageUrl: string; promptUsed: string }> {
+  // Get active image generation provider
   const provider = getActiveImageGenProvider();
 
   if (!provider) {
@@ -87,36 +36,16 @@ export async function generateImage(
   }
 
   console.log(`[Image Gen] Using provider: ${provider.display_name} (${provider.name})`);
-
-  // Estimate cost
-  const costPerImage = estimateImageGenCost(provider, { size, quality });
-  const totalCostCents = costPerImage * n;
+  console.log(`[Image Gen] Prompt: ${prompt.slice(0, 100)}...`);
 
   // Check budget
-  const budgetCheck = checkBudgetAllows('image_generation', totalCostCents);
+  const budgetCheck = checkBudgetAllows('image_generation', provider.cost_per_image);
   if (!budgetCheck.allowed) {
     throw new Error(`Image generation budget exceeded: ${budgetCheck.reason}`);
   }
 
-  // Prepare parameters for payload template
-  const [width, height] = size.split('x').map(Number);
-  const params: Record<string, any> = {
-    prompt,
-    size,
-    width,
-    height,
-    quality,
-    style,
-    n,
-    // Common parameters for Stable Diffusion
-    cfg_scale: 7,
-    steps: 30,
-    sampler: 'euler_a',
-    // Add more as needed
-  };
-
-  // Build request payload from template
-  const payload = buildPayloadFromTemplate(provider.payload_template, params);
+  // Build payload by injecting prompt (and reference images if provided)
+  const payload = buildPayload(provider, prompt, referenceImages);
 
   console.log(`[Image Gen] Request payload:`, JSON.stringify(payload, null, 2));
 
@@ -126,15 +55,7 @@ export async function generateImage(
   };
 
   if (provider.api_key) {
-    // Support different auth header formats
-    if (provider.base_url.includes('openai.com')) {
-      headers['Authorization'] = `Bearer ${provider.api_key}`;
-    } else if (provider.base_url.includes('stability.ai')) {
-      headers['Authorization'] = `Bearer ${provider.api_key}`;
-    } else {
-      // Default to Bearer token
-      headers['Authorization'] = `Bearer ${provider.api_key}`;
-    }
+    headers['Authorization'] = `Bearer ${provider.api_key}`;
   }
 
   const response = await doorFetch(provider.base_url, {
@@ -165,128 +86,36 @@ export async function generateImage(
     throw new Error(`Failed to extract image URL from response: ${error.message}`);
   }
 
-  // Extract revised prompt if available (DALL-E specific)
-  const revisedPrompt = data.data?.[0]?.revised_prompt;
-
   // Log the cost
   logApiCost({
     provider: provider.name,
     model: provider.name,
     feature_category: 'image_generation',
-    cost_cents: totalCostCents,
+    cost_cents: provider.cost_per_image,
     request_metadata: {
       prompt: prompt.slice(0, 100),
-      size,
-      quality,
-      style,
-      n,
+      has_reference_images: Boolean(referenceImages?.length),
       context,
     },
   });
 
   console.log(`[Image Gen] Image generated successfully`);
 
-  return { imageUrl, revisedPrompt, promptUsed: prompt };
+  return { imageUrl, promptUsed: prompt };
 }
 
-// OpenAI DALL-E
-async function callOpenAIImageGen(
-  prompt: string,
-  options: ImageGenerationOptions
-): Promise<{ imageUrl: string; revisedPrompt?: string }> {
-  const baseUrl = imageGenProxyConfig.baseUrl || 'https://api.openai.com/v1';
-  const endpoint = `${baseUrl}/images/generations`;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (imageGenProxyConfig.apiKey) {
-    headers['Authorization'] = `Bearer ${imageGenProxyConfig.apiKey}`;
-  }
-
-  const body: any = {
-    model: imageGenProxyConfig.model,
-    prompt,
-    n: options.n || 1,
-    size: options.size || '1024x1024',
-  };
-
-  // DALL-E 3 specific options
-  if (imageGenProxyConfig.model === 'dall-e-3') {
-    body.quality = options.quality || 'standard';
-    body.style = options.style || 'vivid';
-  }
-
-  const response = await doorFetch(endpoint, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Image generation API error: ${error}`);
-  }
-
-  const data = await response.json();
-
-  return {
-    imageUrl: data.data[0].url,
-    revisedPrompt: data.data[0].revised_prompt,
-  };
-}
-
-// Stability AI (Stable Diffusion)
-async function callStabilityAI(
-  prompt: string,
-  options: ImageGenerationOptions
-): Promise<{ imageUrl: string }> {
-  if (!imageGenProxyConfig.apiKey) {
-    throw new Error('Stability AI API key required');
-  }
-
-  // Stability AI uses different size format
-  const width = parseInt(options.size?.split('x')[0] || '1024');
-  const height = parseInt(options.size?.split('x')[1] || '1024');
-
-  const response = await doorFetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${imageGenProxyConfig.apiKey}`,
-    },
-    body: JSON.stringify({
-      text_prompts: [{ text: prompt }],
-      cfg_scale: 7,
-      height,
-      width,
-      samples: options.n || 1,
-      steps: 30,
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Stability AI error: ${error}`);
-  }
-
-  const data = await response.json();
-
-  // Stability AI returns base64, we'd need to save it somewhere
-  // For now, return a data URL
-  const base64Image = data.artifacts[0].base64;
-  const imageUrl = `data:image/png;base64,${base64Image}`;
-
-  return { imageUrl };
-}
-
-// Generate an image for an NPC (with their personality style)
+/**
+ * Generate an image for an NPC, automatically including their reference image if available.
+ *
+ * @param npcId - The NPC's ID
+ * @param prompt - The image description
+ * @param purpose - Optional purpose tag for logging
+ */
 export async function generateImageForNPC(
   npcId: string,
-  userPrompt: string,
+  prompt: string,
   purpose?: string
-): Promise<{ imageUrl: string; revisedPrompt?: string }> {
+): Promise<{ imageUrl: string; promptUsed: string }> {
   const npcDb = getDB('npc');
   const npc = npcDb.prepare('SELECT * FROM npcs WHERE id = ?').get(npcId) as any;
 
@@ -294,29 +123,35 @@ export async function generateImageForNPC(
     throw new Error(`NPC not found: ${npcId}`);
   }
 
-  // Enhance prompt with NPC's aesthetic/style
-  const personality = npc.personality_traits ? JSON.parse(npc.personality_traits) : {};
-  const aestheticStyle = personality.aesthetic_style || 'realistic';
+  // Get NPC's reference images if they have any
+  let referenceImages: string[] | undefined;
 
-  let enhancedPrompt = userPrompt;
-
-  // Add style context
-  if (purpose === 'profile_picture') {
-    enhancedPrompt = `Portrait photo of a person: ${userPrompt}. Style: ${aestheticStyle}. Professional, high quality.`;
-  } else if (purpose === 'post_image') {
-    enhancedPrompt = `${userPrompt}. Style: ${aestheticStyle}, social media post aesthetic.`;
-  } else {
-    enhancedPrompt = `${userPrompt}. Style: ${aestheticStyle}.`;
+  if (npc.reference_images) {
+    try {
+      referenceImages = JSON.parse(npc.reference_images);
+    } catch {
+      // Ignore parse errors
+    }
   }
 
-  return await generateImage(enhancedPrompt, {}, {
+  // If NPC has a profile image and no explicit reference images, use profile as reference
+  if (!referenceImages?.length && npc.profile_image_url) {
+    referenceImages = [npc.profile_image_url];
+  }
+
+  return await generateImage(prompt, referenceImages, {
     npcId,
     npcName: npc.display_name,
     purpose,
   });
 }
 
-// Generate initial profile portrait for an NPC (during NPC creation)
+/**
+ * Generate initial profile portrait for an NPC (during NPC creation).
+ * No reference images used since we're creating the initial appearance.
+ *
+ * @param npcData - NPC traits to build the portrait prompt
+ */
 export async function generateNPCProfilePortrait(npcData: {
   display_name: string;
   gender?: string;
@@ -337,147 +172,57 @@ export async function generateNPCProfilePortrait(npcData: {
 
   const prompt = `Professional portrait photo of a ${age}-year-old ${gender}${occupation ? `, ${occupation}` : ''}. ${aesthetic} style${personalityHints}. High quality, well-lit, looking at camera, neutral background.`;
 
-  const { imageUrl, revisedPrompt } = await generateImage(
-    prompt,
-    {
-      size: '1024x1024',
-      quality: 'standard',
-      style: 'natural', // Natural for portraits
-    },
-    {
-      purpose: 'npc_profile_generation',
-    }
-  );
-
-  return {
-    imageUrl,
-    promptUsed: revisedPrompt || prompt,
-  };
+  // No reference images for initial portrait generation
+  return await generateImage(prompt, undefined, {
+    purpose: 'npc_profile_generation',
+  });
 }
 
-// Generate an image with character reference (img2img flow)
+/**
+ * Generate an image with explicit character reference (img2img).
+ * Use this when you have a specific reference image to maintain consistency.
+ *
+ * @param prompt - The image description
+ * @param referenceImageUrls - Reference images for character consistency
+ */
 export async function generateImageWithCharacterReference(
   prompt: string,
-  characterReferenceUrl: string,
-  options?: {
-    referenceStrength?: number;
-    includeMultipleCharacters?: boolean;
-    additionalReferenceUrls?: string[]; // For scenes with user + NPC
-  }
-): Promise<{ imageUrl: string }> {
+  referenceImageUrls: string[]
+): Promise<{ imageUrl: string; promptUsed: string }> {
   const provider = getActiveImageGenProvider();
+
   if (!provider) {
     throw new Error('No active image generation provider configured');
   }
 
-  // Check if provider supports img2img
-  if (!provider.supports_img2img) {
+  // Check if provider supports reference images
+  if (!provider.reference_images_key) {
     // Fall back to vision proxy + text description
+    console.log('[Image Gen] Provider does not support reference images, using vision proxy fallback');
+
     const { analyzeImage } = await import('./vision-proxy.js');
 
     const characterDescription = await analyzeImage(
-      characterReferenceUrl,
+      referenceImageUrls[0],
       'Describe this person\'s appearance in detail for image generation: age, gender, hair, clothing style, distinctive features.'
     );
 
     const enhancedPrompt = `${prompt}. The main character looks like: ${characterDescription}`;
 
-    return await generateImage(enhancedPrompt, {
-      size: options?.includeMultipleCharacters ? '1792x1024' : '1024x1024',
+    return await generateImage(enhancedPrompt, undefined, {
+      purpose: 'character_reference_fallback',
     });
   }
 
-  // Provider supports img2img - prepare reference image
-  console.log('[Image Gen] Preparing reference image for img2img');
-
-  // Compress and prepare reference image based on provider requirements
-  const compressionSettings = getProviderCompressionSettings(provider.name);
-
-  // Most img2img APIs expect base64
-  const referenceImageData = await prepareImageForAPI(
-    characterReferenceUrl,
-    provider.name,
-    'base64'
-  );
-
-  console.log('[Image Gen] Reference image prepared');
-
-  // Build payload with img2img parameters
-  const [width, height] = (options?.includeMultipleCharacters ? '1792x1024' : '1024x1024').split('x').map(Number);
-
-  // Different providers have different img2img parameter names
-  const params: Record<string, any> = {
-    prompt,
-    width,
-    height,
-    // Stable Diffusion img2img params
-    init_image: referenceImageData,
-    image: referenceImageData, // Alternative param name
-    reference_image: referenceImageData, // Alternative param name
-    denoising_strength: 1 - (options?.referenceStrength || 0.7), // Convert to denoising strength
-    strength: options?.referenceStrength || 0.7, // Some providers use "strength"
-    cfg_scale: 7,
-    steps: 30,
-  };
-
-  const payload = buildPayloadFromTemplate(provider.payload_template, params);
-
-  console.log('[Image Gen] Making img2img API request');
-
-  // Make API request
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (provider.api_key) {
-    headers['Authorization'] = `Bearer ${provider.api_key}`;
-  }
-
-  const response = await doorFetch(provider.base_url.replace('/text-to-image', '/image-to-image'), {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(payload),
+  // Provider supports reference images
+  return await generateImage(prompt, referenceImageUrls, {
+    purpose: 'character_reference',
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`img2img API error: ${error}`);
-  }
-
-  const data = await response.json();
-  const imageUrl = extractFromResponse(data, provider.response_path);
-
-  // Log cost
-  const costCents = estimateImageGenCost(provider, { size: `${width}x${height}` });
-  logApiCost({
-    provider: provider.name,
-    model: provider.name,
-    feature_category: 'image_generation',
-    cost_cents: costCents,
-    request_metadata: {
-      prompt: prompt.slice(0, 100),
-      has_reference: true,
-      img2img: true,
-    },
-  });
-
-  return { imageUrl };
-}
-
-// Update image generation costs (for user-configured pricing)
-export function setImageGenerationCost(model: string, sizeOrKey: string, costCents: number): void {
-  if (!IMAGE_GENERATION_COSTS[model]) {
-    IMAGE_GENERATION_COSTS[model] = {};
-  }
-  IMAGE_GENERATION_COSTS[model][sizeOrKey] = costCents;
 }
 
 export default {
-  configureImageGenProxy,
-  getImageGenProxyConfig,
   generateImage,
   generateImageForNPC,
   generateNPCProfilePortrait,
   generateImageWithCharacterReference,
-  setImageGenerationCost,
 };
