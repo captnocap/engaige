@@ -374,6 +374,50 @@ export interface MediaDeletedPayload {
   reason?: string;
 }
 
+// === INSTASNAP EVENTS ===
+export interface StoryCreatedPayload {
+  story_id: string;
+  author_id: string;
+  author_type: 'player' | 'npc';
+  media_url: string;
+  media_type: 'image' | 'video';
+  caption?: string;
+  filter_applied?: string;
+  expires_at: number;
+}
+
+export interface StoryViewedPayload {
+  story_id: string;
+  author_id: string;
+  viewer_id: string;
+  viewer_type: 'player' | 'npc';
+}
+
+export interface StoryExpiredPayload {
+  story_id: string;
+  author_id: string;
+  author_type: 'player' | 'npc';
+  view_count: number;
+}
+
+export interface PostSavedPayload {
+  post_id: string;
+  saver_id: string;
+  collection_name?: string;
+}
+
+export interface PostUnsavedPayload {
+  post_id: string;
+  saver_id: string;
+}
+
+export interface HashtagUsedPayload {
+  tag: string;
+  post_id: string;
+  author_id: string;
+  author_type: 'player' | 'npc';
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Event Type Constants
 // ─────────────────────────────────────────────────────────────────
@@ -467,6 +511,14 @@ export const EventTypes = {
   NEWS_ARTICLE_MENTIONED: 'news:article_mentioned',
   NEWS_STORIES_GENERATED: 'news:stories_generated',
   NEWS_RSS_REFRESHED: 'news:rss_refreshed',
+
+  // InstaSnap Stories
+  SOCIAL_STORY_CREATED: 'social:story_created',
+  SOCIAL_STORY_VIEWED: 'social:story_viewed',
+  SOCIAL_STORY_EXPIRED: 'social:story_expired',
+  SOCIAL_POST_SAVED: 'social:post_saved',
+  SOCIAL_POST_UNSAVED: 'social:post_unsaved',
+  SOCIAL_HASHTAG_USED: 'social:hashtag_used',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

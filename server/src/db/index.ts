@@ -520,6 +520,70 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_npc_exposure_article ON npc_news_exposure(article_id);
       CREATE INDEX IF NOT EXISTS idx_rss_enabled ON rss_feeds(enabled);
     `);
+
+    // === INSTASNAP SYSTEM ===
+    db.exec(`
+      -- Stories (24-hour ephemeral posts)
+      CREATE TABLE IF NOT EXISTS instasnap_stories (
+        id TEXT PRIMARY KEY,
+        author_id TEXT NOT NULL,
+        author_type TEXT CHECK (author_type IN ('player', 'npc')),
+        media_url TEXT NOT NULL,
+        media_type TEXT CHECK (media_type IN ('image', 'video')),
+        caption TEXT,
+        filter_applied TEXT,
+        created_at INTEGER DEFAULT (unixepoch()),
+        expires_at INTEGER NOT NULL,
+        view_count INTEGER DEFAULT 0
+      );
+
+      -- Story view tracking
+      CREATE TABLE IF NOT EXISTS instasnap_story_views (
+        id TEXT PRIMARY KEY,
+        story_id TEXT NOT NULL,
+        viewer_id TEXT NOT NULL,
+        viewer_type TEXT CHECK (viewer_type IN ('player', 'npc')),
+        viewed_at INTEGER DEFAULT (unixepoch()),
+        UNIQUE(story_id, viewer_id)
+      );
+
+      -- Saved posts (bookmarks)
+      CREATE TABLE IF NOT EXISTS instasnap_saved_posts (
+        id TEXT PRIMARY KEY,
+        post_id TEXT NOT NULL,
+        saver_id TEXT NOT NULL,
+        saved_at INTEGER DEFAULT (unixepoch()),
+        collection_name TEXT DEFAULT 'All Posts',
+        UNIQUE(post_id, saver_id)
+      );
+
+      -- Hashtags
+      CREATE TABLE IF NOT EXISTS instasnap_hashtags (
+        id TEXT PRIMARY KEY,
+        tag TEXT UNIQUE NOT NULL,
+        usage_count INTEGER DEFAULT 1,
+        trending_score REAL DEFAULT 0,
+        last_used_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Post-hashtag links
+      CREATE TABLE IF NOT EXISTS instasnap_post_hashtags (
+        post_id TEXT NOT NULL,
+        hashtag_id TEXT NOT NULL,
+        PRIMARY KEY (post_id, hashtag_id)
+      );
+
+      -- InstaSnap indexes
+      CREATE INDEX IF NOT EXISTS idx_instasnap_stories_author ON instasnap_stories(author_id, author_type);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_stories_expires ON instasnap_stories(expires_at);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_story_views_story ON instasnap_story_views(story_id);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_story_views_viewer ON instasnap_story_views(viewer_id);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_saved_saver ON instasnap_saved_posts(saver_id);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_saved_post ON instasnap_saved_posts(post_id);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_hashtags_trending ON instasnap_hashtags(trending_score DESC);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_post_hashtags_post ON instasnap_post_hashtags(post_id);
+      CREATE INDEX IF NOT EXISTS idx_instasnap_post_hashtags_hashtag ON instasnap_post_hashtags(hashtag_id);
+    `);
   }
 }
 

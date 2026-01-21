@@ -7,6 +7,7 @@
 import { getApp } from '../../config/app-registry.js'
 import { PlaceholderSite } from './sites/PlaceholderSite.js'
 import { MyFaceSite } from './sites/MyFaceSite.js'
+import { InstaSnapSite } from './sites/InstaSnapSite.js'
 import { WikiKnowSite } from './sites/WikiKnowSite.js'
 import { ThreaditSite } from './sites/ThreaditSite.js'
 import { DailyBuzzSite } from './sites/DailyBuzzSite.js'
@@ -18,6 +19,12 @@ import { BargainBaySite } from './sites/BargainBaySite.js'
 import { OddsOracleSite } from './sites/OddsOracleSite.js'
 import { StrangerZoneSite } from './sites/StrangerZoneSite.js'
 import { WealthWisdomSite } from './sites/WealthWisdomSite.js'
+// Easter egg sites
+import { PopupHellSite } from './sites/PopupHellSite.js'
+import { MillionPixelsSite } from './sites/MillionPixelsSite.js'
+import { QuantumBrewBlogSite } from './sites/QuantumBrewBlogSite.js'
+import { HartwellFilesSite } from './sites/HartwellFilesSite.js'
+import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -33,6 +40,7 @@ export interface SiteProps {
 const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'myface': MyFaceSite,
   'myface-chat': MyFaceSite, // Chat is part of MyFace
+  'instasnap': InstaSnapSite, // Instagram clone
   // Filler content sites
   'wikiknow': WikiKnowSite,
   'threadit': ThreaditSite,
@@ -45,6 +53,12 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'oddsoracle': OddsOracleSite,
   'strangerzone': StrangerZoneSite,
   'wealthwisdom': WealthWisdomSite,
+  // Easter egg sites
+  'popuphell': PopupHellSite,
+  'millionpixels': MillionPixelsSite,
+  'quantumbrewblog': QuantumBrewBlogSite,
+  'hartwellfiles': HartwellFilesSite,
+  'trustfalltim': TrustFallTimSite,
   // All other sites use PlaceholderSite until implemented
 }
 

@@ -230,6 +230,100 @@ export const FILLER_SITES = {
       border: '#374151',       // Dark border
     },
   },
+
+  // =========================================================================
+  // Unhinged Easter Egg Sites
+  // =========================================================================
+
+  popuphell: {
+    id: 'popuphell',
+    name: 'FREE PRIZES CLICK HERE',
+    tagline: 'YOU ARE THE 1000000th VISITOR!!!',
+    url: 'www.free-prizes-click-here.fake',
+    icon: '🎉',
+    description: 'The most obnoxious popup trap site on the fake internet',
+    theme: {
+      primary: '#FF00FF',      // Magenta
+      secondary: '#00FFFF',    // Cyan
+      background: 'linear-gradient(135deg, #ff00ff, #00ffff, #ffff00)',
+      surface: '#ffffff',
+      text: '#000000',
+      textMuted: '#666666',
+      border: '#000000',
+    },
+  },
+
+  millionpixels: {
+    id: 'millionpixels',
+    name: 'MillionPixels',
+    tagline: 'Own a piece of fake internet history',
+    url: 'www.millionpixels.fake',
+    icon: '🟦',
+    description: 'The Million Dollar Homepage, but weirder',
+    theme: {
+      primary: '#FFD700',      // Gold
+      secondary: '#1a1a1a',    // Dark
+      background: '#1a1a1a',
+      surface: '#2a2a2a',
+      text: '#ffffff',
+      textMuted: '#888888',
+      border: '#333333',
+    },
+  },
+
+  quantumbrewblog: {
+    id: 'quantumbrewblog',
+    name: 'QuantumBrewBlog',
+    tagline: 'Observing Coffee So You Don\'t Have To',
+    url: 'www.quantumbrewblog.fake',
+    icon: '☕',
+    description: 'An obsessive blog about quantum coffee by a man named Derek',
+    theme: {
+      primary: '#92400E',      // Amber/brown
+      secondary: '#FEF3C7',    // Light amber
+      background: '#FEF7E6',
+      surface: '#ffffff',
+      text: '#78350F',
+      textMuted: '#A16207',
+      border: '#FDE68A',
+    },
+  },
+
+  hartwellfiles: {
+    id: 'hartwellfiles',
+    name: 'The Hartwell Files',
+    tagline: 'The truth is in there. Floor 7.',
+    url: 'www.hartwellfiles.fake',
+    icon: '🏚️',
+    description: 'Conspiracy theory archive about the mysterious Hartwell Building',
+    theme: {
+      primary: '#DC2626',      // Red
+      secondary: '#7F1D1D',    // Dark red
+      background: '#0a0a0a',
+      surface: '#1a1a1a',
+      text: '#fafafa',
+      textMuted: '#a1a1aa',
+      border: '#3f3f46',
+    },
+  },
+
+  trustfalltim: {
+    id: 'trustfalltim',
+    name: 'TrustFallTim.fan',
+    tagline: 'The Official Unofficial Fan Archive',
+    url: 'www.trustfalltim.fan',
+    icon: '🙆‍♂️',
+    description: 'Fan site dedicated to Trust Fall Tim',
+    theme: {
+      primary: '#EA580C',      // Orange
+      secondary: '#FED7AA',    // Light orange
+      background: '#FFF7ED',
+      surface: '#ffffff',
+      text: '#9A3412',
+      textMuted: '#C2410C',
+      border: '#FDBA74',
+    },
+  },
 } as const;
 
 // ============================================================================

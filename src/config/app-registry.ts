@@ -483,6 +483,60 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   },
 
   // -------------------------------------------------------------------------
+  // Easter Egg Sites (Unhinged Deep Lore)
+  // -------------------------------------------------------------------------
+
+  'popuphell': {
+    id: 'popuphell',
+    name: 'FREE PRIZES!!!',
+    icon: '🎉',
+    description: 'YOU ARE THE 1000000th VISITOR!!!',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'millionpixels': {
+    id: 'millionpixels',
+    name: 'MillionPixels',
+    icon: '🟦',
+    description: 'Own a piece of fake internet history',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'quantumbrewblog': {
+    id: 'quantumbrewblog',
+    name: 'QuantumBrewBlog',
+    icon: '☕',
+    description: 'Observing coffee so you don\'t have to',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'hartwellfiles': {
+    id: 'hartwellfiles',
+    name: 'Hartwell Files',
+    icon: '🏚️',
+    description: 'The truth is in there',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'trustfalltim': {
+    id: 'trustfalltim',
+    name: 'TrustFallTim.fan',
+    icon: '🙆‍♂️',
+    description: 'The official unofficial fan archive',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
 

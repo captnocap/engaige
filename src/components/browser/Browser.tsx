@@ -29,6 +29,12 @@ const SITE_URLS: Record<string, string> = {
   'oddsoracle': 'www.oddsoracle.fake',
   'strangerzone': 'www.strangerzone.fake',
   'wealthwisdom': 'www.wealthwisdom.fake',
+  // Easter egg sites
+  'popuphell': 'www.free-prizes-click-here.fake',
+  'millionpixels': 'www.millionpixels.fake',
+  'quantumbrewblog': 'www.quantumbrewblog.fake',
+  'hartwellfiles': 'www.hartwellfiles.fake',
+  'trustfalltim': 'www.trustfalltim.fan',
 }
 
 // Reverse lookup - URL to app ID
