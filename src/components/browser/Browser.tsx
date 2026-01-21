@@ -459,7 +459,7 @@ function BrowserHomePage({ apps, onNavigate }: BrowserHomePageProps) {
       {/* Logo */}
       <div className="text-6xl mb-4">🌐</div>
       <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
-        NetScape
+        The Corn Cob
       </h1>
       <p className="text-sm mb-8" style={{ color: 'var(--color-textMuted)' }}>
         Your gateway to the social web

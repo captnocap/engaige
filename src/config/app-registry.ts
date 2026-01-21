@@ -360,7 +360,7 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
 
   'browser': {
     id: 'browser',
-    name: 'NetScape',
+    name: 'The Corn Cob',
     icon: '🌐',
     description: 'Web browser - access all sites',
     surfaces: { desktop: true },
