@@ -28,6 +28,7 @@ interface DesktopIconConfig {
   icon: ReactNode
   label: string
   opensWindow?: string
+  allowMultiple?: boolean // Allow opening multiple instances
   action?: () => void
 }
 
@@ -35,12 +36,13 @@ export function Desktop() {
   const { completed: onboardingCompleted, setCompleted } = useOnboardingStore()
   const { currentTheme } = useThemeStore()
   const { wallpaper } = useSettingsStore()
-  const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser'] : []))
+  const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser-1'] : []))
   const [windowStates, setWindowStates] = useState<Record<string, WindowState>>({})
-  const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser' : null)
+  const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser-1' : null)
   const [nextZIndex, setNextZIndex] = useState(10)
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
   const [phoneVisible, setPhoneVisible] = useState(false)
+  const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
 
   const handleOnboardingComplete = useCallback((data: OnboardingData) => {
     console.log('Onboarding data:', data)
@@ -48,8 +50,9 @@ export function Desktop() {
     // For now, just mark as complete with a mock player ID
     setCompleted('mock-player-id')
     // Open browser after onboarding
-    setOpenWindows(new Set(['browser']))
-    setActiveWindow('browser')
+    setOpenWindows(new Set(['browser-1']))
+    setActiveWindow('browser-1')
+    setWindowInstanceCounter(2)
   }, [setCompleted])
 
   useEffect(() => {
@@ -110,7 +113,7 @@ export function Desktop() {
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
-    { id: 'browser', icon: '🌐', label: 'Browser', opensWindow: 'browser' },
+    { id: 'browser', icon: '🌐', label: 'Browser', opensWindow: 'browser', allowMultiple: true },
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
@@ -162,9 +165,20 @@ export function Desktop() {
   }, [])
 
   const handleIconDoubleClick = useCallback((icon: DesktopIconConfig) => {
-    if (icon.opensWindow) openWindow(icon.opensWindow)
-    else if (icon.action) icon.action()
-  }, [openWindow])
+    if (icon.opensWindow) {
+      if (icon.allowMultiple) {
+        // Create a new instance with a unique ID
+        const newId = `${icon.opensWindow}-${windowInstanceCounter}`
+        setWindowInstanceCounter(prev => prev + 1)
+        openWindow(newId)
+      } else {
+        // Single instance - open or focus existing
+        openWindow(icon.opensWindow)
+      }
+    } else if (icon.action) {
+      icon.action()
+    }
+  }, [openWindow, windowInstanceCounter])
 
   const handleDesktopClick = useCallback(() => setSelectedIcon(null), [])
 
@@ -175,11 +189,19 @@ export function Desktop() {
   }, [windowStates, activeWindow, focusWindow, minimizeWindow])
 
   const taskbarWindows: TaskbarWindow[] = Array.from(openWindows).map(id => {
-    const config = windows.find(w => w.id === id)
+    // Extract base window type from ID (e.g., "browser-1" -> "browser")
+    const baseType = id.replace(/-\d+$/, '')
+    const config = windows.find(w => w.id === baseType)
     const state = windowStates[id]
+
+    // For multi-instance windows, show instance number in title
+    const instanceMatch = id.match(/-(\d+)$/)
+    const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
+    const title = instanceNum && instanceNum > 1 ? `${config?.title ?? baseType} (${instanceNum})` : (config?.title ?? baseType)
+
     return {
       id,
-      title: config?.title ?? id,
+      title,
       icon: config?.icon ?? '📄',
       isMinimized: state?.isMinimized ?? false,
       isActive: activeWindow === id,
@@ -232,17 +254,32 @@ export function Desktop() {
         </div>
 
         {Array.from(openWindows).map(windowId => {
-          const config = windows.find(w => w.id === windowId)
+          // Extract base window type from ID (e.g., "browser-1" -> "browser")
+          const baseType = windowId.replace(/-\d+$/, '')
+          const config = windows.find(w => w.id === baseType)
           if (!config) return null
           const state = windowStates[windowId]
+
+          // For multi-instance windows, show instance number in title
+          const instanceMatch = windowId.match(/-(\d+)$/)
+          const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
+          const title = instanceNum && instanceNum > 1 ? `${config.title} (${instanceNum})` : config.title
+
+          // Offset position slightly for new instances to avoid exact overlap
+          const positionOffset = instanceNum ? (instanceNum - 1) * 30 : 0
+          const adjustedDefaultState = {
+            ...config.defaultState,
+            x: (config.defaultState.x ?? 50) + positionOffset,
+            y: (config.defaultState.y ?? 30) + positionOffset,
+          }
 
           return (
             <Window
               key={windowId}
               id={windowId}
-              title={config.title}
+              title={title}
               icon={config.icon}
-              initialState={{ ...config.defaultState, ...state }}
+              initialState={{ ...adjustedDefaultState, ...state }}
               zIndex={state?.zIndex ?? 1}
               isActive={activeWindow === windowId}
               onFocus={() => focusWindow(windowId)}
