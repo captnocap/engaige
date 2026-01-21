@@ -8,6 +8,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { getAppsForSurface, type AppDefinition } from '../../config/app-registry.js'
 import { BrowserSiteContainer } from './BrowserSiteContainer.js'
+import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 // Site URL mappings
 const SITE_URLS: Record<string, string> = {
@@ -298,8 +299,8 @@ export function Browser() {
               }}
             >
               {/* Tab icon */}
-              <span className="text-sm shrink-0">
-                {tab.siteId ? (browserApps.find(a => a.id === tab.siteId)?.icon || '🌐') : '🌐'}
+              <span className="text-sm shrink-0 flex items-center">
+                {tab.siteId ? (browserApps.find(a => a.id === tab.siteId)?.icon || <img src={cornCobIcon} alt="" className="w-4 h-4" />) : <img src={cornCobIcon} alt="" className="w-4 h-4" />}
               </span>
 
               {/* Tab title */}
@@ -458,7 +459,7 @@ function BrowserHomePage({ apps, onNavigate }: BrowserHomePageProps) {
       style={{ background: 'linear-gradient(180deg, var(--color-bgSecondary) 0%, var(--color-bg) 100%)' }}
     >
       {/* Logo */}
-      <div className="text-6xl mb-4">🌐</div>
+      <img src={cornCobIcon} alt="The Corn Cob" className="w-24 h-24 mb-4" />
       <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
         The Corn Cob
       </h1>
