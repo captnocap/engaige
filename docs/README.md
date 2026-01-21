@@ -15,23 +15,41 @@ LoveAI is a relationship simulator and social media game that reimagines the cha
 
 ## Documentation Index
 
-Please refer to the following documents for detailed information:
-
+### Core Architecture
 *   **[Architecture Overview](./ARCHITECTURE.md)**: High-level system design, database schema, and AI integration strategies.
-*   **[Backend Documentation](./BACKEND.md)**: Details on the Bun-based API server, services (NPC, AI, Onboarding), and proxy systems.
-*   **[Frontend Documentation](./FRONTEND.md)**: Architecture of the React + Vite application, window management, and component structure.
-*   **[Tauri Integration](./TAURI.md)**: Desktop environment integration, window customization, and build process.
-*   **[Project Roadmap](./ROADMAP.md)**: Comprehensive guide to planned features, phases, and future ideas.
+*   **[Backend Documentation](./BACKEND.md)**: Details on the Bun-based API server and core services.
+*   **[Frontend Documentation](./FRONTEND.md)**: React + Vite application architecture and window management.
+*   **[Tauri Integration](./TAURI.md)**: Desktop environment integration and build process.
+*   **[Project Roadmap](./ROADMAP.md)**: Detailed feature roadmap and future vision.
 
-## Specialized Documentation
+### NPC & Simulation
+*   **[NPC Personality System](./NPC_PERSONALITY_SYSTEM.md)**: Breakdown of behavior flags, quirks, and presets.
+*   **[Autonomous Context](./AUTONOMOUS_CONTEXT.md)**: Background NPC decision-making and interaction logic.
+*   **[Drama Automation](./DRAMA_AUTOMATION.md)**: Systems for generating and managing NPC-to-NPC narrative friction.
+*   **[News Feed System](./NEWS_FEED_SYSTEM.md)**: Unified feed for world events, lore, and AI-generated trends.
+*   **[Content Templates](./CONTENT_TEMPLATES.md)**: Reference for generating NPC content, profiles, and interactions.
 
-*   **[NPC Personality System](./NPC_PERSONALITY_SYSTEM.md)**: Detailed breakdown of behavior flags, quirks, and personality presets.
-*   **[Proxy System](./PROXY_SYSTEM.md)**: How the Vision and Image Generation proxies transparently handle capabilities for different models.
-*   **[Autonomous Context](./AUTONOMOUS_CONTEXT.md)**: How NPCs make decisions and interact autonomously in the background.
-*   **[Context System](./CONTEXT_SYSTEM.md)**: The memory and context injection architecture for AI prompting.
-*   **[Image Generation](./IMAGE_GENERATION.md)**: Specifics on image prompts, generation flows, and consistency.
+### AI & Systems
+*   **[AI Queue System](./AI_QUEUE.md)**: Priority-based request management and budget control.
+*   **[Context System](./CONTEXT_SYSTEM.md)**: Memory and context injection architecture for AI prompting.
+*   **[Image Generation](./IMAGE_GENERATION.md)**: Specifics on prompts, generation flows, and consistency.
+*   **[Proxy System](./PROXY_SYSTEM.md)**: Transparent Vision and Image Gen proxies for different models.
 *   **[Runtime Tools](./RUNTIME_TOOLS.md)**: Tools available to the AI at runtime.
-*   **[Files System](./FILES_SYSTEM.md)**: How media and configuration files are managed.
+*   **[Output Validation](./OUTPUT_VALIDATION.md)**: Ensuring AI content meets quality and tone standards.
+*   **[Content Guardrails](./CONTENT_GUARDRAILS.md)**: User-configurable content rating and safety systems.
+
+### Technical Foundations
+*   **[Event Bus Specification](./EVENT_BUS_SPEC.md)**: Architecture for the central system event stream.
+*   **[Event Reference](./EVENT_REFERENCE.md)**: Comprehensive guide to all system event types and payloads.
+*   **[Error Logging](./ERROR_LOGGING.md)**: Standardized error handling and tracking across the project.
+*   **[Network Architecture](./NETWORK_ARCHITECTURE.md)**: Two-layer design (WS locally, HTTP/Proxy externally).
+*   **[Multiplayer Architecture](./MULTIPLAYER_ARCHITECTURE.md)**: Design for the decentralized mesh network between players.
+*   **[Component Architecture](./COMPONENT_ARCHITECTURE.md)**: Philosophy for multi-platform UI components.
+*   **[Files System](./FILES_SYSTEM.md)**: Management of media, configuration, and export files.
+
+### Utilities & Reference
+*   **[Logs Viewer](./LOGS_VIEWER.md)**: Documentation for the in-game event and error log viewing tools.
+*   **[Filler Sites](./FILLER_SITES.md)**: Details on the satirical and informational "NetExplorer" websites.
 *   **[Example Configs](./EXAMPLE_CONFIGS.md)**: Reference configurations for models and NPCs.
 
 ## Quick Start

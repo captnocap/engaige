@@ -232,6 +232,29 @@ const postResult = await queuedGenerateNPCPost(npcId, "twitter", prompt, {
 
 ---
 
+## ⚠️ CRITICAL: Content Guardrails - NPC Safety & Rating System
+
+**The Content Guardrails System (`docs/CONTENT_GUARDRAILS.md`) controls all NPC behavioral limits and content visibility.**
+
+NPCs MUST respect the user-defined content rating. This affects prompt injection, output validation, and image generation.
+
+### Key Ratings
+- `harsh`: Strictly platonic, clean language, SFW only.
+- `strict`: Romantic allowed, no sexual content, teen-appropriate.
+- `normal`: Natural adult progression, relationship-gated intimacy.
+- `relaxed`: Unrestricted adult content, NSFW images allowed.
+- `none`: No restrictions (warning required).
+
+### Implementation Requirements
+- **System Prompts**: Must inject guardrail addendums.
+- **Output Validation**: Must check against rating limits.
+- **Multilayer Security**: Receiver-side verification for mesh network content.
+
+**Documentation:**
+- **[CONTENT_GUARDRAILS.md](docs/CONTENT_GUARDRAILS.md)** - Full specification and implementation guide.
+
+---
+
 ## News Feed System (The Recursion Loop)
 
 **The News Feed (`server/src/services/news-feed.ts`) aggregates content from three sources that NPCs consume as "world news" with no distinction between real and fake.**
