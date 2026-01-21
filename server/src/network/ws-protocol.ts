@@ -91,6 +91,36 @@ export interface PingMessage extends WSMessage {
   type: 'ping';
 }
 
+// Logs - Events
+export interface LogsGetEventsMessage extends WSMessage<{
+  category?: string;
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'logs:getEvents';
+}
+
+// Logs - Errors
+export interface LogsGetErrorsMessage extends WSMessage<{
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  unresolved?: boolean;
+  limit?: number;
+}> {
+  type: 'logs:getErrors';
+}
+
+export interface LogsResolveErrorMessage extends WSMessage<{
+  errorId: string;
+  notes?: string;
+}> {
+  type: 'logs:resolveError';
+}
+
+// Logs - Queue
+export interface LogsGetQueueMessage extends WSMessage {
+  type: 'logs:getQueue';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -101,7 +131,11 @@ export type ClientMessage =
   | AIGeneratePostMessage
   | ProxyGetConfigMessage
   | ProxySetConfigMessage
-  | PingMessage;
+  | PingMessage
+  | LogsGetEventsMessage
+  | LogsGetErrorsMessage
+  | LogsResolveErrorMessage
+  | LogsGetQueueMessage;
 
 // ============================================================================
 // Server -> Client Messages

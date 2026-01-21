@@ -1,0 +1,269 @@
+/**
+ * Filler Sites Configuration
+ *
+ * Centralized config for all filler content sites (WikiKnow, Threadit, DailyBuzz).
+ * Change names here → updates everywhere automatically.
+ *
+ * When you get a wild hair and want to rename something, just edit this file!
+ */
+
+// ============================================================================
+// Site Configurations
+// ============================================================================
+
+export const FILLER_SITES = {
+  wiki: {
+    id: 'wikiknow',
+    name: 'WikiKnow',
+    tagline: 'The free encyclopedia',
+    url: 'www.wikiknow.fake',
+    icon: '📖',
+    description: 'The free encyclopedia that anyone can edit',
+    theme: {
+      primary: '#0645AD',      // Wikipedia blue links
+      secondary: '#36c',       // Wikipedia darker blue
+      background: '#f6f6f6',   // Wikipedia grey
+      surface: '#ffffff',      // White content
+      text: '#202122',         // Wikipedia text
+      textMuted: '#72777d',    // Wikipedia muted
+      border: '#a2a9b1',       // Wikipedia border
+    },
+  },
+
+  reddit: {
+    id: 'threadit',
+    name: 'Threadit',
+    tagline: 'The front page of the fake internet',
+    url: 'www.threadit.fake',
+    icon: '🗣️',
+    description: 'Dive into anything',
+    theme: {
+      primary: '#FF4500',      // Reddit orange
+      secondary: '#0079D3',    // Reddit blue
+      background: '#DAE0E6',   // Reddit grey bg
+      surface: '#ffffff',      // White cards
+      text: '#1c1c1c',         // Reddit text
+      textMuted: '#7c7c7c',    // Reddit muted
+      border: '#ccc',          // Reddit border
+      upvote: '#FF4500',       // Upvote orange
+      downvote: '#7193FF',     // Downvote blue
+    },
+  },
+
+  news: {
+    id: 'dailybuzz',
+    name: 'DailyBuzz',
+    tagline: 'All the news that fits',
+    url: 'www.dailybuzz.fake',
+    icon: '📰',
+    description: 'Breaking news, local stories, and everything in between',
+    theme: {
+      primary: '#c41e3a',      // News red
+      secondary: '#1a1a1a',    // Black
+      background: '#f4f4f4',   // Light grey
+      surface: '#ffffff',      // White
+      text: '#1a1a1a',         // Dark text
+      textMuted: '#666666',    // Grey text
+      border: '#e0e0e0',       // Light border
+      accent: '#0066cc',       // Link blue
+    },
+  },
+
+  video: {
+    id: 'vidtube',
+    name: 'VidTube',
+    tagline: 'Broadcast Yourself',
+    url: 'www.vidtube.fake',
+    icon: '▶️',
+    description: 'Share and watch videos from around the world',
+    theme: {
+      primary: '#FF0000',      // YouTube red
+      secondary: '#f2f2f2',    // Light grey
+      background: '#f9f9f9',   // Off-white
+      surface: '#ffffff',      // White
+      text: '#030303',         // Near black
+      textMuted: '#606060',    // Grey
+      border: '#e5e5e5',       // Light border
+    },
+  },
+
+  imageboard: {
+    id: 'forchan',
+    name: 'ForChan',
+    tagline: 'The stories and information posted here are artistic works of fiction',
+    url: 'www.forchan.fake',
+    icon: '🍀',
+    description: 'Anonymous imageboard',
+    theme: {
+      primary: '#117743',      // 4chan green
+      secondary: '#789922',    // Quote green
+      background: '#eef2ff',   // Light blue-ish
+      surface: '#d6daf0',      // Slightly darker
+      text: '#000000',         // Black
+      textMuted: '#666666',    // Grey
+      border: '#b7c5d9',       // Blue-grey border
+      headerBg: '#ADD8E6',     // Light blue header
+      headerText: '#800000',   // Maroon
+      postBg: '#d6daf0',       // Post background
+      replyBg: '#d6daf0',      // Reply background
+      greentext: '#789922',    // Greentext color
+      quoteLink: '#d00',       // Quote link red
+      name: '#117743',         // Name green
+      tripcode: '#228854',     // Tripcode green
+      subject: '#cc1105',      // Subject red
+      postId: '#000080',       // Post ID blue
+      inputBg: '#ffffff',      // Input background
+      buttonBg: '#e0e0e0',     // Button background
+      thumbnailBg: '#eee',     // Thumbnail background
+      sticky: '#f00',          // Sticky red
+      locked: '#789922',       // Locked green
+      boardTitle: '#800000',   // Board title maroon
+    },
+  },
+
+  pharmacy: {
+    id: 'vitalityrx',
+    name: 'VitalityRx',
+    tagline: 'Medications for the Modern Age',
+    url: 'www.vitalityrx.fake',
+    icon: '💊',
+    description: 'Pharmaceutical solutions for conditions you didn\'t know you had',
+    theme: {
+      primary: '#2563EB',      // Medical blue
+      secondary: '#10B981',    // Green accent
+      background: '#f8fafc',   // Light background
+      surface: '#ffffff',      // White
+      text: '#1e293b',         // Dark slate
+      textMuted: '#64748b',    // Slate
+      border: '#e2e8f0',       // Light slate border
+    },
+  },
+
+  realestate: {
+    id: 'nestfinder',
+    name: 'NestFinder',
+    tagline: 'Find Your Perfect Place',
+    url: 'www.nestfinder.fake',
+    icon: '🏠',
+    description: 'Apartments, houses, and rooms for rent and sale',
+    theme: {
+      primary: '#16a34a',      // Real estate green
+      secondary: '#0ea5e9',    // Blue accent
+      background: '#f5f5f4',   // Warm grey
+      surface: '#ffffff',      // White
+      text: '#1c1917',         // Stone dark
+      textMuted: '#78716c',    // Stone muted
+      border: '#e7e5e4',       // Stone border
+    },
+  },
+
+  marketplace: {
+    id: 'bargainbay',
+    name: 'BargainBay',
+    tagline: 'Buy. Sell. Maybe Trust.',
+    url: 'www.bargainbay.fake',
+    icon: '🏷️',
+    description: 'Local classifieds and marketplace',
+    theme: {
+      primary: '#0866ff',      // Facebook-ish blue
+      secondary: '#00a400',    // Craigslist green
+      background: '#f0f2f5',   // Light grey
+      surface: '#ffffff',      // White
+      text: '#050505',         // Near black
+      textMuted: '#65676b',    // Grey
+      border: '#dddfe2',       // Light border
+    },
+  },
+
+  betting: {
+    id: 'oddsoracle',
+    name: 'OddsOracle',
+    tagline: 'Predict Everything. Win Nothing.',
+    url: 'www.oddsoracle.fake',
+    icon: '🎲',
+    description: 'Prediction markets for local events and absurd outcomes',
+    theme: {
+      primary: '#8B5CF6',      // Purple
+      secondary: '#10B981',    // Green for YES
+      background: '#0f0a1f',   // Dark purple bg
+      surface: '#1a1328',      // Slightly lighter
+      text: '#e5e7eb',         // Light text
+      textMuted: '#9ca3af',    // Grey
+      border: '#374151',       // Dark border
+      yes: '#10B981',          // Green for YES
+      no: '#EF4444',           // Red for NO
+    },
+  },
+
+  strangerzone: {
+    id: 'strangerzone',
+    name: 'StrangerZone',
+    tagline: 'Talk to Strangers. Regret It Later.',
+    url: 'www.strangerzone.fake',
+    icon: '👤',
+    description: 'Random chat with anonymous strangers',
+    theme: {
+      primary: '#e94560',      // Pink/red
+      secondary: '#16213e',    // Dark blue
+      background: '#1a1a2e',   // Dark navy
+      surface: '#16213e',      // Slightly lighter
+      text: '#eeeeee',         // Light text
+      textMuted: '#888888',    // Grey
+      border: '#0f3460',       // Blue border
+    },
+  },
+
+  wealthwisdom: {
+    id: 'wealthwisdom',
+    name: 'WealthWisdom',
+    tagline: 'Financial Advice from People Who Definitely Know',
+    url: 'www.wealthwisdom.fake',
+    icon: '💰',
+    description: 'Financial gurus, investment tips, and get-rich-quick schemes',
+    theme: {
+      primary: '#10B981',      // Green (money)
+      secondary: '#F59E0B',    // Gold accent
+      background: '#0a0f1c',   // Dark background
+      surface: '#1f2937',      // Grey surface
+      text: '#e5e7eb',         // Light text
+      textMuted: '#9ca3af',    // Grey
+      border: '#374151',       // Dark border
+    },
+  },
+} as const;
+
+// ============================================================================
+// Type Exports
+// ============================================================================
+
+export type FillerSiteKey = keyof typeof FILLER_SITES;
+export type FillerSite = typeof FILLER_SITES[FillerSiteKey];
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Get all filler site IDs for registration
+ */
+export function getFillerSiteIds(): string[] {
+  return Object.values(FILLER_SITES).map(site => site.id);
+}
+
+/**
+ * Get site config by ID
+ */
+export function getFillerSiteById(id: string): FillerSite | undefined {
+  return Object.values(FILLER_SITES).find(site => site.id === id);
+}
+
+/**
+ * Get URL mappings for Browser.tsx
+ */
+export function getFillerSiteUrls(): Record<string, string> {
+  return Object.fromEntries(
+    Object.values(FILLER_SITES).map(site => [site.id, site.url])
+  );
+}
+
+export default FILLER_SITES;

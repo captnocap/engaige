@@ -7,6 +7,17 @@
 import { getApp } from '../../config/app-registry.js'
 import { PlaceholderSite } from './sites/PlaceholderSite.js'
 import { MyFaceSite } from './sites/MyFaceSite.js'
+import { WikiKnowSite } from './sites/WikiKnowSite.js'
+import { ThreaditSite } from './sites/ThreaditSite.js'
+import { DailyBuzzSite } from './sites/DailyBuzzSite.js'
+import { VidTubeSite } from './sites/VidTubeSite.js'
+import { ForChanSite } from './sites/ForChanSite.js'
+import { VitalityRxSite } from './sites/VitalityRxSite.js'
+import { NestFinderSite } from './sites/NestFinderSite.js'
+import { BargainBaySite } from './sites/BargainBaySite.js'
+import { OddsOracleSite } from './sites/OddsOracleSite.js'
+import { StrangerZoneSite } from './sites/StrangerZoneSite.js'
+import { WealthWisdomSite } from './sites/WealthWisdomSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -22,6 +33,18 @@ export interface SiteProps {
 const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'myface': MyFaceSite,
   'myface-chat': MyFaceSite, // Chat is part of MyFace
+  // Filler content sites
+  'wikiknow': WikiKnowSite,
+  'threadit': ThreaditSite,
+  'dailybuzz': DailyBuzzSite,
+  'vidtube': VidTubeSite,
+  'forchan': ForChanSite,
+  'vitalityrx': VitalityRxSite,
+  'nestfinder': NestFinderSite,
+  'bargainbay': BargainBaySite,
+  'oddsoracle': OddsOracleSite,
+  'strangerzone': StrangerZoneSite,
+  'wealthwisdom': WealthWisdomSite,
   // All other sites use PlaceholderSite until implemented
 }
 

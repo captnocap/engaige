@@ -369,6 +369,120 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   },
 
   // -------------------------------------------------------------------------
+  // Filler Content Sites (browser accessible)
+  // -------------------------------------------------------------------------
+
+  'wikiknow': {
+    id: 'wikiknow',
+    name: 'WikiKnow',
+    icon: '📖',
+    description: 'The free encyclopedia that anyone can edit',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'threadit': {
+    id: 'threadit',
+    name: 'Threadit',
+    icon: '🗣️',
+    description: 'The front page of the fake internet',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'dailybuzz': {
+    id: 'dailybuzz',
+    name: 'DailyBuzz',
+    icon: '📰',
+    description: 'All the news that fits',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'vidtube': {
+    id: 'vidtube',
+    name: 'VidTube',
+    icon: '▶️',
+    description: 'Share and watch videos from around the world',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'forchan': {
+    id: 'forchan',
+    name: 'ForChan',
+    icon: '🍀',
+    description: 'Anonymous imageboard',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'vitalityrx': {
+    id: 'vitalityrx',
+    name: 'VitalityRx',
+    icon: '💊',
+    description: 'Medications for the Modern Age',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'nestfinder': {
+    id: 'nestfinder',
+    name: 'NestFinder',
+    icon: '🏠',
+    description: 'Find your perfect place',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'bargainbay': {
+    id: 'bargainbay',
+    name: 'BargainBay',
+    icon: '🏷️',
+    description: 'Local classifieds and marketplace',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'oddsoracle': {
+    id: 'oddsoracle',
+    name: 'OddsOracle',
+    icon: '🎲',
+    description: 'Prediction markets for everything',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'strangerzone': {
+    id: 'strangerzone',
+    name: 'StrangerZone',
+    icon: '👤',
+    description: 'Talk to random strangers',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'wealthwisdom': {
+    id: 'wealthwisdom',
+    name: 'WealthWisdom',
+    icon: '💰',
+    description: 'Financial advice from experts',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
 

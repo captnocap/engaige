@@ -461,6 +461,12 @@ export const EventTypes = {
   MEDIA_UPLOADED: 'media:uploaded',
   MEDIA_GENERATED: 'media:generated',
   MEDIA_DELETED: 'media:deleted',
+
+  // News Feed
+  NEWS_ARTICLE_INGESTED: 'news:article_ingested',
+  NEWS_ARTICLE_MENTIONED: 'news:article_mentioned',
+  NEWS_STORIES_GENERATED: 'news:stories_generated',
+  NEWS_RSS_REFRESHED: 'news:rss_refreshed',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

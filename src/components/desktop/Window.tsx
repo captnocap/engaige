@@ -1,4 +1,5 @@
 import { useState, useRef, type ReactNode } from 'react'
+import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
 
 export interface WindowState {
   x: number
@@ -58,10 +59,14 @@ export function Window({
   className,
 }: WindowProps) {
   const [state, setState] = useState<WindowState>({ ...DEFAULT_STATE, ...initialState })
+  const [isHoveringControls, setIsHoveringControls] = useState(false)
   const windowRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null)
   const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number; edge: string } | null>(null)
   const restoreStateRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null)
+
+  // Get OS theme config
+  const windowChrome = useOSThemeStore(s => s.windowChrome)
 
   const updateState = (updates: Partial<WindowState>) => {
     setState(prev => {
@@ -187,37 +192,66 @@ export function Window({
       }}
       onMouseDown={onFocus}
     >
-      <div className={`flex flex-col h-full rounded-lg overflow-hidden border shadow-2xl ${isActive ? 'border-[#444] shadow-black/50' : 'border-[#333] shadow-black/30'}`}>
+      <div
+        className={`flex flex-col h-full overflow-hidden border shadow-2xl ${isActive ? 'border-[#444] shadow-black/50' : 'border-[#333] shadow-black/30'}`}
+        style={{ borderRadius: windowChrome.cornerRadius }}
+      >
+        {/* Title Bar */}
         <div
-          className={`flex items-center gap-2 px-3 h-9 shrink-0 select-none ${isActive ? 'bg-[#2a2a2a]' : 'bg-[#222]'}`}
+          className={`flex items-center gap-2 px-3 shrink-0 select-none ${isActive ? 'bg-[#2a2a2a]' : 'bg-[#222]'}`}
+          style={{ height: windowChrome.titleBarHeight }}
           onMouseDown={handleTitleBarMouseDown}
           onDoubleClick={handleMaximize}
         >
-          {icon && <div className="w-4 h-4 flex items-center justify-center text-sm">{icon}</div>}
-          <span className={`text-sm flex-1 truncate ${isActive ? 'text-white' : 'text-[#888]'}`}>{title}</span>
+          {/* Left side controls (Mac style) */}
+          {showControls && windowChrome.buttonPosition === 'left' && (
+            <WindowControls
+              style={windowChrome.buttonStyle}
+              isActive={isActive}
+              isHovering={isHoveringControls}
+              onHoverChange={setIsHoveringControls}
+              onMinimize={handleMinimize}
+              onMaximize={handleMaximize}
+              onClose={onClose}
+              isMaximized={state.isMaximized}
+            />
+          )}
 
-          {showControls && (
-            <div className="flex items-center gap-1" onMouseDown={e => e.stopPropagation()}>
-              <button onClick={handleMinimize} className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#444] text-[#888] hover:text-white transition-colors">
-                <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="5.5" width="8" height="1" /></svg>
-              </button>
-              <button onClick={handleMaximize} className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#444] text-[#888] hover:text-white transition-colors">
-                {state.isMaximized ? (
-                  <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1"><rect x="3" y="1" width="7" height="7" /><path d="M1 4v6h6" /></svg>
-                ) : (
-                  <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1"><rect x="2" y="2" width="8" height="8" /></svg>
-                )}
-              </button>
-              <button onClick={onClose} className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#e81123] text-[#888] hover:text-white transition-colors">
-                <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 2l8 8M10 2l-8 8" /></svg>
-              </button>
-            </div>
+          {/* Icon */}
+          {icon && windowChrome.buttonPosition === 'right' && (
+            <div className="w-4 h-4 flex items-center justify-center text-sm">{icon}</div>
+          )}
+
+          {/* Title */}
+          <span className={`text-sm flex-1 truncate ${windowChrome.buttonPosition === 'left' ? 'text-center' : ''} ${isActive ? 'text-white' : 'text-[#888]'}`}>
+            {title}
+          </span>
+
+          {/* Icon for Mac (centered title, icon on right of controls) */}
+          {icon && windowChrome.buttonPosition === 'left' && (
+            <div className="w-4 h-4 flex items-center justify-center text-sm opacity-0">{icon}</div>
+          )}
+
+          {/* Right side controls (Windows/Linux style) */}
+          {showControls && windowChrome.buttonPosition === 'right' && (
+            <WindowControls
+              style={windowChrome.buttonStyle}
+              isActive={isActive}
+              isHovering={isHoveringControls}
+              onHoverChange={setIsHoveringControls}
+              onMinimize={handleMinimize}
+              onMaximize={handleMaximize}
+              onClose={onClose}
+              isMaximized={state.isMaximized}
+            />
           )}
         </div>
 
+        {/* Content */}
         <div className="flex-1 min-h-0 bg-[#1a1a1a] overflow-hidden">{children}</div>
       </div>
 
+      {/* Resize handles */}
       {resizable && !state.isMaximized && (
         <>
           <div className="absolute top-0 left-2 right-2 h-1 cursor-n-resize" onMouseDown={e => handleResizeMouseDown(e, 'n')} />
@@ -230,6 +264,207 @@ export function Window({
           <div className="absolute bottom-0 right-0 w-2 h-2 cursor-se-resize" onMouseDown={e => handleResizeMouseDown(e, 'se')} />
         </>
       )}
+    </div>
+  )
+}
+
+// ============================================================================
+// Window Controls Component
+// ============================================================================
+
+interface WindowControlsProps {
+  style: WindowButtonStyle
+  isActive: boolean
+  isHovering: boolean
+  onHoverChange: (hovering: boolean) => void
+  onMinimize: () => void
+  onMaximize: () => void
+  onClose?: () => void
+  isMaximized: boolean
+}
+
+function WindowControls({
+  style,
+  isActive,
+  isHovering,
+  onHoverChange,
+  onMinimize,
+  onMaximize,
+  onClose,
+  isMaximized,
+}: WindowControlsProps) {
+  if (style === 'traffic-light') {
+    return <MacTrafficLights isActive={isActive} isHovering={isHovering} onHoverChange={onHoverChange} onMinimize={onMinimize} onMaximize={onMaximize} onClose={onClose} />
+  }
+
+  if (style === 'windows') {
+    return <WindowsControls onMinimize={onMinimize} onMaximize={onMaximize} onClose={onClose} isMaximized={isMaximized} />
+  }
+
+  // Linux style - similar to Windows but with different icons
+  return <LinuxControls onMinimize={onMinimize} onMaximize={onMaximize} onClose={onClose} isMaximized={isMaximized} />
+}
+
+// ============================================================================
+// Mac Traffic Light Buttons
+// ============================================================================
+
+interface MacTrafficLightsProps {
+  isActive: boolean
+  isHovering: boolean
+  onHoverChange: (hovering: boolean) => void
+  onMinimize: () => void
+  onMaximize: () => void
+  onClose?: () => void
+}
+
+function MacTrafficLights({ isActive, isHovering, onHoverChange, onMinimize, onMaximize, onClose }: MacTrafficLightsProps) {
+  return (
+    <div
+      className="flex items-center gap-2"
+      onMouseEnter={() => onHoverChange(true)}
+      onMouseLeave={() => onHoverChange(false)}
+      onMouseDown={e => e.stopPropagation()}
+    >
+      {/* Close - Red */}
+      <button
+        onClick={onClose}
+        className="w-3 h-3 rounded-full flex items-center justify-center transition-colors group"
+        style={{ background: isActive ? '#ff5f57' : '#3c3c3c' }}
+      >
+        {isHovering && (
+          <svg className="w-2 h-2 text-black/60" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 3l6 6M9 3l-6 6" />
+          </svg>
+        )}
+      </button>
+
+      {/* Minimize - Yellow */}
+      <button
+        onClick={onMinimize}
+        className="w-3 h-3 rounded-full flex items-center justify-center transition-colors"
+        style={{ background: isActive ? '#febc2e' : '#3c3c3c' }}
+      >
+        {isHovering && (
+          <svg className="w-2 h-2 text-black/60" viewBox="0 0 12 12" fill="currentColor">
+            <rect x="2" y="5" width="8" height="2" />
+          </svg>
+        )}
+      </button>
+
+      {/* Maximize - Green */}
+      <button
+        onClick={onMaximize}
+        className="w-3 h-3 rounded-full flex items-center justify-center transition-colors"
+        style={{ background: isActive ? '#28c840' : '#3c3c3c' }}
+      >
+        {isHovering && (
+          <svg className="w-2 h-2 text-black/60" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 4l4-2 4 2M2 8l4 2 4-2M2 4v4M10 4v4" />
+          </svg>
+        )}
+      </button>
+    </div>
+  )
+}
+
+// ============================================================================
+// Windows Style Buttons
+// ============================================================================
+
+interface WindowsControlsProps {
+  onMinimize: () => void
+  onMaximize: () => void
+  onClose?: () => void
+  isMaximized: boolean
+}
+
+function WindowsControls({ onMinimize, onMaximize, onClose, isMaximized }: WindowsControlsProps) {
+  return (
+    <div className="flex items-center" onMouseDown={e => e.stopPropagation()}>
+      {/* Minimize */}
+      <button
+        onClick={onMinimize}
+        className="w-11 h-8 flex items-center justify-center hover:bg-[#404040] text-[#888] hover:text-white transition-colors"
+      >
+        <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
+          <rect x="2" y="5.5" width="8" height="1" />
+        </svg>
+      </button>
+
+      {/* Maximize/Restore */}
+      <button
+        onClick={onMaximize}
+        className="w-11 h-8 flex items-center justify-center hover:bg-[#404040] text-[#888] hover:text-white transition-colors"
+      >
+        {isMaximized ? (
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1">
+            <rect x="3" y="1" width="7" height="7" />
+            <path d="M1 4v6h6" />
+          </svg>
+        ) : (
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1">
+            <rect x="2" y="2" width="8" height="8" />
+          </svg>
+        )}
+      </button>
+
+      {/* Close */}
+      <button
+        onClick={onClose}
+        className="w-11 h-8 flex items-center justify-center hover:bg-[#e81123] text-[#888] hover:text-white transition-colors"
+      >
+        <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M2 2l8 8M10 2l-8 8" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+// ============================================================================
+// Linux Style Buttons
+// ============================================================================
+
+function LinuxControls({ onMinimize, onMaximize, onClose, isMaximized }: WindowsControlsProps) {
+  return (
+    <div className="flex items-center gap-1" onMouseDown={e => e.stopPropagation()}>
+      {/* Minimize */}
+      <button
+        onClick={onMinimize}
+        className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#444] text-[#888] hover:text-white transition-colors"
+      >
+        <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
+          <rect x="2" y="9" width="8" height="1" />
+        </svg>
+      </button>
+
+      {/* Maximize/Restore */}
+      <button
+        onClick={onMaximize}
+        className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#444] text-[#888] hover:text-white transition-colors"
+      >
+        {isMaximized ? (
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1">
+            <rect x="1" y="3" width="6" height="6" />
+            <path d="M5 3V1h6v6h-2" />
+          </svg>
+        ) : (
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1">
+            <rect x="2" y="2" width="8" height="8" />
+          </svg>
+        )}
+      </button>
+
+      {/* Close */}
+      <button
+        onClick={onClose}
+        className="w-6 h-6 rounded flex items-center justify-center hover:bg-[#c42b1c] text-[#888] hover:text-white transition-colors"
+      >
+        <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M2 2l8 8M10 2l-8 8" />
+        </svg>
+      </button>
     </div>
   )
 }

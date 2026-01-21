@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Project Name:** engAIge (engage + AI)
 
 **MUST DO:**
+Always commit code updates on minor or major features / chores / bug fixes / anything updated after a tool loop with notes to keep steady documentation of development path!
 Please when ever there is any feature implementation, that is significant to how the underlying game mechanics work, please always remember to make comprehensive documentation of the files made and the changes made to the files. This is to ensure that the code is maintainable and that the code is easy to understand. And that we dont have to keep going back and forth to understand the code, or end up creating the same code multiple times. This also lets us avoid problems with using multiple AI models in parallel from not understanding the code. If you arnt updating documentation expect me to scold you. AND KEEP IT NEAT AND ORGANIZED! Thank you. :D
 
 ---
@@ -228,6 +229,66 @@ const postResult = await queuedGenerateNPCPost(npcId, "twitter", prompt, {
 **Documentation:**
 
 - **[AI_QUEUE.md](docs/AI_QUEUE.md)** - Full reference with all tiers, events, and patterns
+
+---
+
+## News Feed System (The Recursion Loop)
+
+**The News Feed (`server/src/services/news-feed.ts`) aggregates content from three sources that NPCs consume as "world news" with no distinction between real and fake.**
+
+### Sources
+
+| Source | Description |
+|--------|-------------|
+| `rss` | Real RSS feeds from external sources (TODO) |
+| `user` | Hand-crafted lore articles in `server/data/news/lore/*.json` |
+| `ai` | AI-generated articles about trending NPC topics |
+
+### The Loop
+
+1. **Lore/RSS articles** enter the unified feed
+2. **NPCs see headlines** in their context (via context-builder)
+3. **NPCs mention news** in posts → tracked automatically
+4. **Story generator detects trends** (3+ mentions of a topic)
+5. **AI generates articles** about what NPCs are discussing
+6. **New articles enter feed** → NPCs read them → Loop continues
+
+### How to Initialize
+
+```typescript
+import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
+import { startScheduler } from './services/background-scheduler.js';
+
+// Initialize news task handlers and load lore
+initializeNewsTasks();
+
+// Schedule story generation every 6 hours
+scheduleStoryGeneration({ intervalHours: 6, startDelayMinutes: 5 });
+
+// Start background scheduler
+startScheduler(30);
+```
+
+### Adding Lore Articles
+
+Create JSON files in `server/data/news/lore/`:
+
+```json
+{
+  "slug": "unique-slug",
+  "headline": "Your Headline",
+  "summary": "1-2 sentence summary.",
+  "content": "Full article in markdown...",
+  "category": "local|tech|entertainment|politics|business|opinion",
+  "author": "Byline Name",
+  "tags": ["topic", "tags"],
+  "sentiment": "positive|negative|neutral"
+}
+```
+
+**Documentation:**
+
+- **[NEWS_FEED_SYSTEM.md](docs/NEWS_FEED_SYSTEM.md)** - Full spec with schemas, services, and examples
 
 ---
 

@@ -29,6 +29,16 @@ export interface SocialProfile {
   relationshipLevel?: 'stranger' | 'acquaintance' | 'friend' | 'close_friend' | 'best_friend' | 'romantic'
 }
 
+/**
+ * Tracks who has viewed a post - critical for drama awareness system.
+ * NPCs and players only know about posts they've actually "seen".
+ */
+export interface PostView {
+  viewerId: string        // 'player' or npcId
+  viewedAt: string        // ISO timestamp
+  platform: string        // Where they saw it (feed, profile, notification)
+}
+
 export interface Post {
   id: string
   authorId: string
@@ -40,6 +50,9 @@ export interface Post {
   comments: Comment[]
   shares: number
   platform: 'myface' | 'chirp' | 'instasnap'
+
+  // Awareness tracking - who has actually seen this post
+  seenBy: PostView[]
 }
 
 export interface Comment {
@@ -70,6 +83,18 @@ interface SocialState {
   getProfile: (profileId: string) => SocialProfile | undefined
   getPostsByAuthor: (authorId: string) => Post[]
   getFeed: (platform?: string) => Post[]
+
+  // Awareness tracking
+  markPostAsSeen: (postId: string, viewerId: string, viewPlatform?: string) => void
+  hasSeenPost: (postId: string, viewerId: string) => boolean
+  getPostsSeenBy: (viewerId: string) => Post[]
+  getUnseenPosts: (viewerId: string, platform?: string) => Post[]
+
+  // NPC Content Creation (for drama automation)
+  createNPCPost: (npcId: string, content: string, platform?: 'myface' | 'chirp' | 'instasnap', images?: string[]) => Post | null
+  addNPCComment: (postId: string, npcId: string, content: string) => void
+  addNPCLike: (postId: string, npcId: string) => void
+  removeNPCLike: (postId: string, npcId: string) => void
 }
 
 // Mock NPC profiles for development
@@ -161,9 +186,45 @@ const MOCK_PROFILES: Record<string, SocialProfile> = {
     isOnline: true,
     relationshipLevel: 'acquaintance',
   },
+  'npc_marcus': {
+    id: 'npc_marcus',
+    name: 'Marcus',
+    username: 'MarcusNightOwl',
+    avatar: '🦉',
+    bio: 'late night thoughts | insomnia crew | 3am philosophy',
+    mood: 'contemplative',
+    moodEmoji: '🌙',
+    location: 'Chicago, IL',
+    interests: ['philosophy', 'night walks', 'jazz', 'coffee'],
+    music: 'lo-fi beats to contemplate existence to',
+    topFriends: ['npc_sarah', 'npc_luna'],
+    backgroundColor: '#1a1a2e',
+    textColor: '#9370DB',
+    isOnline: false,
+    lastSeen: 'online at 3am',
+    relationshipLevel: 'acquaintance',
+  },
+  'npc_luna': {
+    id: 'npc_luna',
+    name: 'Luna',
+    username: 'LunaStardust',
+    avatar: '🌙',
+    bio: '✨ vibes only ✨ astrology girlie | tarot reader | crystal collector',
+    mood: 'mystical',
+    moodEmoji: '🔮',
+    location: 'Sedona, AZ',
+    interests: ['astrology', 'tarot', 'crystals', 'yoga'],
+    music: 'ethereal ambient and meditation sounds',
+    topFriends: ['npc_emily', 'npc_marcus', 'npc_sarah'],
+    backgroundColor: '#2d1b4e',
+    textColor: '#E6E6FA',
+    isOnline: true,
+    relationshipLevel: 'friend',
+  },
 }
 
 // Mock posts for development
+// Note: seenBy is initially empty - posts become "seen" when viewed in feed
 const MOCK_POSTS: Omit<Post, 'author'>[] = [
   {
     id: 'post_1',
@@ -183,6 +244,7 @@ const MOCK_POSTS: Omit<Post, 'author'>[] = [
     ],
     shares: 2,
     platform: 'myface',
+    seenBy: [], // Likes/comments imply seeing - NPC awareness handled by awarenessStore
   },
   {
     id: 'post_2',
@@ -193,6 +255,7 @@ const MOCK_POSTS: Omit<Post, 'author'>[] = [
     comments: [],
     shares: 0,
     platform: 'myface',
+    seenBy: [],
   },
   {
     id: 'post_3',
@@ -220,6 +283,7 @@ const MOCK_POSTS: Omit<Post, 'author'>[] = [
     ],
     shares: 5,
     platform: 'myface',
+    seenBy: [],
   },
   {
     id: 'post_4',
@@ -230,6 +294,7 @@ const MOCK_POSTS: Omit<Post, 'author'>[] = [
     comments: [],
     shares: 1,
     platform: 'myface',
+    seenBy: [],
   },
   {
     id: 'post_5',
@@ -250,6 +315,7 @@ const MOCK_POSTS: Omit<Post, 'author'>[] = [
     ],
     shares: 3,
     platform: 'myface',
+    seenBy: [],
   },
 ]
 
@@ -359,6 +425,7 @@ export const useSocialStore = create<SocialState>()(
           comments: [],
           shares: 0,
           platform: 'myface',
+          seenBy: [], // New posts start unseen - will be marked as seen when viewed
         }
 
         set(state => ({
@@ -381,6 +448,162 @@ export const useSocialStore = create<SocialState>()(
         return platform
           ? posts.filter(post => post.platform === platform)
           : posts
+      },
+
+      // ========================================================================
+      // Awareness Tracking
+      // ========================================================================
+
+      markPostAsSeen: (postId: string, viewerId: string, viewPlatform?: string) => {
+        const post = get().posts.find(p => p.id === postId)
+        if (!post) return
+
+        // Already seen by this viewer
+        if (post.seenBy.some(v => v.viewerId === viewerId)) return
+
+        const view: PostView = {
+          viewerId,
+          viewedAt: new Date().toISOString(),
+          platform: viewPlatform || post.platform,
+        }
+
+        set(state => ({
+          posts: state.posts.map(p =>
+            p.id === postId
+              ? { ...p, seenBy: [...p.seenBy, view] }
+              : p
+          ),
+        }))
+      },
+
+      hasSeenPost: (postId: string, viewerId: string) => {
+        const post = get().posts.find(p => p.id === postId)
+        if (!post) return false
+        return post.seenBy.some(v => v.viewerId === viewerId)
+      },
+
+      getPostsSeenBy: (viewerId: string) => {
+        return get().posts.filter(p =>
+          p.seenBy.some(v => v.viewerId === viewerId)
+        )
+      },
+
+      getUnseenPosts: (viewerId: string, platform?: string) => {
+        const { posts } = get()
+        const filtered = platform
+          ? posts.filter(p => p.platform === platform)
+          : posts
+
+        return filtered.filter(p =>
+          !p.seenBy.some(v => v.viewerId === viewerId)
+        )
+      },
+
+      // ========================================================================
+      // NPC Content Creation (for drama automation)
+      // ========================================================================
+
+      createNPCPost: (npcId: string, content: string, platform?: 'myface' | 'chirp' | 'instasnap', images?: string[]) => {
+        const { profiles } = get()
+
+        // Try to find profile - handle both 'sarah' and 'npc_sarah' formats
+        let profile = profiles[npcId] || profiles[`npc_${npcId}`]
+
+        if (!profile) {
+          console.warn(`[SocialStore] Cannot create post: NPC profile not found for ${npcId}`)
+          return null
+        }
+
+        const newPost: Post = {
+          id: `post_${Date.now()}_${npcId}`,
+          authorId: profile.id,
+          author: profile,
+          content,
+          images,
+          timestamp: new Date().toISOString(),
+          likes: [],
+          comments: [],
+          shares: 0,
+          platform: platform || 'myface',
+          seenBy: [], // New posts start unseen
+        }
+
+        set(state => ({
+          posts: [newPost, ...state.posts],
+        }))
+
+        console.log(`[SocialStore] NPC ${profile.name} posted: "${content.substring(0, 50)}..."`)
+        return newPost
+      },
+
+      addNPCComment: (postId: string, npcId: string, content: string) => {
+        const { profiles } = get()
+
+        // Try to find profile - handle both 'sarah' and 'npc_sarah' formats
+        let profile = profiles[npcId] || profiles[`npc_${npcId}`]
+
+        if (!profile) {
+          console.warn(`[SocialStore] Cannot add comment: NPC profile not found for ${npcId}`)
+          return
+        }
+
+        const newComment: Comment = {
+          id: `comment_${Date.now()}_${npcId}`,
+          authorId: profile.id,
+          author: profile,
+          content,
+          timestamp: new Date().toISOString(),
+          likes: [],
+        }
+
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId
+              ? { ...post, comments: [...post.comments, newComment] }
+              : post
+          ),
+        }))
+
+        console.log(`[SocialStore] NPC ${profile.name} commented on ${postId}: "${content.substring(0, 30)}..."`)
+      },
+
+      addNPCLike: (postId: string, npcId: string) => {
+        const { profiles } = get()
+
+        // Try to find profile - handle both 'sarah' and 'npc_sarah' formats
+        let profile = profiles[npcId] || profiles[`npc_${npcId}`]
+
+        if (!profile) {
+          console.warn(`[SocialStore] Cannot add like: NPC profile not found for ${npcId}`)
+          return
+        }
+
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId && !post.likes.includes(profile!.id)
+              ? { ...post, likes: [...post.likes, profile!.id] }
+              : post
+          ),
+        }))
+      },
+
+      removeNPCLike: (postId: string, npcId: string) => {
+        const { profiles } = get()
+
+        // Try to find profile - handle both 'sarah' and 'npc_sarah' formats
+        let profile = profiles[npcId] || profiles[`npc_${npcId}`]
+
+        if (!profile) {
+          return
+        }
+
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId
+              ? { ...post, likes: post.likes.filter(id => id !== profile!.id) }
+              : post
+          ),
+        }))
       },
     }),
     {

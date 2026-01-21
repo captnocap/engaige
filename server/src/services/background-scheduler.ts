@@ -11,7 +11,9 @@ export type TaskType =
   | 'generate_post'
   | 'react_to_post'
   | 'initiate_conversation'
-  | 'send_scheduled_message';
+  | 'send_scheduled_message'
+  | 'generate_news_stories'
+  | 'refresh_rss_feeds';
 
 export interface BackgroundTask {
   id: string;
@@ -104,6 +106,8 @@ function inferBudgetCategory(taskType: TaskType): string {
     react_to_post: 'autonomous_posts',
     initiate_conversation: 'random_events',
     send_scheduled_message: 'conversation',
+    generate_news_stories: 'story_generation',
+    refresh_rss_feeds: 'other',
   };
 
   return categoryMap[taskType] || 'other';

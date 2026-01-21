@@ -24,8 +24,12 @@ import {
   type SocialProfile,
   type Post,
 } from '../../../stores/socialStore.js'
-import { useNPCStore, useNPC } from '../../../stores/npcStore.js'
+import { useNPCStore, useNPC, useNPCsOnDatingSite } from '../../../stores/npcStore.js'
 import { APP_REGISTRY, type AccessLevel } from '../../../config/app-registry.js'
+import { useDatingStore, useMatches, usePendingCelebration } from '../../../stores/datingStore.js'
+import { getDatingSite } from '../../../config/dating-registry.js'
+import { DatingCard } from '../../dating/DatingCard.js'
+import { MatchModal } from '../../dating/MatchModal.js'
 
 // MyFace style configuration for browser (uses myspace style for early 2000s aesthetic)
 const MYFACE_CONFIG: MessageStyleConfig = {
@@ -45,7 +49,7 @@ const MYFACE_CONFIG: MessageStyleConfig = {
   currentUserId: 'player',
 }
 
-type MyFaceView = 'home' | 'profile' | 'messages' | 'browse'
+type MyFaceView = 'home' | 'profile' | 'messages' | 'browse' | 'dating'
 
 export function MyFaceSite({ siteId }: SiteProps) {
   const [currentView, setCurrentView] = useState<MyFaceView>(
@@ -88,7 +92,7 @@ export function MyFaceSite({ siteId }: SiteProps) {
 
           {/* Navigation */}
           <nav className="flex items-center gap-4">
-            {(['home', 'browse', 'messages'] as MyFaceView[]).map((view) => (
+            {(['home', 'browse', 'dating', 'messages'] as MyFaceView[]).map((view) => (
               <button
                 key={view}
                 onClick={() => setCurrentView(view)}
@@ -120,6 +124,7 @@ export function MyFaceSite({ siteId }: SiteProps) {
       <main className="max-w-5xl mx-auto py-4 px-4">
         {currentView === 'home' && <MyFaceHome onViewProfile={handleViewProfile} />}
         {currentView === 'browse' && <MyFaceBrowse onViewProfile={handleViewProfile} />}
+        {currentView === 'dating' && <MyFaceDating onViewProfile={handleViewProfile} />}
         {currentView === 'messages' && <MyFaceMessages />}
         {currentView === 'profile' && selectedProfileId && (
           <MyFaceProfile
@@ -415,6 +420,263 @@ function MyFaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }
             No profiles found.
           </p>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// MyFace Dating - Grid-based dating section
+// ============================================================================
+
+const MYFACE_DATING_SITE_ID = 'myface-dating'
+
+function MyFaceDating({ onViewProfile }: { onViewProfile: (id: string) => void }) {
+  const [showMatchModal, setShowMatchModal] = useState(false)
+  const [matchedNpcId, setMatchedNpcId] = useState<string | null>(null)
+
+  const npcsOnSite = useNPCsOnDatingSite(MYFACE_DATING_SITE_ID)
+  const { getNPC, getDatingProfile, initialize: initNPCs } = useNPCStore()
+  const {
+    swipeRight,
+    swipeLeft,
+    hasSwipedOn,
+    clearPendingCelebration,
+    initialize: initDating,
+  } = useDatingStore()
+  const pendingCelebration = usePendingCelebration()
+  const matches = useMatches(MYFACE_DATING_SITE_ID)
+  const site = getDatingSite(MYFACE_DATING_SITE_ID)!
+
+  useEffect(() => {
+    initNPCs()
+    initDating()
+  }, [initNPCs, initDating])
+
+  // Filter to NPCs we haven't swiped on yet
+  const unseenNPCs = npcsOnSite.filter(npc => !hasSwipedOn(MYFACE_DATING_SITE_ID, npc.id))
+
+  // Handle pending match celebration
+  useEffect(() => {
+    if (pendingCelebration && pendingCelebration.siteId === MYFACE_DATING_SITE_ID) {
+      setMatchedNpcId(pendingCelebration.npcId)
+      setShowMatchModal(true)
+    }
+  }, [pendingCelebration])
+
+  const handleLike = (npcId: string) => {
+    swipeRight(MYFACE_DATING_SITE_ID, npcId)
+  }
+
+  const handlePass = (npcId: string) => {
+    swipeLeft(MYFACE_DATING_SITE_ID, npcId)
+  }
+
+  const handleCloseMatch = () => {
+    setShowMatchModal(false)
+    setMatchedNpcId(null)
+    clearPendingCelebration()
+  }
+
+  const matchedNpc = matchedNpcId ? getNPC(matchedNpcId) : undefined
+  const matchedProfile = matchedNpc ? getDatingProfile(matchedNpc.id, MYFACE_DATING_SITE_ID) : undefined
+
+  return (
+    <div className="space-y-4">
+      {/* Dating Header */}
+      <div
+        className="p-4 rounded"
+        style={{ background: 'white', border: '1px solid #ccc' }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-bold text-[#003366] text-lg flex items-center gap-2">
+              💕 MyFace Dating
+            </h2>
+            <p className="text-xs text-gray-500">Find love among your friends</p>
+          </div>
+          {matches.length > 0 && (
+            <div className="text-sm text-[#FF6600]">
+              ❤️ {matches.length} {matches.length === 1 ? 'Match' : 'Matches'}
+            </div>
+          )}
+        </div>
+
+        {/* Matches Row */}
+        {matches.length > 0 && (
+          <div className="mb-4 pb-4 border-b border-gray-200">
+            <h3 className="text-xs font-bold text-gray-500 mb-2">Your Matches</h3>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {matches.map((match) => {
+                const npc = getNPC(match.npcId)
+                const profile = getDatingProfile(match.npcId, MYFACE_DATING_SITE_ID)
+                if (!npc || !profile) return null
+
+                return (
+                  <button
+                    key={match.id}
+                    onClick={() => onViewProfile(match.npcId)}
+                    className="shrink-0 flex flex-col items-center group"
+                  >
+                    <div
+                      className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl ring-2 mb-1 transition-transform group-hover:scale-105 ${
+                        match.isNew ? 'ring-[#FF6600]' : 'ring-gray-300'
+                      }`}
+                      style={{ background: '#f5f5f5' }}
+                    >
+                      {profile.photos[0] || npc.avatar}
+                    </div>
+                    <span className="text-[10px] font-medium text-gray-700 truncate w-14 text-center">
+                      {npc.name}
+                    </span>
+                    {match.isNew && (
+                      <span className="text-[8px] text-[#FF6600] font-medium">NEW</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* People You May Like */}
+        <h3 className="text-sm font-bold text-[#003366] mb-3">People You May Like</h3>
+
+        {unseenNPCs.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-5xl mb-4">💔</div>
+            <p className="text-gray-500 text-sm">
+              No more profiles to browse right now.
+            </p>
+            <p className="text-gray-400 text-xs mt-1">
+              Check back later for new people!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {unseenNPCs.map((npc) => {
+              const profile = getDatingProfile(npc.id, MYFACE_DATING_SITE_ID)
+              if (!profile) return null
+
+              return (
+                <DatingProfileCard
+                  key={npc.id}
+                  npc={npc}
+                  profile={profile}
+                  site={site}
+                  onLike={() => handleLike(npc.id)}
+                  onPass={() => handlePass(npc.id)}
+                  onViewProfile={() => onViewProfile(npc.id)}
+                />
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Match Modal */}
+      {showMatchModal && matchedNpc && matchedProfile && site && (
+        <MatchModal
+          npc={matchedNpc}
+          datingProfile={matchedProfile}
+          site={site}
+          onSendMessage={handleCloseMatch}
+          onKeepSwiping={handleCloseMatch}
+        />
+      )}
+    </div>
+  )
+}
+
+interface DatingProfileCardProps {
+  npc: import('../../../stores/npcStore.js').NPC
+  profile: import('../../../stores/npcStore.js').NPCDatingProfile
+  site: import('../../../config/dating-registry.js').DatingSiteDefinition
+  onLike: () => void
+  onPass: () => void
+  onViewProfile: () => void
+}
+
+function DatingProfileCard({ npc, profile, site, onLike, onPass, onViewProfile }: DatingProfileCardProps) {
+  const [showDetails, setShowDetails] = useState(false)
+
+  return (
+    <div
+      className="rounded-lg overflow-hidden transition-shadow hover:shadow-lg cursor-pointer relative"
+      style={{ border: '1px solid #ddd', background: 'white' }}
+      onClick={() => setShowDetails(!showDetails)}
+    >
+      {/* Photo/Avatar */}
+      <div
+        className="aspect-[3/4] flex items-center justify-center text-6xl relative"
+        style={{ background: '#f0f0f0' }}
+      >
+        {profile.photos[0] || npc.avatar}
+
+        {/* Gradient overlay for text */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-24"
+          style={{
+            background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+          }}
+        />
+
+        {/* Name & Info */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+          <h4 className="font-bold text-sm">{npc.name}, {npc.age}</h4>
+          <p className="text-xs opacity-90 truncate">{profile.lookingFor}</p>
+        </div>
+      </div>
+
+      {/* Quick info / expanded details */}
+      {showDetails ? (
+        <div className="p-3 space-y-2">
+          <p className="text-xs text-gray-700 line-clamp-3">{profile.bio}</p>
+
+          {profile.promptAnswers && profile.promptAnswers.length > 0 && (
+            <div className="text-xs">
+              <p className="text-gray-500 font-medium">{profile.promptAnswers[0].prompt}</p>
+              <p className="text-gray-700">{profile.promptAnswers[0].answer}</p>
+            </div>
+          )}
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewProfile()
+            }}
+            className="text-xs text-[#003366] hover:underline"
+          >
+            View Full Profile →
+          </button>
+        </div>
+      ) : (
+        <div className="p-2">
+          <p className="text-xs text-gray-500 truncate">{profile.bio}</p>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex border-t border-gray-100">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onPass()
+          }}
+          className="flex-1 py-2 text-center text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors border-r border-gray-100"
+        >
+          ✕ Pass
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onLike()
+          }}
+          className="flex-1 py-2 text-center text-sm font-medium transition-colors hover:bg-pink-50"
+          style={{ color: '#FF6600' }}
+        >
+          ❤️ Like
+        </button>
       </div>
     </div>
   )

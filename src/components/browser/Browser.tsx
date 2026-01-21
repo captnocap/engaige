@@ -1,12 +1,12 @@
 /**
  * Browser Component
  *
- * Desktop browser window that hosts "websites" (MySpace, Chirp, etc.)
- * Has URL bar, back/forward navigation, and routes to site components.
+ * Desktop browser window with tabbed browsing.
+ * Has URL bar, back/forward navigation, tabs, and routes to site components.
  */
 
-import { useState, useCallback } from 'react'
-import { getAppsForSurface, getApp, type AppDefinition } from '../../config/app-registry.js'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { getAppsForSurface, type AppDefinition } from '../../config/app-registry.js'
 import { BrowserSiteContainer } from './BrowserSiteContainer.js'
 
 // Site URL mappings
@@ -17,6 +17,18 @@ const SITE_URLS: Record<string, string> = {
   'chirp-dm': 'www.chirp.fake/messages',
   'instasnap': 'www.instasnap.fake',
   'instasnap-dm': 'www.instasnap.fake/direct',
+  // Filler content sites
+  'wikiknow': 'www.wikiknow.fake',
+  'threadit': 'www.threadit.fake',
+  'dailybuzz': 'www.dailybuzz.fake',
+  'vidtube': 'www.vidtube.fake',
+  'forchan': 'www.forchan.fake',
+  'vitalityrx': 'www.vitalityrx.fake',
+  'nestfinder': 'www.nestfinder.fake',
+  'bargainbay': 'www.bargainbay.fake',
+  'oddsoracle': 'www.oddsoracle.fake',
+  'strangerzone': 'www.strangerzone.fake',
+  'wealthwisdom': 'www.wealthwisdom.fake',
 }
 
 // Reverse lookup - URL to app ID
@@ -24,53 +36,133 @@ const URL_TO_APP: Record<string, string> = Object.fromEntries(
   Object.entries(SITE_URLS).map(([appId, url]) => [url, appId])
 )
 
+// Tab interface
+interface BrowserTab {
+  id: string
+  siteId: string | null
+  url: string
+  history: string[]
+  historyIndex: number
+  title: string
+}
+
+// Generate unique tab ID
+function generateTabId(): string {
+  return `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
+// Create a new empty tab
+function createNewTab(): BrowserTab {
+  return {
+    id: generateTabId(),
+    siteId: null,
+    url: '',
+    history: [],
+    historyIndex: -1,
+    title: 'New Tab',
+  }
+}
+
+// Get display title for a tab
+function getTabTitle(tab: BrowserTab, apps: AppDefinition[]): string {
+  if (!tab.siteId) return 'New Tab'
+  const app = apps.find(a => a.id === tab.siteId)
+  return app?.name || tab.siteId
+}
+
 export function Browser() {
-  const [currentSite, setCurrentSite] = useState<string | null>(null)
+  const [tabs, setTabs] = useState<BrowserTab[]>([createNewTab()])
+  const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id)
   const [urlInput, setUrlInput] = useState('')
-  const [history, setHistory] = useState<string[]>([])
-  const [historyIndex, setHistoryIndex] = useState(-1)
+  const urlInputRef = useRef<HTMLInputElement>(null)
 
   // Get apps available in browser
   const browserApps = getAppsForSurface('browser')
 
-  const navigateTo = useCallback((appId: string) => {
-    const url = SITE_URLS[appId] || `www.${appId}.fake`
+  // Get active tab
+  const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0]
 
-    // Add to history
-    const newHistory = history.slice(0, historyIndex + 1)
-    newHistory.push(appId)
-    setHistory(newHistory)
-    setHistoryIndex(newHistory.length - 1)
+  // Sync URL input with active tab
+  useEffect(() => {
+    setUrlInput(activeTab.url)
+  }, [activeTab.url, activeTab.id])
 
-    setCurrentSite(appId)
-    setUrlInput(url)
-  }, [history, historyIndex])
-
-  const goBack = useCallback(() => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1
-      setHistoryIndex(newIndex)
-      const appId = history[newIndex]
-      setCurrentSite(appId)
-      setUrlInput(SITE_URLS[appId] || `www.${appId}.fake`)
-    }
-  }, [history, historyIndex])
-
-  const goForward = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1
-      setHistoryIndex(newIndex)
-      const appId = history[newIndex]
-      setCurrentSite(appId)
-      setUrlInput(SITE_URLS[appId] || `www.${appId}.fake`)
-    }
-  }, [history, historyIndex])
-
-  const goHome = useCallback(() => {
-    setCurrentSite(null)
-    setUrlInput('')
+  // Update a specific tab
+  const updateTab = useCallback((tabId: string, updates: Partial<BrowserTab>) => {
+    setTabs(prev => prev.map(tab =>
+      tab.id === tabId ? { ...tab, ...updates } : tab
+    ))
   }, [])
 
+  // Navigate within the active tab
+  const navigateTo = useCallback((appId: string, tabId?: string) => {
+    const targetTabId = tabId || activeTabId
+    const tab = tabs.find(t => t.id === targetTabId)
+    if (!tab) return
+
+    const url = SITE_URLS[appId] || `www.${appId}.fake`
+    const app = browserApps.find(a => a.id === appId)
+
+    // Add to history
+    const newHistory = tab.history.slice(0, tab.historyIndex + 1)
+    newHistory.push(appId)
+
+    updateTab(targetTabId, {
+      siteId: appId,
+      url,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+      title: app?.name || appId,
+    })
+
+    if (targetTabId === activeTabId) {
+      setUrlInput(url)
+    }
+  }, [activeTabId, tabs, browserApps, updateTab])
+
+  // Go back in history
+  const goBack = useCallback(() => {
+    if (activeTab.historyIndex > 0) {
+      const newIndex = activeTab.historyIndex - 1
+      const appId = activeTab.history[newIndex]
+      const app = browserApps.find(a => a.id === appId)
+
+      updateTab(activeTabId, {
+        historyIndex: newIndex,
+        siteId: appId,
+        url: SITE_URLS[appId] || `www.${appId}.fake`,
+        title: app?.name || appId,
+      })
+    }
+  }, [activeTab, activeTabId, browserApps, updateTab])
+
+  // Go forward in history
+  const goForward = useCallback(() => {
+    if (activeTab.historyIndex < activeTab.history.length - 1) {
+      const newIndex = activeTab.historyIndex + 1
+      const appId = activeTab.history[newIndex]
+      const app = browserApps.find(a => a.id === appId)
+
+      updateTab(activeTabId, {
+        historyIndex: newIndex,
+        siteId: appId,
+        url: SITE_URLS[appId] || `www.${appId}.fake`,
+        title: app?.name || appId,
+      })
+    }
+  }, [activeTab, activeTabId, browserApps, updateTab])
+
+  // Go to home page
+  const goHome = useCallback(() => {
+    updateTab(activeTabId, {
+      siteId: null,
+      url: '',
+      title: 'New Tab',
+    })
+    setUrlInput('')
+  }, [activeTabId, updateTab])
+
+  // Handle URL submission
   const handleUrlSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     const url = urlInput.toLowerCase().trim()
@@ -85,16 +177,162 @@ export function Browser() {
     }
   }, [urlInput, navigateTo])
 
+  // Refresh current page
   const refresh = useCallback(() => {
-    // Just trigger a re-render by setting the same site
-    if (currentSite) {
-      setCurrentSite(null)
-      setTimeout(() => setCurrentSite(currentSite), 0)
+    if (activeTab.siteId) {
+      const siteId = activeTab.siteId
+      updateTab(activeTabId, { siteId: null })
+      setTimeout(() => updateTab(activeTabId, { siteId }), 0)
     }
-  }, [currentSite])
+  }, [activeTab.siteId, activeTabId, updateTab])
+
+  // Add new tab
+  const addTab = useCallback(() => {
+    const newTab = createNewTab()
+    setTabs(prev => [...prev, newTab])
+    setActiveTabId(newTab.id)
+    setUrlInput('')
+    // Focus URL bar
+    setTimeout(() => urlInputRef.current?.focus(), 0)
+  }, [])
+
+  // Close a tab
+  const closeTab = useCallback((tabId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    e?.preventDefault()
+
+    setTabs(prev => {
+      // Don't close last tab
+      if (prev.length === 1) {
+        // Reset the tab instead
+        return [createNewTab()]
+      }
+
+      const tabIndex = prev.findIndex(t => t.id === tabId)
+      const newTabs = prev.filter(t => t.id !== tabId)
+
+      // If closing active tab, switch to adjacent tab
+      if (tabId === activeTabId) {
+        const newActiveIndex = Math.min(tabIndex, newTabs.length - 1)
+        setActiveTabId(newTabs[newActiveIndex].id)
+      }
+
+      return newTabs
+    })
+  }, [activeTabId])
+
+  // Handle middle-click on tab to close
+  const handleTabMouseDown = useCallback((tabId: string, e: React.MouseEvent) => {
+    if (e.button === 1) { // Middle click
+      e.preventDefault()
+      closeTab(tabId)
+    }
+  }, [closeTab])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey
+
+      if (isMod && e.key === 't') {
+        e.preventDefault()
+        addTab()
+      } else if (isMod && e.key === 'w') {
+        e.preventDefault()
+        closeTab(activeTabId)
+      } else if (isMod && e.key === 'l') {
+        e.preventDefault()
+        urlInputRef.current?.focus()
+        urlInputRef.current?.select()
+      } else if (isMod && e.shiftKey && e.key === 'Tab') {
+        e.preventDefault()
+        // Previous tab
+        const currentIndex = tabs.findIndex(t => t.id === activeTabId)
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1
+        setActiveTabId(tabs[prevIndex].id)
+      } else if (isMod && e.key === 'Tab') {
+        e.preventDefault()
+        // Next tab
+        const currentIndex = tabs.findIndex(t => t.id === activeTabId)
+        const nextIndex = (currentIndex + 1) % tabs.length
+        setActiveTabId(tabs[nextIndex].id)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [addTab, closeTab, activeTabId, tabs])
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--color-bg)' }}>
+      {/* Tab Bar */}
+      <div
+        className="flex items-center gap-1 px-2 pt-2 pb-0"
+        style={{ background: 'var(--color-bgSecondary)' }}
+      >
+        {/* Tabs */}
+        <div className="flex-1 flex items-center gap-1 min-w-0 overflow-x-auto scrollbar-none">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTabId(tab.id)}
+              onMouseDown={(e) => handleTabMouseDown(tab.id, e)}
+              className={`
+                group relative flex items-center gap-2 px-3 py-1.5 rounded-t-lg min-w-[120px] max-w-[200px]
+                transition-colors text-left
+                ${tab.id === activeTabId
+                  ? 'bg-[var(--color-bg)]'
+                  : 'bg-[var(--color-bgTertiary)] hover:bg-[var(--color-bgTertiary)]/80'
+                }
+              `}
+              style={{
+                borderTop: tab.id === activeTabId ? '2px solid var(--color-primary)' : '2px solid transparent',
+              }}
+            >
+              {/* Tab icon */}
+              <span className="text-sm shrink-0">
+                {tab.siteId ? (browserApps.find(a => a.id === tab.siteId)?.icon || '🌐') : '🌐'}
+              </span>
+
+              {/* Tab title */}
+              <span
+                className="text-xs truncate flex-1"
+                style={{ color: 'var(--color-text)' }}
+              >
+                {getTabTitle(tab, browserApps)}
+              </span>
+
+              {/* Close button */}
+              <span
+                onClick={(e) => closeTab(tab.id, e)}
+                className={`
+                  w-4 h-4 rounded-sm flex items-center justify-center shrink-0
+                  opacity-0 group-hover:opacity-100 hover:bg-[var(--color-bgSecondary)]
+                  transition-opacity cursor-pointer
+                `}
+                style={{ color: 'var(--color-textMuted)' }}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* New Tab button */}
+        <button
+          onClick={addTab}
+          className="w-7 h-7 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)] shrink-0"
+          style={{ color: 'var(--color-textMuted)' }}
+          title="New Tab (Cmd+T)"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      </div>
+
       {/* Browser Chrome */}
       <div
         className="flex items-center gap-2 px-3 py-2"
@@ -104,7 +342,7 @@ export function Browser() {
         <div className="flex items-center gap-1">
           <button
             onClick={goBack}
-            disabled={historyIndex <= 0}
+            disabled={activeTab.historyIndex <= 0}
             className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30"
             style={{ color: 'var(--color-text)' }}
             title="Back"
@@ -115,7 +353,7 @@ export function Browser() {
           </button>
           <button
             onClick={goForward}
-            disabled={historyIndex >= history.length - 1}
+            disabled={activeTab.historyIndex >= activeTab.history.length - 1}
             className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30"
             style={{ color: 'var(--color-text)' }}
             title="Forward"
@@ -156,6 +394,7 @@ export function Browser() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
             </svg>
             <input
+              ref={urlInputRef}
               type="text"
               value={urlInput}
               onChange={e => setUrlInput(e.target.value)}
@@ -180,9 +419,9 @@ export function Browser() {
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
-        {currentSite ? (
+        {activeTab.siteId ? (
           <BrowserSiteContainer
-            siteId={currentSite}
+            siteId={activeTab.siteId}
             onNavigate={navigateTo}
           />
         ) : (

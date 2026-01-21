@@ -171,6 +171,23 @@ async function routeMessage(
       await handleAIGeneratePost(ws, message);
       break;
 
+    // Logs routes
+    case 'logs:getEvents':
+      await handleLogsGetEvents(ws, message);
+      break;
+
+    case 'logs:getErrors':
+      await handleLogsGetErrors(ws, message);
+      break;
+
+    case 'logs:resolveError':
+      await handleLogsResolveError(ws, message);
+      break;
+
+    case 'logs:getQueue':
+      await handleLogsGetQueue(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -277,6 +294,45 @@ async function handleAIGeneratePost(ws: ServerWebSocket<ClientSession>, message:
       postId: `post_${Date.now()}`,
     },
   });
+}
+
+// ============================================================================
+// Logs Handlers
+// ============================================================================
+
+async function handleLogsGetEvents(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createLogsRoutes } = await import('../routes/logs.js');
+  const routes = createLogsRoutes();
+  const result = routes.getEvents(message.payload || {});
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleLogsGetErrors(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createLogsRoutes } = await import('../routes/logs.js');
+  const routes = createLogsRoutes();
+  const result = routes.getErrors(message.payload || {});
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleLogsResolveError(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createLogsRoutes } = await import('../routes/logs.js');
+  const routes = createLogsRoutes();
+  const { errorId, notes } = message.payload as any;
+
+  if (!errorId) {
+    send(ws, createResponse(message.id, false, null, 'Missing errorId'));
+    return;
+  }
+
+  const result = routes.resolveError({ errorId, notes });
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleLogsGetQueue(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createLogsRoutes } = await import('../routes/logs.js');
+  const routes = createLogsRoutes();
+  const result = routes.getQueueStatus();
+  send(ws, createResponse(message.id, true, result));
 }
 
 // ============================================================================

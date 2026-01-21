@@ -10,6 +10,7 @@ import { getToolDefinitions, executeToolCall } from './runtime-tools.js';
 import { validateAndFixIfNeeded, type ValidationOptions } from './output-validator.js';
 import { doorFetch } from '../network/door.js';
 import { eventBus, EventTypes } from '../events/index.js';
+import { buildNPCContext, formatContextForPrompt, recordArticleMention } from './context-builder.js';
 import { errorLogger } from './error-logger.js';
 import { aiQueue, Priority, type RequestType, type QueueResult } from './ai-queue.js';
 
@@ -172,9 +173,19 @@ export async function generateNPCResponse(
     systemPrompt += `\n\nYou are talking to ${context.player_name}.`;
   }
 
-  const memories = getNPCMemories(npcId, message, 5);
-  if (memories.length > 0) {
-    systemPrompt += `\n\n## Your Relevant Memories\n${memories.map(m => `- ${m.content}`).join('\n')}`;
+  // Build enriched context (memories + news headlines + relationship)
+  const enrichedContext = await buildNPCContext({
+    npcId,
+    conversationContext: message,
+    playerId: context?.player_id,
+    includeNews: true,
+    includeMemories: true,
+  });
+
+  // Add formatted context to system prompt
+  const contextSection = formatContextForPrompt(enrichedContext);
+  if (contextSection) {
+    systemPrompt += `\n\n${contextSection}`;
   }
 
   const messages = [
@@ -230,6 +241,11 @@ export async function generateNPCResponse(
   if (validationResult.was_fixed) {
     console.log(`[AI] Output was fixed after validation (attempts: ${validationResult.attempts})`);
   }
+
+  // Track article mentions in the response (for the recursion loop)
+  recordArticleMention(npcId, validationResult.final_output).catch(err => {
+    console.error('[AI] Failed to track article mentions:', err.message);
+  });
 
   return validationResult.final_output;
 }

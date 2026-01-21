@@ -6,9 +6,12 @@ import { Onboarding, type OnboardingData } from '../onboarding/Onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useSettingsStore } from '../../stores/settingsStore.js'
+import { useAwarenessStore } from '../../stores/awarenessStore.js'
+import { useSocialStore } from '../../stores/socialStore.js'
 import { FilesWindow } from './FilesWindow'
 import { SettingsWindow } from './SettingsWindow'
 import { WalletWindow } from './WalletWindow'
+import { LogsWindow } from './LogsWindow'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 
@@ -58,6 +61,16 @@ export function Desktop() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  // Initialize drama automation stores
+  useEffect(() => {
+    if (onboardingCompleted) {
+      console.log('[Desktop] Initializing drama automation stores...')
+      useAwarenessStore.getState().initialize()
+      useSocialStore.getState().initialize()
+      console.log('[Desktop] Drama automation stores initialized')
+    }
+  }, [onboardingCompleted])
+
   const windows: WindowConfig[] = [
     {
       id: 'browser',
@@ -87,6 +100,13 @@ export function Desktop() {
       component: <WalletWindow />,
       defaultState: { x: 150, y: 50, width: 600, height: 700 },
     },
+    {
+      id: 'logs',
+      title: 'Logs',
+      icon: '📊',
+      component: <LogsWindow />,
+      defaultState: { x: 100, y: 50, width: 900, height: 600 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
@@ -94,6 +114,7 @@ export function Desktop() {
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
+    { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
   ]
 
   const openWindow = useCallback((windowId: string) => {

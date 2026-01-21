@@ -434,6 +434,92 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_comments_created ON comments(created_at);
       CREATE INDEX IF NOT EXISTS idx_group_participants ON group_chat_participants(conversation_id);
     `);
+
+    // === NEWS FEED SYSTEM ===
+    db.exec(`
+      -- Core news articles table (unified schema for RSS, user lore, AI-generated)
+      CREATE TABLE IF NOT EXISTS news_articles (
+        id TEXT PRIMARY KEY,
+        slug TEXT UNIQUE NOT NULL,
+
+        -- Source tracking (internal only - NPCs don't see this distinction)
+        source TEXT NOT NULL CHECK (source IN ('rss', 'user', 'ai')),
+        source_url TEXT,
+        source_feed TEXT,
+
+        -- Content
+        headline TEXT NOT NULL,
+        subheadline TEXT,
+        summary TEXT NOT NULL,
+        content TEXT NOT NULL,
+
+        -- Metadata
+        category TEXT NOT NULL,
+        author TEXT NOT NULL,
+        published_at INTEGER NOT NULL,
+        updated_at INTEGER,
+
+        -- Media
+        image_url TEXT,
+        image_caption TEXT,
+        image_emoji TEXT,
+
+        -- Classification (JSON arrays)
+        tags TEXT DEFAULT '[]',
+        entities TEXT DEFAULT '[]',
+        sentiment TEXT,
+
+        -- Engagement tracking
+        npc_mentions INTEGER DEFAULT 0,
+        last_mentioned_at INTEGER,
+
+        -- AI generation metadata (JSON object, only for source: 'ai')
+        generated_from TEXT,
+
+        -- Timestamps
+        created_at INTEGER DEFAULT (unixepoch()),
+
+        -- Prevent RSS duplicates
+        UNIQUE(source, source_url)
+      );
+
+      -- RSS feed configuration
+      CREATE TABLE IF NOT EXISTS rss_feeds (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        url TEXT UNIQUE NOT NULL,
+        category TEXT NOT NULL,
+        refresh_interval INTEGER DEFAULT 30,
+        max_articles INTEGER DEFAULT 20,
+        enabled INTEGER DEFAULT 1,
+        include_keywords TEXT,        -- JSON array
+        exclude_keywords TEXT,        -- JSON array
+        last_fetched_at INTEGER,
+        last_error TEXT,
+        created_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Track which articles NPCs have "seen" (for context injection)
+      CREATE TABLE IF NOT EXISTS npc_news_exposure (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL,
+        article_id TEXT NOT NULL,
+        exposed_at INTEGER DEFAULT (unixepoch()),
+        mentioned INTEGER DEFAULT 0,
+        FOREIGN KEY (article_id) REFERENCES news_articles(id),
+        UNIQUE(npc_id, article_id)
+      );
+
+      -- News feed indexes
+      CREATE INDEX IF NOT EXISTS idx_news_published ON news_articles(published_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_news_category ON news_articles(category);
+      CREATE INDEX IF NOT EXISTS idx_news_source ON news_articles(source);
+      CREATE INDEX IF NOT EXISTS idx_news_mentions ON news_articles(npc_mentions DESC);
+      CREATE INDEX IF NOT EXISTS idx_news_slug ON news_articles(slug);
+      CREATE INDEX IF NOT EXISTS idx_npc_exposure_npc ON npc_news_exposure(npc_id);
+      CREATE INDEX IF NOT EXISTS idx_npc_exposure_article ON npc_news_exposure(article_id);
+      CREATE INDEX IF NOT EXISTS idx_rss_enabled ON rss_feeds(enabled);
+    `);
   }
 }
 
