@@ -77,9 +77,13 @@ export function Window({
   }
 
   const handleTitleBarMouseDown = (e: React.MouseEvent) => {
-    if (state.isMaximized) return
     e.preventDefault()
     onFocus?.()
+
+    // If maximized, we'll restore on first move
+    const wasMaximized = state.isMaximized
+    const restoreWidth = restoreStateRef.current?.width ?? DEFAULT_STATE.width
+    const restoreHeight = restoreStateRef.current?.height ?? DEFAULT_STATE.height
 
     dragRef.current = {
       startX: e.clientX,
@@ -88,14 +92,47 @@ export function Window({
       startPosY: state.y,
     }
 
+    let hasRestored = false
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return
       const dx = e.clientX - dragRef.current.startX
       const dy = e.clientY - dragRef.current.startY
-      updateState({
-        x: Math.max(0, dragRef.current.startPosX + dx),
-        y: Math.max(0, dragRef.current.startPosY + dy),
-      })
+
+      // If maximized and user starts dragging, restore the window
+      if (wasMaximized && !hasRestored && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        hasRestored = true
+
+        // Calculate where to position the restored window so cursor stays proportionally on titlebar
+        // Place the window so the cursor is at the same relative X position it was on the maximized titlebar
+        const cursorRatioX = e.clientX / window.innerWidth
+        const newX = e.clientX - (restoreWidth * cursorRatioX)
+        const newY = e.clientY - 15 // Keep cursor near top of titlebar
+
+        // Update the drag reference to the new position
+        dragRef.current.startX = e.clientX
+        dragRef.current.startY = e.clientY
+        dragRef.current.startPosX = newX
+        dragRef.current.startPosY = newY
+
+        updateState({
+          x: Math.max(0, newX),
+          y: Math.max(0, newY),
+          width: restoreWidth,
+          height: restoreHeight,
+          isMaximized: false,
+        })
+        restoreStateRef.current = null
+        return
+      }
+
+      // Normal dragging (not maximized or already restored)
+      if (!wasMaximized || hasRestored) {
+        updateState({
+          x: Math.max(0, dragRef.current.startPosX + dx),
+          y: Math.max(0, dragRef.current.startPosY + dy),
+        })
+      }
     }
 
     const handleMouseUp = () => {
