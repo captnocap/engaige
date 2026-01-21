@@ -121,6 +121,67 @@ export interface LogsGetQueueMessage extends WSMessage {
   type: 'logs:getQueue';
 }
 
+// AI Provider Configuration
+export interface AIProviderGetAllMessage extends WSMessage {
+  type: 'aiProvider:getAll';
+}
+
+export interface AIProviderGetActiveMessage extends WSMessage {
+  type: 'aiProvider:getActive';
+}
+
+export interface AIProviderCreateMessage extends WSMessage<{
+  name: string;
+  display_name: string;
+  provider_type: 'openai' | 'openai-compatible' | 'anthropic';
+  base_url?: string;
+  api_key?: string;
+  default_model: string;
+  is_enabled?: boolean;
+  supports_vision?: boolean;
+  supports_tools?: boolean;
+  max_context_tokens?: number;
+}> {
+  type: 'aiProvider:create';
+}
+
+export interface AIProviderUpdateMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+  display_name?: string;
+  provider_type?: 'openai' | 'openai-compatible' | 'anthropic';
+  base_url?: string;
+  api_key?: string;
+  default_model?: string;
+  is_enabled?: boolean;
+  supports_vision?: boolean;
+  supports_tools?: boolean;
+  max_context_tokens?: number;
+}> {
+  type: 'aiProvider:update';
+}
+
+export interface AIProviderDeleteMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:delete';
+}
+
+export interface AIProviderSetActiveMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:setActive';
+}
+
+export interface AIProviderTestMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:test';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -135,7 +196,14 @@ export type ClientMessage =
   | LogsGetEventsMessage
   | LogsGetErrorsMessage
   | LogsResolveErrorMessage
-  | LogsGetQueueMessage;
+  | LogsGetQueueMessage
+  | AIProviderGetAllMessage
+  | AIProviderGetActiveMessage
+  | AIProviderCreateMessage
+  | AIProviderUpdateMessage
+  | AIProviderDeleteMessage
+  | AIProviderSetActiveMessage
+  | AIProviderTestMessage;
 
 // ============================================================================
 // Server -> Client Messages

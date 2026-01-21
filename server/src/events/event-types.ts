@@ -295,6 +295,31 @@ export interface AIProxiedPayload {
   cost_cents: number;
 }
 
+// === AI PROVIDER EVENTS ===
+export interface AIProviderCreatedPayload {
+  provider_id: string;
+  provider_name: string;
+  provider_type: 'openai' | 'openai-compatible' | 'anthropic';
+}
+
+export interface AIProviderUpdatedPayload {
+  provider_id: string;
+  provider_name: string;
+  fields_changed: string[];
+}
+
+export interface AIProviderDeletedPayload {
+  provider_id: string;
+  provider_name: string;
+}
+
+export interface AIProviderActivatedPayload {
+  provider_id: string;
+  provider_name: string;
+  previous_provider_id?: string;
+  previous_provider_name?: string;
+}
+
 // === AI QUEUE EVENTS ===
 export interface AIQueuedPayload {
   request_id: string;
@@ -491,6 +516,12 @@ export const EventTypes = {
   AI_ERROR: 'ai:error',
   AI_VISION_PROXIED: 'ai:vision_proxied',
   AI_IMAGE_GENERATED: 'ai:image_generated',
+
+  // AI Providers
+  AI_PROVIDER_CREATED: 'ai:provider_created',
+  AI_PROVIDER_UPDATED: 'ai:provider_updated',
+  AI_PROVIDER_DELETED: 'ai:provider_deleted',
+  AI_PROVIDER_ACTIVATED: 'ai:provider_activated',
 
   // AI Queue
   AI_QUEUED: 'ai:queued',

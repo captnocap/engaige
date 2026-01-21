@@ -528,7 +528,7 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
 
   'trustfalltim': {
     id: 'trustfalltim',
-    name: 'TrustFallTim.fan',
+    name: 'TrustFallTim.corn',
     icon: '🙆‍♂️',
     description: 'The official unofficial fan archive',
     surfaces: { browser: true },

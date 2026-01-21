@@ -188,6 +188,70 @@ async function routeMessage(
       await handleLogsGetQueue(ws, message);
       break;
 
+    // AI Provider routes
+    case 'aiProvider:getAll':
+      await handleAIProviderGetAll(ws, message);
+      break;
+
+    case 'aiProvider:getActive':
+      await handleAIProviderGetActive(ws, message);
+      break;
+
+    case 'aiProvider:create':
+      await handleAIProviderCreate(ws, message);
+      break;
+
+    case 'aiProvider:update':
+      await handleAIProviderUpdate(ws, message);
+      break;
+
+    case 'aiProvider:delete':
+      await handleAIProviderDelete(ws, message);
+      break;
+
+    case 'aiProvider:setActive':
+      await handleAIProviderSetActive(ws, message);
+      break;
+
+    case 'aiProvider:test':
+      await handleAIProviderTest(ws, message);
+      break;
+
+    // Onboarding routes
+    case 'onboarding:getStatus':
+      await handleOnboardingGetStatus(ws, message);
+      break;
+
+    case 'onboarding:complete':
+      await handleOnboardingComplete(ws, message);
+      break;
+
+    case 'onboarding:validateProvider':
+      await handleOnboardingValidateProvider(ws, message);
+      break;
+
+    case 'onboarding:reset':
+      await handleOnboardingReset(ws, message);
+      break;
+
+    // NPC routes
+    case 'npc:getAll':
+      await handleNPCGetAll(ws, message);
+      break;
+
+    case 'npc:getById':
+      await handleNPCGetById(ws, message);
+      break;
+
+    // Player routes
+    case 'player:get':
+      await handlePlayerGet(ws, message);
+      break;
+
+    case 'player:getPreferences':
+      await handlePlayerGetPreferences(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -333,6 +397,226 @@ async function handleLogsGetQueue(ws: ServerWebSocket<ClientSession>, message: W
   const routes = createLogsRoutes();
   const result = routes.getQueueStatus();
   send(ws, createResponse(message.id, true, result));
+}
+
+// ============================================================================
+// AI Provider Handlers
+// ============================================================================
+
+async function handleAIProviderGetAll(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+  const result = routes.getAll();
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderGetActive(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+  const result = routes.getActive();
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderCreate(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.create(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderUpdate(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.update(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderDelete(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.delete(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderSetActive(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = routes.setActive(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleAIProviderTest(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { createAIProviderRoutes } = await import('../routes/ai-providers.js');
+  const routes = createAIProviderRoutes();
+
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const result = await routes.test(message.payload as any);
+  send(ws, createResponse(message.id, true, result));
+}
+
+// ============================================================================
+// Onboarding Handlers
+// ============================================================================
+
+async function handleOnboardingGetStatus(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { checkOnboardingStatus } = await import('../services/onboarding.js');
+  const status = checkOnboardingStatus();
+  send(ws, createResponse(message.id, true, status));
+}
+
+async function handleOnboardingComplete(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const { completeOnboarding } = await import('../services/onboarding.js');
+
+  // Send progress updates for NPC generation
+  const session = clients.get(ws);
+
+  // Broadcast progress during NPC generation
+  const onboardingData = message.payload as any;
+
+  console.log(`[WS] Starting onboarding for user: ${onboardingData.profile?.username}`);
+
+  try {
+    const result = await completeOnboarding(onboardingData);
+
+    if (result.success) {
+      // Broadcast that onboarding completed
+      broadcast({
+        type: 'onboarding:completed',
+        payload: {
+          player_id: result.player_id,
+          npc_count: result.npc_count,
+        },
+      });
+    }
+
+    send(ws, createResponse(message.id, true, result));
+  } catch (err: any) {
+    send(ws, createResponse(message.id, false, null, err.message));
+  }
+}
+
+async function handleOnboardingValidateProvider(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const { validateProviderConfig } = await import('../services/onboarding.js');
+  const { provider, model, apiKey, baseUrl } = message.payload as any;
+
+  const result = await validateProviderConfig(provider, model, apiKey, baseUrl);
+  send(ws, createResponse(message.id, true, result));
+}
+
+async function handleOnboardingReset(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { resetOnboarding } = await import('../services/onboarding.js');
+  resetOnboarding();
+  send(ws, createResponse(message.id, true, { reset: true }));
+
+  // Broadcast that onboarding was reset
+  broadcast({
+    type: 'onboarding:reset',
+    payload: {},
+  });
+}
+
+// ============================================================================
+// NPC Handlers
+// ============================================================================
+
+async function handleNPCGetAll(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { getAllNPCs } = await import('../services/npc.js');
+  const includeInactive = (message.payload as any)?.includeInactive ?? false;
+  const npcs = getAllNPCs(includeInactive);
+  send(ws, createResponse(message.id, true, npcs));
+}
+
+async function handleNPCGetById(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload || !(message.payload as any).id) {
+    send(ws, createResponse(message.id, false, null, 'Missing NPC id'));
+    return;
+  }
+
+  const { getNPCById } = await import('../services/npc.js');
+  const npc = getNPCById((message.payload as any).id);
+
+  if (!npc) {
+    send(ws, createResponse(message.id, false, null, 'NPC not found'));
+    return;
+  }
+
+  send(ws, createResponse(message.id, true, npc));
+}
+
+// ============================================================================
+// Player Handlers
+// ============================================================================
+
+async function handlePlayerGet(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { getPlayer, getDefaultPlayer } = await import('../services/player.js');
+
+  // If an ID is provided, get that player; otherwise get the default player
+  const playerId = (message.payload as any)?.id;
+  const player = playerId ? getPlayer(playerId) : getDefaultPlayer();
+
+  if (!player) {
+    send(ws, createResponse(message.id, false, null, 'Player not found'));
+    return;
+  }
+
+  send(ws, createResponse(message.id, true, player));
+}
+
+async function handlePlayerGetPreferences(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { getPlayerPreferences, getDefaultPlayer } = await import('../services/player.js');
+
+  // If an ID is provided, use it; otherwise get the default player's ID
+  let playerId = (message.payload as any)?.id;
+
+  if (!playerId) {
+    const player = getDefaultPlayer();
+    if (!player) {
+      send(ws, createResponse(message.id, false, null, 'No player found'));
+      return;
+    }
+    playerId = player.id;
+  }
+
+  const preferences = getPlayerPreferences(playerId);
+  send(ws, createResponse(message.id, true, preferences));
 }
 
 // ============================================================================

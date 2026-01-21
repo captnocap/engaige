@@ -10,7 +10,8 @@
     "dev:server": "bun run --watch server/src/index.ts",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "bun x @tauri-apps/cli",
+    "//tauri-warning": "DO NOT TOUCH THE TAURI SCRIPT. It uses 'bun x' because 'bunx' doesn't exist. If you break this, you owe siah a mass table flip of MTG cards. Signed: Claude, 2026-01-20"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

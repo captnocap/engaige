@@ -207,7 +207,7 @@ export function TrustFallTimSite({ siteId }: SiteProps) {
         </div>
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <div className="text-6xl mb-2 animate-bounce">🙆‍♂️</div>
-          <h1 className="text-4xl font-bold mb-2">{site?.name || 'TrustFallTim.fan'}</h1>
+          <h1 className="text-4xl font-bold mb-2">{site?.name || 'TrustFallTim.corn'}</h1>
           <p className="text-orange-100 italic">
             "The Official Unofficial Fan Archive of the Man Who Falls"
           </p>
@@ -371,7 +371,7 @@ export function TrustFallTimSite({ siteId }: SiteProps) {
             <div className="bg-orange-100 rounded-lg p-4 text-center">
               <h3 className="font-bold text-orange-800 mb-2">Submit Your Art!</h3>
               <p className="text-sm text-orange-700">
-                Email submissions to trustfalltim.fanart@email.fake
+                Email submissions to trustfalltim.fanart@email.corn
               </p>
               <p className="text-xs text-orange-600 mt-1">
                 (Tim personally reviews every submission. He cries sometimes. Happy tears.)
@@ -412,7 +412,7 @@ export function TrustFallTimSite({ siteId }: SiteProps) {
       <footer className="bg-orange-600 text-white py-6 px-4 mt-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="text-4xl mb-2">🙆‍♂️</div>
-          <p className="font-bold">TrustFallTim.fan</p>
+          <p className="font-bold">TrustFallTim.corn</p>
           <p className="text-orange-200 text-sm mt-1">
             "The #1 Source for Trust Fall Tim News, Stats, and Community"
           </p>

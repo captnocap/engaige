@@ -47,6 +47,16 @@ export function getPlayerByUsername(username: string): PlayerProfile | null {
   return player || null;
 }
 
+/**
+ * Get the default (first) player
+ * Since this is a single-player game, we just return the first player
+ */
+export function getDefaultPlayer(): PlayerProfile | null {
+  const db = getDB('user');
+  const player = db.prepare('SELECT * FROM player LIMIT 1').get() as any;
+  return player || null;
+}
+
 export function createPlayer(
   username: string,
   displayName?: string,
@@ -143,6 +153,7 @@ export function setGlobalSetting(key: string, value: string): void {
 export default {
   getPlayer,
   getPlayerByUsername,
+  getDefaultPlayer,
   createPlayer,
   updatePlayer,
   getPlayerPreferences,

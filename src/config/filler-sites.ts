@@ -16,7 +16,7 @@ export const FILLER_SITES = {
     id: 'wikiknow',
     name: 'WikiKnow',
     tagline: 'The free encyclopedia',
-    url: 'www.wikiknow.fake',
+    url: 'www.wikiknow.corn',
     icon: '📖',
     description: 'The free encyclopedia that anyone can edit',
     theme: {
@@ -34,7 +34,7 @@ export const FILLER_SITES = {
     id: 'threadit',
     name: 'Threadit',
     tagline: 'The front page of the fake internet',
-    url: 'www.threadit.fake',
+    url: 'www.threadit.corn',
     icon: '🗣️',
     description: 'Dive into anything',
     theme: {
@@ -54,7 +54,7 @@ export const FILLER_SITES = {
     id: 'dailybuzz',
     name: 'DailyBuzz',
     tagline: 'All the news that fits',
-    url: 'www.dailybuzz.fake',
+    url: 'www.dailybuzz.corn',
     icon: '📰',
     description: 'Breaking news, local stories, and everything in between',
     theme: {
@@ -73,7 +73,7 @@ export const FILLER_SITES = {
     id: 'vidtube',
     name: 'VidTube',
     tagline: 'Broadcast Yourself',
-    url: 'www.vidtube.fake',
+    url: 'www.vidtube.corn',
     icon: '▶️',
     description: 'Share and watch videos from around the world',
     theme: {
@@ -91,7 +91,7 @@ export const FILLER_SITES = {
     id: 'forchan',
     name: 'ForChan',
     tagline: 'The stories and information posted here are artistic works of fiction',
-    url: 'www.forchan.fake',
+    url: 'www.forchan.corn',
     icon: '🍀',
     description: 'Anonymous imageboard',
     theme: {
@@ -125,7 +125,7 @@ export const FILLER_SITES = {
     id: 'vitalityrx',
     name: 'VitalityRx',
     tagline: 'Medications for the Modern Age',
-    url: 'www.vitalityrx.fake',
+    url: 'www.vitalityrx.corn',
     icon: '💊',
     description: 'Pharmaceutical solutions for conditions you didn\'t know you had',
     theme: {
@@ -143,7 +143,7 @@ export const FILLER_SITES = {
     id: 'nestfinder',
     name: 'NestFinder',
     tagline: 'Find Your Perfect Place',
-    url: 'www.nestfinder.fake',
+    url: 'www.nestfinder.corn',
     icon: '🏠',
     description: 'Apartments, houses, and rooms for rent and sale',
     theme: {
@@ -161,7 +161,7 @@ export const FILLER_SITES = {
     id: 'bargainbay',
     name: 'BargainBay',
     tagline: 'Buy. Sell. Maybe Trust.',
-    url: 'www.bargainbay.fake',
+    url: 'www.bargainbay.corn',
     icon: '🏷️',
     description: 'Local classifieds and marketplace',
     theme: {
@@ -179,7 +179,7 @@ export const FILLER_SITES = {
     id: 'oddsoracle',
     name: 'OddsOracle',
     tagline: 'Predict Everything. Win Nothing.',
-    url: 'www.oddsoracle.fake',
+    url: 'www.oddsoracle.corn',
     icon: '🎲',
     description: 'Prediction markets for local events and absurd outcomes',
     theme: {
@@ -199,7 +199,7 @@ export const FILLER_SITES = {
     id: 'strangerzone',
     name: 'StrangerZone',
     tagline: 'Talk to Strangers. Regret It Later.',
-    url: 'www.strangerzone.fake',
+    url: 'www.strangerzone.corn',
     icon: '👤',
     description: 'Random chat with anonymous strangers',
     theme: {
@@ -217,7 +217,7 @@ export const FILLER_SITES = {
     id: 'wealthwisdom',
     name: 'WealthWisdom',
     tagline: 'Financial Advice from People Who Definitely Know',
-    url: 'www.wealthwisdom.fake',
+    url: 'www.wealthwisdom.corn',
     icon: '💰',
     description: 'Financial gurus, investment tips, and get-rich-quick schemes',
     theme: {
@@ -239,7 +239,7 @@ export const FILLER_SITES = {
     id: 'popuphell',
     name: 'FREE PRIZES CLICK HERE',
     tagline: 'YOU ARE THE 1000000th VISITOR!!!',
-    url: 'www.free-prizes-click-here.fake',
+    url: 'www.free-prizes-click-here.corn',
     icon: '🎉',
     description: 'The most obnoxious popup trap site on the fake internet',
     theme: {
@@ -257,7 +257,7 @@ export const FILLER_SITES = {
     id: 'millionpixels',
     name: 'MillionPixels',
     tagline: 'Own a piece of fake internet history',
-    url: 'www.millionpixels.fake',
+    url: 'www.millionpixels.corn',
     icon: '🟦',
     description: 'The Million Dollar Homepage, but weirder',
     theme: {
@@ -275,7 +275,7 @@ export const FILLER_SITES = {
     id: 'quantumbrewblog',
     name: 'QuantumBrewBlog',
     tagline: 'Observing Coffee So You Don\'t Have To',
-    url: 'www.quantumbrewblog.fake',
+    url: 'www.quantumbrewblog.corn',
     icon: '☕',
     description: 'An obsessive blog about quantum coffee by a man named Derek',
     theme: {
@@ -293,7 +293,7 @@ export const FILLER_SITES = {
     id: 'hartwellfiles',
     name: 'The Hartwell Files',
     tagline: 'The truth is in there. Floor 7.',
-    url: 'www.hartwellfiles.fake',
+    url: 'www.hartwellfiles.corn',
     icon: '🏚️',
     description: 'Conspiracy theory archive about the mysterious Hartwell Building',
     theme: {
@@ -311,7 +311,7 @@ export const FILLER_SITES = {
     id: 'trustfalltim',
     name: 'TrustFallTim.fan',
     tagline: 'The Official Unofficial Fan Archive',
-    url: 'www.trustfalltim.fan',
+    url: 'www.trustfalltim.corn',
     icon: '🙆‍♂️',
     description: 'Fan site dedicated to Trust Fall Tim',
     theme: {
@@ -329,7 +329,7 @@ export const FILLER_SITES = {
     id: 'onlyfans',
     name: 'OnlyFans',
     tagline: 'The #1 Destination for Fan Enthusiasts',
-    url: 'www.onlyfans.fake',
+    url: 'www.onlyfans.corn',
     icon: '🌀',
     description: 'Premium ceiling fans, desk fans, and more. What did you think it was?',
     theme: {

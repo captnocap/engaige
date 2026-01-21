@@ -11,31 +11,31 @@ import { BrowserSiteContainer } from './BrowserSiteContainer.js'
 
 // Site URL mappings
 const SITE_URLS: Record<string, string> = {
-  'myface': 'www.myface.fake',
-  'myface-chat': 'www.myface.fake/messages',
-  'chirp': 'www.chirp.fake',
-  'chirp-dm': 'www.chirp.fake/messages',
-  'instasnap': 'www.instasnap.fake',
-  'instasnap-dm': 'www.instasnap.fake/direct',
+  'myface': 'www.myface.corn',
+  'myface-chat': 'www.myface.corn/messages',
+  'chirp': 'www.chirp.corn',
+  'chirp-dm': 'www.chirp.corn/messages',
+  'instasnap': 'www.instasnap.corn',
+  'instasnap-dm': 'www.instasnap.corn/direct',
   // Filler content sites
-  'wikiknow': 'www.wikiknow.fake',
-  'threadit': 'www.threadit.fake',
-  'dailybuzz': 'www.dailybuzz.fake',
-  'vidtube': 'www.vidtube.fake',
-  'forchan': 'www.forchan.fake',
-  'vitalityrx': 'www.vitalityrx.fake',
-  'nestfinder': 'www.nestfinder.fake',
-  'bargainbay': 'www.bargainbay.fake',
-  'oddsoracle': 'www.oddsoracle.fake',
-  'strangerzone': 'www.strangerzone.fake',
-  'wealthwisdom': 'www.wealthwisdom.fake',
+  'wikiknow': 'www.wikiknow.corn',
+  'threadit': 'www.threadit.corn',
+  'dailybuzz': 'www.dailybuzz.corn',
+  'vidtube': 'www.vidtube.corn',
+  'forchan': 'www.forchan.corn',
+  'vitalityrx': 'www.vitalityrx.corn',
+  'nestfinder': 'www.nestfinder.corn',
+  'bargainbay': 'www.bargainbay.corn',
+  'oddsoracle': 'www.oddsoracle.corn',
+  'strangerzone': 'www.strangerzone.corn',
+  'wealthwisdom': 'www.wealthwisdom.corn',
   // Easter egg sites
-  'popuphell': 'www.free-prizes-click-here.fake',
-  'millionpixels': 'www.millionpixels.fake',
-  'quantumbrewblog': 'www.quantumbrewblog.fake',
-  'hartwellfiles': 'www.hartwellfiles.fake',
-  'trustfalltim': 'www.trustfalltim.fan',
-  'onlyfans': 'www.onlyfans.fake',
+  'popuphell': 'www.free-prizes-click-here.corn',
+  'millionpixels': 'www.millionpixels.corn',
+  'quantumbrewblog': 'www.quantumbrewblog.corn',
+  'hartwellfiles': 'www.hartwellfiles.corn',
+  'trustfalltim': 'www.trustfalltim.corn',
+  'onlyfans': 'www.onlyfans.corn',
 }
 
 // Reverse lookup - URL to app ID
@@ -107,7 +107,7 @@ export function Browser() {
     const tab = tabs.find(t => t.id === targetTabId)
     if (!tab) return
 
-    const url = SITE_URLS[appId] || `www.${appId}.fake`
+    const url = SITE_URLS[appId] || `www.${appId}.corn`
     const app = browserApps.find(a => a.id === appId)
 
     // Add to history
@@ -137,7 +137,7 @@ export function Browser() {
       updateTab(activeTabId, {
         historyIndex: newIndex,
         siteId: appId,
-        url: SITE_URLS[appId] || `www.${appId}.fake`,
+        url: SITE_URLS[appId] || `www.${appId}.corn`,
         title: app?.name || appId,
       })
     }
@@ -153,7 +153,7 @@ export function Browser() {
       updateTab(activeTabId, {
         historyIndex: newIndex,
         siteId: appId,
-        url: SITE_URLS[appId] || `www.${appId}.fake`,
+        url: SITE_URLS[appId] || `www.${appId}.corn`,
         title: app?.name || appId,
       })
     }
@@ -487,7 +487,7 @@ function BrowserHomePage({ apps, onNavigate }: BrowserHomePageProps) {
                 {app.name}
               </span>
               <span className="text-xs" style={{ color: 'var(--color-textMuted)' }}>
-                {SITE_URLS[app.id] || `${app.id}.fake`}
+                {SITE_URLS[app.id] || `${app.id}.corn`}
               </span>
             </button>
           ))}

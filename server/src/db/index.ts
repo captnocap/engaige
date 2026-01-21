@@ -122,6 +122,34 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
           'artifacts.0.base64',
           '{"default": 3}');
 
+      -- === AI PROVIDER CONFIGS ===
+      CREATE TABLE IF NOT EXISTS ai_providers (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        display_name TEXT NOT NULL,
+        provider_type TEXT NOT NULL CHECK (provider_type IN ('openai', 'openai-compatible', 'anthropic')),
+        base_url TEXT,
+        api_key TEXT,
+        default_model TEXT NOT NULL,
+        is_active INTEGER DEFAULT 0,
+        is_enabled INTEGER DEFAULT 1,
+        cost_config TEXT,
+        supports_vision INTEGER DEFAULT 0,
+        supports_tools INTEGER DEFAULT 1,
+        max_context_tokens INTEGER,
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Insert default AI providers (can be edited by user)
+      INSERT OR IGNORE INTO ai_providers (id, name, display_name, provider_type, base_url, default_model, is_active, is_enabled, supports_vision, supports_tools, max_context_tokens) VALUES
+        ('local', 'local', 'Local LM Studio', 'openai-compatible', 'http://localhost:1234/v1', 'gpt-4o', 1, 1, 0, 1, 128000),
+        ('openai', 'openai', 'OpenAI', 'openai', 'https://api.openai.com/v1', 'gpt-4o', 0, 1, 1, 1, 128000),
+        ('anthropic', 'anthropic', 'Anthropic', 'anthropic', 'https://api.anthropic.com', 'claude-sonnet-4-20250514', 0, 1, 1, 1, 200000);
+
+      CREATE INDEX IF NOT EXISTS idx_ai_providers_active ON ai_providers(is_active);
+      CREATE INDEX IF NOT EXISTS idx_ai_providers_enabled ON ai_providers(is_enabled);
+
       -- Insert default feature categories
       INSERT OR IGNORE INTO feature_categories (name, display_name, description) VALUES
         ('npc_generation', 'NPC Creation', 'Generating new NPC personalities and profiles'),
@@ -199,6 +227,9 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         image_generation_prompt TEXT, -- Base prompt used to generate their appearance
 
         -- === AI MODEL CONFIG (Per-NPC override) ===
+        -- New: Reference to ai_providers table (preferred method)
+        ai_provider_id TEXT,
+        -- Legacy: Inline config (backward compatibility)
         model_provider TEXT DEFAULT 'openai-compatible',
         model_name TEXT,
         model_base_url TEXT,

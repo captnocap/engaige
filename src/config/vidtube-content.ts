@@ -314,8 +314,8 @@ Of memories I can't compute..."
 Directed by: Someone Artsy
 Produced by: The Velvet Algorithms
 
-Stream: fakespotify.fake/velvetalgorithms
-Merch: velvetalgorithms.fake/shop
+Stream: fakespotify.corn/velvetalgorithms
+Merch: velvetalgorithms.corn/shop
 
 #newmusic #indieelectronic #velvetalgorithms`,
     likes: '67K',
@@ -572,8 +572,8 @@ CHAPTERS:
 
 ⚠️ DISCLAIMER: This video is for entertainment purposes only. I am not claiming anything as fact.
 
-Support the channel: patreon.fake/midnightmystery
-Merch: midnightmystery.fake/shop
+Support the channel: patreon.corn/midnightmystery
+Merch: midnightmystery.corn/shop
 
 #mystery #investigation #hartwell #unexplained`,
     likes: '245K',
@@ -672,7 +672,7 @@ Tonight's lineup:
 
 Chat rules: Be cool, be kind, no spoilers about the special guest
 
-Support the venue: theunderground.fake/donate`,
+Support the venue: theunderground.corn/donate`,
     likes: '2.3K',
     dislikes: '45',
     category: 'Music',

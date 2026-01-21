@@ -13,8 +13,16 @@ import { eventBus, EventTypes } from '../events/index.js';
 import { buildNPCContext, formatContextForPrompt, recordArticleMention } from './context-builder.js';
 import { errorLogger } from './error-logger.js';
 import { aiQueue, Priority, type RequestType, type QueueResult } from './ai-queue.js';
+import {
+  getActiveAIProvider,
+  getProviderForNPC,
+  upsertAIProvider,
+  setActiveAIProvider as setActiveProvider,
+  type AIProvider as AIProviderRecord,
+  type AIProviderType,
+} from './ai-provider-config.js';
 
-// AI Configuration Types
+// AI Configuration Types (kept for backward compatibility)
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
 
 export interface AIConfig {
@@ -24,36 +32,93 @@ export interface AIConfig {
   baseUrl?: string;
 }
 
-// Default global config (fallback when NPC doesn't have custom config)
-let globalConfig: AIConfig = {
-  provider: 'openai-compatible',
-  model: 'gpt-4o',
-  baseUrl: 'http://localhost:1234/v1',
-};
-
-// User-facing configuration function
+/**
+ * User-facing configuration function
+ * Now persists to database instead of just memory
+ */
 export function configureAI(config: Partial<AIConfig>) {
-  globalConfig = { ...globalConfig, ...config };
-  console.log(`[AI] Global config: ${globalConfig.provider} (${globalConfig.model}) @ ${globalConfig.baseUrl || 'openai.com'}`);
+  // Get or create provider based on the provider type
+  const providerType = config.provider || 'openai-compatible';
+  let providerName: string;
+
+  // Map provider type to a provider name
+  switch (providerType) {
+    case 'openai':
+      providerName = 'openai';
+      break;
+    case 'anthropic':
+      providerName = 'anthropic';
+      break;
+    default:
+      providerName = 'local';
+  }
+
+  // Update the provider in the database
+  upsertAIProvider({
+    name: providerName,
+    display_name: providerName === 'local' ? 'Local LM Studio' : providerName === 'openai' ? 'OpenAI' : 'Anthropic',
+    provider_type: providerType,
+    base_url: config.baseUrl,
+    api_key: config.apiKey,
+    default_model: config.model || 'gpt-4o',
+    is_active: true,
+  });
+
+  // Set this provider as active
+  setActiveProvider(providerName);
+
+  const activeProvider = getActiveAIProvider();
+  console.log(`[AI] Global config: ${activeProvider?.provider_type} (${activeProvider?.default_model}) @ ${activeProvider?.base_url || 'default'}`);
 }
 
+/**
+ * Get the current global AI configuration
+ * Now reads from database
+ */
 export function getAIConfig(): AIConfig {
-  return { ...globalConfig };
+  const provider = getActiveAIProvider();
+
+  if (!provider) {
+    // Fallback to defaults if no provider configured
+    return {
+      provider: 'openai-compatible',
+      model: 'gpt-4o',
+      baseUrl: 'http://localhost:1234/v1',
+    };
+  }
+
+  return {
+    provider: provider.provider_type,
+    model: provider.default_model,
+    apiKey: provider.api_key,
+    baseUrl: provider.base_url,
+  };
 }
 
-// Get effective config for an NPC (NPC config overrides global)
+/**
+ * Get effective config for an NPC
+ * Resolution order: ai_provider_id -> inline config -> global default
+ */
 export function getNPCConfig(npc: {
+  ai_provider_id?: string | null;
   model_provider?: string | null;
   model_name?: string | null;
   model_base_url?: string | null;
   model_api_key?: string | null;
 }): AIConfig {
-  const provider = (npc.model_provider as AIProvider) || globalConfig.provider;
-  const model = npc.model_name || globalConfig.model;
-  const baseUrl = npc.model_base_url || globalConfig.baseUrl;
-  const apiKey = npc.model_api_key || globalConfig.apiKey;
+  const providerRecord = getProviderForNPC(npc);
 
-  return { provider, model, baseUrl, apiKey };
+  if (providerRecord) {
+    return {
+      provider: providerRecord.provider_type,
+      model: providerRecord.default_model,
+      apiKey: providerRecord.api_key,
+      baseUrl: providerRecord.base_url,
+    };
+  }
+
+  // Fallback to global config
+  return getAIConfig();
 }
 
 // Build system prompt for an NPC with their identity
@@ -690,7 +755,7 @@ export async function queuedGenerateNPCResponse(
 
   // Estimate cost (rough: ~4 chars per token, assume 500 output tokens)
   const promptLength = message.length + conversationHistory.reduce((acc, m) => acc + m.content.length, 0);
-  const estimatedCost = estimateCost(promptLength, 500, globalConfig.model);
+  const estimatedCost = estimateCost(promptLength, 500, getAIConfig().model);
 
   return aiQueue.enqueue({
     priority,
@@ -738,7 +803,7 @@ export async function queuedGenerateNPCPost(
 
   // Estimate cost for post generation
   const promptLength = (prompt?.length || 50) + 500; // Base system prompt
-  const estimatedCost = estimateCost(promptLength, 300, globalConfig.model);
+  const estimatedCost = estimateCost(promptLength, 300, getAIConfig().model);
 
   return aiQueue.enqueue({
     priority,
@@ -771,7 +836,7 @@ export async function queuedNPCInteraction(
   const priority = options?.priority || Priority.LOW;
 
   // Estimate cost for interaction
-  const estimatedCost = estimateCost(context.length + 500, 200, globalConfig.model);
+  const estimatedCost = estimateCost(context.length + 500, 200, getAIConfig().model);
 
   return aiQueue.enqueue({
     priority,
@@ -808,7 +873,7 @@ export async function queuedPregenerate(
     featureCategory?: string;
   }
 ): Promise<QueueResult<string>> {
-  const estimatedCost = estimateCost(500, 200, globalConfig.model);
+  const estimatedCost = estimateCost(500, 200, getAIConfig().model);
 
   return aiQueue.enqueue({
     priority: Priority.IDLE,

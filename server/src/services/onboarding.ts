@@ -1,7 +1,9 @@
 import { getDB, generateId } from '../db/index.js';
 import { configureAI, type AIProvider } from './ai.js';
+import { upsertAIProvider, setActiveAIProvider, testProviderConnection, getAIProviderByName } from './ai-provider-config.js';
 import { initializeBudget, type BudgetConfig } from './budget.js';
 import { createPlayer, setOnboardingComplete, hasCompletedOnboarding, savePlayerPreferences, type PlayerPreferences } from './player.js';
+import { generateNPCBatch, generateNPCBatchProgressive, type NPCGenerationResult } from './npc-generator.js';
 
 // Onboarding data structure
 export interface OnboardingData {
@@ -69,13 +71,34 @@ export async function completeOnboarding(data: OnboardingData): Promise<{
   error?: string;
 }> {
   try {
-    // Step 1: Configure AI provider globally
-    configureAI({
-      provider: data.provider.type,
-      model: data.provider.model,
-      apiKey: data.provider.apiKey,
-      baseUrl: data.provider.baseUrl,
+    // Step 1: Configure AI provider (persists to database)
+    // Determine provider name from type
+    let providerName: string;
+    switch (data.provider.type) {
+      case 'openai':
+        providerName = 'openai';
+        break;
+      case 'anthropic':
+        providerName = 'anthropic';
+        break;
+      default:
+        providerName = 'local';
+    }
+
+    // Create/update the provider in the database
+    upsertAIProvider({
+      name: providerName,
+      display_name: providerName === 'local' ? 'Local LM Studio' : providerName === 'openai' ? 'OpenAI' : 'Anthropic',
+      provider_type: data.provider.type,
+      base_url: data.provider.baseUrl,
+      api_key: data.provider.apiKey,
+      default_model: data.provider.model,
+      is_active: true,
+      is_enabled: true,
     });
+
+    // Set this provider as active
+    setActiveAIProvider(providerName);
 
     // Step 2: Initialize budget
     initializeBudget({
@@ -109,10 +132,37 @@ export async function completeOnboarding(data: OnboardingData): Promise<{
 
     // Step 5: Generate NPCs (optional, can be skipped for dev)
     let npcCount = 0;
-    if (!data.skip_npc_generation) {
-      // TODO: Implement NPC generation
-      // This will be done in the next phase
-      npcCount = 0; // Placeholder
+    let npcGenerationResult: NPCGenerationResult | null = null;
+
+    if (!data.skip_npc_generation && data.preferences.npc_count > 0) {
+      console.log(`[Onboarding] Starting NPC generation: ${data.preferences.npc_count} NPCs requested`);
+
+      // Use progressive generation for larger batches
+      if (data.preferences.npc_count > 10) {
+        npcGenerationResult = await generateNPCBatchProgressive({
+          count: data.preferences.npc_count,
+          preferences: preferences,
+          playerInterests: data.profile.interests,
+          playerPersonalityVibe: data.profile.personality_vibe,
+        }, (created, total) => {
+          console.log(`[Onboarding] NPC generation progress: ${created}/${total}`);
+        });
+      } else {
+        npcGenerationResult = await generateNPCBatch({
+          count: data.preferences.npc_count,
+          preferences: preferences,
+          playerInterests: data.profile.interests,
+          playerPersonalityVibe: data.profile.personality_vibe,
+        });
+      }
+
+      npcCount = npcGenerationResult.created_count;
+
+      if (npcGenerationResult.errors.length > 0) {
+        console.warn(`[Onboarding] NPC generation had ${npcGenerationResult.errors.length} errors:`, npcGenerationResult.errors);
+      }
+
+      console.log(`[Onboarding] NPC generation complete: ${npcCount} created, ${npcGenerationResult.failed_count} failed`);
     }
 
     // Step 6: Mark onboarding as complete
@@ -180,6 +230,9 @@ export function resetOnboarding(): void {
   db.exec('DELETE FROM budget_config');
   db.exec('DELETE FROM api_costs');
 
+  // Reset AI providers (will be re-seeded with defaults on next startup)
+  db.exec('DELETE FROM ai_providers');
+
   // Reset game state
   const gameDb = getDB('game');
   gameDb.exec('DELETE FROM conversations');
@@ -198,42 +251,39 @@ export async function validateProviderConfig(
   model: string,
   apiKey?: string,
   baseUrl?: string
-): Promise<{ valid: boolean; error?: string }> {
+): Promise<{ valid: boolean; error?: string; latency_ms?: number }> {
   try {
-    // For OpenAI-compatible, just check if base URL is reachable
-    if (provider === 'openai-compatible' && baseUrl) {
-      try {
-        const response = await fetch(baseUrl.replace('/v1', '') + '/v1/models', {
-          method: 'GET',
-          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
-        });
-        if (response.ok) {
-          return { valid: true };
-        }
-      } catch {
-        // Local server might not have models endpoint, that's okay
-        return { valid: true };
-      }
+    // Basic validation first
+    if (provider === 'openai' && !apiKey) {
+      return { valid: false, error: 'API key required for OpenAI' };
+    }
+    if (provider === 'anthropic' && !apiKey) {
+      return { valid: false, error: 'API key required for Anthropic' };
     }
 
-    // For OpenAI, check API key
-    if (provider === 'openai') {
-      if (!apiKey) {
-        return { valid: false, error: 'API key required for OpenAI' };
-      }
-      // Could test with a minimal API call here
-      return { valid: true };
-    }
+    // Create a temporary provider object to test connection
+    const tempProvider = {
+      id: 'temp',
+      name: 'temp',
+      display_name: 'Temp',
+      provider_type: provider,
+      base_url: baseUrl,
+      api_key: apiKey,
+      default_model: model,
+      is_active: false,
+      is_enabled: true,
+      supports_vision: false,
+      supports_tools: true,
+      created_at: 0,
+      updated_at: 0,
+    };
 
-    // For Anthropic, check API key
-    if (provider === 'anthropic') {
-      if (!apiKey) {
-        return { valid: false, error: 'API key required for Anthropic' };
-      }
-      return { valid: true };
-    }
-
-    return { valid: true };
+    const result = await testProviderConnection(tempProvider);
+    return {
+      valid: result.success,
+      error: result.error,
+      latency_ms: result.latency_ms,
+    };
   } catch (error: any) {
     return { valid: false, error: error.message };
   }

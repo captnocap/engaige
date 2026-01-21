@@ -259,7 +259,7 @@ The people who say phones are destroying society aren't wrong. But society was a
 
 I will not be repeating this experiment.
 
-*Alex Rivera is a columnist who clearly has a phone problem. You can reach them at alex@dailybuzz.fake, assuming they've checked their email this decade.*`,
+*Alex Rivera is a columnist who clearly has a phone problem. You can reach them at alex@dailybuzz.corn, assuming they've checked their email this decade.*`,
     tags: ['opinion', 'technology', 'lifestyle', 'humor'],
     relatedArticles: ['Is Social Media Addiction Real?', 'The Digital Detox Industry'],
   },
@@ -473,7 +473,7 @@ export function DailyBuzzSite({ siteId }: SiteProps) {
                 </p>
                 <input
                   type="email"
-                  placeholder="your@email.fake"
+                  placeholder="your@email.corn"
                   className="w-full px-3 py-2 text-sm rounded mb-2"
                   style={{
                     background: site.theme.background,
