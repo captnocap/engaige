@@ -8,6 +8,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { getAppsForSurface, type AppDefinition } from '../../config/app-registry.js'
 import { BrowserSiteContainer } from './BrowserSiteContainer.js'
+import { useBrowserStore } from '../../stores/browserStore.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 // Site URL mappings
@@ -84,9 +85,20 @@ export function Browser() {
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id)
   const [urlInput, setUrlInput] = useState('')
   const urlInputRef = useRef<HTMLInputElement>(null)
+  const [draggedBookmarkId, setDraggedBookmarkId] = useState<string | null>(null)
 
   // Get apps available in browser
   const browserApps = getAppsForSurface('browser')
+
+  // Bookmark store
+  const {
+    bookmarks,
+    showBookmarksBar,
+    addBookmark,
+    removeBookmark,
+    reorderBookmark,
+    isBookmarked,
+  } = useBrowserStore()
 
   // Get active tab
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0]
@@ -132,6 +144,7 @@ export function Browser() {
   // Go back in history
   const goBack = useCallback(() => {
     if (activeTab.historyIndex > 0) {
+      // Go to previous page in history
       const newIndex = activeTab.historyIndex - 1
       const appId = activeTab.history[newIndex]
       const app = browserApps.find(a => a.id === appId)
@@ -142,12 +155,24 @@ export function Browser() {
         url: SITE_URLS[appId] || `www.${appId}.corn`,
         title: app?.name || appId,
       })
+    } else if (activeTab.historyIndex === 0 && activeTab.siteId) {
+      // Go back to homepage (we're at the first page in history)
+      updateTab(activeTabId, {
+        historyIndex: -1,
+        siteId: null,
+        url: '',
+        title: 'New Tab',
+      })
     }
   }, [activeTab, activeTabId, browserApps, updateTab])
 
   // Go forward in history
   const goForward = useCallback(() => {
-    if (activeTab.historyIndex < activeTab.history.length - 1) {
+    // Check if we can go forward (including from homepage where historyIndex is -1)
+    const canGoForward = activeTab.historyIndex < activeTab.history.length - 1
+    const canGoForwardFromHome = activeTab.historyIndex === -1 && activeTab.history.length > 0
+
+    if (canGoForward || canGoForwardFromHome) {
       const newIndex = activeTab.historyIndex + 1
       const appId = activeTab.history[newIndex]
       const app = browserApps.find(a => a.id === appId)
@@ -194,6 +219,50 @@ export function Browser() {
       setTimeout(() => updateTab(activeTabId, { siteId }), 0)
     }
   }, [activeTab.siteId, activeTabId, updateTab])
+
+  // Toggle bookmark for current page
+  const toggleBookmark = useCallback(() => {
+    if (!activeTab.siteId || !activeTab.url) return
+
+    if (isBookmarked(activeTab.url)) {
+      const bookmark = bookmarks.find(b => b.url === activeTab.url)
+      if (bookmark) {
+        removeBookmark(bookmark.id)
+      }
+    } else {
+      const app = browserApps.find(a => a.id === activeTab.siteId)
+      const icon = app?.icon || ''
+      addBookmark(activeTab.url, activeTab.title, typeof icon === 'string' ? icon : '')
+    }
+  }, [activeTab, isBookmarked, bookmarks, removeBookmark, addBookmark, browserApps])
+
+  // Navigate to bookmark
+  const navigateToBookmark = useCallback((url: string) => {
+    const appId = URL_TO_APP[url]
+    if (appId) {
+      navigateTo(appId)
+    }
+  }, [navigateTo])
+
+  // Drag and drop handlers for bookmarks
+  const handleBookmarkDragStart = useCallback((e: React.DragEvent, bookmarkId: string) => {
+    setDraggedBookmarkId(bookmarkId)
+    e.dataTransfer.effectAllowed = 'move'
+  }, [])
+
+  const handleBookmarkDragOver = useCallback((e: React.DragEvent, targetBookmarkId: string) => {
+    e.preventDefault()
+    if (!draggedBookmarkId || draggedBookmarkId === targetBookmarkId) return
+
+    const targetBookmark = bookmarks.find(b => b.id === targetBookmarkId)
+    if (targetBookmark) {
+      reorderBookmark(draggedBookmarkId, targetBookmark.position)
+    }
+  }, [draggedBookmarkId, bookmarks, reorderBookmark])
+
+  const handleBookmarkDragEnd = useCallback(() => {
+    setDraggedBookmarkId(null)
+  }, [])
 
   // Add new tab
   const addTab = useCallback(() => {
@@ -265,12 +334,16 @@ export function Browser() {
         const currentIndex = tabs.findIndex(t => t.id === activeTabId)
         const nextIndex = (currentIndex + 1) % tabs.length
         setActiveTabId(tabs[nextIndex].id)
+      } else if (isMod && e.key === 'd') {
+        e.preventDefault()
+        // Toggle bookmark
+        toggleBookmark()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [addTab, closeTab, activeTabId, tabs])
+  }, [addTab, closeTab, activeTabId, tabs, toggleBookmark])
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--color-bg)' }}>
@@ -327,19 +400,19 @@ export function Browser() {
               </span>
             </button>
           ))}
-        </div>
 
-        {/* New Tab button */}
-        <button
-          onClick={addTab}
-          className="w-7 h-7 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)] shrink-0"
-          style={{ color: 'var(--color-textMuted)' }}
-          title="New Tab (Cmd+T)"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
+          {/* New Tab button - inside scrollable container to stay next to rightmost tab */}
+          <button
+            onClick={addTab}
+            className="w-7 h-7 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)] shrink-0"
+            style={{ color: 'var(--color-textMuted)' }}
+            title="New Tab (Cmd+T)"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Browser Chrome */}
@@ -351,8 +424,8 @@ export function Browser() {
         <div className="flex items-center gap-1">
           <button
             onClick={goBack}
-            disabled={activeTab.historyIndex <= 0}
-            className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30"
+            disabled={!activeTab.siteId}
+            className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-[var(--color-bgTertiary)]"
             style={{ color: 'var(--color-text)' }}
             title="Back"
           >
@@ -362,8 +435,8 @@ export function Browser() {
           </button>
           <button
             onClick={goForward}
-            disabled={activeTab.historyIndex >= activeTab.history.length - 1}
-            className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30"
+            disabled={!(activeTab.historyIndex < activeTab.history.length - 1 || (activeTab.historyIndex === -1 && activeTab.history.length > 0))}
+            className="w-8 h-8 rounded-md flex items-center justify-center transition-colors disabled:opacity-30 hover:bg-[var(--color-bgTertiary)]"
             style={{ color: 'var(--color-text)' }}
             title="Forward"
           >
@@ -411,6 +484,31 @@ export function Browser() {
               className="flex-1 bg-transparent text-sm outline-none"
               style={{ color: 'var(--color-text)' }}
             />
+
+            {/* Bookmark star - only show when on a valid site */}
+            {activeTab.siteId && (
+              <button
+                type="button"
+                onClick={toggleBookmark}
+                className="w-5 h-5 flex items-center justify-center shrink-0 transition-colors hover:scale-110"
+                style={{ color: isBookmarked(activeTab.url) ? 'var(--color-primary)' : 'var(--color-textMuted)' }}
+                title={isBookmarked(activeTab.url) ? 'Remove bookmark (Cmd+D)' : 'Add bookmark (Cmd+D)'}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill={isBookmarked(activeTab.url) ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </form>
 
@@ -425,6 +523,69 @@ export function Browser() {
           </svg>
         </button>
       </div>
+
+      {/* Bookmarks Bar */}
+      {showBookmarksBar && bookmarks.length > 0 && (
+        <div
+          className="flex items-center gap-1 px-3 py-1.5 overflow-x-auto scrollbar-none"
+          style={{
+            background: 'var(--color-bgSecondary)',
+            borderBottom: '1px solid var(--color-border)',
+          }}
+        >
+          {bookmarks
+            .sort((a, b) => a.position - b.position)
+            .map(bookmark => (
+              <div
+                key={bookmark.id}
+                draggable
+                onDragStart={e => handleBookmarkDragStart(e, bookmark.id)}
+                onDragOver={e => handleBookmarkDragOver(e, bookmark.id)}
+                onDragEnd={handleBookmarkDragEnd}
+                className={`
+                  group relative flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer
+                  transition-colors hover:bg-[var(--color-bgTertiary)]
+                  ${draggedBookmarkId === bookmark.id ? 'opacity-50' : ''}
+                `}
+                onClick={() => navigateToBookmark(bookmark.url)}
+              >
+                {/* Bookmark icon */}
+                <span className="text-sm shrink-0">{bookmark.icon || '🔖'}</span>
+
+                {/* Bookmark title */}
+                <span
+                  className="text-xs truncate max-w-[100px]"
+                  style={{ color: 'var(--color-text)' }}
+                >
+                  {bookmark.title}
+                </span>
+
+                {/* Delete button - shows on hover */}
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    removeBookmark(bookmark.id)
+                  }}
+                  className="
+                    absolute -top-1 -right-1 w-4 h-4 rounded-full
+                    flex items-center justify-center
+                    opacity-0 group-hover:opacity-100
+                    transition-opacity
+                  "
+                  style={{
+                    background: 'var(--color-bgTertiary)',
+                    color: 'var(--color-textMuted)',
+                  }}
+                  title="Remove bookmark"
+                >
+                  <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+        </div>
+      )}
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
