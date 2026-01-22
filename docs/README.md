@@ -1,10 +1,20 @@
-# LoveAI Project Documentation
+# engAIge Project Documentation
 
-Welcome to the LoveAI project documentation. This documentation covers the architecture, backend services, frontend components, and Tauri integration of the project.
+Welcome to the engAIge project documentation. This documentation covers the architecture, backend services, frontend components, and Tauri integration of the project.
+
+## 📊 Implementation Status
+
+**Current Status:** ~95% of roadmap complete
+
+See **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)** for:
+- Comprehensive feature-by-feature implementation audit
+- What's working vs what's documented
+- Current gaps and TODOs
+- Recommendations for next steps
 
 ## Project Overview
 
-LoveAI is a relationship simulator and social media game that reimagines the character AI experience. It features autonomous NPCs that live, post, and interact in the background, creating a dynamic social environment.
+engAIge is a relationship simulator and social media game that reimagines the character AI experience. It features autonomous NPCs that live, post, and interact in the background, creating a dynamic social environment.
 
 **Core Vision:**
 *   **Social Platforms with Personality**: MySpace/Twitter/Instagram-style interactions.
@@ -13,44 +23,83 @@ LoveAI is a relationship simulator and social media game that reimagines the cha
 *   **Cost-Conscious AI**: Granular budget controls for API usage.
 *   **Provider Agnostic**: Support for OpenAI, Anthropic, and local models.
 
+---
+
+## Documentation Organization
+
+### 📁 [/completed/](./completed/)
+**Fully implemented systems** - Reference documentation for working features:
+- Event Bus & Event Reference
+- Error Logging System
+- AI Queue & Provider Management
+- Network Architecture
+- NPC Personality & Thoughts Systems
+- Proxy Systems (Vision & Image Gen)
+- Runtime Tools & Output Validation
+- Conversation Context & Autonomous Behavior
+- Component Architecture
+- Logs Viewer
+- Drama Automation
+
+### 📁 /docs/ (this directory)
+**Active development** - Specs for incomplete or future features:
+- Content Guardrails (partial)
+- Files System (import missing)
+- Rare Spawn System (future)
+- Multiplayer Architecture (future)
+- Content Templates (guidance)
+
+---
+
 ## Documentation Index
 
-### Core Architecture
-*   **[Architecture Overview](./ARCHITECTURE.md)**: High-level system design, database schema, and AI integration strategies.
-*   **[Backend Documentation](./BACKEND.md)**: Details on the Bun-based API server and core services.
-*   **[Frontend Documentation](./FRONTEND.md)**: React + Vite application architecture and window management.
-*   **[Tauri Integration](./TAURI.md)**: Desktop environment integration and build process.
-*   **[Project Roadmap](./ROADMAP.md)**: Detailed feature roadmap and future vision.
+### 🎯 Start Here
+*   **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)**: Complete audit of docs vs implementation
+*   **[ROADMAP.md](./ROADMAP.md)**: Detailed feature roadmap and future vision
+*   **[ROADMAP_CHECKLIST.md](./ROADMAP_CHECKLIST.md)**: Phase-by-phase completion tracking
 
-### NPC & Simulation
-*   **[NPC Personality System](./NPC_PERSONALITY_SYSTEM.md)**: Breakdown of behavior flags, quirks, and presets.
-*   **[Autonomous Context](./AUTONOMOUS_CONTEXT.md)**: Background NPC decision-making and interaction logic.
-*   **[Drama Automation](./DRAMA_AUTOMATION.md)**: Systems for generating and managing NPC-to-NPC narrative friction.
-*   **[News Feed System](./NEWS_FEED_SYSTEM.md)**: Unified feed for world events, lore, and AI-generated trends.
-*   **[Content Templates](./CONTENT_TEMPLATES.md)**: Reference for generating NPC content, profiles, and interactions.
+### 🏗️ Core Architecture
+*   **[ARCHITECTURE.md](./ARCHITECTURE.md)**: High-level system design, database schema
+*   **[BACKEND.md](./BACKEND.md)**: Bun-based API server and core services
+*   **[FRONTEND.md](./FRONTEND.md)**: React + Vite application architecture
+*   **[TAURI.md](./TAURI.md)**: Desktop environment integration
 
-### AI & Systems
-*   **[AI Queue System](./AI_QUEUE.md)**: Priority-based request management and budget control.
-*   **[Context System](./CONTEXT_SYSTEM.md)**: Memory and context injection architecture for AI prompting.
-*   **[Image Generation](./IMAGE_GENERATION.md)**: Specifics on prompts, generation flows, and consistency.
-*   **[Proxy System](./PROXY_SYSTEM.md)**: Transparent Vision and Image Gen proxies for different models.
-*   **[Runtime Tools](./RUNTIME_TOOLS.md)**: Tools available to the AI at runtime.
-*   **[Output Validation](./OUTPUT_VALIDATION.md)**: Ensuring AI content meets quality and tone standards.
-*   **[Content Guardrails](./CONTENT_GUARDRAILS.md)**: User-configurable content rating and safety systems.
+### 🤖 NPC Systems (Implemented - See [/completed/](./completed/))
+*   **NPC Personality System**: Behavior flags, quirks, presets
+*   **NPC Thoughts System**: Reasoning extraction and deliberation
+*   **Autonomous Context**: Rich context for autonomous behavior
 
-### Technical Foundations
-*   **[Event Bus Specification](./EVENT_BUS_SPEC.md)**: Architecture for the central system event stream.
-*   **[Event Reference](./EVENT_REFERENCE.md)**: Comprehensive guide to all system event types and payloads.
-*   **[Error Logging](./ERROR_LOGGING.md)**: Standardized error handling and tracking across the project.
-*   **[Network Architecture](./NETWORK_ARCHITECTURE.md)**: Two-layer design (WS locally, HTTP/Proxy externally).
-*   **[Multiplayer Architecture](./MULTIPLAYER_ARCHITECTURE.md)**: Design for the decentralized mesh network between players.
-*   **[Component Architecture](./COMPONENT_ARCHITECTURE.md)**: Philosophy for multi-platform UI components.
-*   **[Files System](./FILES_SYSTEM.md)**: Management of media, configuration, and export files.
+### 🔧 Technical Foundations (Implemented - See [/completed/](./completed/))
+*   **Event Bus Specification**: Central event stream architecture
+*   **Event Reference**: All 40+ event types and payloads
+*   **Error Logging**: Standardized error handling
+*   **Network Architecture**: Two-layer design (WS + HTTP door)
+*   **AI Queue System**: Priority-based request management
+*   **AI Providers**: Multi-provider configuration
 
-### Utilities & Reference
-*   **[Logs Viewer](./LOGS_VIEWER.md)**: Documentation for the in-game event and error log viewing tools.
-*   **[Filler Sites](./FILLER_SITES.md)**: Details on the satirical and informational "NetExplorer" websites.
-*   **[Example Configs](./EXAMPLE_CONFIGS.md)**: Reference configurations for models and NPCs.
+### 🎨 Content & Media (Implemented - See [/completed/](./completed/))
+*   **Proxy System**: Vision and image generation proxies
+*   **Image Generation**: Flexible provider templates
+*   **Output Validation**: AI response validation and auto-fixing
+*   **Runtime Tools**: Tools available to NPCs at runtime
+*   **Component Architecture**: Reusable UI patterns
+*   **Logs Viewer**: In-app debugging tools
+
+### 🌍 World Building
+*   **[NEWS_FEED_SYSTEM.md](./NEWS_FEED_SYSTEM.md)**: Unified feed with recursion loop (90% complete)
+*   **[FILLER_SITES.md](./FILLER_SITES.md)**: 20+ parody websites (complete)
+*   **[CONTENT_TEMPLATES.md](./CONTENT_TEMPLATES.md)**: Templates for content generation
+
+### 🚧 In Progress / Future
+*   **[CONTENT_GUARDRAILS.md](./CONTENT_GUARDRAILS.md)**: Content rating system (partial)
+*   **[FILES_SYSTEM.md](./FILES_SYSTEM.md)**: Export/import (export done, import TODO)
+*   **[RARE_SPAWN_SYSTEM.md](./RARE_SPAWN_SYSTEM.md)**: Special NPC abilities (future)
+*   **[MULTIPLAYER_ARCHITECTURE.md](./MULTIPLAYER_ARCHITECTURE.md)**: Discord mesh (future)
+
+### 📖 Reference
+*   **[EXAMPLE_CONFIGS.md](./EXAMPLE_CONFIGS.md)**: Complete NPC and player configs
+
+---
 
 ## Quick Start
 
@@ -66,3 +115,27 @@ bun run build         # Build for production
 
 The backend runs separately using Bun.
 Data is stored in `server/data/`.
+
+```bash
+cd server
+bun install
+bun run dev
+```
+
+---
+
+## Finding What You Need
+
+### "How do I implement X?"
+1. Check **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)** to see if it exists
+2. If ✅ complete, check **[/completed/](./completed/)** for reference docs
+3. If 🟡 partial or ❌ not done, check main /docs/ for specs
+
+### "What's already working?"
+See **[/completed/](./completed/)** - everything there is implemented and working
+
+### "What needs to be built?"
+See **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)** - Section "Recommendations"
+
+### "What's the roadmap?"
+See **[ROADMAP.md](./ROADMAP.md)** and **[ROADMAP_CHECKLIST.md](./ROADMAP_CHECKLIST.md)**
