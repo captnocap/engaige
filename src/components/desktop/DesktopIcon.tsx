@@ -11,12 +11,13 @@ interface DesktopIconProps {
 
 export function DesktopIcon({
   icon,
+  iconImage,
   label,
   onClick,
   onDoubleClick,
   isSelected = false,
   className,
-}: DesktopIconProps) {
+}: DesktopIconProps & { iconImage?: string }) {
   const [lastClick, setLastClick] = useState(0)
 
   const handleClick = (e: React.MouseEvent) => {
@@ -31,9 +32,20 @@ export function DesktopIcon({
   return (
     <button
       onClick={handleClick}
-      className={`flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-colors select-none ${isSelected ? 'bg-[#00ff88]/20 outline outline-1 outline-[#00ff88]/50' : 'hover:bg-white/5'} ${className ?? ''}`}
+      className={`flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-colors select-none group ${isSelected ? 'bg-[#00ff88]/20 outline outline-1 outline-[#00ff88]/50' : 'hover:bg-white/5'} ${className ?? ''}`}
     >
-      <div className="text-4xl drop-shadow-lg">{icon}</div>
+      <div className={`relative flex items-center justify-center transition-transform group-hover:scale-105 ${iconImage ? 'w-12 h-12' : 'text-4xl'} drop-shadow-lg`}>
+        {iconImage ? (
+          <img
+            src={iconImage}
+            alt={label}
+            className="w-full h-full object-cover rounded-xl shadow-md"
+            style={{ borderRadius: '22%' }} // Smooth squircle-like radius
+          />
+        ) : (
+          icon
+        )}
+      </div>
       <span
         className={`text-xs text-center leading-tight px-1 py-0.5 rounded ${isSelected ? 'bg-[#00ff88] text-black' : 'text-white drop-shadow-md'}`}
         style={{ textShadow: isSelected ? 'none' : '0 1px 2px rgba(0,0,0,0.8)' }}

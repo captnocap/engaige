@@ -18,6 +18,7 @@ export const FILLER_SITES = {
     tagline: 'The free encyclopedia',
     url: 'www.wikiknow.corn',
     icon: '📖',
+    iconImage: '/src/assets/icon-wikiknow.png', // Generated
     description: 'The free encyclopedia that anyone can edit',
     theme: {
       primary: '#0645AD',      // Wikipedia blue links
@@ -36,6 +37,7 @@ export const FILLER_SITES = {
     tagline: 'The front page of the fake internet',
     url: 'www.threadit.corn',
     icon: '🗣️',
+    iconImage: '/src/assets/icon-threadit.png', // Generated
     description: 'Dive into anything',
     theme: {
       primary: '#FF4500',      // Reddit orange
@@ -75,6 +77,7 @@ export const FILLER_SITES = {
     tagline: 'Broadcast Yourself',
     url: 'www.vidtube.corn',
     icon: '▶️',
+    iconImage: '/src/assets/icon-vidtube.png', // Generated
     description: 'Share and watch videos from around the world',
     theme: {
       primary: '#FF0000',      // YouTube red
@@ -201,6 +204,7 @@ export const FILLER_SITES = {
     tagline: 'Talk to Strangers. Regret It Later.',
     url: 'www.strangerzone.corn',
     icon: '👤',
+    iconImage: '/src/assets/icon-strangerzone.png', // User uploaded
     description: 'Random chat with anonymous strangers',
     theme: {
       primary: '#e94560',      // Pink/red
@@ -331,6 +335,7 @@ export const FILLER_SITES = {
     tagline: 'The #1 Destination for Fan Enthusiasts',
     url: 'www.onlyfans.corn',
     icon: '🌀',
+    iconImage: '/src/assets/icon-onlyfans.png', // User uploaded
     description: 'Premium ceiling fans, desk fans, and more. What did you think it was?',
     theme: {
       primary: '#EC4899',      // Pink

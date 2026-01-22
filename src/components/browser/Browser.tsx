@@ -439,7 +439,13 @@ export function Browser({ onClose }: BrowserProps) {
             >
               {/* Tab icon */}
               <span className="text-sm shrink-0 flex items-center">
-                {tab.siteId ? (browserApps.find(a => a.id === tab.siteId)?.icon || <img src={cornCobIcon} alt="" className="w-4 h-4" />) : <img src={cornCobIcon} alt="" className="w-4 h-4" />}
+                {(() => {
+                  const app = tab.siteId ? browserApps.find(a => a.id === tab.siteId) : null
+                  if (app?.iconImage) {
+                    return <img src={app.iconImage} alt="" className="w-4 h-4 object-cover rounded-sm" />
+                  }
+                  return app?.icon || <img src={cornCobIcon} alt="" className="w-4 h-4" />
+                })()}
               </span>
 
               {/* Tab title */}
@@ -787,10 +793,19 @@ function BrowserHomePage({ apps, onNavigate }: BrowserHomePageProps) {
               className="flex flex-col items-center gap-2 p-4 rounded-xl transition-colors hover:bg-[var(--color-bgSecondary)]"
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-105 shadow-sm"
                 style={{ background: 'var(--color-bgTertiary)' }}
               >
-                {app.icon}
+                {app.iconImage ? (
+                  <img
+                    src={app.iconImage}
+                    alt={app.name}
+                    className="w-full h-full object-cover shadow-sm"
+                    style={{ borderRadius: '22%' }}
+                  />
+                ) : (
+                  app.icon
+                )}
               </div>
               <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
                 {app.name}

@@ -54,6 +54,7 @@ export interface AppDefinition {
   id: string;
   name: string;
   icon: string; // Emoji or icon name
+  iconImage?: string; // Optional path to high-res image icon
   description?: string;
 
   // Where does this app exist?
@@ -221,6 +222,7 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     id: 'myface',
     name: 'MyFace',
     icon: '👤',
+    iconImage: '/src/assets/icon-myface.png', // User uploaded
     description: 'The OG social network - profiles, Top 8, bulletins',
     surfaces: { phone: true, browser: true },
     category: 'social',
