@@ -56,6 +56,15 @@ interface BrowserTab {
   title: string
 }
 
+// TODO: Tab drag-to-new-window feature
+// To implement dragging a tab out to create a new browser window:
+// 1. Create a shared browserTabStore (Zustand) to manage tabs across browser instances
+// 2. On drag start, store the tab data in dataTransfer
+// 3. Detect when tab is dragged outside the tab bar (use dragend coordinates)
+// 4. If dropped outside, emit an event/action to Desktop to spawn a new browser window
+// 5. Pass the tab data to the new browser instance via the store
+// 6. Remove the tab from the source browser (close browser if it was the last tab)
+
 // Generate unique tab ID
 function generateTabId(): string {
   return `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -80,12 +89,20 @@ function getTabTitle(tab: BrowserTab, apps: AppDefinition[]): string {
   return app?.name || tab.siteId
 }
 
-export function Browser() {
+interface BrowserProps {
+  onClose?: () => void
+}
+
+export function Browser({ onClose }: BrowserProps) {
   const [tabs, setTabs] = useState<BrowserTab[]>([createNewTab()])
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id)
   const [urlInput, setUrlInput] = useState('')
   const urlInputRef = useRef<HTMLInputElement>(null)
   const [draggedBookmarkId, setDraggedBookmarkId] = useState<string | null>(null)
+  const [draggedTabId, setDraggedTabId] = useState<string | null>(null)
+  const [zoom, setZoom] = useState(100)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   // Get apps available in browser
   const browserApps = getAppsForSurface('browser')
@@ -280,10 +297,10 @@ export function Browser() {
     e?.preventDefault()
 
     setTabs(prev => {
-      // Don't close last tab
+      // If closing last tab, close the browser window
       if (prev.length === 1) {
-        // Reset the tab instead
-        return [createNewTab()]
+        onClose?.()
+        return prev // Return unchanged (window will close anyway)
       }
 
       const tabIndex = prev.findIndex(t => t.id === tabId)
@@ -297,7 +314,51 @@ export function Browser() {
 
       return newTabs
     })
-  }, [activeTabId])
+  }, [activeTabId, onClose])
+
+  // Tab drag handlers for reordering
+  const handleTabDragStart = useCallback((e: React.DragEvent, tabId: string) => {
+    setDraggedTabId(tabId)
+    e.dataTransfer.effectAllowed = 'move'
+  }, [])
+
+  const handleTabDragOver = useCallback((e: React.DragEvent, targetTabId: string) => {
+    e.preventDefault()
+    if (!draggedTabId || draggedTabId === targetTabId) return
+
+    setTabs(prev => {
+      const draggedIndex = prev.findIndex(t => t.id === draggedTabId)
+      const targetIndex = prev.findIndex(t => t.id === targetTabId)
+      if (draggedIndex === -1 || targetIndex === -1) return prev
+
+      const newTabs = [...prev]
+      const [removed] = newTabs.splice(draggedIndex, 1)
+      newTabs.splice(targetIndex, 0, removed)
+      return newTabs
+    })
+  }, [draggedTabId])
+
+  const handleTabDragEnd = useCallback(() => {
+    setDraggedTabId(null)
+  }, [])
+
+  // Zoom controls
+  const zoomIn = useCallback(() => setZoom(z => Math.min(200, z + 10)), [])
+  const zoomOut = useCallback(() => setZoom(z => Math.max(50, z - 10)), [])
+  const resetZoom = useCallback(() => setZoom(100), [])
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuOpen])
 
   // Handle middle-click on tab to close
   const handleTabMouseDown = useCallback((tabId: string, e: React.MouseEvent) => {
@@ -357,8 +418,12 @@ export function Browser() {
           {tabs.map(tab => (
             <button
               key={tab.id}
+              draggable
               onClick={() => setActiveTabId(tab.id)}
               onMouseDown={(e) => handleTabMouseDown(tab.id, e)}
+              onDragStart={(e) => handleTabDragStart(e, tab.id)}
+              onDragOver={(e) => handleTabDragOver(e, tab.id)}
+              onDragEnd={handleTabDragEnd}
               className={`
                 group relative flex items-center gap-2 px-3 py-1.5 rounded-t-lg min-w-[120px] max-w-[200px]
                 transition-colors text-left
@@ -366,6 +431,7 @@ export function Browser() {
                   ? 'bg-[var(--color-bg)]'
                   : 'bg-[var(--color-bgTertiary)] hover:bg-[var(--color-bgTertiary)]/80'
                 }
+                ${draggedTabId === tab.id ? 'opacity-50' : ''}
               `}
               style={{
                 borderTop: tab.id === activeTabId ? '2px solid var(--color-primary)' : '2px solid transparent',
@@ -512,16 +578,87 @@ export function Browser() {
           </div>
         </form>
 
-        {/* Menu button */}
-        <button
-          className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
-          style={{ color: 'var(--color-text)' }}
-          title="Menu"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
-        </button>
+        {/* Menu button with dropdown */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(prev => !prev)}
+            className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
+            style={{ color: 'var(--color-text)' }}
+            title="Menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+          </button>
+
+          {/* Dropdown menu */}
+          {menuOpen && (
+            <div
+              className="absolute right-0 top-10 w-48 rounded-lg shadow-xl border py-1 z-50"
+              style={{
+                background: 'var(--color-bgSecondary)',
+                borderColor: 'var(--color-border)',
+              }}
+            >
+              {/* Zoom controls */}
+              <div className="px-3 py-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                <div className="text-xs font-medium mb-2" style={{ color: 'var(--color-textMuted)' }}>
+                  Zoom
+                </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={zoomOut}
+                    className="w-8 h-8 rounded flex items-center justify-center hover:bg-[var(--color-bgTertiary)]"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={resetZoom}
+                    className="text-sm px-2 py-1 rounded hover:bg-[var(--color-bgTertiary)]"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    {zoom}%
+                  </button>
+                  <button
+                    onClick={zoomIn}
+                    className="w-8 h-8 rounded flex items-center justify-center hover:bg-[var(--color-bgTertiary)]"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Other menu items */}
+              <button
+                onClick={() => { addTab(); setMenuOpen(false) }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--color-bgTertiary)] flex items-center gap-2"
+                style={{ color: 'var(--color-text)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Tab
+              </button>
+              <button
+                onClick={() => { toggleBookmark(); setMenuOpen(false) }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--color-bgTertiary)] flex items-center gap-2"
+                style={{ color: 'var(--color-text)' }}
+                disabled={!activeTab.siteId}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                {isBookmarked(activeTab.url) ? 'Remove Bookmark' : 'Add Bookmark'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bookmarks Bar */}
@@ -588,18 +725,27 @@ export function Browser() {
       )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        {activeTab.siteId ? (
-          <BrowserSiteContainer
-            siteId={activeTab.siteId}
-            onNavigate={navigateTo}
-          />
-        ) : (
-          <BrowserHomePage
-            apps={browserApps}
-            onNavigate={navigateTo}
-          />
-        )}
+      <div className="flex-1 overflow-auto">
+        <div
+          style={{
+            transform: `scale(${zoom / 100})`,
+            transformOrigin: 'top left',
+            width: `${10000 / zoom}%`,
+            minHeight: `${10000 / zoom}%`,
+          }}
+        >
+          {activeTab.siteId ? (
+            <BrowserSiteContainer
+              siteId={activeTab.siteId}
+              onNavigate={navigateTo}
+            />
+          ) : (
+            <BrowserHomePage
+              apps={browserApps}
+              onNavigate={navigateTo}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

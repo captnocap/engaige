@@ -224,13 +224,11 @@ export const useConversationStore = create<ConversationState>()(
       getMessages: (conversationId) => {
         const { messages } = get()
 
-        // Load mock messages if not yet loaded
+        // Return existing messages or generate mock ones
+        // Note: Don't call set() here - it causes "Cannot update while rendering" errors
+        // Mock messages are regenerated each call, but that's fine for demo data
         if (!messages[conversationId]) {
-          const mockMessages = createMockMessages(conversationId)
-          set(state => ({
-            messages: { ...state.messages, [conversationId]: mockMessages }
-          }))
-          return mockMessages
+          return createMockMessages(conversationId)
         }
 
         return messages[conversationId] || []

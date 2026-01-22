@@ -57,6 +57,21 @@ const STAGE_THRESHOLDS = {
   partner: { trust: 80, affinity: 90, familiarity: 80, messages: 150 },
 };
 
+// Get relationship for the default player (convenience function for agents)
+export function getPlayerRelationship(npcId: string, playerId: string = 'player'): PlayerNPCRelationship | null {
+  const db = getDB('game');
+  const rel = db.prepare(`
+    SELECT * FROM player_npc_relationships WHERE player_id = ? AND npc_id = ?
+  `).get(playerId, npcId) as any;
+
+  return rel ? parseRelationship(rel) : null;
+}
+
+// Extract relationship stage from a relationship object
+export function getRelationshipStage(relationship: PlayerNPCRelationship): RelationshipStage {
+  return relationship.relationship_stage;
+}
+
 // Get or create relationship
 export function getOrCreateRelationship(playerId: string, npcId: string): PlayerNPCRelationship {
   const db = getDB('game');
@@ -548,6 +563,8 @@ function parseRelationship(rel: any): PlayerNPCRelationship {
 }
 
 export default {
+  getPlayerRelationship,
+  getRelationshipStage,
   getOrCreateRelationship,
   updateRelationshipStats,
   updateStatsForMessage,

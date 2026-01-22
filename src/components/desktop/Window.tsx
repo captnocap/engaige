@@ -1,4 +1,4 @@
-import { useState, useRef, type ReactNode } from 'react'
+import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
 
 export interface WindowState {
@@ -67,6 +67,27 @@ export function Window({
 
   // Get OS theme config
   const windowChrome = useOSThemeStore(s => s.windowChrome)
+
+  // Update maximized window dimensions when viewport resizes (e.g., fullscreen toggle)
+  useEffect(() => {
+    if (!state.isMaximized) return
+
+    const handleResize = () => {
+      setState(prev => {
+        if (!prev.isMaximized) return prev
+        const next = {
+          ...prev,
+          width: window.innerWidth,
+          height: window.innerHeight - 48, // Account for taskbar
+        }
+        onStateChange?.(next)
+        return next
+      })
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [state.isMaximized, onStateChange])
 
   const updateState = (updates: Partial<WindowState>) => {
     setState(prev => {

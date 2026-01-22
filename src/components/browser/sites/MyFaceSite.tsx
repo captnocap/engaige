@@ -1014,19 +1014,19 @@ function MyFaceMessages() {
   const cssVars = MESSAGE_CSS_VARS.myspace || {}
 
   return (
-    <div className="grid grid-cols-3 gap-4" style={cssVars as React.CSSProperties}>
+    <div className="grid grid-cols-3 gap-4 h-[500px]" style={cssVars as React.CSSProperties}>
       {/* Conversation list */}
       <div
-        className="p-4 rounded"
+        className="rounded flex flex-col"
         style={{ background: 'white', border: '1px solid #ccc' }}
       >
-        <h3 className="font-bold text-[#003366] mb-3 pb-2 border-b border-gray-200">
+        <h3 className="font-bold text-[#003366] p-4 pb-2 border-b border-gray-200 shrink-0">
           Inbox
         </h3>
         {isLoading ? (
-          <p className="text-sm text-gray-500">Loading...</p>
+          <p className="text-sm text-gray-500 p-4">Loading...</p>
         ) : (
-          <div className="space-y-1">
+          <div className="flex-1 overflow-y-auto p-4 pt-2 space-y-1">
             {sortedConversations.map((convo) => (
               <button
                 key={convo.id}
@@ -1064,7 +1064,7 @@ function MyFaceMessages() {
       {/* Message thread */}
       <div
         className="col-span-2 rounded flex flex-col"
-        style={{ background: 'white', border: '1px solid #ccc', minHeight: '400px' }}
+        style={{ background: 'white', border: '1px solid #ccc' }}
       >
         {selectedConversation ? (
           <>

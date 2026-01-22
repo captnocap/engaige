@@ -154,6 +154,9 @@ export function initializeMemoryAgent(): void {
   console.log('[Memory Agent] Initialized');
 }
 
+// Alias for consistency with other agents
+export const initializeMemoryWriter = initializeMemoryAgent;
+
 export default {
   initializeMemoryAgent,
   scheduleMemoryGeneration,

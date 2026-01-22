@@ -7,6 +7,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useShallow } from 'zustand/react/shallow'
 import { type AccessLevel, canContactViaApp, getAppsForAccessLevel } from '../config/app-registry.js'
 
 // ============================================================================
@@ -740,22 +741,27 @@ export function useNPCRelationship(npcId: string) {
 }
 
 export function useNPCsOnApp(appId: string) {
-  return useNPCStore(state =>
-    Object.values(state.npcs).filter(npc =>
-      npc.apps.some(a => a.appId === appId && a.isActive)
+  return useNPCStore(
+    useShallow(state =>
+      Object.values(state.npcs).filter(npc =>
+        npc.apps.some(a => a.appId === appId && a.isActive)
+      )
     )
   )
 }
 
 export function useAccessibleApps(npcId: string) {
-  const getAccessibleApps = useNPCStore(state => state.getAccessibleApps)
-  return getAccessibleApps(npcId)
+  return useNPCStore(
+    useShallow(state => state.getAccessibleApps(npcId))
+  )
 }
 
 export function useNPCsOnDatingSite(siteId: string) {
-  return useNPCStore(state =>
-    Object.values(state.npcs).filter(npc =>
-      npc.datingProfiles.some(dp => dp.siteId === siteId && dp.isActive)
+  return useNPCStore(
+    useShallow(state =>
+      Object.values(state.npcs).filter(npc =>
+        npc.datingProfiles.some(dp => dp.siteId === siteId && dp.isActive)
+      )
     )
   )
 }

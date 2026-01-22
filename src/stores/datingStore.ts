@@ -10,6 +10,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useShallow } from 'zustand/react/shallow'
 import { getDatingSite, npcMatchesSiteNiche, type DatingSiteDefinition } from '../config/dating-registry.js'
 
 // ============================================================================
@@ -435,8 +436,11 @@ export const useDatingStore = create<DatingState>()(
 // ============================================================================
 
 export const useMatches = (siteId?: string) => {
-  const matches = useDatingStore(state => state.matches)
-  return siteId ? matches.filter(m => m.siteId === siteId) : matches
+  return useDatingStore(
+    useShallow(state =>
+      siteId ? state.matches.filter(m => m.siteId === siteId) : state.matches
+    )
+  )
 }
 
 export const useNewMatchCount = () => {
@@ -452,5 +456,7 @@ export const useSuperLikes = (siteId: string) => {
 }
 
 export const useNPCLikes = (siteId: string) => {
-  return useDatingStore(state => state.getNPCsWhoLikedPlayer(siteId))
+  return useDatingStore(
+    useShallow(state => state.getNPCsWhoLikedPlayer(siteId))
+  )
 }

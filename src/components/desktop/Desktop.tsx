@@ -20,7 +20,7 @@ interface WindowConfig {
   id: string
   title: string
   icon: ReactNode
-  component: ReactNode
+  component: ReactNode | ((props: { onClose: () => void }) => ReactNode)
   defaultState: Partial<WindowState>
 }
 
@@ -83,7 +83,7 @@ export function Desktop() {
       id: 'browser',
       title: 'The Corn Cob',
       icon: CornCobIcon,
-      component: <Browser />,
+      component: ({ onClose }) => <Browser onClose={onClose} />,
       defaultState: { x: 50, y: 30, width: 1000, height: 650 },
     },
     {
@@ -291,7 +291,9 @@ export function Desktop() {
               onMinimize={() => minimizeWindow(windowId)}
               onStateChange={s => handleWindowStateChange(windowId, s)}
             >
-              {config.component}
+              {typeof config.component === 'function'
+                ? config.component({ onClose: () => closeWindow(windowId) })
+                : config.component}
             </Window>
           )
         })}

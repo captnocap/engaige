@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 interface TimestampProps {
-  time: number | Date
+  time: number | Date | string
   format?: 'relative' | 'absolute' | 'smart'
   className?: string
   updateInterval?: number // ms, for live updating relative times
@@ -73,7 +73,19 @@ export function Timestamp({
   className = '',
   updateInterval = 60000, // Update every minute by default
 }: TimestampProps) {
-  const date = typeof time === 'number' ? new Date(time * 1000) : time
+  // Handle various time formats: unix timestamp, Date object, or ISO string
+  const date = (() => {
+    if (time instanceof Date) return time
+    if (typeof time === 'number') return new Date(time * 1000)
+    if (typeof time === 'string') return new Date(time)
+    return new Date() // fallback
+  })()
+
+  // Guard against invalid dates
+  if (isNaN(date.getTime())) {
+    return <span className={className} style={{ color: 'var(--color-textMuted)' }}>--</span>
+  }
+
   const [, setTick] = useState(0)
 
   // Live update for relative times
