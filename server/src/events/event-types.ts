@@ -443,6 +443,29 @@ export interface HashtagUsedPayload {
   author_type: 'player' | 'npc';
 }
 
+// === NPC THOUGHT & DELIBERATION EVENTS ===
+export interface NPCThoughtCapturedPayload {
+  thought_id: string;
+  content: string;
+  thought_type: 'in_character' | 'meta_ai' | 'unknown';
+  confidence: number;
+}
+
+export interface NPCDeliberationStartedPayload {
+  npc_id: string;
+  target_loops: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  reason: string;
+}
+
+export interface NPCDeliberationCompletedPayload {
+  npc_id: string;
+  loops_completed: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  total_time_ms: number;
+  thought_count: number;
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Event Type Constants
 // ─────────────────────────────────────────────────────────────────
@@ -550,6 +573,11 @@ export const EventTypes = {
   SOCIAL_POST_SAVED: 'social:post_saved',
   SOCIAL_POST_UNSAVED: 'social:post_unsaved',
   SOCIAL_HASHTAG_USED: 'social:hashtag_used',
+
+  // NPC Thoughts & Deliberation
+  NPC_THOUGHT_CAPTURED: 'npc:thought_captured',
+  NPC_DELIBERATION_STARTED: 'npc:deliberation_started',
+  NPC_DELIBERATION_COMPLETED: 'npc:deliberation_completed',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

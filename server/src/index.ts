@@ -11,12 +11,24 @@ import {
   handleClose,
   handleMessage,
   getClientCount,
+  broadcastThought,
+  broadcastDeliberationStarted,
+  broadcastDeliberationCompleted,
   type ClientSession,
 } from './network/ws-server.js';
 import { getDB } from './db/index.js';
 import { eventBus, EventTypes } from './events/index.js';
 import { errorLogger } from './services/error-logger.js';
 import { aiQueue } from './services/ai-queue.js';
+import { startScheduler } from './services/background-scheduler.js';
+
+// Agents
+import { initializeMemoryWriter } from './agents/memory-writer.js';
+import { initializeProfilePopulator } from './agents/profile-populator.js';
+import { initializeRelationshipAnalyzer } from './agents/relationship-analyzer.js';
+import { initializeSocialAutopilot, startSocialAutopilot } from './agents/social-autopilot.js';
+import { initializeConversationInitiator, startConversationInitiator } from './agents/conversation-initiator.js';
+import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
 
 const PORT = 4269;
 
@@ -27,6 +39,78 @@ const gameDb = getDB('game');
 eventBus.initialize(gameDb);
 errorLogger.initialize(gameDb);
 aiQueue.start();
+
+// ─────────────────────────────────────────────────────────────────
+// NPC Thoughts Event Listeners (broadcast to WebSocket subscribers)
+// ─────────────────────────────────────────────────────────────────
+eventBus.on(EventTypes.NPC_THOUGHT_CAPTURED, async (event) => {
+  const { getNPCById } = await import('./services/npc.js');
+  const npc = getNPCById(event.npc_id!);
+
+  broadcastThought({
+    thought_id: event.payload.thought_id,
+    npc_id: event.npc_id!,
+    npc_display_name: npc?.display_name || 'Unknown',
+    content: event.payload.content,
+    thought_type: event.payload.thought_type,
+    confidence: event.payload.confidence,
+    context: event.conversation_id ? undefined : undefined, // Add context if available
+    conversation_id: event.conversation_id,
+    created_at: event.timestamp,
+  });
+});
+
+eventBus.on(EventTypes.NPC_DELIBERATION_STARTED, async (event) => {
+  const { getNPCById } = await import('./services/npc.js');
+  const npc = getNPCById(event.npc_id!);
+
+  broadcastDeliberationStarted({
+    npc_id: event.npc_id!,
+    npc_display_name: npc?.display_name || 'Unknown',
+    target_loops: event.payload.target_loops,
+    thinking_style: event.payload.thinking_style,
+    reason: event.payload.reason,
+    conversation_id: event.conversation_id,
+  });
+});
+
+eventBus.on(EventTypes.NPC_DELIBERATION_COMPLETED, async (event) => {
+  const { getNPCById } = await import('./services/npc.js');
+  const npc = getNPCById(event.npc_id!);
+
+  broadcastDeliberationCompleted({
+    npc_id: event.npc_id!,
+    npc_display_name: npc?.display_name || 'Unknown',
+    loops_completed: event.payload.loops_completed,
+    thinking_style: event.payload.thinking_style,
+    total_time_ms: event.payload.total_time_ms,
+    thought_count: event.payload.thought_count,
+    conversation_id: event.conversation_id,
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Initialize Agents (register task handlers)
+// ─────────────────────────────────────────────────────────────────
+initializeMemoryWriter();
+initializeProfilePopulator();
+initializeRelationshipAnalyzer();
+initializeSocialAutopilot();
+initializeConversationInitiator();
+initializeNewsTasks();
+
+// ─────────────────────────────────────────────────────────────────
+// Start Background Systems
+// ─────────────────────────────────────────────────────────────────
+startScheduler(30); // Process tasks every 30 seconds
+scheduleStoryGeneration({ intervalHours: 6, startDelayMinutes: 5 });
+
+// Start autonomous behaviors after a short delay (let system stabilize)
+setTimeout(() => {
+  startSocialAutopilot({ initialBurst: true, postIntervalMinutes: 45 });
+  startConversationInitiator({ checkIntervalMinutes: 60 });
+  console.log('[Server] Autonomous NPC behaviors started');
+}, 5000);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)
 const corsHeaders = {
@@ -119,6 +203,10 @@ console.log(`
 ║  AI Requests: Queue (priority + budget management)         ║
 ║  Game Events: Event Bus (centralized logging)              ║
 ║  Errors: Error Logger (centralized tracking)               ║
+╠════════════════════════════════════════════════════════════╣
+║  Agents: Memory, Profile, Relationship, Social, Chat       ║
+║  Scheduler: Running (30s interval)                         ║
+║  Autonomous: NPCs will post & DM on their own!             ║
 ╚════════════════════════════════════════════════════════════╝
 `);
 

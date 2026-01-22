@@ -23,6 +23,9 @@ import { errorLogger } from '../services/error-logger.js';
 export interface ClientSession {
   id: string;
   connectedAt: number;
+  // Subscription state
+  subscribedToThoughts?: boolean;
+  thoughtsNpcFilter?: string; // If set, only get thoughts from this NPC
 }
 
 // Map of connected clients
@@ -288,6 +291,19 @@ async function routeMessage(
 
     case 'player:getPreferences':
       await handlePlayerGetPreferences(ws, message);
+      break;
+
+    // NPC Thoughts routes
+    case 'thoughts:get':
+      await handleThoughtsGet(ws, message);
+      break;
+
+    case 'thoughts:subscribe':
+      handleThoughtsSubscribe(ws, message);
+      break;
+
+    case 'thoughts:unsubscribe':
+      handleThoughtsUnsubscribe(ws, message);
       break;
 
     default:
@@ -764,6 +780,151 @@ async function handlePlayerGetPreferences(ws: ServerWebSocket<ClientSession>, me
 }
 
 // ============================================================================
+// NPC Thoughts Handlers
+// ============================================================================
+
+async function handleThoughtsGet(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { getNPCThoughts, getAllNPCThoughts } = await import('../services/reasoning-extractor.js');
+  const { npcId, limit, thoughtType, minConfidence, since } = (message.payload || {}) as any;
+
+  let thoughts;
+  if (npcId) {
+    // Get thoughts for specific NPC
+    thoughts = getNPCThoughts(npcId, {
+      limit: limit || 20,
+      thought_type: thoughtType || 'in_character',
+      min_confidence: minConfidence || 0.5,
+      since: since || 0,
+    });
+  } else {
+    // Get thoughts across all NPCs
+    thoughts = getAllNPCThoughts({
+      limit: limit || 50,
+      min_confidence: minConfidence || 0.5,
+      since: since || 0,
+    });
+  }
+
+  send(ws, createResponse(message.id, true, thoughts));
+}
+
+function handleThoughtsSubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const session = clients.get(ws);
+  if (session) {
+    session.subscribedToThoughts = true;
+    session.thoughtsNpcFilter = (message.payload as any)?.npcId;
+    console.log(`[WS] Client ${session.id} subscribed to thoughts${session.thoughtsNpcFilter ? ` (NPC: ${session.thoughtsNpcFilter})` : ''}`);
+  }
+  send(ws, createResponse(message.id, true, { subscribed: true }));
+}
+
+function handleThoughtsUnsubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const session = clients.get(ws);
+  if (session) {
+    session.subscribedToThoughts = false;
+    session.thoughtsNpcFilter = undefined;
+    console.log(`[WS] Client ${session.id} unsubscribed from thoughts`);
+  }
+  send(ws, createResponse(message.id, true, { subscribed: false }));
+}
+
+/**
+ * Broadcast a thought event to subscribed clients
+ */
+export function broadcastThought(thought: {
+  thought_id: string;
+  npc_id: string;
+  npc_display_name: string;
+  content: string;
+  thought_type: 'in_character' | 'meta_ai' | 'unknown';
+  confidence: number;
+  context?: string;
+  conversation_id?: string;
+  created_at: number;
+}): void {
+  for (const [ws, session] of clients.entries()) {
+    if (!session.subscribedToThoughts) continue;
+
+    // Apply NPC filter if set
+    if (session.thoughtsNpcFilter && session.thoughtsNpcFilter !== thought.npc_id) continue;
+
+    try {
+      ws.send(serializeMessage({
+        type: 'thoughts:captured',
+        payload: thought,
+      }));
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcastThought',
+        session_id: session.id,
+      });
+    }
+  }
+}
+
+/**
+ * Broadcast a deliberation started event
+ */
+export function broadcastDeliberationStarted(data: {
+  npc_id: string;
+  npc_display_name: string;
+  target_loops: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  reason: string;
+  conversation_id?: string;
+}): void {
+  for (const [ws, session] of clients.entries()) {
+    if (!session.subscribedToThoughts) continue;
+    if (session.thoughtsNpcFilter && session.thoughtsNpcFilter !== data.npc_id) continue;
+
+    try {
+      ws.send(serializeMessage({
+        type: 'thoughts:deliberationStarted',
+        payload: data,
+      }));
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcastDeliberationStarted',
+        session_id: session.id,
+      });
+    }
+  }
+}
+
+/**
+ * Broadcast a deliberation completed event
+ */
+export function broadcastDeliberationCompleted(data: {
+  npc_id: string;
+  npc_display_name: string;
+  loops_completed: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  total_time_ms: number;
+  thought_count: number;
+  conversation_id?: string;
+}): void {
+  for (const [ws, session] of clients.entries()) {
+    if (!session.subscribedToThoughts) continue;
+    if (session.thoughtsNpcFilter && session.thoughtsNpcFilter !== data.npc_id) continue;
+
+    try {
+      ws.send(serializeMessage({
+        type: 'thoughts:deliberationCompleted',
+        payload: data,
+      }));
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcastDeliberationCompleted',
+        session_id: session.id,
+      });
+    }
+  }
+}
+
+// ============================================================================
 // Utilities
 // ============================================================================
 
@@ -816,5 +977,8 @@ export default {
   handleMessage,
   send,
   broadcast,
+  broadcastThought,
+  broadcastDeliberationStarted,
+  broadcastDeliberationCompleted,
   getClientCount,
 };

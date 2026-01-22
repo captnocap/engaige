@@ -21,6 +21,8 @@ import {
   type AIProvider as AIProviderRecord,
   type AIProviderType,
 } from './ai-provider-config.js';
+import { processAndStoreThoughts } from './reasoning-extractor.js';
+import { deliberateResponse, type DeliberationResult } from './deliberation.js';
 
 // AI Configuration Types (kept for backward compatibility)
 export type AIProvider = 'openai' | 'openai-compatible' | 'anthropic';
@@ -310,6 +312,13 @@ export async function generateNPCResponse(
       throw new Error(`Unknown provider: ${config.provider}`);
   }
 
+  // Extract and store any reasoning blocks (thoughts) from the response
+  // This strips <think> blocks and stores them for the NPC thoughts feature
+  const cleanResponse = await processAndStoreThoughts(response, npcId, {
+    conversation_id: context?.conversation_id,
+    trigger_message: message,
+  });
+
   // Store memory
   const memoryId = generateId();
   gameDb.prepare(`
@@ -317,7 +326,7 @@ export async function generateNPCResponse(
     VALUES (?, ?, 'conversation', ?, ?)
   `).run(memoryId, npcId, `Had a conversation: ${message.slice(0, 100)}...`, 0.5);
 
-  // Validate and fix output if needed
+  // Validate and fix output if needed (validate the clean response without thinking blocks)
   const validationContext = {
     platform: context?.platform,
     conversation_type: context?.conversation_type || 'direct_message',
@@ -326,7 +335,7 @@ export async function generateNPCResponse(
 
   const validationResult = await validateAndFixIfNeeded(
     npcId,
-    response,
+    cleanResponse,
     message,
     validationContext,
     context?.validation_options
@@ -769,7 +778,12 @@ export async function generateNPCPost(
       throw new Error(`Unknown provider: ${config.provider}`);
   }
 
-  // Validate post output
+  // Extract and store any reasoning blocks from the response
+  const cleanResponse = await processAndStoreThoughts(response, npcId, {
+    trigger_message: prompt || 'Create a post',
+  });
+
+  // Validate post output (validate the clean response without thinking blocks)
   const validationContext = {
     platform,
     conversation_type: 'post' as const,
@@ -778,7 +792,7 @@ export async function generateNPCPost(
 
   const validationResult = await validateAndFixIfNeeded(
     npcId,
-    response,
+    cleanResponse,
     prompt || 'Create a post',
     validationContext,
     validationOptions
@@ -977,6 +991,86 @@ export async function queuedPregenerate(
 // Re-export Priority for convenience
 export { Priority } from './ai-queue.js';
 
+/**
+ * Queue-wrapped deliberation response
+ * Uses forced thinking loops for extended NPC consideration
+ * Good for important conversations, relationship milestones, or sensitive topics
+ */
+export async function queuedDeliberateResponse(
+  npcId: string,
+  message: string,
+  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>,
+  context?: {
+    platform?: string;
+    player_name?: string;
+    player_id?: string;
+    conversation_id?: string;
+    // Deliberation options
+    force_depth?: number;      // Override automatic depth calculation
+    skip_deliberation?: boolean; // Skip entirely (falls back to normal response)
+    // Queue options
+    priority?: Priority;
+  }
+): Promise<QueueResult<DeliberationResult>> {
+  const priority = context?.priority || Priority.CRITICAL;
+
+  // Deliberation uses more tokens due to multiple loops
+  const promptLength = message.length + conversationHistory.reduce((acc, m) => acc + m.content.length, 0);
+  const estimatedLoops = context?.force_depth || 3; // Assume 3 loops average
+  const estimatedCost = estimateCost(promptLength * estimatedLoops, 500 * estimatedLoops, getAIConfig().model);
+
+  return aiQueue.enqueue({
+    priority,
+    type: 'npc_deliberation' as RequestType,
+    npcId,
+    playerId: context?.player_id,
+    conversationId: context?.conversation_id,
+    featureCategory: 'conversation',
+    estimatedCost,
+    execute: async () => {
+      const result = await deliberateResponse({
+        npc_id: npcId,
+        player_id: context?.player_id,
+        conversation_id: context?.conversation_id,
+        message,
+        conversation_history: conversationHistory,
+        platform: context?.platform,
+        player_name: context?.player_name,
+        force_depth: context?.force_depth,
+        skip_deliberation: context?.skip_deliberation,
+      });
+
+      // Apply validation and post-processing to the final response
+      const validationContext = {
+        platform: context?.platform,
+        conversation_type: 'direct_message' as const,
+        prompt: message,
+      };
+
+      const validationResult = await validateAndFixIfNeeded(
+        npcId,
+        result.response,
+        message,
+        validationContext
+      );
+
+      return {
+        ...result,
+        response: validationResult.final_output,
+      };
+    },
+    metadata: {
+      platform: context?.platform,
+      message_preview: message.slice(0, 100),
+      deliberation: true,
+      force_depth: context?.force_depth,
+    },
+  });
+}
+
+// Re-export deliberation types for convenience
+export type { DeliberationResult } from './deliberation.js';
+
 export default {
   configureAI,
   getAIConfig,
@@ -990,4 +1084,5 @@ export default {
   queuedGenerateNPCPost,
   queuedNPCInteraction,
   queuedPregenerate,
+  queuedDeliberateResponse,
 };

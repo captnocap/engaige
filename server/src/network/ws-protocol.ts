@@ -121,6 +121,27 @@ export interface LogsGetQueueMessage extends WSMessage {
   type: 'logs:getQueue';
 }
 
+// NPC Thoughts
+export interface ThoughtsGetMessage extends WSMessage<{
+  npcId?: string;       // If provided, get thoughts for specific NPC
+  limit?: number;
+  thoughtType?: 'in_character' | 'meta_ai' | 'unknown' | 'all';
+  minConfidence?: number;
+  since?: number;       // Timestamp - get thoughts after this time
+}> {
+  type: 'thoughts:get';
+}
+
+export interface ThoughtsSubscribeMessage extends WSMessage<{
+  npcId?: string;       // If provided, subscribe to specific NPC's thoughts
+}> {
+  type: 'thoughts:subscribe';
+}
+
+export interface ThoughtsUnsubscribeMessage extends WSMessage {
+  type: 'thoughts:unsubscribe';
+}
+
 // AI Provider Configuration
 export interface AIProviderGetAllMessage extends WSMessage {
   type: 'aiProvider:getAll';
@@ -203,7 +224,10 @@ export type ClientMessage =
   | AIProviderUpdateMessage
   | AIProviderDeleteMessage
   | AIProviderSetActiveMessage
-  | AIProviderTestMessage;
+  | AIProviderTestMessage
+  | ThoughtsGetMessage
+  | ThoughtsSubscribeMessage
+  | ThoughtsUnsubscribeMessage;
 
 // ============================================================================
 // Server -> Client Messages
@@ -269,6 +293,44 @@ export interface ConnectedEvent extends WSMessage<{
   type: 'connected';
 }
 
+// NPC Thoughts Events
+export interface ThoughtCapturedEvent extends WSMessage<{
+  thought_id: string;
+  npc_id: string;
+  npc_display_name: string;
+  content: string;
+  thought_type: 'in_character' | 'meta_ai' | 'unknown';
+  confidence: number;
+  context?: string;
+  conversation_id?: string;
+  created_at: number;
+}> {
+  type: 'thoughts:captured';
+}
+
+export interface DeliberationStartedEvent extends WSMessage<{
+  npc_id: string;
+  npc_display_name: string;
+  target_loops: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  reason: string;
+  conversation_id?: string;
+}> {
+  type: 'thoughts:deliberationStarted';
+}
+
+export interface DeliberationCompletedEvent extends WSMessage<{
+  npc_id: string;
+  npc_display_name: string;
+  loops_completed: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  total_time_ms: number;
+  thought_count: number;
+  conversation_id?: string;
+}> {
+  type: 'thoughts:deliberationCompleted';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -278,7 +340,10 @@ export type ServerMessage =
   | AIPostCreatedEvent
   | PongMessage
   | ErrorEvent
-  | ConnectedEvent;
+  | ConnectedEvent
+  | ThoughtCapturedEvent
+  | DeliberationStartedEvent
+  | DeliberationCompletedEvent;
 
 // ============================================================================
 // Helpers

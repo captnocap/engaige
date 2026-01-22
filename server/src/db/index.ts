@@ -442,7 +442,7 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
 
       CREATE TABLE IF NOT EXISTS npc_activities (
         id TEXT PRIMARY KEY,
-        npc_id TEXT NOT NULL,
+        npc_id TEXT,  -- Nullable: some tasks (news, system) aren't NPC-specific
         activity_type TEXT NOT NULL,
         target_id TEXT,
         scheduled_for INTEGER,
@@ -623,6 +623,69 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_instasnap_hashtags_trending ON instasnap_hashtags(trending_score DESC);
       CREATE INDEX IF NOT EXISTS idx_instasnap_post_hashtags_post ON instasnap_post_hashtags(post_id);
       CREATE INDEX IF NOT EXISTS idx_instasnap_post_hashtags_hashtag ON instasnap_post_hashtags(hashtag_id);
+    `);
+
+    // === NPC THOUGHTS & DELIBERATION SYSTEM ===
+    db.exec(`
+      -- Extracted thoughts from AI reasoning blocks
+      -- Stores both in-character thoughts (for "NPC thoughts" UI) and meta-AI reasoning (for debugging)
+      CREATE TABLE IF NOT EXISTS npc_thoughts (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL,
+        content TEXT NOT NULL,
+
+        -- Classification
+        thought_type TEXT NOT NULL CHECK (thought_type IN ('in_character', 'meta_ai', 'unknown')),
+        confidence REAL DEFAULT 0.5,           -- 0-1 confidence in classification
+
+        -- Context
+        context TEXT,                          -- What triggered this thought (user message, etc.)
+        conversation_id TEXT,
+
+        -- Metadata
+        thinking_style TEXT,                   -- 'quick', 'normal', 'deliberate', 'agonizing'
+        deliberation_loop INTEGER,             -- Which loop this came from (1, 2, 3...)
+
+        -- Timestamps
+        created_at INTEGER DEFAULT (unixepoch()),
+
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+      );
+
+      -- Deliberation sessions (tracks when NPCs went through extended thinking)
+      CREATE TABLE IF NOT EXISTS deliberation_sessions (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL,
+        conversation_id TEXT,
+
+        -- Deliberation details
+        total_loops INTEGER NOT NULL,
+        thinking_style TEXT NOT NULL,
+        depth_reason TEXT,                     -- Why this depth was chosen
+
+        -- Timing
+        total_time_ms INTEGER,
+        started_at INTEGER DEFAULT (unixepoch()),
+        completed_at INTEGER,
+
+        -- The trigger
+        trigger_message TEXT,
+
+        -- Result
+        final_response TEXT,
+
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+      );
+
+      -- NPC thoughts indexes
+      CREATE INDEX IF NOT EXISTS idx_npc_thoughts_npc ON npc_thoughts(npc_id);
+      CREATE INDEX IF NOT EXISTS idx_npc_thoughts_type ON npc_thoughts(thought_type);
+      CREATE INDEX IF NOT EXISTS idx_npc_thoughts_created ON npc_thoughts(created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_npc_thoughts_conversation ON npc_thoughts(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_npc_thoughts_confidence ON npc_thoughts(confidence);
+
+      CREATE INDEX IF NOT EXISTS idx_deliberation_npc ON deliberation_sessions(npc_id);
+      CREATE INDEX IF NOT EXISTS idx_deliberation_started ON deliberation_sessions(started_at DESC);
     `);
   }
 }
