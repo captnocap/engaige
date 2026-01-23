@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.onlyfans
 
@@ -233,12 +234,19 @@ const CATEGORIES = [
 
 function FanCard({ fan, onSelect }: { fan: Fan; onSelect: () => void }) {
   return (
-    <div
+    <StyledCard
       onClick={onSelect}
-      className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-all hover:scale-[1.02] border border-pink-100"
+      bgColor="#ffffff"
+      borderColor="#fce7f3"
+      borderWidth={1}
+      padding="md"
+      borderRadius="lg"
+      shadow="md"
+      interactive
+      className="overflow-hidden h-full hover:scale-[1.02] transition-all"
     >
       {/* Image placeholder */}
-      <div className="bg-gradient-to-br from-pink-100 to-pink-200 h-40 flex items-center justify-center relative">
+      <div className="bg-gradient-to-br from-pink-100 to-pink-200 h-40 flex items-center justify-center relative -m-4 mb-4">
         <span className="text-6xl">{fan.emoji}</span>
         {fan.isHot && (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -258,25 +266,23 @@ function FanCard({ fan, onSelect }: { fan: Fan; onSelect: () => void }) {
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <h3 className="font-bold text-gray-800 text-sm line-clamp-2 mb-1">{fan.name}</h3>
-        <div className="flex items-center gap-1 text-xs text-yellow-500 mb-2">
-          {'★'.repeat(Math.floor(fan.rating))}
-          <span className="text-gray-500">({fan.reviews.toLocaleString()})</span>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-bold text-pink-600">${fan.price}</span>
-          {fan.originalPrice && (
-            <span className="text-sm text-gray-400 line-through">${fan.originalPrice}</span>
-          )}
-        </div>
-        {fan.cfm && (
-          <div className="text-xs text-gray-500 mt-1">
-            💨 {fan.cfm.toLocaleString()} CFM
-          </div>
+      <h3 className="font-bold text-gray-800 text-sm line-clamp-2 mb-1">{fan.name}</h3>
+      <div className="flex items-center gap-1 text-xs text-yellow-500 mb-2">
+        {'★'.repeat(Math.floor(fan.rating))}
+        <span className="text-gray-500">({fan.reviews.toLocaleString()})</span>
+      </div>
+      <div className="flex items-baseline gap-2">
+        <span className="text-lg font-bold text-pink-600">${fan.price}</span>
+        {fan.originalPrice && (
+          <span className="text-sm text-gray-400 line-through">${fan.originalPrice}</span>
         )}
       </div>
-    </div>
+      {fan.cfm && (
+        <div className="text-xs text-gray-500 mt-1">
+          💨 {fan.cfm.toLocaleString()} CFM
+        </div>
+      )}
+    </StyledCard>
   )
 }
 
@@ -284,10 +290,16 @@ function FanDetail({ fan, onBack }: { fan: Fan; onBack: () => void }) {
   const [quantity, setQuantity] = useState(1)
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-      <button onClick={onBack} className="text-pink-600 p-4 hover:underline text-sm">
+    <StyledCard bgColor="#ffffff" borderColor="transparent" shadow="lg" padding="lg" borderRadius="lg">
+      <Button
+        variant="ghost"
+        size="sm"
+        textColor="#ec4899"
+        onClick={onBack}
+        className="mb-4"
+      >
         ← Back to all fans
-      </button>
+      </Button>
 
       <div className="md:flex">
         {/* Image */}
@@ -374,28 +386,48 @@ function FanDetail({ fan, onBack }: { fan: Fan; onBack: () => void }) {
           {fan.inStock ? (
             <div className="flex gap-4 items-center">
               <div className="flex items-center border rounded">
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-2 hover:bg-gray-100"
+                  textColor="#6b7280"
+                  width="auto"
                 >
-                  -
-                </button>
+                  −
+                </Button>
                 <span className="px-4">{quantity}</span>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-2 hover:bg-gray-100"
+                  textColor="#6b7280"
+                  width="auto"
                 >
                   +
-                </button>
+                </Button>
               </div>
-              <button className="flex-1 bg-pink-500 text-white py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors">
+              <Button
+                variant="primary"
+                size="lg"
+                backgroundColor="#ec3b6b"
+                textColor="#ffffff"
+                width="full"
+                onClick={() => {}}
+              >
                 Add to Cart - ${(fan.price * quantity).toFixed(2)}
-              </button>
+              </Button>
             </div>
           ) : (
-            <button className="w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-bold cursor-not-allowed">
+            <Button
+              variant="secondary"
+              size="lg"
+              backgroundColor="#d1d5db"
+              textColor="#6b7280"
+              width="full"
+              disabled
+            >
               Out of Stock - Notify Me
-            </button>
+            </Button>
           )}
 
           <p className="text-xs text-gray-500 mt-4 text-center">
@@ -403,7 +435,7 @@ function FanDetail({ fan, onBack }: { fan: Fan; onBack: () => void }) {
           </p>
         </div>
       </div>
-    </div>
+    </StyledCard>
   )
 }
 
@@ -425,7 +457,7 @@ export function OnlyFansSite({ siteId }: SiteProps) {
   if (!ageVerified) {
     return (
       <div className="min-h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
-        <div className="max-w-md w-full mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <StyledCard bgColor="#ffffff" borderColor="transparent" padding="none" borderRadius="full" shadow="lg" className="max-w-md w-full mx-4 overflow-hidden">
           {/* Warning header */}
           <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-center">
             <span className="text-6xl block mb-3">⚠️</span>
@@ -438,7 +470,7 @@ export function OnlyFansSite({ siteId }: SiteProps) {
               This website contains content intended for adults only.
             </p>
 
-            <div className="bg-pink-50 rounded-lg p-4 mb-6 text-left">
+            <StyledCard bgColor="#fce7f3" borderColor="transparent" padding="md" borderRadius="lg" className="mb-6 text-left">
               <p className="text-sm text-gray-600 mb-2">
                 <strong>⚡ WARNING:</strong> You must be <strong>18 years or older</strong> to enter this site.
               </p>
@@ -451,28 +483,36 @@ export function OnlyFansSite({ siteId }: SiteProps) {
                 <li>You understand that industrial fans over 3000 CFM may require proper ventilation</li>
                 <li>You accept responsibility for any ceiling fan installation decisions</li>
               </ul>
-            </div>
+            </StyledCard>
 
             <div className="space-y-3">
-              <button
+              <Button
+                variant="primary"
+                size="lg"
+                backgroundColor="#ec3b6b"
+                textColor="#ffffff"
+                width="full"
                 onClick={() => setAgeVerified(true)}
-                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-3 rounded-full font-bold text-lg hover:from-pink-600 hover:to-pink-700 transition-all"
               >
                 🌀 I Accept - Let Me See The Fans
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                backgroundColor="#e5e7eb"
+                textColor="#4b5563"
+                width="full"
                 onClick={() => window.history.back()}
-                className="w-full bg-gray-200 text-gray-600 py-3 rounded-full font-medium hover:bg-gray-300 transition-all"
               >
                 I'm Under 18 / Not Interested in Fans
-              </button>
+              </Button>
             </div>
 
             <p className="text-xs text-gray-400 mt-4">
               OnlyFans™ - Premium Cooling Solutions Since 2024
             </p>
           </div>
-        </div>
+        </StyledCard>
       </div>
     )
   }
@@ -491,12 +531,23 @@ export function OnlyFansSite({ siteId }: SiteProps) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <button className="text-pink-200 hover:text-white text-sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                textColor="#fce7f3"
+                onClick={() => {}}
+              >
                 My Account
-              </button>
-              <button className="bg-white text-pink-600 px-4 py-2 rounded-full text-sm font-bold hover:bg-pink-100">
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                backgroundColor="#ffffff"
+                textColor="#ec3b6b"
+                onClick={() => {}}
+              >
                 🛒 Cart (0)
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -540,35 +591,39 @@ export function OnlyFansSite({ siteId }: SiteProps) {
               <h3 className="font-bold text-gray-700 mb-3">Categories</h3>
               <div className="space-y-1">
                 {CATEGORIES.map(cat => (
-                  <button
+                  <Button
                     key={cat.id}
+                    variant={selectedCategory === cat.id ? 'primary' : 'ghost'}
+                    size="sm"
+                    width="full"
+                    backgroundColor={selectedCategory === cat.id ? '#ec3b6b' : 'transparent'}
+                    textColor={selectedCategory === cat.id ? '#ffffff' : '#374151'}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 ${
-                      selectedCategory === cat.id
-                        ? 'bg-pink-500 text-white'
-                        : 'hover:bg-pink-100 text-gray-700'
-                    }`}
+                    className="justify-start"
                   >
-                    <span>{cat.emoji}</span>
+                    <span className="mr-2">{cat.emoji}</span>
                     {cat.name}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
               {/* FAQ */}
-              <div className="mt-6 p-4 bg-pink-100 rounded-lg">
+              <StyledCard bgColor="#fce7f3" borderColor="transparent" padding="md" borderRadius="lg">
                 <h4 className="font-bold text-pink-800 text-sm mb-2">Wait, is this...?</h4>
                 <p className="text-xs text-pink-700">
                   Yes, this is literally a fan store. Ceiling fans, desk fans, box fans.
                   What were YOU thinking? 🤔
                 </p>
-                <button
+                <Button
+                  variant="link"
+                  size="xs"
+                  textColor="#ec3b6b"
                   onClick={() => setShowFAQ(true)}
-                  className="text-pink-600 text-xs mt-2 underline"
+                  className="mt-2 p-0"
                 >
                   Read our FAQ
-                </button>
-              </div>
+                </Button>
+              </StyledCard>
             </aside>
 
             {/* Product Grid */}
@@ -607,7 +662,7 @@ export function OnlyFansSite({ siteId }: SiteProps) {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">What Our Customers Say</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {SAMPLE_REVIEWS.map((review, i) => (
-              <div key={i} className="bg-white rounded-lg p-4 shadow-sm border border-pink-100">
+              <StyledCard key={i} bgColor="#ffffff" borderColor="#fce7f3" padding="md" shadow="sm" borderRadius="lg">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="text-yellow-500 text-sm">
                     {'★'.repeat(review.rating)}
@@ -623,7 +678,7 @@ export function OnlyFansSite({ siteId }: SiteProps) {
                   <span>— {review.author}</span>
                   <span>👍 {review.helpfulCount} found helpful</span>
                 </div>
-              </div>
+              </StyledCard>
             ))}
           </div>
         </section>
@@ -651,14 +706,18 @@ export function OnlyFansSite({ siteId }: SiteProps) {
       {/* FAQ Modal */}
       {showFAQ && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold text-gray-800">Frequently Asked Questions</h2>
-                <button onClick={() => setShowFAQ(false)} className="text-gray-500 hover:text-gray-700">
-                  ✕
-                </button>
-              </div>
+          <StyledCard bgColor="#ffffff" borderColor="transparent" padding="lg" borderRadius="lg" shadow="lg" className="max-w-lg w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Frequently Asked Questions</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                textColor="#6b7280"
+                onClick={() => setShowFAQ(false)}
+              >
+                ✕
+              </Button>
+            </div>
 
               <div className="space-y-4">
                 <div>
@@ -687,14 +746,18 @@ export function OnlyFansSite({ siteId }: SiteProps) {
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowFAQ(false)}
-                className="mt-6 w-full bg-pink-500 text-white py-2 rounded-lg font-bold hover:bg-pink-600"
-              >
-                Got it, show me the fans!
-              </button>
-            </div>
-          </div>
+            <Button
+              variant="primary"
+              size="md"
+              backgroundColor="#ec3b6b"
+              textColor="#ffffff"
+              width="full"
+              onClick={() => setShowFAQ(false)}
+              className="mt-6"
+            >
+              Got it, show me the fans!
+            </Button>
+          </StyledCard>
         </div>
       )}
 
@@ -742,9 +805,16 @@ export function OnlyFansSite({ siteId }: SiteProps) {
                   placeholder="your@email.com"
                   className="flex-1 px-3 py-2 rounded-l text-gray-800 text-sm"
                 />
-                <button className="bg-pink-500 px-4 rounded-r text-sm font-bold">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  backgroundColor="#ec3b6b"
+                  textColor="#ffffff"
+                  onClick={() => {}}
+                  className="rounded-r"
+                >
                   Subscribe
-                </button>
+                </Button>
               </div>
             </div>
           </div>
