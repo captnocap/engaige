@@ -9,6 +9,7 @@ import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.marketplace
 
@@ -432,13 +433,15 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
         style={{ background: site.theme.primary }}
       >
         <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <button
+          <Button
             onClick={() => setSelectedListing(null)}
-            className="flex items-center gap-2 text-white hover:opacity-80"
+            variant="ghost"
+            textColor="white"
+            className="flex items-center gap-2"
           >
             <span className="text-2xl">{site.icon}</span>
             <span className="text-xl font-bold">{site.name}</span>
-          </button>
+          </Button>
 
           <div className="flex-1 max-w-xl">
             <input
@@ -452,18 +455,21 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="text-white text-sm hover:underline">
+            <Button variant="link" textColor="white" size="sm">
               Sell
-            </button>
-            <button className="text-white text-sm hover:underline">
+            </Button>
+            <Button variant="link" textColor="white" size="sm">
               Messages
-            </button>
-            <button
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
-              style={{ background: 'white', color: site.theme.primary }}
+            </Button>
+            <StyledCard
+              bgColor="white"
+              borderRadius="full"
+              padding="4px"
+              className="w-8 h-8 flex items-center justify-center text-sm font-medium"
+              textColor={site.theme.primary}
             >
               G
-            </button>
+            </StyledCard>
           </div>
         </div>
       </header>
@@ -486,19 +492,18 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
               </h3>
               <div className="space-y-1">
                 {CATEGORIES.map((cat) => (
-                  <button
+                  <Button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      selectedCategory === cat ? 'font-medium' : ''
-                    }`}
-                    style={{
-                      background: selectedCategory === cat ? `${site.theme.primary}15` : 'transparent',
-                      color: selectedCategory === cat ? site.theme.primary : site.theme.text,
-                    }}
+                    variant={selectedCategory === cat ? 'primary' : 'ghost'}
+                    size="sm"
+                    backgroundColor={selectedCategory === cat ? site.theme.primary : 'transparent'}
+                    textColor={selectedCategory === cat ? 'white' : site.theme.text}
+                    width="full"
+                    className="justify-start"
                   >
                     {cat}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -570,10 +575,18 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
           All listings are fictional. BargainBay is not responsible for any items that may or may not be haunted.
         </p>
         <div className="flex justify-center gap-4">
-          <button className="hover:underline">About</button>
-          <button className="hover:underline">Safety Tips</button>
-          <button className="hover:underline">Help</button>
-          <button className="hover:underline">Terms</button>
+          <Button variant="link" textColor={site.theme.textMuted} size="sm">
+            About
+          </Button>
+          <Button variant="link" textColor={site.theme.textMuted} size="sm">
+            Safety Tips
+          </Button>
+          <Button variant="link" textColor={site.theme.textMuted} size="sm">
+            Help
+          </Button>
+          <Button variant="link" textColor={site.theme.textMuted} size="sm">
+            Terms
+          </Button>
         </div>
       </footer>
     </div>
@@ -598,14 +611,16 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
   }
 
   return (
-    <button
+    <StyledCard
       onClick={onClick}
-      className="text-left rounded-xl overflow-hidden transition-all hover:shadow-lg"
-      style={{
-        background: site.theme.surface,
-        border: `1px solid ${site.theme.border}`,
-      }}
+      bgColor={site.theme.surface}
+      borderColor={site.theme.border}
+      borderRadius="lg"
+      shadow="md"
+      padding={0}
+      className="text-left overflow-hidden cursor-pointer"
     >
+      {/* Image Container */}
       <div
         className="aspect-square flex items-center justify-center text-5xl relative"
         style={{ background: site.theme.background }}
@@ -628,6 +643,8 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
           </span>
         )}
       </div>
+
+      {/* Info Container */}
       <div className="p-3">
         <p
           className="font-bold mb-1"
@@ -648,7 +665,7 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
           {listing.location} • {listing.posted}
         </p>
       </div>
-    </button>
+    </StyledCard>
   )
 }
 
@@ -673,23 +690,26 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <button
+      <Button
         onClick={onBack}
-        className="mb-6 text-sm hover:underline"
-        style={{ color: site.theme.primary }}
+        variant="link"
+        textColor={site.theme.primary}
+        className="mb-6"
       >
         ← Back to listings
-      </button>
+      </Button>
 
       <div className="flex gap-8">
         {/* Image */}
         <div className="w-96 shrink-0">
-          <div
-            className="aspect-square rounded-xl flex items-center justify-center text-8xl mb-4"
-            style={{ background: site.theme.background }}
+          <StyledCard
+            bgColor={site.theme.background}
+            borderRadius="lg"
+            padding="lg"
+            className="aspect-square flex items-center justify-center text-8xl"
           >
             {listing.image}
-          </div>
+          </StyledCard>
         </div>
 
         {/* Details */}
@@ -708,28 +728,39 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
             {formatPrice(listing.price)}
           </p>
 
+          {/* Metadata Badges */}
           <div className="flex flex-wrap gap-2 mb-4">
-            <span
-              className="px-2 py-1 rounded text-xs"
-              style={{ background: site.theme.background, color: site.theme.text }}
+            <StyledCard
+              variant="light"
+              bgColor={site.theme.background}
+              borderColor="transparent"
+              textColor={site.theme.text}
+              padding="sm"
+              borderRadius="sm"
+              className="text-xs"
             >
               {listing.category}
-            </span>
-            <span
-              className="px-2 py-1 rounded text-xs"
-              style={{
-                background: listing.condition === 'Haunted' ? '#FEE2E2' : site.theme.background,
-                color: listing.condition === 'Haunted' ? '#DC2626' : site.theme.text,
-              }}
+            </StyledCard>
+            <StyledCard
+              bgColor={listing.condition === 'Haunted' ? '#FEE2E2' : site.theme.background}
+              borderColor="transparent"
+              textColor={listing.condition === 'Haunted' ? '#DC2626' : site.theme.text}
+              padding="sm"
+              borderRadius="sm"
+              className="text-xs"
             >
               {listing.condition}
-            </span>
-            <span
-              className="px-2 py-1 rounded text-xs"
-              style={{ background: site.theme.background, color: site.theme.text }}
+            </StyledCard>
+            <StyledCard
+              bgColor={site.theme.background}
+              borderColor="transparent"
+              textColor={site.theme.text}
+              padding="sm"
+              borderRadius="sm"
+              className="text-xs"
             >
               📍 {listing.location}
-            </span>
+            </StyledCard>
           </div>
 
           <p
@@ -741,15 +772,17 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
 
           {/* Suspicious Warning */}
           {listing.suspicious && (
-            <div
-              className="p-4 rounded-lg mb-6"
-              style={{ background: '#FEF3C7', border: '1px solid #F59E0B' }}
+            <StyledCard
+              bgColor="#FEF3C7"
+              borderColor="#F59E0B"
+              textColor="#92400E"
+              padding="md"
+              borderRadius="md"
+              className="mb-6 text-sm"
             >
-              <p className="text-sm" style={{ color: '#92400E' }}>
-                ⚠️ <strong>Heads up:</strong> This listing has some... unusual characteristics.
-                Use your best judgment and meet in a public place if purchasing.
-              </p>
-            </div>
+              ⚠️ <strong>Heads up:</strong> This listing has some... unusual characteristics.
+              Use your best judgment and meet in a public place if purchasing.
+            </StyledCard>
           )}
 
           {/* Description */}
@@ -773,39 +806,45 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
             <div className="mb-6">
               <div className="flex flex-wrap gap-2">
                 {listing.tags.map((tag) => (
-                  <span
+                  <StyledCard
                     key={tag}
-                    className="px-2 py-1 rounded-full text-xs"
-                    style={{
-                      background: `${site.theme.primary}15`,
-                      color: site.theme.primary,
-                    }}
+                    bgColor={`${site.theme.primary}15`}
+                    borderColor="transparent"
+                    textColor={site.theme.primary}
+                    padding="sm"
+                    borderRadius="full"
+                    className="text-xs"
                   >
                     #{tag}
-                  </span>
+                  </StyledCard>
                 ))}
               </div>
             </div>
           )}
 
           {/* Seller Info */}
-          <div
-            className="p-4 rounded-xl mb-6"
-            style={{
-              background: site.theme.surface,
-              border: `1px solid ${site.theme.border}`,
-            }}
+          <StyledCard
+            bgColor={site.theme.surface}
+            borderColor={site.theme.border}
+            textColor={site.theme.text}
+            padding="md"
+            borderRadius="lg"
+            className="mb-6"
           >
             <div className="flex items-center gap-3 mb-3">
               <span className="text-3xl">{listing.seller.avatar}</span>
               <div>
-                <p className="font-medium" style={{ color: site.theme.text }}>
-                  {listing.seller.name}
-                </p>
-                <p className="text-xs" style={{ color: site.theme.textMuted }}>
-                  {listing.seller.joined}
-                  {listing.seller.rating && ` • ⭐ ${listing.seller.rating}`}
-                </p>
+                <p className="font-medium">{listing.seller.name}</p>
+                <MetaRow
+                  items={[
+                    { value: listing.seller.joined },
+                    ...(listing.seller.rating ? [{ value: `⭐ ${listing.seller.rating}` }] : []),
+                  ]}
+                  textSize="xs"
+                  textColor={site.theme.textMuted}
+                  mutedColor={site.theme.textMuted}
+                  separator="•"
+                />
               </div>
             </div>
             {listing.seller.responseRate && (
@@ -813,7 +852,7 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
                 {listing.seller.responseRate}
               </p>
             )}
-          </div>
+          </StyledCard>
 
           {/* Actions */}
           {showMessage ? (
@@ -830,54 +869,52 @@ function ListingDetail({ listing, onBack }: ListingDetailProps) {
                 defaultValue={`Hi! Is this still available?`}
               />
               <div className="flex gap-2">
-                <button
-                  className="flex-1 py-2 rounded-lg font-medium"
-                  style={{ background: site.theme.primary, color: 'white' }}
+                <Button
+                  variant="primary"
+                  backgroundColor={site.theme.primary}
+                  textColor="white"
+                  width="full"
                 >
                   Send Message
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowMessage(false)}
-                  className="px-4 py-2 rounded-lg"
-                  style={{
-                    background: site.theme.surface,
-                    border: `1px solid ${site.theme.border}`,
-                    color: site.theme.text,
-                  }}
+                  variant="outline"
+                  borderColor={site.theme.border}
+                  textColor={site.theme.text}
+                  backgroundColor={site.theme.surface}
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           ) : (
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => setShowMessage(true)}
-                className="flex-1 py-3 rounded-lg font-medium"
-                style={{ background: site.theme.primary, color: 'white' }}
+                variant="primary"
+                backgroundColor={site.theme.primary}
+                textColor="white"
+                width="full"
               >
                 Message Seller
-              </button>
-              <button
-                className="px-4 py-3 rounded-lg"
-                style={{
-                  background: site.theme.surface,
-                  border: `1px solid ${site.theme.border}`,
-                  color: site.theme.text,
-                }}
-              >
-                ❤️
-              </button>
-              <button
-                className="px-4 py-3 rounded-lg"
-                style={{
-                  background: site.theme.surface,
-                  border: `1px solid ${site.theme.border}`,
-                  color: site.theme.text,
-                }}
-              >
-                Share
-              </button>
+              </Button>
+              <Button
+                variant="outline"
+                borderColor={site.theme.border}
+                backgroundColor={site.theme.surface}
+                textColor={site.theme.text}
+                icon="❤️"
+                iconPosition="only"
+              />
+              <Button
+                variant="outline"
+                borderColor={site.theme.border}
+                backgroundColor={site.theme.surface}
+                textColor={site.theme.text}
+                icon="📤"
+                iconPosition="only"
+              />
             </div>
           )}
         </div>
