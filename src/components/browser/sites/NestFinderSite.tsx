@@ -9,6 +9,8 @@ import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
+import type { MetaRowItem } from '../../ui/shared/layout/MetaRow.js'
 
 const site = FILLER_SITES.realestate
 
@@ -448,12 +450,13 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
             >
               ❤️ Saved ({savedListings.length})
             </button>
-            <button
-              className="px-4 py-2 rounded-lg text-sm font-medium"
-              style={{ background: site.theme.primary, color: 'white' }}
+            <Button
+              size="sm"
+              backgroundColor={site.theme.primary}
+              textColor="white"
             >
               Sign In
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -534,12 +537,13 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
                     <option value={2}>2+ Beds</option>
                     <option value={3}>3+ Beds</option>
                   </select>
-                  <button
-                    className="px-6 py-2 rounded-lg text-sm font-medium"
-                    style={{ background: site.theme.primary, color: 'white' }}
+                  <Button
+                    size="sm"
+                    backgroundColor={site.theme.primary}
+                    textColor="white"
                   >
                     Search
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -627,10 +631,20 @@ function ListingCard({ listing, onClick, isSaved, onToggleSave }: ListingCardPro
     return `$${price.toLocaleString()}/mo`
   }
 
+  const specItems: MetaRowItem[] = [
+    { value: listing.beds === 0 ? 'Studio' : `${listing.beds} bd` },
+    { value: `${listing.baths} ba` },
+    { value: `${listing.sqft.toLocaleString()} sqft` },
+  ]
+
   return (
-    <div
-      className="rounded-xl overflow-hidden transition-all hover:shadow-lg"
-      style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+    <StyledCard
+      bgColor={site.theme.surface}
+      borderColor={site.theme.border}
+      padding="0"
+      shadow="md"
+      borderRadius="lg"
+      className="overflow-hidden"
     >
       {/* Image */}
       <button
@@ -653,7 +667,7 @@ function ListingCard({ listing, onClick, isSaved, onToggleSave }: ListingCardPro
             e.stopPropagation()
             onToggleSave()
           }}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
           style={{ background: 'white' }}
         >
           {isSaved ? '❤️' : '🤍'}
@@ -679,13 +693,15 @@ function ListingCard({ listing, onClick, isSaved, onToggleSave }: ListingCardPro
         >
           {formatPrice(listing.price, listing.priceType)}
         </p>
-        <div className="flex items-center gap-3 text-sm mb-2" style={{ color: site.theme.text }}>
-          <span>{listing.beds === 0 ? 'Studio' : `${listing.beds} bd`}</span>
-          <span>•</span>
-          <span>{listing.baths} ba</span>
-          <span>•</span>
-          <span>{listing.sqft.toLocaleString()} sqft</span>
-        </div>
+        <MetaRow
+          items={specItems}
+          separator="•"
+          textSize="sm"
+          textColor={site.theme.text}
+          mutedColor={site.theme.text}
+          gap="8px"
+          className="mb-2"
+        />
         <p
           className="text-sm font-medium line-clamp-1 mb-1"
           style={{ color: site.theme.text }}
@@ -705,7 +721,7 @@ function ListingCard({ listing, onClick, isSaved, onToggleSave }: ListingCardPro
           {listing.neighborhood} • Posted {listing.posted}
         </p>
       </button>
-    </div>
+    </StyledCard>
   )
 }
 
@@ -777,13 +793,17 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                 >
                   {formatPrice(listing.price, listing.priceType)}
                 </p>
-                <div className="flex items-center gap-3 text-lg mb-2" style={{ color: site.theme.text }}>
-                  <span>{listing.beds === 0 ? 'Studio' : `${listing.beds} beds`}</span>
-                  <span>•</span>
-                  <span>{listing.baths} baths</span>
-                  <span>•</span>
-                  <span>{listing.sqft.toLocaleString()} sqft</span>
-                </div>
+                <MetaRow
+                  items={[
+                    { value: listing.beds === 0 ? 'Studio' : `${listing.beds} beds` },
+                    { value: `${listing.baths} baths` },
+                    { value: `${listing.sqft.toLocaleString()} sqft` },
+                  ]}
+                  textSize="md"
+                  textColor={site.theme.text}
+                  mutedColor={site.theme.text}
+                  className="mb-2"
+                />
                 <p className="font-medium" style={{ color: site.theme.text }}>
                   {listing.address}
                 </p>
@@ -792,27 +812,25 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                 </p>
               </div>
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={onToggleSave}
-                  className="px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
-                  style={{
-                    background: isSaved ? site.theme.primary : site.theme.surface,
-                    color: isSaved ? 'white' : site.theme.text,
-                    border: `1px solid ${site.theme.border}`,
-                  }}
+                  size="sm"
+                  variant={isSaved ? 'primary' : 'outline'}
+                  backgroundColor={isSaved ? site.theme.primary : 'transparent'}
+                  textColor={isSaved ? 'white' : site.theme.primary}
+                  borderColor={isSaved ? 'transparent' : site.theme.primary}
                 >
                   {isSaved ? '❤️ Saved' : '🤍 Save'}
-                </button>
-                <button
-                  className="px-4 py-2 rounded-lg text-sm font-medium"
-                  style={{
-                    background: site.theme.surface,
-                    border: `1px solid ${site.theme.border}`,
-                    color: site.theme.text,
-                  }}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  backgroundColor="transparent"
+                  textColor={site.theme.text}
+                  borderColor={site.theme.border}
                 >
                   Share
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -875,34 +893,22 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                 Details
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                <div
-                  className="p-4 rounded-lg"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-                >
+                <StyledCard bgColor={site.theme.surface} borderColor={site.theme.border} padding="md">
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>Pet Policy</p>
                   <p className="font-medium" style={{ color: site.theme.text }}>{listing.petPolicy}</p>
-                </div>
-                <div
-                  className="p-4 rounded-lg"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-                >
+                </StyledCard>
+                <StyledCard bgColor={site.theme.surface} borderColor={site.theme.border} padding="md">
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>Parking</p>
                   <p className="font-medium" style={{ color: site.theme.text }}>{listing.parking}</p>
-                </div>
-                <div
-                  className="p-4 rounded-lg"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-                >
+                </StyledCard>
+                <StyledCard bgColor={site.theme.surface} borderColor={site.theme.border} padding="md">
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>Laundry</p>
                   <p className="font-medium" style={{ color: site.theme.text }}>{listing.laundry}</p>
-                </div>
-                <div
-                  className="p-4 rounded-lg"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-                >
+                </StyledCard>
+                <StyledCard bgColor={site.theme.surface} borderColor={site.theme.border} padding="md">
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>Available</p>
                   <p className="font-medium" style={{ color: site.theme.text }}>{listing.available}</p>
-                </div>
+                </StyledCard>
               </div>
             </div>
 
@@ -923,12 +929,11 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
 
           {/* Sidebar - Contact */}
           <aside className="w-80 shrink-0">
-            <div
-              className="sticky top-20 p-6 rounded-xl"
-              style={{
-                background: site.theme.surface,
-                border: `1px solid ${site.theme.border}`,
-              }}
+            <StyledCard
+              bgColor={site.theme.surface}
+              borderColor={site.theme.border}
+              padding="lg"
+              className="sticky top-20"
             >
               {listing.agent ? (
                 <>
@@ -987,32 +992,33 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                         }}
                         defaultValue={`Hi, I'm interested in ${listing.address}. Is it still available?`}
                       />
-                      <button
-                        className="w-full py-2 rounded-lg font-medium"
-                        style={{ background: site.theme.primary, color: 'white' }}
+                      <Button
+                        width="full"
+                        backgroundColor={site.theme.primary}
+                        textColor="white"
                       >
                         Send Message
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <button
+                      <Button
+                        width="full"
+                        backgroundColor={site.theme.primary}
+                        textColor="white"
                         onClick={() => setShowContactForm(true)}
-                        className="w-full py-2 rounded-lg font-medium"
-                        style={{ background: site.theme.primary, color: 'white' }}
                       >
                         Contact Agent
-                      </button>
-                      <button
-                        className="w-full py-2 rounded-lg font-medium"
-                        style={{
-                          background: site.theme.surface,
-                          border: `1px solid ${site.theme.primary}`,
-                          color: site.theme.primary,
-                        }}
+                      </Button>
+                      <Button
+                        width="full"
+                        variant="outline"
+                        backgroundColor="transparent"
+                        textColor={site.theme.primary}
+                        borderColor={site.theme.primary}
                       >
                         Schedule Tour
-                      </button>
+                      </Button>
                       <p
                         className="text-center text-sm"
                         style={{ color: site.theme.textMuted }}
@@ -1027,12 +1033,14 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                   <p className="font-medium mb-4" style={{ color: site.theme.text }}>
                     Contact Posted By Owner
                   </p>
-                  <button
-                    className="w-full py-2 rounded-lg font-medium mb-3"
-                    style={{ background: site.theme.primary, color: 'white' }}
+                  <Button
+                    width="full"
+                    backgroundColor={site.theme.primary}
+                    textColor="white"
+                    className="mb-3"
                   >
                     Send Message
-                  </button>
+                  </Button>
                   <p className="text-xs text-center" style={{ color: site.theme.textMuted }}>
                     Be cautious with listings posted by owners.
                     Always verify the property in person before sending any money.
@@ -1049,7 +1057,7 @@ function ListingDetail({ listing, onBack, isSaved, onToggleSave }: ListingDetail
                   count={2}
                 />
               </div>
-            </div>
+            </StyledCard>
           </aside>
         </div>
       </div>
