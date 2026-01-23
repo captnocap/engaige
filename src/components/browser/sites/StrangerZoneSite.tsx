@@ -13,6 +13,7 @@
 import { useState, useRef, useEffect } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 // Site config
 const SITE = FILLER_SITES.strangerzone
@@ -415,45 +416,32 @@ export function StrangerZoneSite({ siteId, onNavigate }: SiteProps) {
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {AVAILABLE_INTERESTS.map(interest => (
-                    <button
+                    <Button
                       key={interest}
+                      variant={selectedInterests.includes(interest) ? 'primary' : 'outline'}
+                      size="xs"
+                      backgroundColor={selectedInterests.includes(interest) ? '#e94560' : 'transparent'}
+                      textColor={selectedInterests.includes(interest) ? '#fff' : '#888'}
+                      borderColor={selectedInterests.includes(interest) ? '#e94560' : '#333'}
                       onClick={() => toggleInterest(interest)}
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '16px',
-                        fontSize: '12px',
-                        border: '1px solid',
-                        borderColor: selectedInterests.includes(interest) ? '#e94560' : '#333',
-                        backgroundColor: selectedInterests.includes(interest) ? '#e94560' : 'transparent',
-                        color: selectedInterests.includes(interest) ? '#fff' : '#888',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                      }}
                     >
                       {interest}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
               {/* Start buttons */}
               <div className="flex gap-4 justify-center">
-                <button
+                <Button
+                  variant="primary"
+                  size="lg"
+                  backgroundColor="#e94560"
+                  textColor="#fff"
                   onClick={findStranger}
-                  style={{
-                    padding: '12px 32px',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#e94560',
-                    color: '#fff',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
                 >
                   Start Chatting
-                </button>
+                </Button>
               </div>
 
               {chatCount > 0 && (
@@ -462,24 +450,25 @@ export function StrangerZoneSite({ siteId, onNavigate }: SiteProps) {
                 </p>
               )}
 
-              {/* Warnings */}
-              <div style={{
-                marginTop: '32px',
-                padding: '12px',
-                backgroundColor: 'rgba(233, 69, 96, 0.1)',
-                borderRadius: '8px',
-                fontSize: '11px',
-                color: '#888',
-              }}>
+              {/* Warning Card */}
+              <StyledCard
+                variant="dark"
+                bgColor="rgba(233, 69, 96, 0.15)"
+                borderColor="#e94560"
+                textColor="#888"
+                padding="lg"
+                borderRadius="lg"
+                style={{ marginTop: '32px', borderWidth: 1 }}
+              >
                 <p style={{ fontWeight: 'bold', color: '#e94560', marginBottom: '4px' }}>
                   ⚠️ Stranger Danger
                 </p>
-                <p>
+                <p style={{ fontSize: '11px' }}>
                   StrangerZone is unmoderated. You may encounter nudity, explicit content,
                   or people who are just really weird. Proceed with caution. Don't share
                   personal information. By clicking "Start", you accept our terms.
                 </p>
-              </div>
+              </StyledCard>
             </div>
           </div>
         )}
@@ -513,32 +502,42 @@ export function StrangerZoneSite({ siteId, onNavigate }: SiteProps) {
               {messages.map(message => (
                 <div key={message.id} style={{ marginBottom: '8px' }}>
                   {message.sender === 'system' ? (
-                    <p style={{
-                      textAlign: 'center',
-                      color: '#666',
-                      fontSize: '12px',
-                      fontStyle: 'italic',
-                    }}>
+                    <StyledCard
+                      variant="transparent"
+                      padding="sm"
+                      borderRadius="md"
+                      textColor="#666"
+                      style={{ textAlign: 'center', fontSize: '12px', fontStyle: 'italic' }}
+                    >
                       {message.text}
-                    </p>
+                    </StyledCard>
                   ) : (
-                    <div>
-                      <span style={{
-                        fontWeight: 'bold',
-                        color: message.sender === 'you' ? '#4ade80' : '#e94560',
-                      }}>
+                    <StyledCard
+                      bgColor={message.sender === 'you' ? '#1a3a1a' : '#3a1a2a'}
+                      borderColor={message.sender === 'you' ? '#4ade80' : '#e94560'}
+                      textColor={message.sender === 'you' ? '#4ade80' : '#e94560'}
+                      padding="md"
+                      borderRadius="md"
+                      borderWidth={1}
+                    >
+                      <span style={{ fontWeight: 'bold' }}>
                         {message.sender === 'you' ? 'You' : 'Stranger'}:
                       </span>{' '}
                       <span style={{ color: '#ddd' }}>{message.text}</span>
-                    </div>
+                    </StyledCard>
                   )}
                 </div>
               ))}
 
               {strangerTyping && (
-                <p style={{ color: '#666', fontSize: '12px', fontStyle: 'italic' }}>
+                <StyledCard
+                  variant="transparent"
+                  padding="sm"
+                  textColor="#666"
+                  style={{ fontSize: '12px', fontStyle: 'italic' }}
+                >
                   Stranger is typing...
-                </p>
+                </StyledCard>
               )}
 
               <div ref={chatEndRef} />
@@ -569,54 +568,41 @@ export function StrangerZoneSite({ siteId, onNavigate }: SiteProps) {
                     outline: 'none',
                   }}
                 />
-                <button
+                <Button
+                  variant="primary"
+                  size="md"
+                  backgroundColor={strangerDisconnected ? '#333' : '#e94560'}
+                  textColor="#fff"
                   onClick={handleSendMessage}
                   disabled={strangerDisconnected || !inputText.trim()}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    backgroundColor: strangerDisconnected ? '#333' : '#e94560',
-                    color: '#fff',
-                    border: 'none',
-                    cursor: strangerDisconnected ? 'not-allowed' : 'pointer',
-                    fontWeight: 'bold',
-                  }}
                 >
                   Send
-                </button>
+                </Button>
               </div>
 
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
+                  backgroundColor="transparent"
+                  textColor="#888"
+                  borderColor="#0f3460"
                   onClick={handleSkip}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    borderRadius: '6px',
-                    backgroundColor: '#0f3460',
-                    color: '#888',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                  }}
+                  width="full"
                 >
                   {strangerDisconnected ? '🔄 New Chat' : '⏭️ Skip'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  backgroundColor="transparent"
+                  textColor="#888"
+                  borderColor="#0f3460"
                   onClick={handleDisconnect}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    borderRadius: '6px',
-                    backgroundColor: '#0f3460',
-                    color: '#888',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                  }}
+                  width="full"
                 >
                   🚪 Stop
-                </button>
+                </Button>
               </div>
             </div>
           </div>
