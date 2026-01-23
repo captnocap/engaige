@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.bandsnotintown
 
@@ -209,7 +210,17 @@ function ConcertCard({ concert }: { concert: Concert }) {
   const isPast = concert.date.includes('ago') || concert.date.includes('Last') || concert.date.includes('Yesterday')
 
   return (
-    <div className={`bg-white rounded-lg border ${isPast ? 'border-gray-300 opacity-75' : 'border-red-200'} p-4 mb-3`}>
+    <StyledCard
+      variant="default"
+      padding="md"
+      borderRadius="md"
+      shadow="md"
+      className="mb-3"
+      bgColor="#ffffff"
+      borderColor={isPast ? '#d1d5db' : '#fecaca'}
+      textColor={isPast ? '#6b7280' : '#1f2937'}
+      style={{ opacity: isPast ? 0.75 : 1 }}
+    >
       <div className="flex justify-between items-start">
         <div className="flex gap-3">
           <div className="text-4xl">{concert.bandEmoji}</div>
@@ -229,12 +240,21 @@ function ConcertCard({ concert }: { concert: Concert }) {
       </div>
 
       {/* Why you can't go */}
-      <div className={`mt-3 p-2 rounded text-sm ${isPast ? 'bg-gray-100 text-gray-600' : 'bg-red-50 text-red-700'}`}>
+      <StyledCard
+        variant="default"
+        padding="sm"
+        borderRadius="sm"
+        shadow="none"
+        className="mt-3"
+        bgColor={isPast ? '#f3f4f6' : '#fef2f2'}
+        borderColor="transparent"
+        textColor={isPast ? '#4b5563' : '#b91c1c'}
+      >
         <span className="font-medium">
           {isPast ? '❌ You missed this: ' : '😔 Why you can\'t go: '}
         </span>
         {concert.reasonYouCantGo}
-      </div>
+      </StyledCard>
 
       {/* Ticket info */}
       <div className="mt-3 flex justify-between items-center">
@@ -246,18 +266,31 @@ function ConcertCard({ concert }: { concert: Concert }) {
             Only {concert.ticketsLeft} tickets left!
           </span>
         ) : (
-          <button className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+          <Button
+            variant="primary"
+            size="xs"
+            backgroundColor="#dc2626"
+            textColor="#ffffff"
+          >
             Get Tickets (Why Though?)
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </StyledCard>
   )
 }
 
 function BandCard({ band }: { band: Band }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <StyledCard
+      variant="default"
+      padding="md"
+      borderRadius="md"
+      shadow="md"
+      bgColor="#ffffff"
+      borderColor="#e5e7eb"
+      textColor="#1f2937"
+    >
       <div className="flex items-center gap-3 mb-3">
         <span className="text-3xl">{band.emoji}</span>
         <div>
@@ -278,10 +311,18 @@ function BandCard({ band }: { band: Band }) {
           <span className="text-red-600">{band.nextInYourCity}</span>
         </p>
       </div>
-      <button className="mt-3 w-full text-sm border border-red-300 text-red-600 py-1 rounded hover:bg-red-50">
+      <Button
+        variant="outline"
+        size="sm"
+        width="full"
+        textColor="#dc2626"
+        borderColor="#fca5a5"
+        backgroundColor="transparent"
+        className="mt-3"
+      >
         Track (For More Disappointment)
-      </button>
-    </div>
+      </Button>
+    </StyledCard>
   )
 }
 
@@ -383,14 +424,23 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
       <main className="max-w-4xl mx-auto px-4 py-6">
         {activeTab === 'upcoming' && (
           <div>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="none"
+              className="mb-6"
+              bgColor="#fef2f2"
+              borderColor="#fca5a5"
+              textColor="#7f1d1d"
+            >
               <h2 className="font-bold text-red-800 mb-2">😔 Bad News</h2>
               <p className="text-sm text-red-700">
                 We found {UPCOMING_CONCERTS.length} concerts from artists you like.
                 Unfortunately, none of them are convenient for you to attend.
                 Here they are anyway, to maximize your suffering.
               </p>
-            </div>
+            </StyledCard>
 
             {UPCOMING_CONCERTS.map(concert => (
               <ConcertCard key={concert.id} concert={concert} />
@@ -400,51 +450,110 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
 
         {activeTab === 'missed' && (
           <div>
-            <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-6">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="none"
+              className="mb-6"
+              bgColor="#f3f4f6"
+              borderColor="#d1d5db"
+              textColor="#1f2937"
+            >
               <h2 className="font-bold text-gray-800 mb-2">💀 Shows You Missed</h2>
               <p className="text-sm text-gray-600">
                 These shows already happened. They were apparently amazing.
                 Everyone's still talking about them. You weren't there.
               </p>
-            </div>
+            </StyledCard>
 
             {JUST_MISSED.map(concert => (
               <ConcertCard key={concert.id} concert={concert} />
             ))}
 
-            <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              className="mt-6"
+              bgColor="#ffffff"
+              borderColor="#e5e7eb"
+              textColor="#1f2937"
+            >
               <h3 className="font-bold text-gray-800 mb-3">📊 Your Miss Statistics</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-gray-50 p-3 rounded">
+                <StyledCard
+                  variant="default"
+                  padding="sm"
+                  borderRadius="sm"
+                  shadow="none"
+                  bgColor="#f3f4f6"
+                  borderColor="transparent"
+                  textColor="#6b7280"
+                >
                   <p className="text-gray-500">Shows missed this year</p>
                   <p className="text-2xl font-bold text-red-600">47</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded">
+                </StyledCard>
+                <StyledCard
+                  variant="default"
+                  padding="sm"
+                  borderRadius="sm"
+                  shadow="none"
+                  bgColor="#f3f4f6"
+                  borderColor="transparent"
+                  textColor="#6b7280"
+                >
                   <p className="text-gray-500">Money saved (cope)</p>
                   <p className="text-2xl font-bold text-green-600">$1,847</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded">
+                </StyledCard>
+                <StyledCard
+                  variant="default"
+                  padding="sm"
+                  borderRadius="sm"
+                  shadow="none"
+                  bgColor="#f3f4f6"
+                  borderColor="transparent"
+                  textColor="#6b7280"
+                >
                   <p className="text-gray-500">Secret shows missed</p>
                   <p className="text-2xl font-bold text-red-600">12</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded">
+                </StyledCard>
+                <StyledCard
+                  variant="default"
+                  padding="sm"
+                  borderRadius="sm"
+                  shadow="none"
+                  bgColor="#f3f4f6"
+                  borderColor="transparent"
+                  textColor="#6b7280"
+                >
                   <p className="text-gray-500">Reunion tours missed</p>
                   <p className="text-2xl font-bold text-red-600">3</p>
-                </div>
+                </StyledCard>
               </div>
-            </div>
+            </StyledCard>
           </div>
         )}
 
         {activeTab === 'tracked' && (
           <div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="none"
+              className="mb-6"
+              bgColor="#eff6ff"
+              borderColor="#93c5fd"
+              textColor="#1e40af"
+            >
               <h2 className="font-bold text-blue-800 mb-2">🎯 Bands You're Tracking</h2>
               <p className="text-sm text-blue-700">
                 We'll notify you the moment these bands announce shows!
                 (So you can watch tickets sell out before you can buy them)
               </p>
-            </div>
+            </StyledCard>
 
             <div className="grid md:grid-cols-2 gap-4">
               {TRACKED_BANDS.map(band => (
@@ -452,36 +561,83 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
               ))}
             </div>
 
-            <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4 text-center">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              className="mt-6"
+              bgColor="#ffffff"
+              borderColor="#e5e7eb"
+              textColor="#1f2937"
+              style={{ textAlign: 'center' }}
+            >
               <p className="text-gray-500 mb-3">Track more bands to increase your disappointment</p>
-              <button className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600">
+              <Button
+                variant="primary"
+                size="md"
+                backgroundColor="#dc2626"
+                textColor="#ffffff"
+              >
                 + Add Artists
-              </button>
-            </div>
+              </Button>
+            </StyledCard>
           </div>
         )}
 
         {/* FOMO Generator */}
-        <div className="mt-8 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-6 text-white">
+        <StyledCard
+          variant="gradient"
+          padding="lg"
+          borderRadius="md"
+          shadow="md"
+          className="mt-8"
+          bgColor="linear-gradient(to right, #9333ea, #a855f7)"
+          textColor="#ffffff"
+        >
           <h2 className="text-xl font-bold mb-2">🔥 FOMO Generator</h2>
           <p className="text-purple-200 mb-4">
             Not feeling bad enough? Let us help.
           </p>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
-            <div className="bg-white/10 rounded p-3">
+            <StyledCard
+              variant="transparent"
+              padding="sm"
+              borderRadius="sm"
+              shadow="none"
+              bgColor="rgba(255, 255, 255, 0.1)"
+              borderColor="transparent"
+              textColor="#f3e8ff"
+            >
               <p className="text-purple-200">Right now, somewhere:</p>
               <p className="font-bold">The Velvet Algorithms are soundchecking</p>
-            </div>
-            <div className="bg-white/10 rounded p-3">
+            </StyledCard>
+            <StyledCard
+              variant="transparent"
+              padding="sm"
+              borderRadius="sm"
+              shadow="none"
+              bgColor="rgba(255, 255, 255, 0.1)"
+              borderColor="transparent"
+              textColor="#f3e8ff"
+            >
               <p className="text-purple-200">Last night:</p>
               <p className="font-bold">Secret show in your neighborhood</p>
-            </div>
-            <div className="bg-white/10 rounded p-3">
+            </StyledCard>
+            <StyledCard
+              variant="transparent"
+              padding="sm"
+              borderRadius="sm"
+              shadow="none"
+              bgColor="rgba(255, 255, 255, 0.1)"
+              borderColor="transparent"
+              textColor="#f3e8ff"
+            >
               <p className="text-purple-200">Tomorrow:</p>
               <p className="font-bold">Last ever Neon Requiem show (not here)</p>
-            </div>
+            </StyledCard>
           </div>
-        </div>
+        </StyledCard>
       </main>
 
       {/* Footer */}

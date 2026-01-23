@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.hartwellfiles
 
@@ -199,10 +200,10 @@ function GlitchText({ children }: { children: React.ReactNode }) {
 
 function EvidenceCard({ evidence, onSelect }: { evidence: Evidence; onSelect: () => void }) {
   const classColors = {
-    verified: 'bg-green-900 text-green-300',
-    unverified: 'bg-yellow-900 text-yellow-300',
-    suppressed: 'bg-red-900 text-red-300',
-    leaked: 'bg-purple-900 text-purple-300',
+    verified: { bg: '#065f46', text: '#86efac' },
+    unverified: { bg: '#78350f', text: '#fcd34d' },
+    suppressed: { bg: '#7f1d1d', text: '#fca5a5' },
+    leaked: { bg: '#581c87', text: '#e879f9' },
   }
 
   const typeIcons = {
@@ -213,14 +214,24 @@ function EvidenceCard({ evidence, onSelect }: { evidence: Evidence; onSelect: ()
     theory: '🧠',
   }
 
+  const classColor = classColors[evidence.classification]
+
   return (
-    <div
+    <StyledCard
+      variant="dark"
+      padding="md"
+      borderRadius="md"
+      shadow="md"
       onClick={onSelect}
-      className="bg-gray-900 border border-gray-700 rounded p-4 cursor-pointer hover:border-red-500 transition-colors"
+      className="cursor-pointer"
+      bgColor="#111827"
+      borderColor="#374151"
+      textColor="#f3f4f6"
+      hoverColor="#1f2937"
     >
       <div className="flex justify-between items-start mb-2">
         <span className="text-gray-500 font-mono text-xs">{evidence.id}</span>
-        <span className={`text-xs px-2 py-0.5 rounded ${classColors[evidence.classification]}`}>
+        <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: classColor.bg, color: classColor.text }}>
           {evidence.classification.toUpperCase()}
         </span>
       </div>
@@ -232,29 +243,45 @@ function EvidenceCard({ evidence, onSelect }: { evidence: Evidence; onSelect: ()
       <p className="text-gray-500 text-xs mt-2 line-clamp-2">
         {evidence.content[0]}
       </p>
-    </div>
+    </StyledCard>
   )
 }
 
 function EvidenceDetail({ evidence, onBack }: { evidence: Evidence; onBack: () => void }) {
   const classColors = {
-    verified: 'border-green-500 text-green-400',
-    unverified: 'border-yellow-500 text-yellow-400',
-    suppressed: 'border-red-500 text-red-400',
-    leaked: 'border-purple-500 text-purple-400',
+    verified: { border: '#22c55e', text: '#4ade80' },
+    unverified: { border: '#eab308', text: '#facc15' },
+    suppressed: { border: '#ef4444', text: '#f87171' },
+    leaked: { border: '#a855f7', text: '#d8b4fe' },
   }
 
+  const classColor = classColors[evidence.classification]
+
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded p-6">
-      <button onClick={onBack} className="text-red-400 text-sm mb-4 hover:underline">
+    <StyledCard
+      variant="dark"
+      padding="lg"
+      borderRadius="md"
+      shadow="md"
+      bgColor="#111827"
+      borderColor="#374151"
+      textColor="#f3f4f6"
+    >
+      <Button
+        variant="link"
+        size="sm"
+        textColor="#f87171"
+        onClick={onBack}
+        className="mb-4"
+      >
         ← Back to files
-      </button>
+      </Button>
       <div className="flex justify-between items-start mb-4">
         <div>
           <span className="text-gray-500 font-mono text-sm">FILE: {evidence.id}</span>
           <h1 className="text-2xl font-bold text-white mt-1">{evidence.title}</h1>
         </div>
-        <span className={`border px-3 py-1 rounded ${classColors[evidence.classification]}`}>
+        <span className="border px-3 py-1 rounded" style={{ borderColor: classColor.border, color: classColor.text }}>
           {evidence.classification.toUpperCase()}
         </span>
       </div>
@@ -271,7 +298,7 @@ function EvidenceDetail({ evidence, onBack }: { evidence: Evidence; onBack: () =
           <p className="text-gray-500 text-sm">Related Files: {evidence.relatedFiles.join(', ')}</p>
         </div>
       )}
-    </div>
+    </StyledCard>
   )
 }
 
@@ -346,7 +373,15 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
         )}
 
         {activeTab === 'timeline' && (
-          <div className="bg-gray-900 border border-gray-700 rounded p-6">
+          <StyledCard
+            variant="dark"
+            padding="lg"
+            borderRadius="md"
+            shadow="md"
+            bgColor="#111827"
+            borderColor="#374151"
+            textColor="#f3f4f6"
+          >
             <h2 className="text-xl font-bold text-white mb-4">📅 Incident Timeline</h2>
             <div className="relative">
               <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-red-900" />
@@ -374,12 +409,20 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
               <p>🔴 Critical | 🟡 Major | ⚪ Minor</p>
               <p className="mt-2 italic">This timeline is incomplete. If you have information, contact us securely.</p>
             </div>
-          </div>
+          </StyledCard>
         )}
 
         {activeTab === 'about' && (
           <div className="space-y-6">
-            <div className="bg-gray-900 border border-gray-700 rounded p-6">
+            <StyledCard
+              variant="dark"
+              padding="lg"
+              borderRadius="md"
+              shadow="md"
+              bgColor="#111827"
+              borderColor="#374151"
+              textColor="#f3f4f6"
+            >
               <h2 className="text-xl font-bold text-white mb-4">About This Archive</h2>
               <div className="text-gray-300 text-sm space-y-4">
                 <p>
@@ -396,9 +439,17 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
                   contact us. But be careful. Use a VPN. They're watching.
                 </p>
               </div>
-            </div>
+            </StyledCard>
 
-            <div className="bg-gray-900 border border-gray-700 rounded p-6">
+            <StyledCard
+              variant="dark"
+              padding="lg"
+              borderRadius="md"
+              shadow="md"
+              bgColor="#111827"
+              borderColor="#374151"
+              textColor="#f3f4f6"
+            >
               <h2 className="text-xl font-bold text-white mb-4">Quick Facts</h2>
               <ul className="space-y-2">
                 {QUICK_FACTS.map((fact, i) => (
@@ -408,9 +459,17 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </StyledCard>
 
-            <div className="bg-red-900/20 border border-red-800 rounded p-6">
+            <StyledCard
+              variant="dark"
+              padding="lg"
+              borderRadius="md"
+              shadow="md"
+              bgColor="#7f1d1d"
+              borderColor="#991b1b"
+              textColor="#fca5a5"
+            >
               <h2 className="text-xl font-bold text-red-400 mb-4">⚠️ Warning</h2>
               <p className="text-red-300 text-sm">
                 If you are reading this and you live in or near the Hartwell Building:
@@ -422,24 +481,48 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
                 <li>• If someone knocks from inside a wall, do not respond</li>
                 <li>• The basement is off-limits for a reason</li>
               </ul>
-            </div>
+            </StyledCard>
           </div>
         )}
 
         {/* Sidebar Info */}
         <div className="mt-6 grid md:grid-cols-3 gap-4">
-          <div className="bg-gray-900 border border-gray-700 rounded p-4">
+          <StyledCard
+            variant="dark"
+            padding="md"
+            borderRadius="md"
+            shadow="md"
+            bgColor="#111827"
+            borderColor="#374151"
+            textColor="#f3f4f6"
+          >
             <h3 className="text-gray-400 text-xs uppercase mb-2">Files Documented</h3>
             <p className="text-2xl font-bold text-white">{EVIDENCE_FILES.length}</p>
-          </div>
-          <div className="bg-gray-900 border border-gray-700 rounded p-4">
+          </StyledCard>
+          <StyledCard
+            variant="dark"
+            padding="md"
+            borderRadius="md"
+            shadow="md"
+            bgColor="#111827"
+            borderColor="#374151"
+            textColor="#f3f4f6"
+          >
             <h3 className="text-gray-400 text-xs uppercase mb-2">Incidents Logged</h3>
             <p className="text-2xl font-bold text-white">{TIMELINE.length}</p>
-          </div>
-          <div className="bg-gray-900 border border-gray-700 rounded p-4">
+          </StyledCard>
+          <StyledCard
+            variant="dark"
+            padding="md"
+            borderRadius="md"
+            shadow="md"
+            bgColor="#111827"
+            borderColor="#374151"
+            textColor="#f3f4f6"
+          >
             <h3 className="text-gray-400 text-xs uppercase mb-2">Days Since Last "Incident"</h3>
             <p className="text-2xl font-bold text-red-500">3</p>
-          </div>
+          </StyledCard>
         </div>
       </main>
 

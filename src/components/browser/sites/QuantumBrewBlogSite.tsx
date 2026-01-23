@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.quantumbrewblog
 
@@ -175,9 +176,16 @@ I am banned from: 4 Starbucks, 2 Peet's, 1 independent roaster (they really over
 
 function BlogPostCard({ post, onSelect }: { post: BlogPost; onSelect: () => void }) {
   return (
-    <article
+    <StyledCard
+      variant="default"
+      padding="md"
+      borderRadius="md"
+      shadow="md"
       onClick={onSelect}
-      className="bg-white rounded-lg p-4 mb-4 cursor-pointer hover:shadow-md transition-shadow border border-amber-100"
+      className="mb-4 cursor-pointer"
+      bgColor="#ffffff"
+      borderColor="#fcd34d"
+      textColor="#78350f"
     >
       <div className="flex justify-between items-start mb-2">
         <span className="text-xs text-amber-600">{post.date}</span>
@@ -202,19 +210,31 @@ function BlogPostCard({ post, onSelect }: { post: BlogPost; onSelect: () => void
           </span>
         ))}
       </div>
-    </article>
+    </StyledCard>
   )
 }
 
 function FullPost({ post, onBack }: { post: BlogPost; onBack: () => void }) {
   return (
-    <article className="bg-white rounded-lg p-6 mb-4">
-      <button
+    <StyledCard
+      variant="default"
+      padding="lg"
+      borderRadius="md"
+      shadow="md"
+      className="mb-4"
+      bgColor="#ffffff"
+      borderColor="#fcd34d"
+      textColor="#78350f"
+    >
+      <Button
+        variant="link"
+        size="sm"
+        textColor="#b45309"
         onClick={onBack}
-        className="text-amber-600 text-sm mb-4 hover:underline"
+        className="mb-4"
       >
         ← Back to posts
-      </button>
+      </Button>
       <div className="flex justify-between items-start mb-2">
         <span className="text-xs text-amber-600">{post.date}</span>
         {post.isControversial && (
@@ -240,13 +260,22 @@ function FullPost({ post, onBack }: { post: BlogPost; onBack: () => void }) {
           ))}
         </div>
       </div>
-      <div className="mt-4 p-4 bg-amber-50 rounded text-sm">
+      <StyledCard
+        variant="default"
+        padding="md"
+        borderRadius="sm"
+        shadow="none"
+        className="mt-4"
+        bgColor="#fef3c7"
+        borderColor="#fcd34d"
+        textColor="#78350f"
+      >
         <p className="font-bold text-amber-800">💬 {post.comments} Comments</p>
         <p className="text-amber-600 text-xs mt-1">
           Comments are disabled after the "incident." You know which one.
         </p>
-      </div>
-    </article>
+      </StyledCard>
+    </StyledCard>
   )
 }
 
@@ -297,7 +326,15 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
           {/* Posts Column */}
           <div className="flex-1">
             {showAbout ? (
-              <div className="bg-white rounded-lg p-6">
+              <StyledCard
+                variant="default"
+                padding="lg"
+                borderRadius="md"
+                shadow="md"
+                bgColor="#ffffff"
+                borderColor="#fcd34d"
+                textColor="#78350f"
+              >
                 <h2 className="text-xl font-bold text-amber-900 mb-4">About Derek</h2>
                 <div className="flex gap-4 mb-4">
                   <div className="text-6xl">🧔</div>
@@ -310,7 +347,16 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
                 <div className="text-sm text-gray-700 whitespace-pre-line">
                   {ABOUT_TEXT}
                 </div>
-                <div className="mt-4 p-3 bg-amber-50 rounded text-sm">
+                <StyledCard
+                  variant="default"
+                  padding="md"
+                  borderRadius="sm"
+                  shadow="none"
+                  className="mt-4"
+                  bgColor="#fef3c7"
+                  borderColor="#fcd34d"
+                  textColor="#78350f"
+                >
                   <p className="font-bold text-amber-800">📊 Stats</p>
                   <ul className="text-amber-700 text-xs mt-2">
                     <li>• 847 documented brewing experiments</li>
@@ -319,18 +365,27 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
                     <li>• 0 Jennifers (currently)</li>
                     <li>• ∞ dedication to the craft</li>
                   </ul>
-                </div>
-              </div>
+                </StyledCard>
+              </StyledCard>
             ) : selectedPost ? (
               <FullPost post={selectedPost} onBack={() => setSelectedPost(null)} />
             ) : (
               <>
-                <div className="bg-amber-100 rounded-lg p-4 mb-4">
+                <StyledCard
+                  variant="default"
+                  padding="md"
+                  borderRadius="md"
+                  shadow="none"
+                  className="mb-4"
+                  bgColor="#fef3c7"
+                  borderColor="#fcd34d"
+                  textColor="#78350f"
+                >
                   <p className="text-amber-800 text-sm">
                     🔬 <strong>Latest:</strong> 847 trials. 3 years. 1 divorce. The definitive
                     quantum coffee methodology is HERE.
                   </p>
-                </div>
+                </StyledCard>
                 {BLOG_POSTS.map(post => (
                   <BlogPostCard
                     key={post.id}
@@ -345,7 +400,16 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
           {/* Sidebar */}
           <aside className="w-64 hidden md:block">
             {/* Newsletter */}
-            <div className="bg-white rounded-lg p-4 mb-4 border border-amber-200">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              className="mb-4"
+              bgColor="#ffffff"
+              borderColor="#fcd34d"
+              textColor="#78350f"
+            >
               <h3 className="font-bold text-amber-900 mb-2">📬 Newsletter</h3>
               <p className="text-xs text-gray-600 mb-2">
                 Weekly quantum brewing insights. Jennifer, if you're reading this, I've changed.
@@ -355,13 +419,28 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
                 placeholder="your@email.com"
                 className="w-full px-2 py-1 text-sm border rounded mb-2"
               />
-              <button className="w-full bg-amber-600 text-white py-1 rounded text-sm hover:bg-amber-700">
+              <Button
+                variant="primary"
+                size="sm"
+                width="full"
+                backgroundColor="#b45309"
+                textColor="#ffffff"
+              >
                 Subscribe
-              </button>
-            </div>
+              </Button>
+            </StyledCard>
 
             {/* Resources */}
-            <div className="bg-white rounded-lg p-4 mb-4 border border-amber-200">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              className="mb-4"
+              bgColor="#ffffff"
+              borderColor="#fcd34d"
+              textColor="#78350f"
+            >
               <h3 className="font-bold text-amber-900 mb-2">📚 Premium Resources</h3>
               <div className="space-y-2">
                 {SIDEBAR_RESOURCES.map((resource, i) => (
@@ -371,10 +450,19 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
                   </div>
                 ))}
               </div>
-            </div>
+            </StyledCard>
 
             {/* Mr. Whiskers Corner */}
-            <div className="bg-white rounded-lg p-4 mb-4 border border-amber-200">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              className="mb-4"
+              bgColor="#ffffff"
+              borderColor="#fcd34d"
+              textColor="#78350f"
+            >
               <h3 className="font-bold text-amber-900 mb-2">🐱 Mr. Whiskers Corner</h3>
               <div className="text-4xl text-center mb-2">😺</div>
               <p className="text-xs text-gray-600 italic">
@@ -383,17 +471,25 @@ export function QuantumBrewBlogSite({ siteId }: SiteProps) {
               <p className="text-xs text-gray-500 mt-2">
                 Since the entanglement experiment, we share thoughts. He disapproves of most of them.
               </p>
-            </div>
+            </StyledCard>
 
             {/* Legal */}
-            <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+            <StyledCard
+              variant="default"
+              padding="md"
+              borderRadius="md"
+              shadow="md"
+              bgColor="#fef2f2"
+              borderColor="#fca5a5"
+              textColor="#7f1d1d"
+            >
               <h3 className="font-bold text-red-800 mb-2">⚠️ Legal Notice</h3>
               <p className="text-xs text-red-700">
                 This blog does not constitute medical, scientific, or relationship advice.
                 Do not put cats in boxes. Do not confront strangers about their coffee opinions.
                 If you experience temporal displacement, consult a physician.
               </p>
-            </div>
+            </StyledCard>
           </aside>
         </div>
       </main>

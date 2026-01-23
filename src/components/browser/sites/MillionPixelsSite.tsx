@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.millionpixels
 
@@ -479,7 +480,13 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
 
       {/* Selected Block Info */}
       {selectedBlock && (
-        <div className="max-w-md mx-auto bg-gray-800 rounded-lg p-4 mb-4 mx-4">
+        <StyledCard
+          variant="dark"
+          padding="md"
+          borderRadius="lg"
+          shadow="md"
+          className="max-w-md mx-auto mb-4 mx-4"
+        >
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-white font-bold flex items-center gap-2">
@@ -490,12 +497,14 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
                 <p className="text-gray-400 text-sm">{selectedBlock.subtext}</p>
               )}
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setSelectedBlock(null)}
-              className="text-gray-500 hover:text-white"
+              textColor="#9CA3AF"
             >
               ✕
-            </button>
+            </Button>
           </div>
           <div className="mt-2 pt-2 border-t border-gray-700 text-xs text-gray-500">
             <p>Block ID: {selectedBlock.id}</p>
@@ -505,7 +514,7 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
               💰 This block is worth ${(selectedBlock.width * selectedBlock.height * 10).toLocaleString()}
             </p>
           </div>
-        </div>
+        </StyledCard>
       )}
 
       {/* Stats & Info */}
@@ -517,15 +526,28 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
             { label: 'Advertisers', value: PIXEL_BLOCKS.length.toString(), emoji: '🏪' },
             { label: 'Dead Links', value: '47%', emoji: '💀' },
           ].map((stat, i) => (
-            <div key={i} className="bg-gray-800 rounded p-3 text-center">
+            <StyledCard
+              key={i}
+              variant="dark"
+              padding="sm"
+              borderRadius="md"
+              shadow="sm"
+              className="text-center"
+            >
               <div className="text-2xl">{stat.emoji}</div>
               <div className="text-white font-bold">{stat.value}</div>
               <div className="text-gray-500 text-xs">{stat.label}</div>
-            </div>
+            </StyledCard>
           ))}
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-4 mb-4">
+        <StyledCard
+          variant="dark"
+          padding="md"
+          borderRadius="lg"
+          shadow="md"
+          className="mb-4"
+        >
           <h2 className="text-white font-bold mb-2">🤔 What is this?</h2>
           <p className="text-gray-400 text-sm">
             Inspired by the original Million Dollar Homepage (2005), this is a collection
@@ -533,27 +555,50 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
             local businesses to obvious scams, from beloved local bands to cryptic lore...
             it's all here.
           </p>
-        </div>
+        </StyledCard>
 
-        <div className="bg-gray-800 rounded-lg p-4 mb-4">
+        <StyledCard
+          variant="dark"
+          padding="md"
+          borderRadius="lg"
+          shadow="md"
+          className="mb-4"
+        >
           <h2 className="text-white font-bold mb-2">💰 Buy Your Own Pixel!</h2>
           <p className="text-gray-400 text-sm mb-3">
             Only $1 per pixel! Minimum purchase: 10x10 block ($100)
           </p>
           <div className="grid grid-cols-2 gap-2">
-            <button className="bg-green-600 text-white py-2 rounded text-sm font-bold hover:bg-green-500">
+            <Button
+              variant="success"
+              size="sm"
+              width="full"
+              backgroundColor="#16a34a"
+              hoverColor="#15803d"
+            >
               Buy Pixels ($100)
-            </button>
-            <button className="bg-yellow-600 text-white py-2 rounded text-sm font-bold hover:bg-yellow-500">
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              width="full"
+              backgroundColor="#b45309"
+              hoverColor="#92400e"
+            >
               Premium Block ($500)
-            </button>
+            </Button>
           </div>
           <p className="text-gray-600 text-xs mt-2 text-center">
             Payment accepted: Cryptocurrency, Gift Cards, Exposure
           </p>
-        </div>
+        </StyledCard>
 
-        <div className="bg-gray-800 rounded-lg p-4">
+        <StyledCard
+          variant="dark"
+          padding="md"
+          borderRadius="lg"
+          shadow="md"
+        >
           <h2 className="text-white font-bold mb-2">📜 Hall of Fame</h2>
           <div className="space-y-2 text-sm">
             {[
@@ -569,7 +614,7 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
               </div>
             ))}
           </div>
-        </div>
+        </StyledCard>
       </div>
 
       {/* Footer */}
