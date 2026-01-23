@@ -1,5 +1,5 @@
 /**
- * Threadit Site
+ * Threadit Site - Refactored with Shared Components
  *
  * Reddit clone for the engAIge browser.
  * Features chaotic drama, AITA posts, and nested comment threads.
@@ -9,6 +9,7 @@ import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.reddit
 
@@ -386,12 +387,14 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
 
             {/* User */}
             <div className="flex items-center gap-2">
-              <button
-                className="px-3 py-1 rounded-full text-sm font-medium"
-                style={{ background: site.theme.primary, color: 'white' }}
+              <Button
+                variant="primary"
+                size="sm"
+                backgroundColor={site.theme.primary}
+                textColor="white"
               >
                 Log In
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -412,29 +415,30 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
             ) : (
               <>
                 {/* Sort Controls */}
-                <div
-                  className="rounded-md mb-4 p-3 flex items-center gap-4"
-                  style={{ background: site.theme.surface }}
+                <StyledCard
+                  bgColor={site.theme.surface}
+                  borderColor="transparent"
+                  padding="md"
+                  borderRadius="md"
+                  shadow="none"
+                  className="flex items-center gap-4 mb-4"
                 >
                   <span className="text-sm" style={{ color: site.theme.textMuted }}>
                     Sort by:
                   </span>
                   {(['hot', 'new', 'top'] as const).map((sort) => (
-                    <button
+                    <Button
                       key={sort}
                       onClick={() => setSortBy(sort)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                        sortBy === sort ? '' : 'hover:bg-gray-100'
-                      }`}
-                      style={{
-                        background: sortBy === sort ? site.theme.primary : 'transparent',
-                        color: sortBy === sort ? 'white' : site.theme.textMuted,
-                      }}
+                      variant={sortBy === sort ? 'primary' : 'ghost'}
+                      size="sm"
+                      backgroundColor={sortBy === sort ? site.theme.primary : 'transparent'}
+                      textColor={sortBy === sort ? 'white' : site.theme.textMuted}
                     >
                       {sort.charAt(0).toUpperCase() + sort.slice(1)}
-                    </button>
+                    </Button>
                   ))}
-                </div>
+                </StyledCard>
 
                 {/* Thread List */}
                 <div className="space-y-3">
@@ -457,62 +461,76 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
           <aside className="w-72 shrink-0 space-y-4">
             {/* Subreddit Info */}
             {selectedSubreddit ? (
-              <div
-                className="rounded-md overflow-hidden"
-                style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-              >
+              <div className="rounded-md overflow-hidden" style={{ border: `1px solid ${site.theme.border}` }}>
                 <div className="p-3" style={{ background: site.theme.primary }}>
                   <h2 className="font-bold text-white">{selectedSubreddit}</h2>
                 </div>
-                <div className="p-3">
-                  <p className="text-sm" style={{ color: site.theme.textMuted }}>
+                <StyledCard
+                  bgColor={site.theme.surface}
+                  borderColor="transparent"
+                  padding="md"
+                  borderRadius="0"
+                  shadow="none"
+                >
+                  <p className="text-sm mb-3" style={{ color: site.theme.textMuted }}>
                     {SUBREDDITS.find(s => s.name === selectedSubreddit)?.description}
                   </p>
-                  <button
+                  <Button
                     onClick={() => setSelectedSubreddit(null)}
-                    className="mt-3 text-sm hover:underline"
-                    style={{ color: site.theme.secondary }}
+                    variant="link"
+                    size="sm"
+                    textColor={site.theme.secondary}
                   >
                     ← Back to Home
-                  </button>
-                </div>
+                  </Button>
+                </StyledCard>
               </div>
             ) : (
-              <div
-                className="rounded-md overflow-hidden"
-                style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
-              >
+              <div className="rounded-md overflow-hidden" style={{ border: `1px solid ${site.theme.border}` }}>
                 <div className="p-3" style={{ background: site.theme.primary }}>
                   <h2 className="font-bold text-white">Home</h2>
                 </div>
-                <div className="p-3">
+                <StyledCard
+                  bgColor={site.theme.surface}
+                  borderColor="transparent"
+                  padding="md"
+                  borderRadius="0"
+                  shadow="none"
+                >
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>
                     Your personal {site.name} front page. Come here to check in with your favorite communities.
                   </p>
-                </div>
+                </StyledCard>
               </div>
             )}
 
             {/* Popular Communities */}
-            <div
-              className="rounded-md overflow-hidden"
-              style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+            <StyledCard
+              bgColor={site.theme.surface}
+              borderColor={site.theme.border}
+              padding="0"
+              borderRadius="md"
+              shadow="sm"
+              className="overflow-hidden"
             >
               <div className="p-3 font-bold text-sm" style={{ color: site.theme.text, borderBottom: `1px solid ${site.theme.border}` }}>
                 Popular Communities
               </div>
               <div className="py-2">
                 {SUBREDDITS.map((sub) => (
-                  <button
+                  <Button
                     key={sub.name}
                     onClick={() => {
                       setSelectedSubreddit(sub.name)
                       setSelectedThread(null)
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 transition-colors text-left"
+                    variant="ghost"
+                    backgroundColor="transparent"
+                    width="full"
+                    className="justify-start px-3 py-2"
                   >
-                    <span className="text-xl">{sub.icon}</span>
-                    <div className="flex-1 min-w-0">
+                    <span className="text-xl mr-2">{sub.icon}</span>
+                    <div className="flex-1 min-w-0 text-left">
                       <p className="text-sm font-medium" style={{ color: site.theme.text }}>
                         {sub.name}
                       </p>
@@ -520,15 +538,20 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
                         {sub.members} members
                       </p>
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
-            </div>
+            </StyledCard>
 
             {/* Rules */}
-            <div
-              className="rounded-md p-3 text-xs"
-              style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}`, color: site.theme.textMuted }}
+            <StyledCard
+              bgColor={site.theme.surface}
+              borderColor={site.theme.border}
+              padding="md"
+              borderRadius="md"
+              shadow="sm"
+              textColor={site.theme.textMuted}
+              className="text-xs"
             >
               <p className="font-bold mb-2" style={{ color: site.theme.text }}>
                 {site.name} Rules
@@ -540,7 +563,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
                 <li>Search for duplicates before posting</li>
                 <li>Read the community rules</li>
               </ol>
-            </div>
+            </StyledCard>
 
             {/* Promoted */}
             <SidebarAdWidget
@@ -573,32 +596,39 @@ function ThreadCard({ thread, onClick, userVotes, onVote, getVoteAdjustment }: T
   const userVote = userVotes[thread.id]
 
   return (
-    <div
-      className="rounded-md flex overflow-hidden"
-      style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+    <StyledCard
+      bgColor={site.theme.surface}
+      borderColor={site.theme.border}
+      padding="md"
+      borderRadius="md"
+      shadow="sm"
+      className="flex overflow-hidden p-0"
     >
       {/* Vote Column */}
       <div
-        className="w-10 flex flex-col items-center py-2 gap-1"
+        className="w-10 flex flex-col items-center py-2 gap-1 shrink-0"
         style={{ background: site.theme.background }}
       >
-        <button
+        <Button
           onClick={(e) => {
-            e.stopPropagation()
+            e.stopPropagation?.()
             onVote(thread.id, 'up')
           }}
-          className="p-1 rounded hover:bg-gray-200 transition-colors"
-        >
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill={userVote === 'up' ? site.theme.upvote : 'none'}
-            stroke={userVote === 'up' ? site.theme.upvote : site.theme.textMuted}
-            strokeWidth={2}
-          >
-            <path d="M12 4l-8 8h5v8h6v-8h5z" />
-          </svg>
-        </button>
+          variant="ghost"
+          size="xs"
+          icon={
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill={userVote === 'up' ? site.theme.upvote : 'none'}
+              stroke={userVote === 'up' ? site.theme.upvote : site.theme.textMuted}
+              strokeWidth={2}
+            >
+              <path d="M12 4l-8 8h5v8h6v-8h5z" />
+            </svg>
+          }
+          backgroundColor="transparent"
+        />
         <span
           className="text-xs font-bold"
           style={{
@@ -609,43 +639,47 @@ function ThreadCard({ thread, onClick, userVotes, onVote, getVoteAdjustment }: T
         >
           {votes >= 1000 ? `${(votes / 1000).toFixed(1)}k` : votes}
         </span>
-        <button
+        <Button
           onClick={(e) => {
-            e.stopPropagation()
+            e.stopPropagation?.()
             onVote(thread.id, 'down')
           }}
-          className="p-1 rounded hover:bg-gray-200 transition-colors"
-        >
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill={userVote === 'down' ? site.theme.downvote : 'none'}
-            stroke={userVote === 'down' ? site.theme.downvote : site.theme.textMuted}
-            strokeWidth={2}
-          >
-            <path d="M12 20l8-8h-5V4H9v8H4z" />
-          </svg>
-        </button>
+          variant="ghost"
+          size="xs"
+          icon={
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill={userVote === 'down' ? site.theme.downvote : 'none'}
+              stroke={userVote === 'down' ? site.theme.downvote : site.theme.textMuted}
+              strokeWidth={2}
+            >
+              <path d="M12 20l8-8h-5V4H9v8H4z" />
+            </svg>
+          }
+          backgroundColor="transparent"
+        />
       </div>
 
       {/* Content */}
       <button
         onClick={onClick}
         className="flex-1 p-3 text-left hover:bg-gray-50 transition-colors"
+        style={{ border: 'none', background: 'transparent' }}
       >
-        <div className="flex items-center gap-2 text-xs mb-1" style={{ color: site.theme.textMuted }}>
-          <span className="font-medium" style={{ color: site.theme.text }}>
-            {thread.subreddit}
-          </span>
-          <span>•</span>
-          <span>Posted by u/{thread.author}</span>
-          <span>•</span>
-          <span>{thread.timestamp}</span>
-          {thread.awards && thread.awards.map((award, i) => (
-            <span key={i}>{award}</span>
-          ))}
-        </div>
-        <h3 className="font-medium mb-1" style={{ color: site.theme.text }}>
+        <MetaRow
+          items={[
+            { value: thread.subreddit, style: { fontWeight: 500 } },
+            { value: `Posted by u/${thread.author}` },
+            { value: thread.timestamp },
+            ...(thread.awards?.map(award => ({ value: award })) ?? []),
+          ]}
+          textSize="xs"
+          textColor={site.theme.text}
+          mutedColor={site.theme.textMuted}
+          separator="•"
+        />
+        <h3 className="font-medium mb-1 mt-1" style={{ color: site.theme.text }}>
           {thread.flair && (
             <span
               className="inline-block px-2 py-0.5 text-xs rounded mr-2"
@@ -675,7 +709,7 @@ function ThreadCard({ thread, onClick, userVotes, onVote, getVoteAdjustment }: T
           <span>Save</span>
         </div>
       </button>
-    </div>
+    </StyledCard>
   )
 }
 
@@ -697,64 +731,69 @@ function ThreadDetail({ thread, onBack, userVotes, onVote, getVoteAdjustment }: 
 
   return (
     <div className="space-y-4">
-      <button
+      <Button
         onClick={onBack}
-        className="text-sm hover:underline"
-        style={{ color: site.theme.secondary }}
+        variant="link"
+        size="sm"
+        textColor={site.theme.secondary}
       >
         ← Back to {thread.subreddit}
-      </button>
+      </Button>
 
       {/* Main Post */}
-      <div
-        className="rounded-md"
-        style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+      <StyledCard
+        bgColor={site.theme.surface}
+        borderColor={site.theme.border}
+        padding="lg"
+        borderRadius="md"
+        shadow="sm"
       >
-        <div className="p-4">
-          <div className="flex items-center gap-2 text-xs mb-2" style={{ color: site.theme.textMuted }}>
-            <span className="font-medium" style={{ color: site.theme.text }}>
-              {thread.subreddit}
+        <MetaRow
+          items={[
+            { value: thread.subreddit, style: { fontWeight: 500 } },
+            { value: `Posted by u/${thread.author}` },
+            { value: thread.timestamp },
+            ...(thread.awards?.map(award => ({ value: award })) ?? []),
+          ]}
+          textSize="xs"
+          textColor={site.theme.text}
+          mutedColor={site.theme.textMuted}
+          separator="•"
+          className="mb-2"
+        />
+
+        <h1 className="text-xl font-medium mb-3" style={{ color: site.theme.text }}>
+          {thread.flair && (
+            <span
+              className="inline-block px-2 py-0.5 text-xs rounded mr-2"
+              style={{
+                background: thread.flair === 'Asshole' ? '#ff4500' :
+                           thread.flair === 'Not the A-hole' ? '#0dd3bb' :
+                           site.theme.secondary,
+                color: 'white',
+              }}
+            >
+              {thread.flair}
             </span>
-            <span>•</span>
-            <span>Posted by u/{thread.author}</span>
-            <span>•</span>
-            <span>{thread.timestamp}</span>
-            {thread.awards && thread.awards.map((award, i) => (
-              <span key={i}>{award}</span>
-            ))}
-          </div>
+          )}
+          {thread.title}
+        </h1>
 
-          <h1 className="text-xl font-medium mb-3" style={{ color: site.theme.text }}>
-            {thread.flair && (
-              <span
-                className="inline-block px-2 py-0.5 text-xs rounded mr-2"
-                style={{
-                  background: thread.flair === 'Asshole' ? '#ff4500' :
-                             thread.flair === 'Not the A-hole' ? '#0dd3bb' :
-                             site.theme.secondary,
-                  color: 'white',
-                }}
-              >
-                {thread.flair}
-              </span>
-            )}
-            {thread.title}
-          </h1>
+        <div
+          className="text-sm whitespace-pre-wrap mb-4"
+          style={{ color: site.theme.text }}
+        >
+          {thread.content}
+        </div>
 
-          <div
-            className="text-sm whitespace-pre-wrap mb-4"
-            style={{ color: site.theme.text }}
-          >
-            {thread.content}
-          </div>
-
-          {/* Post Actions */}
-          <div className="flex items-center gap-4 text-sm" style={{ color: site.theme.textMuted }}>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onVote(thread.id, 'up')}
-                className="p-1 rounded hover:bg-gray-100"
-              >
+        {/* Post Actions */}
+        <div className="flex items-center gap-4 text-sm" style={{ color: site.theme.textMuted }}>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => onVote(thread.id, 'up')}
+              variant="ghost"
+              size="sm"
+              icon={
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 24 24"
@@ -764,21 +803,24 @@ function ThreadDetail({ thread, onBack, userVotes, onVote, getVoteAdjustment }: 
                 >
                   <path d="M12 4l-8 8h5v8h6v-8h5z" />
                 </svg>
-              </button>
-              <span
-                className="font-bold"
-                style={{
-                  color: userVote === 'up' ? site.theme.upvote :
-                         userVote === 'down' ? site.theme.downvote :
-                         site.theme.text
-                }}
-              >
-                {votes}
-              </span>
-              <button
-                onClick={() => onVote(thread.id, 'down')}
-                className="p-1 rounded hover:bg-gray-100"
-              >
+              }
+              backgroundColor="transparent"
+            />
+            <span
+              className="font-bold"
+              style={{
+                color: userVote === 'up' ? site.theme.upvote :
+                       userVote === 'down' ? site.theme.downvote :
+                       site.theme.text
+              }}
+            >
+              {votes}
+            </span>
+            <Button
+              onClick={() => onVote(thread.id, 'down')}
+              variant="ghost"
+              size="sm"
+              icon={
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 24 24"
@@ -788,26 +830,30 @@ function ThreadDetail({ thread, onBack, userVotes, onVote, getVoteAdjustment }: 
                 >
                   <path d="M12 20l8-8h-5V4H9v8H4z" />
                 </svg>
-              </button>
-            </div>
-            <span>{thread.commentCount} comments</span>
-            <span>Share</span>
-            <span>Save</span>
+              }
+              backgroundColor="transparent"
+            />
           </div>
+          <span>{thread.commentCount} comments</span>
+          <span>Share</span>
+          <span>Save</span>
         </div>
-      </div>
+      </StyledCard>
 
       {/* Comment Input */}
-      <div
-        className="rounded-md p-4"
-        style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+      <StyledCard
+        bgColor={site.theme.surface}
+        borderColor={site.theme.border}
+        padding="lg"
+        borderRadius="md"
+        shadow="sm"
       >
         <p className="text-sm mb-2" style={{ color: site.theme.textMuted }}>
           Comment as <span style={{ color: site.theme.secondary }}>u/guest</span>
         </p>
         <textarea
           placeholder="What are your thoughts?"
-          className="w-full p-3 rounded text-sm resize-none"
+          className="w-full p-3 rounded text-sm resize-none mb-2"
           rows={4}
           style={{
             background: site.theme.background,
@@ -815,20 +861,25 @@ function ThreadDetail({ thread, onBack, userVotes, onVote, getVoteAdjustment }: 
             color: site.theme.text,
           }}
         />
-        <div className="flex justify-end mt-2">
-          <button
-            className="px-4 py-1.5 rounded-full text-sm font-medium"
-            style={{ background: site.theme.secondary, color: 'white' }}
+        <div className="flex justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            backgroundColor={site.theme.secondary}
+            textColor="white"
           >
             Comment
-          </button>
+          </Button>
         </div>
-      </div>
+      </StyledCard>
 
       {/* Comments */}
-      <div
-        className="rounded-md p-4"
-        style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+      <StyledCard
+        bgColor={site.theme.surface}
+        borderColor={site.theme.border}
+        padding="lg"
+        borderRadius="md"
+        shadow="sm"
       >
         <div className="flex items-center gap-4 mb-4">
           <span className="text-sm font-medium" style={{ color: site.theme.text }}>
@@ -848,7 +899,7 @@ function ThreadDetail({ thread, onBack, userVotes, onVote, getVoteAdjustment }: 
             />
           ))}
         </div>
-      </div>
+      </StyledCard>
     </div>
   )
 }
@@ -892,12 +943,15 @@ function CommentThread({ comment, depth, userVotes, onVote, getVoteAdjustment }:
       <div className="py-1">
         {/* Comment Header */}
         <div className="flex items-center gap-2 text-xs" style={{ color: site.theme.textMuted }}>
-          <button
+          <Button
             onClick={() => setCollapsed(!collapsed)}
-            className="hover:bg-gray-100 p-0.5 rounded"
+            variant="ghost"
+            size="xs"
+            backgroundColor="transparent"
+            textColor={site.theme.textMuted}
           >
             {collapsed ? '[+]' : '[-]'}
-          </button>
+          </Button>
           <span className="font-medium" style={{ color: comment.isOP ? site.theme.secondary : site.theme.text }}>
             u/{comment.author}
             {comment.isOP && <span className="ml-1 text-xs" style={{ color: site.theme.secondary }}>(OP)</span>}
@@ -927,20 +981,23 @@ function CommentThread({ comment, depth, userVotes, onVote, getVoteAdjustment }:
             {/* Comment Actions */}
             <div className="flex items-center gap-3 text-xs" style={{ color: site.theme.textMuted }}>
               <div className="flex items-center gap-1">
-                <button
+                <Button
                   onClick={() => onVote(comment.id, 'up')}
-                  className="p-0.5 rounded hover:bg-gray-100"
-                >
-                  <svg
-                    className="w-3 h-3"
-                    viewBox="0 0 24 24"
-                    fill={userVote === 'up' ? site.theme.upvote : 'none'}
-                    stroke={userVote === 'up' ? site.theme.upvote : 'currentColor'}
-                    strokeWidth={2}
-                  >
-                    <path d="M12 4l-8 8h5v8h6v-8h5z" />
-                  </svg>
-                </button>
+                  variant="ghost"
+                  size="xs"
+                  icon={
+                    <svg
+                      className="w-3 h-3"
+                      viewBox="0 0 24 24"
+                      fill={userVote === 'up' ? site.theme.upvote : 'none'}
+                      stroke={userVote === 'up' ? site.theme.upvote : 'currentColor'}
+                      strokeWidth={2}
+                    >
+                      <path d="M12 4l-8 8h5v8h6v-8h5z" />
+                    </svg>
+                  }
+                  backgroundColor="transparent"
+                />
                 <span
                   className="font-medium"
                   style={{
@@ -952,23 +1009,38 @@ function CommentThread({ comment, depth, userVotes, onVote, getVoteAdjustment }:
                 >
                   {votes}
                 </span>
-                <button
+                <Button
                   onClick={() => onVote(comment.id, 'down')}
-                  className="p-0.5 rounded hover:bg-gray-100"
-                >
-                  <svg
-                    className="w-3 h-3"
-                    viewBox="0 0 24 24"
-                    fill={userVote === 'down' ? site.theme.downvote : 'none'}
-                    stroke={userVote === 'down' ? site.theme.downvote : 'currentColor'}
-                    strokeWidth={2}
-                  >
-                    <path d="M12 20l8-8h-5V4H9v8H4z" />
-                  </svg>
-                </button>
+                  variant="ghost"
+                  size="xs"
+                  icon={
+                    <svg
+                      className="w-3 h-3"
+                      viewBox="0 0 24 24"
+                      fill={userVote === 'down' ? site.theme.downvote : 'none'}
+                      stroke={userVote === 'down' ? site.theme.downvote : 'currentColor'}
+                      strokeWidth={2}
+                    >
+                      <path d="M12 20l8-8h-5V4H9v8H4z" />
+                    </svg>
+                  }
+                  backgroundColor="transparent"
+                />
               </div>
-              <button className="hover:underline">Reply</button>
-              <button className="hover:underline">Share</button>
+              <Button
+                variant="link"
+                size="xs"
+                textColor={site.theme.secondary}
+              >
+                Reply
+              </Button>
+              <Button
+                variant="link"
+                size="xs"
+                textColor={site.theme.secondary}
+              >
+                Share
+              </Button>
             </div>
 
             {/* Nested Replies */}
