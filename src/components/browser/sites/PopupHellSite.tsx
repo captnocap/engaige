@@ -11,6 +11,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { Button } from '../../ui/shared/index.js'
+import { StyledCard } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.popuphell
 
@@ -50,12 +52,24 @@ const POPUP_TEMPLATES = {
           <div className="text-xs text-red-500 mb-3">
             YOUR HARD DRIVE WILL BE FORMATTED IN 00:59 SECONDS
           </div>
-          <button className="px-4 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 mr-2">
-            SCAN NOW!!! (FREE)
-          </button>
-          <button className="px-4 py-1 bg-gray-300 text-gray-500 text-xs rounded cursor-not-allowed">
-            Ignore (NOT RECOMMENDED)
-          </button>
+          <div className="flex gap-2 justify-center">
+            <Button
+              backgroundColor="#ef4444"
+              textColor="#ffffff"
+              size="xs"
+              onClick={() => {}}
+            >
+              SCAN NOW!!! (FREE)
+            </Button>
+            <Button
+              backgroundColor="#d1d5db"
+              textColor="#9ca3af"
+              size="xs"
+              disabled
+            >
+              Ignore (NOT RECOMMENDED)
+            </Button>
+          </div>
         </div>
       ),
     },
@@ -74,8 +88,12 @@ const POPUP_TEMPLATES = {
             ⚠️ 23 unauthorized programs detected trying to access your webcam
           </div>
           <div className="flex gap-2 justify-center">
-            <button className="px-3 py-1 bg-blue-500 text-white text-xs">Fix Now</button>
-            <button className="px-3 py-1 bg-blue-500 text-white text-xs">Fix Later (RISKY)</button>
+            <Button backgroundColor="#3b82f6" textColor="#ffffff" size="xs" onClick={() => {}}>
+              Fix Now
+            </Button>
+            <Button backgroundColor="#3b82f6" textColor="#ffffff" size="xs" onClick={() => {}}>
+              Fix Later (RISKY)
+            </Button>
           </div>
         </div>
       ),
@@ -91,9 +109,15 @@ const POPUP_TEMPLATES = {
             <div className="text-sm my-2">You are the <span className="text-red-500 font-bold">1,000,000th</span> visitor!</div>
             <div className="text-lg font-bold text-purple-600 my-2">🏆 WIN A FREE iPHONE 47 PRO MAX ULTRA!!! 🏆</div>
             <div className="text-xs mb-2">Click below to claim your prize before it expires!</div>
-            <button className="px-4 py-2 bg-green-500 text-white font-bold rounded animate-pulse text-sm">
+            <Button
+              backgroundColor="#22c55e"
+              textColor="#ffffff"
+              size="sm"
+              onClick={() => {}}
+              className="animate-pulse"
+            >
               👉 CLAIM NOW!!! 👈
-            </button>
+            </Button>
             <div className="text-xs mt-2 text-gray-500">
               *Offer expires in 0:47 seconds
             </div>
@@ -111,9 +135,9 @@ const POPUP_TEMPLATES = {
             Recipient: {'{'}YOUR_EMAIL{'}'}<br/>
             Amount: $50,000.00 USD
           </div>
-          <button className="px-4 py-2 bg-green-600 text-white font-bold rounded">
+          <Button backgroundColor="#16a34a" textColor="#ffffff" size="sm" onClick={() => {}}>
             ACCEPT PAYMENT
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -133,9 +157,16 @@ const POPUP_TEMPLATES = {
               <input type="radio" name="survey" /> YES!!!
             </label>
           </div>
-          <button className="mt-3 w-full py-2 bg-orange-500 text-white font-bold rounded">
+          <Button
+            backgroundColor="#f97316"
+            textColor="#ffffff"
+            size="sm"
+            width="full"
+            onClick={() => {}}
+            className="mt-3"
+          >
             SUBMIT & WIN!!!
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -150,9 +181,9 @@ const POPUP_TEMPLATES = {
             37 SINGLES NEAR {'{'}YOUR_CITY{'}'} WANT TO MEET YOU!
           </div>
           <div className="text-xs mb-2">They're online RIGHT NOW and waiting!</div>
-          <button className="px-4 py-2 bg-pink-500 text-white rounded font-bold">
+          <Button backgroundColor="#ec4899" textColor="#ffffff" size="sm" onClick={() => {}}>
             SEE PHOTOS (18+)
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -165,9 +196,9 @@ const POPUP_TEMPLATES = {
           <div className="text-xs bg-white p-2 rounded mb-2">
             "I just made $500 in my pajamas!" - Karen, 34
           </div>
-          <button className="px-4 py-2 bg-green-600 text-white font-bold rounded">
+          <Button backgroundColor="#16a34a" textColor="#ffffff" size="sm" onClick={() => {}}>
             LEARN THE SECRET
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -183,9 +214,15 @@ const POPUP_TEMPLATES = {
           </div>
           <div className="text-sm mb-2">You are using Internet Explorer -3.0</div>
           <div className="text-xs mb-3">Update NOW to avoid hackers stealing your identity!</div>
-          <button className="w-full py-2 bg-yellow-500 text-black font-bold rounded">
+          <Button
+            backgroundColor="#eab308"
+            textColor="#000000"
+            size="sm"
+            width="full"
+            onClick={() => {}}
+          >
             UPDATE BROWSER (URGENT)
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -203,8 +240,24 @@ const POPUP_TEMPLATES = {
             This file contains: FREE_MOVIES_2024_KEYGEN_WORKING.zip
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 py-1 bg-blue-500 text-white text-sm rounded">Run</button>
-            <button className="flex-1 py-1 bg-gray-300 text-gray-700 text-sm rounded">Save</button>
+            <Button
+              backgroundColor="#3b82f6"
+              textColor="#ffffff"
+              size="sm"
+              width="full"
+              onClick={() => {}}
+            >
+              Run
+            </Button>
+            <Button
+              backgroundColor="#d1d5db"
+              textColor="#374151"
+              size="sm"
+              width="full"
+              onClick={() => {}}
+            >
+              Save
+            </Button>
           </div>
         </div>
       ),
@@ -228,9 +281,15 @@ const POPUP_TEMPLATES = {
             <li>Search powered by Ask Jeeves</li>
             <li>Cool cursor effects!</li>
           </ul>
-          <button className="w-full py-2 bg-purple-600 text-white font-bold rounded">
+          <Button
+            backgroundColor="#9333ea"
+            textColor="#ffffff"
+            size="sm"
+            width="full"
+            onClick={() => {}}
+          >
             INSTALL NOW (IT'S FREE!)
-          </button>
+          </Button>
           <div className="text-xs text-center mt-1 text-gray-500">
             By clicking, you agree to change your homepage
           </div>
@@ -251,9 +310,15 @@ const POPUP_TEMPLATES = {
             <div className="text-xs">
               Just complete 47 sponsor offers and it's yours!
             </div>
-            <button className="mt-2 px-4 py-2 bg-red-500 text-white font-bold rounded animate-pulse">
+            <Button
+              backgroundColor="#ef4444"
+              textColor="#ffffff"
+              size="sm"
+              onClick={() => {}}
+              className="mt-2 animate-pulse"
+            >
               START NOW!!!
-            </button>
+            </Button>
           </div>
         </div>
       ),
@@ -364,15 +429,28 @@ function PopupWindow({ popup, onClose, onSpawnMore }: PopupWindowProps) {
       <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-blue-800 to-blue-600 text-white text-xs">
         <span className="truncate font-bold">{popup.title}</span>
         <div className="flex gap-0.5">
-          <button className="w-4 h-4 bg-gray-300 text-black text-xs font-bold flex items-center justify-center hover:bg-gray-400">
+          <Button
+            size="xs"
+            backgroundColor="#d1d5db"
+            textColor="#000000"
+            borderRadius={0}
+            onClick={() => {}}
+            width="4"
+            ariaLabel="Minimize"
+          >
             _
-          </button>
-          <button
+          </Button>
+          <Button
+            size="xs"
+            backgroundColor="#ef4444"
+            textColor="#ffffff"
+            borderRadius={0}
             onClick={handleClose}
-            className="w-4 h-4 bg-red-500 text-white text-xs font-bold flex items-center justify-center hover:bg-red-600"
+            width="4"
+            ariaLabel="Close"
           >
             X
-          </button>
+          </Button>
         </div>
       </div>
       {/* Content */}
@@ -573,14 +651,17 @@ export function PopupHellSite({ siteId }: SiteProps) {
               { text: '⬇️ DOWNLOAD FREE MOVIES', type: 'download' as const },
               { text: '🔧 INSTALL COOL TOOLBAR', type: 'toolbar' as const },
             ].map((link, i) => (
-              <button
+              <Button
                 key={i}
                 onClick={() => spawnPopup(link.type)}
-                className="text-blue-600 underline text-sm hover:text-purple-600 text-left"
+                variant="link"
+                size="sm"
+                textColor="#2563eb"
+                className="text-left"
                 style={{ fontFamily: 'Times New Roman, serif' }}
               >
                 {link.text}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -611,10 +692,16 @@ export function PopupHellSite({ siteId }: SiteProps) {
           <span className="font-bold">[ This site is part of the</span>
           <span className="text-blue-600 underline mx-1">AWESOME SITES WEB RING</span>
           <span className="font-bold">]</span>
-          <div className="mt-1">
-            <button className="text-blue-600 underline mx-2">← Previous</button>
-            <button className="text-blue-600 underline mx-2">Random</button>
-            <button className="text-blue-600 underline mx-2">Next →</button>
+          <div className="mt-1 flex justify-center gap-2">
+            <Button variant="link" size="xs" textColor="#2563eb" onClick={() => {}}>
+              ← Previous
+            </Button>
+            <Button variant="link" size="xs" textColor="#2563eb" onClick={() => {}}>
+              Random
+            </Button>
+            <Button variant="link" size="xs" textColor="#2563eb" onClick={() => {}}>
+              Next →
+            </Button>
           </div>
         </div>
 
