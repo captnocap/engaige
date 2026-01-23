@@ -3,11 +3,14 @@
  *
  * Pharmaceutical advertising site for the engAIge browser.
  * Features fake medications, ridiculous side effects, and over-the-top medical marketing.
+ *
+ * Refactored to use shared components: StyledCard, Button, Avatar, MetaRow
  */
 
 import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.pharmacy
 
@@ -350,21 +353,23 @@ export function VitalityRxSite({ siteId }: SiteProps) {
           </button>
 
           <nav className="flex items-center gap-6 text-sm">
-            <button className="hover:underline" style={{ color: site.theme.text }}>
+            <Button variant="ghost" size="sm" textColor={site.theme.text}>
               Our Medications
-            </button>
-            <button className="hover:underline" style={{ color: site.theme.text }}>
+            </Button>
+            <Button variant="ghost" size="sm" textColor={site.theme.text}>
               For Healthcare Providers
-            </button>
-            <button className="hover:underline" style={{ color: site.theme.text }}>
+            </Button>
+            <Button variant="ghost" size="sm" textColor={site.theme.text}>
               Patient Resources
-            </button>
-            <button
-              className="px-4 py-2 rounded-full text-sm font-medium"
-              style={{ background: site.theme.primary, color: 'white' }}
+            </Button>
+            <Button
+              backgroundColor={site.theme.primary}
+              textColor="white"
+              variant="primary"
+              size="sm"
             >
               Find a Doctor
-            </button>
+            </Button>
           </nav>
         </div>
       </header>
@@ -483,12 +488,14 @@ export function VitalityRxSite({ siteId }: SiteProps) {
                 Talk to your healthcare provider about whether VitalityRx medications might be right for you.
                 Or just keep scrolling. We're not your mom.
               </p>
-              <button
-                className="px-6 py-3 rounded-full font-medium"
-                style={{ background: 'white', color: site.theme.primary }}
+              <Button
+                backgroundColor="white"
+                textColor={site.theme.primary}
+                variant="primary"
+                size="lg"
               >
                 Find a Provider Near You
-              </button>
+              </Button>
             </div>
           </section>
         </>
@@ -536,13 +543,16 @@ interface MedicationCardProps {
 
 function MedicationCard({ medication, onClick }: MedicationCardProps) {
   return (
-    <button
+    <StyledCard
       onClick={onClick}
-      className="text-left p-6 rounded-xl transition-all hover:shadow-lg hover:-translate-y-1"
-      style={{
-        background: site.theme.surface,
-        border: `1px solid ${site.theme.border}`,
-      }}
+      bgColor={site.theme.surface}
+      borderColor={site.theme.border}
+      textColor={site.theme.text}
+      padding="lg"
+      borderRadius="lg"
+      shadow="md"
+      interactive
+      className="text-left cursor-pointer hover:shadow-lg"
     >
       <div className="flex items-start gap-4 mb-4">
         <div
@@ -567,10 +577,7 @@ function MedicationCard({ medication, onClick }: MedicationCardProps) {
         </div>
       </div>
 
-      <p
-        className="text-sm font-medium mb-2"
-        style={{ color: site.theme.text }}
-      >
+      <p className="text-sm font-medium mb-2">
         {medication.tagline}
       </p>
 
@@ -587,7 +594,7 @@ function MedicationCard({ medication, onClick }: MedicationCardProps) {
       >
         Learn more →
       </span>
-    </button>
+    </StyledCard>
   )
 }
 
@@ -613,13 +620,15 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
         }}
       >
         <div className="max-w-4xl mx-auto">
-          <button
+          <Button
             onClick={onBack}
-            className="mb-6 text-sm hover:underline"
-            style={{ color: site.theme.primary }}
+            variant="link"
+            size="sm"
+            textColor={site.theme.primary}
+            className="mb-6"
           >
             ← Back to all medications
-          </button>
+          </Button>
 
           <div className="flex items-start gap-6">
             <div
@@ -697,14 +706,16 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
             >
               Dosage Information
             </h2>
-            <div
-              className="p-6 rounded-xl"
-              style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+            <StyledCard
+              bgColor={site.theme.surface}
+              borderColor={site.theme.border}
+              textColor={site.theme.text}
+              padding="lg"
+              borderRadius="lg"
+              shadow="sm"
             >
-              <p className="text-lg" style={{ color: site.theme.text }}>
-                💊 {medication.dosage}
-              </p>
-            </div>
+              <p className="text-lg">💊 {medication.dosage}</p>
+            </StyledCard>
           </div>
 
           {/* Clinical Results */}
@@ -717,10 +728,15 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {medication.clinicalResults.map((result, i) => (
-                <div
+                <StyledCard
                   key={i}
-                  className="p-6 rounded-xl text-center"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+                  bgColor={site.theme.surface}
+                  borderColor={site.theme.border}
+                  textColor={site.theme.text}
+                  padding="lg"
+                  borderRadius="lg"
+                  shadow="sm"
+                  className="text-center"
                 >
                   <p
                     className="text-4xl font-bold mb-2"
@@ -731,7 +747,7 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
                   <p className="text-sm" style={{ color: site.theme.textMuted }}>
                     {result.description}
                   </p>
-                </div>
+                </StyledCard>
               ))}
             </div>
             <p
@@ -752,21 +768,24 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {medication.testimonials.map((testimonial, i) => (
-                <div
+                <StyledCard
                   key={i}
-                  className="p-6 rounded-xl"
-                  style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+                  bgColor={site.theme.surface}
+                  borderColor={site.theme.border}
+                  textColor={site.theme.text}
+                  padding="lg"
+                  borderRadius="lg"
+                  shadow="sm"
                 >
-                  <p
-                    className="text-lg italic mb-4"
-                    style={{ color: site.theme.text }}
-                  >
-                    "{testimonial.quote}"
-                  </p>
+                  <p className="text-lg italic mb-4">"{testimonial.quote}"</p>
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{testimonial.avatar}</span>
+                    <Avatar
+                      size="md"
+                      initials={testimonial.name[0]}
+                      bgColor={medication.color}
+                    />
                     <div>
-                      <p className="font-medium" style={{ color: site.theme.text }}>
+                      <p className="font-medium">
                         {testimonial.name}, {testimonial.age}
                       </p>
                       <p className="text-sm" style={{ color: site.theme.textMuted }}>
@@ -774,7 +793,7 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
                       </p>
                     </div>
                   </div>
-                </div>
+                </StyledCard>
               ))}
             </div>
             <p
@@ -794,26 +813,32 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
               Important Safety Information
             </h2>
 
-            <button
+            <StyledCard
               onClick={() => setShowSideEffects(!showSideEffects)}
-              className="w-full p-4 rounded-xl text-left flex items-center justify-between mb-4"
-              style={{
-                background: site.theme.surface,
-                border: `1px solid ${site.theme.border}`,
-              }}
+              bgColor={site.theme.surface}
+              borderColor={site.theme.border}
+              textColor={site.theme.text}
+              padding="md"
+              borderRadius="lg"
+              shadow="sm"
+              interactive
+              className="w-full text-left flex items-center justify-between mb-4"
             >
-              <span className="font-medium" style={{ color: site.theme.text }}>
-                View Side Effects
-              </span>
+              <span className="font-medium">View Side Effects</span>
               <span style={{ color: site.theme.textMuted }}>
                 {showSideEffects ? '▲' : '▼'}
               </span>
-            </button>
+            </StyledCard>
 
             {showSideEffects && (
-              <div
-                className="p-6 rounded-xl space-y-6"
-                style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
+              <StyledCard
+                bgColor={site.theme.surface}
+                borderColor={site.theme.border}
+                textColor={site.theme.text}
+                padding="lg"
+                borderRadius="lg"
+                shadow="sm"
+                className="space-y-6"
               >
                 <div>
                   <h4 className="font-medium mb-2" style={{ color: site.theme.text }}>
@@ -847,21 +872,22 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
                     ))}
                   </ul>
                 </div>
-              </div>
+              </StyledCard>
             )}
 
             {/* Disclaimer */}
-            <div
-              className="mt-6 p-4 rounded-lg text-sm"
-              style={{
-                background: '#FEF3C7',
-                border: '1px solid #F59E0B',
-                color: '#92400E',
-              }}
+            <StyledCard
+              bgColor="#FEF3C7"
+              borderColor="#F59E0B"
+              textColor="#92400E"
+              padding="md"
+              borderRadius="lg"
+              shadow="sm"
+              className="mt-6 text-sm"
             >
               <p className="font-medium mb-2">⚠️ Important</p>
               <p>{medication.disclaimer}</p>
-            </div>
+            </StyledCard>
           </div>
 
           {/* CTA */}
@@ -876,17 +902,22 @@ function MedicationDetail({ medication, onBack, showSideEffects, setShowSideEffe
               Talk to your healthcare provider about your symptoms and treatment options.
             </p>
             <div className="flex justify-center gap-4">
-              <button
-                className="px-6 py-3 rounded-full font-medium"
-                style={{ background: 'white', color: medication.color }}
+              <Button
+                backgroundColor="white"
+                textColor={medication.color}
+                variant="primary"
+                size="lg"
               >
                 Find a Doctor
-              </button>
-              <button
-                className="px-6 py-3 rounded-full font-medium border-2 border-white text-white"
+              </Button>
+              <Button
+                variant="outline"
+                borderColor="white"
+                textColor="white"
+                size="lg"
               >
                 Download Patient Guide
-              </button>
+              </Button>
             </div>
           </div>
         </div>
