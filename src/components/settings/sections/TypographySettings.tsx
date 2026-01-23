@@ -1,7 +1,7 @@
 import { useSettingsStore } from '../../../stores/settingsStore.js'
 import { Select } from '../../ui/Select.js'
-import { SettingsCard } from '../SettingsCard.js'
-import { RangeControl } from '../RangeControl.js'
+import { SettingsCard } from '../components/SettingsCard.js'
+import { RangeControl } from '../components/RangeControl.js'
 import { fontFamilies } from '../typography-constants.js'
 
 export default function TypographySettings() {

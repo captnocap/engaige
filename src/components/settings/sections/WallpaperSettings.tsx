@@ -3,7 +3,7 @@ import { useSettingsStore } from '../../../stores/settingsStore.js'
 import { Select } from '../../ui/Select.js'
 import { open } from '@tauri-apps/plugin-dialog'
 import { convertFileSrc } from '@tauri-apps/api/core'
-import { SettingsCard } from '../SettingsCard.js'
+import { SettingsCard } from '../components/SettingsCard.js'
 
 export default function WallpaperSettings() {
   const { wallpaper, setWallpaper } = useSettingsStore()

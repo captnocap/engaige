@@ -1,6 +1,6 @@
 import { useSettingsStore } from '../../../stores/settingsStore.js'
-import { SettingsCard } from '../SettingsCard.js'
-import { RangeControl } from '../RangeControl.js'
+import { SettingsCard } from '../components/SettingsCard.js'
+import { RangeControl } from '../components/RangeControl.js'
 
 export default function GraphicsSettings() {
   const { graphics, setGraphics } = useSettingsStore()

@@ -1,5 +1,5 @@
 import { useThemeStore, themes } from '../../../stores/themeStore.js'
-import { SettingsCard } from '../SettingsCard.js'
+import { SettingsCard } from '../components/SettingsCard.js'
 
 export default function ThemeSettings() {
   const { currentTheme, setTheme } = useThemeStore()

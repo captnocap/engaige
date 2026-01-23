@@ -1,5 +1,5 @@
 import { useSettingsStore } from '../../../stores/settingsStore.js'
-import { VolumeControl } from '../VolumeControl.js'
+import { VolumeControl } from '../components/VolumeControl.js'
 
 export default function AudioSettings() {
   const { audio, setAudio } = useSettingsStore()

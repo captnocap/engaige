@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDisplayStore } from '../../../stores/displayStore.js'
 import { Select } from '../../ui/Select.js'
-import { SettingsCard } from '../SettingsCard.js'
+import { SettingsCard } from '../components/SettingsCard.js'
 
 export default function DisplaySettings() {
   const { fullscreen, monitorName, monitors, loadMonitors, setFullscreen, setMonitor } = useDisplayStore()
