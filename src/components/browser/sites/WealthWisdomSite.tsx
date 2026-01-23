@@ -14,6 +14,7 @@ import { useState } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
 
 // Site config
 const SITE = FILLER_SITES.wealthwisdom
@@ -453,36 +454,25 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button
+            <Button
+              variant={view === 'courses' ? 'primary' : 'outline'}
+              size="sm"
+              backgroundColor={view === 'courses' ? '#10B981' : 'transparent'}
+              textColor={view === 'courses' ? '#fff' : '#10B981'}
+              borderColor="#10B981"
               onClick={() => setView('courses')}
-              style={{
-                padding: '6px 16px',
-                borderRadius: '6px',
-                backgroundColor: view === 'courses' ? '#10B981' : 'transparent',
-                color: view === 'courses' ? '#fff' : '#10B981',
-                border: '1px solid #10B981',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
             >
               Courses
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              backgroundColor="#10B981"
+              textColor="#fff"
               onClick={() => setShowSignupModal(true)}
-              style={{
-                padding: '6px 16px',
-                borderRadius: '6px',
-                backgroundColor: '#10B981',
-                color: '#fff',
-                border: 'none',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
             >
               Go Premium 💎
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -492,33 +482,30 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
         {view === 'home' && (
           <div className="p-6">
             {/* Hero Banner */}
-            <div style={{
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-              borderRadius: '12px',
-              padding: '24px',
-              marginBottom: '24px',
-            }}>
+            <StyledCard
+              bgColor="linear-gradient(135deg, #10B981 0%, #059669 100%)"
+              borderColor="transparent"
+              padding="lg"
+              borderRadius="lg"
+              shadow="md"
+              style={{ marginBottom: '24px' }}
+            >
               <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff', marginBottom: '8px' }}>
                 🚀 Free Masterclass: "How I Made $47M in 30 Days"
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '16px' }}>
                 Limited spots available. Learn the exact strategy I used (results not typical).
               </p>
-              <button
+              <Button
+                variant="primary"
+                size="md"
+                backgroundColor="#fff"
+                textColor="#10B981"
                 onClick={() => setShowSignupModal(true)}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#fff',
-                  color: '#10B981',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                }}
               >
                 Register Now (Free)
-              </button>
-            </div>
+              </Button>
+            </StyledCard>
 
             {/* Featured Gurus */}
             <div style={{ marginBottom: '32px' }}>
@@ -527,19 +514,18 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
               </h3>
               <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
                 {GURUS.map(guru => (
-                  <div
+                  <StyledCard
                     key={guru.id}
+                    variant="dark"
+                    bgColor="#1f2937"
+                    borderColor="#374151"
+                    hoverColor="#263341"
+                    textColor="#e5e7eb"
+                    padding="md"
+                    borderRadius="lg"
+                    shadow="md"
+                    interactive
                     onClick={() => { setSelectedGuru(guru); setView('guru') }}
-                    style={{
-                      backgroundColor: '#1f2937',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      cursor: 'pointer',
-                      border: '1px solid #374151',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseOver={e => (e.currentTarget.style.borderColor = '#10B981')}
-                    onMouseOut={e => (e.currentTarget.style.borderColor = '#374151')}
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <span style={{ fontSize: '32px' }}>{guru.emoji}</span>
@@ -551,11 +537,17 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
                     <p style={{ fontSize: '11px', color: '#6b7280', fontStyle: 'italic', marginBottom: '8px' }}>
                       "{guru.quote.slice(0, 60)}..."
                     </p>
-                    <div className="flex justify-between items-center">
-                      <span style={{ fontSize: '11px', color: '#10B981' }}>{guru.followers} followers</span>
-                      <span style={{ fontSize: '10px', color: '#6b7280' }}>{guru.specialty}</span>
-                    </div>
-                  </div>
+                    <MetaRow
+                      items={[
+                        { value: `${guru.followers} followers`, icon: '👥' },
+                        { value: guru.specialty },
+                      ]}
+                      separator="•"
+                      textSize="xs"
+                      textColor="#10B981"
+                      mutedColor="#6b7280"
+                    />
+                  </StyledCard>
                 ))}
               </div>
             </div>
@@ -563,43 +555,37 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
             {/* Category Filter */}
             <div className="flex gap-2 flex-wrap mb-4">
               {categories.map(cat => (
-                <button
+                <Button
                   key={cat}
+                  variant={selectedCategory === cat ? 'primary' : 'outline'}
+                  size="sm"
+                  backgroundColor={selectedCategory === cat ? '#10B981' : 'transparent'}
+                  textColor={selectedCategory === cat ? '#fff' : '#9ca3af'}
+                  borderColor={selectedCategory === cat ? '#10B981' : '#374151'}
                   onClick={() => setSelectedCategory(cat)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    border: '1px solid',
-                    borderColor: selectedCategory === cat ? '#10B981' : '#374151',
-                    backgroundColor: selectedCategory === cat ? '#10B981' : 'transparent',
-                    color: selectedCategory === cat ? '#fff' : '#9ca3af',
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                  }}
+                  style={{ textTransform: 'capitalize' }}
                 >
                   {cat.replace('-', ' ')}
-                </button>
+                </Button>
               ))}
             </div>
 
             {/* Articles Grid */}
             <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
               {filteredArticles.map(article => (
-                <div
+                <StyledCard
                   key={article.id}
+                  variant="dark"
+                  bgColor="#1f2937"
+                  borderColor="#374151"
+                  hoverColor="#263341"
+                  textColor="#e5e7eb"
+                  padding="lg"
+                  borderRadius="lg"
+                  shadow="md"
+                  interactive
                   onClick={() => { setSelectedArticle(article); setView('article') }}
-                  style={{
-                    backgroundColor: '#1f2937',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    cursor: 'pointer',
-                    border: '1px solid #374151',
-                    transition: 'all 0.2s',
-                    position: 'relative',
-                  }}
-                  onMouseOver={e => (e.currentTarget.style.borderColor = '#10B981')}
-                  onMouseOut={e => (e.currentTarget.style.borderColor = '#374151')}
+                  style={{ position: 'relative' }}
                 >
                   {article.isPremium && (
                     <span style={{
@@ -637,14 +623,25 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span>{article.authorEmoji}</span>
+                      <Avatar
+                        size="sm"
+                        initials={article.author.split(' ').map(n => n[0]).join('')}
+                        bgColor="#374151"
+                      />
                       <span style={{ fontSize: '11px', color: '#6b7280' }}>{article.author}</span>
                     </div>
-                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                      {article.readTime} min • ❤️ {article.likes.toLocaleString()}
-                    </div>
+                    <MetaRow
+                      items={[
+                        { value: `${article.readTime} min`, icon: '⏱️' },
+                        { value: `${article.likes.toLocaleString()}`, icon: '❤️' },
+                      ]}
+                      separator="•"
+                      textSize="xs"
+                      textColor="#6b7280"
+                      mutedColor="#6b7280"
+                    />
                   </div>
-                </div>
+                </StyledCard>
               ))}
             </div>
           </div>
@@ -652,19 +649,15 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
 
         {view === 'article' && selectedArticle && (
           <div className="p-6" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
+              textColor="#10B981"
               onClick={() => { setView('home'); setSelectedArticle(null) }}
-              style={{
-                color: '#10B981',
-                fontSize: '13px',
-                marginBottom: '16px',
-                cursor: 'pointer',
-                background: 'none',
-                border: 'none',
-              }}
+              style={{ marginBottom: '16px' }}
             >
               ← Back to Articles
-            </button>
+            </Button>
 
             <span style={{
               display: 'inline-block',
@@ -686,15 +679,27 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
 
             <div className="flex items-center gap-4 mb-6" style={{ borderBottom: '1px solid #374151', paddingBottom: '16px' }}>
               <div className="flex items-center gap-2">
-                <span style={{ fontSize: '24px' }}>{selectedArticle.authorEmoji}</span>
+                <Avatar
+                  size="lg"
+                  initials={selectedArticle.author.split(' ').map(n => n[0]).join('')}
+                  bgColor="#374151"
+                />
                 <div>
                   <p style={{ fontWeight: 'bold', fontSize: '14px' }}>{selectedArticle.author}</p>
                   <p style={{ fontSize: '11px', color: '#6b7280' }}>{selectedArticle.authorTitle}</p>
                 </div>
               </div>
-              <div style={{ marginLeft: 'auto', fontSize: '12px', color: '#6b7280' }}>
-                {selectedArticle.readTime} min read • ❤️ {selectedArticle.likes.toLocaleString()}
-              </div>
+              <MetaRow
+                items={[
+                  { value: `${selectedArticle.readTime} min read`, icon: '⏱️' },
+                  { value: `${selectedArticle.likes.toLocaleString()}`, icon: '❤️' },
+                ]}
+                separator="•"
+                textSize="sm"
+                textColor="#6b7280"
+                alignment="right"
+                style={{ marginLeft: 'auto' }}
+              />
             </div>
 
             <div style={{ lineHeight: '1.8', fontSize: '15px' }}>
@@ -710,35 +715,31 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
             </div>
 
             {selectedArticle.isPremium && (
-              <div style={{
-                backgroundColor: '#1f2937',
-                borderRadius: '12px',
-                padding: '24px',
-                textAlign: 'center',
-                marginTop: '24px',
-                border: '2px solid #F59E0B',
-              }}>
+              <StyledCard
+                bgColor="#1f2937"
+                borderColor="#F59E0B"
+                borderWidth={2}
+                padding="lg"
+                borderRadius="lg"
+                textColor="#e5e7eb"
+                style={{ marginTop: '24px', textAlign: 'center' }}
+              >
                 <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
                   💎 Unlock Full Article
                 </p>
                 <p style={{ color: '#9ca3af', marginBottom: '16px' }}>
                   Get access to this article and 500+ premium insights
                 </p>
-                <button
+                <Button
+                  variant="primary"
+                  size="md"
+                  backgroundColor="#F59E0B"
+                  textColor="#000"
                   onClick={() => setShowSignupModal(true)}
-                  style={{
-                    padding: '12px 32px',
-                    borderRadius: '8px',
-                    backgroundColor: '#F59E0B',
-                    color: '#000',
-                    border: 'none',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                  }}
                 >
                   Go Premium - $9.99/month
-                </button>
-              </div>
+                </Button>
+              </StyledCard>
             )}
 
             <div style={{ marginTop: '24px' }}>
@@ -765,26 +766,24 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
 
         {view === 'guru' && selectedGuru && (
           <div className="p-6" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
+              textColor="#10B981"
               onClick={() => { setView('home'); setSelectedGuru(null) }}
-              style={{
-                color: '#10B981',
-                fontSize: '13px',
-                marginBottom: '16px',
-                cursor: 'pointer',
-                background: 'none',
-                border: 'none',
-              }}
+              style={{ marginBottom: '16px' }}
             >
               ← Back
-            </button>
+            </Button>
 
-            <div style={{
-              backgroundColor: '#1f2937',
-              borderRadius: '12px',
-              padding: '24px',
-              marginBottom: '24px',
-            }}>
+            <StyledCard
+              bgColor="#1f2937"
+              borderColor="#374151"
+              padding="lg"
+              borderRadius="lg"
+              shadow="md"
+              style={{ marginBottom: '24px' }}
+            >
               <div className="flex items-start gap-4">
                 <span style={{ fontSize: '64px' }}>{selectedGuru.emoji}</span>
                 <div>
@@ -792,23 +791,31 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
                     {selectedGuru.name}
                   </h1>
                   <p style={{ color: '#10B981', marginBottom: '8px' }}>{selectedGuru.title}</p>
-                  <p style={{ fontSize: '14px', color: '#9ca3af' }}>{selectedGuru.followers} followers</p>
+                  <MetaRow
+                    items={[{ value: `${selectedGuru.followers} followers`, icon: '👥' }]}
+                    textSize="sm"
+                    textColor="#9ca3af"
+                  />
                 </div>
               </div>
 
-              <p style={{
-                fontSize: '18px',
-                fontStyle: 'italic',
-                color: '#e5e7eb',
-                marginTop: '20px',
-                padding: '16px',
-                backgroundColor: '#374151',
-                borderRadius: '8px',
-                borderLeft: '4px solid #10B981',
-              }}>
+              <StyledCard
+                bgColor="#374151"
+                borderColor="#10B981"
+                borderWidth={0}
+                padding="lg"
+                borderRadius="md"
+                textColor="#e5e7eb"
+                style={{
+                  fontSize: '18px',
+                  fontStyle: 'italic',
+                  marginTop: '20px',
+                  borderLeft: '4px solid #10B981',
+                }}
+              >
                 "{selectedGuru.quote}"
-              </p>
-            </div>
+              </StyledCard>
+            </StyledCard>
 
             <div style={{ marginBottom: '24px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
@@ -833,22 +840,28 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
             </h3>
             <div className="grid gap-3">
               {ARTICLES.filter(a => a.author === selectedGuru.name).map(article => (
-                <div
+                <StyledCard
                   key={article.id}
+                  bgColor="#1f2937"
+                  borderColor="#374151"
+                  hoverColor="#263341"
+                  padding="md"
+                  borderRadius="md"
+                  interactive
                   onClick={() => { setSelectedArticle(article); setView('article') }}
-                  style={{
-                    backgroundColor: '#1f2937',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    cursor: 'pointer',
-                    border: '1px solid #374151',
-                  }}
                 >
-                  <p style={{ fontWeight: 'bold', fontSize: '14px' }}>{article.title}</p>
-                  <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                    {article.readTime} min • ❤️ {article.likes.toLocaleString()}
-                  </p>
-                </div>
+                  <p style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{article.title}</p>
+                  <MetaRow
+                    items={[
+                      { value: `${article.readTime} min`, icon: '⏱️' },
+                      { value: `${article.likes.toLocaleString()}`, icon: '❤️' },
+                    ]}
+                    separator="•"
+                    textSize="xs"
+                    textColor="#6b7280"
+                    mutedColor="#6b7280"
+                  />
+                </StyledCard>
               ))}
             </div>
           </div>
@@ -865,14 +878,13 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
 
             <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
               {COURSES.map(course => (
-                <div
+                <StyledCard
                   key={course.id}
-                  style={{
-                    backgroundColor: '#1f2937',
-                    borderRadius: '12px',
-                    padding: '20px',
-                    border: '1px solid #374151',
-                  }}
+                  bgColor="#1f2937"
+                  borderColor="#374151"
+                  padding="lg"
+                  borderRadius="lg"
+                  shadow="md"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <span style={{ fontSize: '48px' }}>{course.emoji}</span>
@@ -898,12 +910,17 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
                     </ul>
                   </div>
 
-                  <div className="flex items-center gap-2 mb-4">
-                    <span style={{ color: '#F59E0B' }}>⭐ {course.rating}</span>
-                    <span style={{ color: '#6b7280', fontSize: '12px' }}>
-                      ({course.students.toLocaleString()} students)
-                    </span>
-                  </div>
+                  <MetaRow
+                    items={[
+                      { value: `${course.rating}`, icon: '⭐' },
+                      { value: `${course.students.toLocaleString()} students`, icon: '👥' },
+                    ]}
+                    separator="•"
+                    textSize="sm"
+                    textColor="#6b7280"
+                    mutedColor="#6b7280"
+                    style={{ marginBottom: '16px' }}
+                  />
 
                   <div className="flex items-center justify-between">
                     <div>
@@ -919,41 +936,35 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
                         {course.originalPrice}
                       </span>
                     </div>
-                    <button
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      backgroundColor="#10B981"
+                      textColor="#fff"
                       onClick={() => setShowSignupModal(true)}
-                      style={{
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        backgroundColor: '#10B981',
-                        color: '#fff',
-                        border: 'none',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                      }}
                     >
                       Enroll Now
-                    </button>
+                    </Button>
                   </div>
-                </div>
+                </StyledCard>
               ))}
             </div>
 
             {/* Money back guarantee */}
-            <div style={{
-              backgroundColor: '#374151',
-              borderRadius: '8px',
-              padding: '16px',
-              marginTop: '24px',
-              textAlign: 'center',
-            }}>
-              <p style={{ fontSize: '14px' }}>
+            <StyledCard
+              bgColor="#374151"
+              borderColor="transparent"
+              padding="md"
+              borderRadius="md"
+              style={{ marginTop: '24px', textAlign: 'center' }}
+            >
+              <p style={{ fontSize: '14px', marginBottom: '4px' }}>
                 💰 30-Day Money Back Guarantee (if you can prove you didn't get rich)
               </p>
-              <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+              <p style={{ fontSize: '11px', color: '#6b7280' }}>
                 Terms: Must provide documentation of following advice exactly. Most refund requests denied.
               </p>
-            </div>
+            </StyledCard>
           </div>
         )}
       </div>
@@ -972,14 +983,13 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
           }}
           onClick={() => setShowSignupModal(false)}
         >
-          <div
-            style={{
-              backgroundColor: '#1f2937',
-              borderRadius: '16px',
-              padding: '32px',
-              maxWidth: '400px',
-              width: '90%',
-            }}
+          <StyledCard
+            bgColor="#1f2937"
+            borderColor="#374151"
+            padding="xl"
+            borderRadius="xl"
+            shadow="lg"
+            style={{ maxWidth: '400px', width: '90%' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', textAlign: 'center' }}>
@@ -1006,27 +1016,22 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
               }}
             />
 
-            <button
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: '#10B981',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                marginBottom: '12px',
-              }}
+            <Button
+              variant="primary"
+              size="md"
+              width="full"
+              backgroundColor="#10B981"
+              textColor="#fff"
+              style={{ marginBottom: '12px' }}
             >
               Start Free Trial
-            </button>
+            </Button>
 
             <p style={{ fontSize: '10px', color: '#6b7280', textAlign: 'center' }}>
               By signing up, you agree to receive 47 emails per day about becoming rich.
               Unsubscribe anytime (we'll email you about that too).
             </p>
-          </div>
+          </StyledCard>
         </div>
       )}
 
