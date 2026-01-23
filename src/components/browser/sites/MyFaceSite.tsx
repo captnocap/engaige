@@ -3,6 +3,8 @@
  *
  * The OG social network - early 2000s aesthetic.
  * Includes feed, profiles, and messaging.
+ *
+ * Refactored to use shared UI components: StyledCard, Button, Avatar, MetaRow
  */
 
 import { useState, useEffect, useRef } from 'react'
@@ -11,6 +13,7 @@ import { MessageThread as MessageThreadComponent } from '../../ui/Message/Messag
 import { TypingIndicator } from '../../ui/Message/TypingIndicator.js'
 import { MESSAGE_CSS_VARS } from '../../ui/Message/styles.js'
 import type { MessageStyleConfig } from '../../ui/Message/types.js'
+import { StyledCard, Button, Avatar, MetaRow, type MetaRowItem } from '../../ui/shared/index.js'
 import {
   useConversationStore,
   useConversations,
@@ -30,6 +33,14 @@ import { useDatingStore, useMatches, usePendingCelebration } from '../../../stor
 import { getDatingSite } from '../../../config/dating-registry.js'
 import { DatingCard } from '../../dating/DatingCard.js'
 import { MatchModal } from '../../dating/MatchModal.js'
+
+// MyFace color scheme
+const MYFACE_COLORS = {
+  primary: '#003366',
+  accent: '#FF6600',
+  bg: 'white',
+  border: '#ccc',
+}
 
 // MyFace style configuration for browser (uses myspace style for early 2000s aesthetic)
 const MYFACE_CONFIG: MessageStyleConfig = {
@@ -150,7 +161,6 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
     setPostContent('')
   }
 
-  // Get top friends (first 8 profiles)
   const topFriends = Object.values(profiles).slice(0, 8)
 
   return (
@@ -158,16 +168,11 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
       {/* Left Column - User Info */}
       <div className="space-y-4">
         {/* Player Card */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
-        >
+        <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-16 h-16 rounded bg-gray-200 flex items-center justify-center text-2xl">
-              {playerProfile.avatar}
-            </div>
+            <Avatar size="lg" initials={playerProfile.avatar} shape="rounded" />
             <div>
-              <h2 className="font-bold text-[#003366]">{playerProfile.name}</h2>
+              <h2 className="font-bold" style={{ color: MYFACE_COLORS.primary }}>{playerProfile.name}</h2>
               <p className="text-xs text-gray-500">"{playerProfile.bio}"</p>
             </div>
           </div>
@@ -175,34 +180,37 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
             <p><strong>Mood:</strong> {playerProfile.moodEmoji} {playerProfile.mood}</p>
             <p className="text-green-600"><strong>Online Now!</strong></p>
           </div>
-          <button
+          <Button
+            size="xs"
+            variant="link"
+            textColor={MYFACE_COLORS.primary}
             onClick={() => onViewProfile('player')}
-            className="mt-3 text-xs text-[#003366] hover:underline"
+            className="mt-3"
           >
             View My Profile →
-          </button>
-        </div>
+          </Button>
+        </StyledCard>
 
         {/* Top 8 Friends */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
-        >
-          <h3 className="font-bold text-[#003366] mb-2 text-sm">
+        <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+          <h3 className="font-bold mb-2 text-sm" style={{ color: MYFACE_COLORS.primary }}>
             {playerProfile.name}'s Top 8
           </h3>
           <div className="grid grid-cols-4 gap-2">
             {topFriends.map((friend) => (
-              <button
+              <Button
                 key={friend.id}
+                variant="ghost"
+                size="sm"
                 onClick={() => onViewProfile(friend.id)}
-                className="aspect-square rounded bg-gray-100 flex flex-col items-center justify-center text-xs cursor-pointer hover:bg-gray-200 p-1"
+                className="aspect-square flex flex-col items-center justify-center text-xs p-1"
+                style={{ background: '#f0f0f0' }}
               >
                 <span className="text-lg">{friend.avatar}</span>
-                <span className="truncate w-full text-center text-[10px] text-gray-600">
+                <span className="truncate w-full text-center text-[10px] text-gray-600 mt-1">
                   {friend.name}
                 </span>
-              </button>
+              </Button>
             ))}
             {Array.from({ length: Math.max(0, 8 - topFriends.length) }).map((_, i) => (
               <div
@@ -213,55 +221,48 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
               </div>
             ))}
           </div>
-        </div>
+        </StyledCard>
 
         {/* Stats */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
-        >
-          <h3 className="font-bold text-[#003366] mb-2 text-sm">My Stats</h3>
+        <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+          <h3 className="font-bold mb-2 text-sm" style={{ color: MYFACE_COLORS.primary }}>My Stats</h3>
           <div className="text-xs space-y-1 text-gray-600">
             <p>Profile Views: <strong>1,337</strong></p>
             <p>Friends: <strong>{Object.keys(profiles).length}</strong></p>
             <p>Posts: <strong>{posts.filter(p => p.authorId === 'player').length}</strong></p>
           </div>
-        </div>
+        </StyledCard>
       </div>
 
       {/* Center Column - Feed */}
       <div className="col-span-2 space-y-4">
         {/* Post something */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
-        >
-          <h3 className="font-bold text-[#003366] mb-2 text-sm">Post a Bulletin</h3>
+        <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+          <h3 className="font-bold mb-2 text-sm" style={{ color: MYFACE_COLORS.primary }}>Post a Bulletin</h3>
           <textarea
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
             placeholder="What's on your mind?"
-            className="w-full p-2 border border-gray-300 rounded text-sm resize-none focus:outline-none focus:border-[#003366]"
+            className="w-full p-2 border border-gray-300 rounded text-sm resize-none focus:outline-none"
+            style={{ borderColor: MYFACE_COLORS.border, color: '#333' }}
             rows={3}
           />
           <div className="flex justify-end mt-2">
-            <button
+            <Button
+              size="sm"
+              backgroundColor={MYFACE_COLORS.accent}
+              textColor="white"
               onClick={handlePost}
               disabled={!postContent.trim()}
-              className="px-4 py-1 text-sm font-medium text-white rounded disabled:opacity-50 transition-opacity"
-              style={{ background: '#FF6600' }}
             >
               Post
-            </button>
+            </Button>
           </div>
-        </div>
+        </StyledCard>
 
         {/* Feed */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'white', border: '1px solid #ccc' }}
-        >
-          <h3 className="font-bold text-[#003366] mb-3 pb-2 border-b border-gray-200">
+        <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+          <h3 className="font-bold mb-3 pb-2 border-b border-gray-200" style={{ color: MYFACE_COLORS.primary }}>
             Bulletin Board
           </h3>
 
@@ -281,7 +282,7 @@ function MyFaceHome({ onViewProfile }: { onViewProfile: (id: string) => void }) 
               ))}
             </div>
           )}
-        </div>
+        </StyledCard>
       </div>
     </div>
   )
@@ -305,45 +306,42 @@ function PostCard({ post, onLike, onViewProfile }: PostCardProps) {
     setCommentText('')
   }
 
+  const metaItems: MetaRowItem[] = [
+    { value: post.author.name, onClick: () => onViewProfile(post.authorId) },
+    { value: formatRelativeTime(new Date(post.timestamp)) },
+  ]
+
   return (
     <div className="py-3 border-b border-gray-100 last:border-0">
       <div className="flex items-start gap-3">
-        <button
+        <Avatar
+          size="sm"
+          initials={post.author.avatar || post.author.name[0]}
           onClick={() => onViewProfile(post.authorId)}
-          className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-lg shrink-0 hover:bg-gray-300 transition-colors"
-        >
-          {post.author.avatar || post.author.name[0]}
-        </button>
+          bgColor="#e5e7eb"
+        />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <button
-              onClick={() => onViewProfile(post.authorId)}
-              className="font-bold text-[#003366] text-sm hover:underline"
-            >
-              {post.author.name}
-            </button>
-            <span className="text-xs text-gray-400">
-              {formatRelativeTime(new Date(post.timestamp))}
-            </span>
-          </div>
-          <p className="text-sm text-gray-700 whitespace-pre-wrap">{post.content}</p>
+          <MetaRow items={metaItems} textColor={MYFACE_COLORS.primary} mutedColor="#9ca3af" />
+          <p className="text-sm text-gray-700 whitespace-pre-wrap mt-1">{post.content}</p>
 
           {/* Actions */}
           <div className="flex items-center gap-4 mt-2 text-xs">
-            <button
+            <Button
+              size="xs"
+              variant="ghost"
+              textColor={isLiked ? MYFACE_COLORS.accent : MYFACE_COLORS.primary}
               onClick={onLike}
-              className={`flex items-center gap-1 transition-colors ${
-                isLiked ? 'text-[#FF6600] font-medium' : 'text-[#003366] hover:text-[#FF6600]'
-              }`}
             >
               {isLiked ? '❤️' : '🤍'} {post.likes.length > 0 && post.likes.length} Kudos
-            </button>
-            <button
+            </Button>
+            <Button
+              size="xs"
+              variant="link"
+              textColor={MYFACE_COLORS.primary}
               onClick={() => setShowComments(!showComments)}
-              className="text-[#003366] hover:underline"
             >
               💬 {post.comments.length > 0 && post.comments.length} Comments
-            </button>
+            </Button>
           </div>
 
           {/* Comments Section */}
@@ -351,18 +349,16 @@ function PostCard({ post, onLike, onViewProfile }: PostCardProps) {
             <div className="mt-3 pl-3 border-l-2 border-gray-200">
               {post.comments.map((comment) => (
                 <div key={comment.id} className="py-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <button
-                      onClick={() => onViewProfile(comment.authorId)}
-                      className="font-medium text-[#003366] text-xs hover:underline"
-                    >
-                      {comment.author.name}
-                    </button>
-                    <span className="text-[10px] text-gray-400">
-                      {formatRelativeTime(new Date(comment.timestamp))}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600">{comment.content}</p>
+                  <MetaRow
+                    items={[
+                      { value: comment.author.name, onClick: () => onViewProfile(comment.authorId) },
+                      { value: formatRelativeTime(new Date(comment.timestamp)) },
+                    ]}
+                    textColor={MYFACE_COLORS.primary}
+                    mutedColor="#9ca3af"
+                    textSize="xs"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">{comment.content}</p>
                 </div>
               ))}
 
@@ -374,16 +370,18 @@ function PostCard({ post, onLike, onViewProfile }: PostCardProps) {
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleComment()}
                   placeholder="Write a comment..."
-                  className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#003366]"
+                  className="flex-1 px-2 py-1 text-xs border rounded focus:outline-none"
+                  style={{ borderColor: MYFACE_COLORS.border, color: '#333' }}
                 />
-                <button
+                <Button
+                  size="xs"
+                  backgroundColor={MYFACE_COLORS.accent}
+                  textColor="white"
                   onClick={handleComment}
                   disabled={!commentText.trim()}
-                  className="px-2 py-1 text-xs text-white rounded disabled:opacity-50"
-                  style={{ background: '#FF6600' }}
                 >
                   Post
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -399,11 +397,8 @@ function MyFaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }
 
   return (
     <div className="space-y-4">
-      <div
-        className="p-4 rounded"
-        style={{ background: 'white', border: '1px solid #ccc' }}
-      >
-        <h3 className="font-bold text-[#003366] mb-4">Browse People</h3>
+      <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+        <h3 className="font-bold mb-4" style={{ color: MYFACE_COLORS.primary }}>Browse People</h3>
 
         <div className="grid grid-cols-2 gap-4">
           {profileList.map((profile) => (
@@ -420,7 +415,7 @@ function MyFaceBrowse({ onViewProfile }: { onViewProfile: (id: string) => void }
             No profiles found.
           </p>
         )}
-      </div>
+      </StyledCard>
     </div>
   )
 }
@@ -484,19 +479,16 @@ function MyFaceDating({ onViewProfile }: { onViewProfile: (id: string) => void }
   return (
     <div className="space-y-4">
       {/* Dating Header */}
-      <div
-        className="p-4 rounded"
-        style={{ background: 'white', border: '1px solid #ccc' }}
-      >
+      <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-bold text-[#003366] text-lg flex items-center gap-2">
+            <h2 className="font-bold text-lg flex items-center gap-2" style={{ color: MYFACE_COLORS.primary }}>
               💕 MyFace Dating
             </h2>
             <p className="text-xs text-gray-500">Find love among your friends</p>
           </div>
           {matches.length > 0 && (
-            <div className="text-sm text-[#FF6600]">
+            <div className="text-sm" style={{ color: MYFACE_COLORS.accent }}>
               ❤️ {matches.length} {matches.length === 1 ? 'Match' : 'Matches'}
             </div>
           )}
@@ -513,26 +505,27 @@ function MyFaceDating({ onViewProfile }: { onViewProfile: (id: string) => void }
                 if (!npc || !profile) return null
 
                 return (
-                  <button
+                  <Button
                     key={match.id}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onViewProfile(match.npcId)}
-                    className="shrink-0 flex flex-col items-center group"
+                    className="shrink-0 flex flex-col items-center"
                   >
-                    <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl ring-2 mb-1 transition-transform group-hover:scale-105 ${
-                        match.isNew ? 'ring-[#FF6600]' : 'ring-gray-300'
-                      }`}
-                      style={{ background: '#f5f5f5' }}
-                    >
-                      {profile.photos[0] || npc.avatar}
-                    </div>
-                    <span className="text-[10px] font-medium text-gray-700 truncate w-14 text-center">
+                    <Avatar
+                      size="lg"
+                      initials={profile.photos[0] || npc.avatar}
+                      bgColor="#f5f5f5"
+                      border={match.isNew ? `2px solid ${MYFACE_COLORS.accent}` : `2px solid #d1d5db`}
+                      shape="circle"
+                    />
+                    <span className="text-[10px] font-medium text-gray-700 truncate w-14 text-center mt-1">
                       {npc.name}
                     </span>
                     {match.isNew && (
-                      <span className="text-[8px] text-[#FF6600] font-medium">NEW</span>
+                      <span className="text-[8px] font-medium" style={{ color: MYFACE_COLORS.accent }}>NEW</span>
                     )}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -540,7 +533,7 @@ function MyFaceDating({ onViewProfile }: { onViewProfile: (id: string) => void }
         )}
 
         {/* People You May Like */}
-        <h3 className="text-sm font-bold text-[#003366] mb-3">People You May Like</h3>
+        <h3 className="text-sm font-bold mb-3" style={{ color: MYFACE_COLORS.primary }}>People You May Like</h3>
 
         {unseenNPCs.length === 0 ? (
           <div className="text-center py-12">
@@ -572,7 +565,7 @@ function MyFaceDating({ onViewProfile }: { onViewProfile: (id: string) => void }
             })}
           </div>
         )}
-      </div>
+      </StyledCard>
 
       {/* Match Modal */}
       {showMatchModal && matchedNpc && matchedProfile && site && (
@@ -601,10 +594,14 @@ function DatingProfileCard({ npc, profile, site, onLike, onPass, onViewProfile }
   const [showDetails, setShowDetails] = useState(false)
 
   return (
-    <div
-      className="rounded-lg overflow-hidden transition-shadow hover:shadow-lg cursor-pointer relative"
-      style={{ border: '1px solid #ddd', background: 'white' }}
+    <StyledCard
+      bgColor={MYFACE_COLORS.bg}
+      borderColor="#ddd"
+      borderRadius="lg"
+      shadow="md"
       onClick={() => setShowDetails(!showDetails)}
+      className="overflow-hidden p-0"
+      interactive
     >
       {/* Photo/Avatar */}
       <div
@@ -613,7 +610,7 @@ function DatingProfileCard({ npc, profile, site, onLike, onPass, onViewProfile }
       >
         {profile.photos[0] || npc.avatar}
 
-        {/* Gradient overlay for text */}
+        {/* Gradient overlay */}
         <div
           className="absolute inset-x-0 bottom-0 h-24"
           style={{
@@ -628,57 +625,64 @@ function DatingProfileCard({ npc, profile, site, onLike, onPass, onViewProfile }
         </div>
       </div>
 
-      {/* Quick info / expanded details */}
-      {showDetails ? (
-        <div className="p-3 space-y-2">
-          <p className="text-xs text-gray-700 line-clamp-3">{profile.bio}</p>
-
-          {profile.promptAnswers && profile.promptAnswers.length > 0 && (
-            <div className="text-xs">
-              <p className="text-gray-500 font-medium">{profile.promptAnswers[0].prompt}</p>
-              <p className="text-gray-700">{profile.promptAnswers[0].answer}</p>
-            </div>
-          )}
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onViewProfile()
-            }}
-            className="text-xs text-[#003366] hover:underline"
-          >
-            View Full Profile →
-          </button>
-        </div>
-      ) : (
-        <div className="p-2">
+      {/* Details */}
+      <div className="p-3">
+        {showDetails ? (
+          <div className="space-y-2">
+            <p className="text-xs text-gray-700 line-clamp-3">{profile.bio}</p>
+            {profile.promptAnswers && profile.promptAnswers.length > 0 && (
+              <div className="text-xs">
+                <p className="text-gray-500 font-medium">{profile.promptAnswers[0].prompt}</p>
+                <p className="text-gray-700">{profile.promptAnswers[0].answer}</p>
+              </div>
+            )}
+            <Button
+              size="xs"
+              variant="link"
+              textColor={MYFACE_COLORS.primary}
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewProfile()
+              }}
+            >
+              View Full Profile →
+            </Button>
+          </div>
+        ) : (
           <p className="text-xs text-gray-500 truncate">{profile.bio}</p>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Action Buttons */}
       <div className="flex border-t border-gray-100">
-        <button
+        <Button
+          size="sm"
+          variant="ghost"
+          textColor="#9ca3af"
           onClick={(e) => {
             e.stopPropagation()
             onPass()
           }}
-          className="flex-1 py-2 text-center text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors border-r border-gray-100"
+          width="full"
+          className="border-r border-gray-100"
         >
           ✕ Pass
-        </button>
-        <button
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          backgroundColor="transparent"
+          textColor={MYFACE_COLORS.accent}
           onClick={(e) => {
             e.stopPropagation()
             onLike()
           }}
-          className="flex-1 py-2 text-center text-sm font-medium transition-colors hover:bg-pink-50"
-          style={{ color: '#FF6600' }}
+          width="full"
         >
           ❤️ Like
-        </button>
+        </Button>
       </div>
-    </div>
+    </StyledCard>
   )
 }
 
@@ -688,36 +692,46 @@ interface ProfileCardProps {
 }
 
 function ProfileCard({ profile, onViewProfile }: ProfileCardProps) {
+  const statusItems: MetaRowItem[] = [
+    {
+      value: profile.isOnline ? '● Online' : `○ ${profile.lastSeen || 'Offline'}`,
+    },
+  ]
+  if (profile.mood) {
+    statusItems.push({
+      value: `${profile.moodEmoji} ${profile.mood}`,
+    })
+  }
+
   return (
-    <button
+    <StyledCard
+      bgColor={MYFACE_COLORS.bg}
+      borderColor={MYFACE_COLORS.border}
+      padding="md"
+      interactive
       onClick={() => onViewProfile(profile.id)}
-      className="flex items-start gap-3 p-3 rounded hover:bg-gray-50 transition-colors text-left"
-      style={{ border: '1px solid #ddd' }}
+      className="flex items-start gap-3"
     >
-      <div
-        className="w-16 h-16 rounded flex items-center justify-center text-2xl shrink-0"
-        style={{ background: profile.backgroundColor || '#eee' }}
-      >
-        {profile.avatar || profile.name[0]}
-      </div>
+      <Avatar
+        size="lg"
+        initials={profile.avatar || profile.name[0]}
+        bgColor={profile.backgroundColor || '#eee'}
+        shape="rounded"
+      />
       <div className="flex-1 min-w-0">
-        <h4 className="font-bold text-[#003366] text-sm">{profile.name}</h4>
+        <h4 className="font-bold text-sm" style={{ color: MYFACE_COLORS.primary }}>{profile.name}</h4>
         <p className="text-xs text-gray-500">@{profile.username}</p>
         <p className="text-xs text-gray-600 mt-1 line-clamp-2">{profile.bio}</p>
-        <div className="flex items-center gap-2 mt-2">
-          {profile.isOnline ? (
-            <span className="text-[10px] text-green-600">● Online</span>
-          ) : (
-            <span className="text-[10px] text-gray-400">○ {profile.lastSeen || 'Offline'}</span>
-          )}
-          {profile.mood && (
-            <span className="text-[10px] text-gray-500">
-              {profile.moodEmoji} {profile.mood}
-            </span>
-          )}
-        </div>
+        <MetaRow
+          items={statusItems}
+          textSize="xs"
+          textColor="#6b7280"
+          gap={8}
+          separator="•"
+          className="mt-2"
+        />
       </div>
-    </button>
+    </StyledCard>
   )
 }
 
@@ -735,25 +749,18 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
   const profile = getProfile(profileId)
   const posts = getPostsByAuthor(profileId)
 
-  // Initialize NPC store
   useEffect(() => {
     initNPCs()
   }, [initNPCs])
 
   if (!profile) {
     return (
-      <div
-        className="p-4 rounded"
-        style={{ background: 'white', border: '1px solid #ccc' }}
-      >
-        <button
-          onClick={onBack}
-          className="text-[#003366] hover:underline text-sm mb-4"
-        >
+      <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} padding="lg">
+        <Button variant="link" textColor={MYFACE_COLORS.primary} onClick={onBack} className="mb-4">
           ← Back to Home
-        </button>
+        </Button>
         <p className="text-gray-500">Profile not found.</p>
-      </div>
+      </StyledCard>
     )
   }
 
@@ -762,41 +769,36 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
     .filter(Boolean)
     .slice(0, 8) || []
 
-  // Get relationship info from NPC store
   const relationshipLevel = npc?.relationship?.level || 'stranger'
   const accessibleApps = npc ? getAccessibleApps(profileId) : []
+
+  const relationshipBgColor = {
+    stranger: '#6b7280',
+    acquaintance: '#3b82f6',
+    friend: '#10b981',
+    close_friend: '#a855f7',
+    best_friend: '#ec4899',
+  }[relationshipLevel] || '#ef4444'
 
   return (
     <div className="space-y-4">
       {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="text-white hover:underline text-sm"
-      >
+      <Button variant="link" textColor="white" onClick={onBack}>
         ← Back to Home
-      </button>
+      </Button>
 
-      {/* Profile Header - MySpace style with custom colors */}
-      <div
-        className="rounded overflow-hidden"
-        style={{
-          background: profile.backgroundColor || 'white',
-          border: '1px solid #ccc',
-        }}
+      {/* Profile Header */}
+      <StyledCard
+        bgColor={profile.backgroundColor || MYFACE_COLORS.bg}
+        borderColor={MYFACE_COLORS.border}
+        borderRadius="lg"
+        shadow="md"
+        padding={0}
+        className="overflow-hidden"
       >
-        <div
-          className="p-4"
-          style={{
-            background: 'linear-gradient(180deg, #003366 0%, #336699 100%)',
-            borderBottom: '2px solid #FF6600',
-          }}
-        >
+        <div style={{ background: 'linear-gradient(180deg, #003366 0%, #336699 100%)', borderBottom: '2px solid #FF6600' }} className="p-4">
           <div className="flex items-end gap-4">
-            <div
-              className="w-24 h-24 rounded flex items-center justify-center text-4xl bg-white shadow-lg"
-            >
-              {profile.avatar || profile.name[0]}
-            </div>
+            <Avatar size="xl" initials={profile.avatar || profile.name[0]} bgColor="white" shape="rounded" />
             <div className="flex-1 pb-2">
               <h1 className="text-2xl font-bold text-white">{profile.name}</h1>
               <p className="text-white/60 text-sm">@{profile.username}</p>
@@ -809,39 +811,26 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
                   Last seen: {profile.lastSeen || 'Unknown'}
                 </span>
               )}
-              {/* Relationship Badge */}
               {profileId !== 'player' && npc && (
-                <span className={`inline-block mt-2 px-2 py-0.5 text-xs rounded ${
-                  relationshipLevel === 'stranger' ? 'bg-gray-500' :
-                  relationshipLevel === 'acquaintance' ? 'bg-blue-500' :
-                  relationshipLevel === 'friend' ? 'bg-green-500' :
-                  relationshipLevel === 'close_friend' ? 'bg-purple-500' :
-                  relationshipLevel === 'best_friend' ? 'bg-pink-500' :
-                  'bg-red-500'
-                } text-white`}>
+                <span className="inline-block mt-2 px-2 py-0.5 text-xs rounded text-white" style={{ background: relationshipBgColor }}>
                   {relationshipLevel.replace('_', ' ')}
                 </span>
               )}
             </div>
             {profileId !== 'player' && (
               <div className="flex gap-2 pb-2 relative">
-                <button
-                  className="px-4 py-1.5 text-sm font-medium text-white rounded"
-                  style={{ background: '#FF6600' }}
-                >
+                <Button size="sm" backgroundColor={MYFACE_COLORS.accent} textColor="white">
                   Add Friend
-                </button>
+                </Button>
                 <div className="relative">
-                  <button
+                  <Button
+                    size="sm"
+                    backgroundColor="white"
+                    textColor={MYFACE_COLORS.primary}
                     onClick={() => setShowContactOptions(!showContactOptions)}
-                    className="px-4 py-1.5 text-sm font-medium text-[#003366] bg-white rounded flex items-center gap-1"
                   >
-                    Message
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {/* Contact Options Dropdown */}
+                    Message ▼
+                  </Button>
                   {showContactOptions && npc && (
                     <ContactOptionsDropdown
                       npc={npc}
@@ -861,8 +850,8 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
           {/* Left Column */}
           <div className="space-y-4">
             {/* About */}
-            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
-              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+            <StyledCard bgColor="rgba(255,255,255,0.9)" borderColor={MYFACE_COLORS.border} padding="md">
+              <h3 className="font-bold mb-2 text-sm border-b border-gray-200 pb-1" style={{ color: MYFACE_COLORS.primary }}>
                 About Me
               </h3>
               <p className="text-sm">{profile.bio}</p>
@@ -876,68 +865,73 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
                   <strong>Location:</strong> {profile.location}
                 </p>
               )}
-            </div>
+            </StyledCard>
 
             {/* Interests */}
             {profile.interests && profile.interests.length > 0 && (
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+              <StyledCard bgColor="rgba(255,255,255,0.9)" borderColor={MYFACE_COLORS.border} padding="md">
+                <h3 className="font-bold mb-2 text-sm border-b border-gray-200 pb-1" style={{ color: MYFACE_COLORS.primary }}>
                   Interests
                 </h3>
                 <div className="flex flex-wrap gap-1">
                   {profile.interests.map((interest, i) => (
-                    <span
+                    <Button
                       key={i}
-                      className="px-2 py-0.5 text-xs rounded"
-                      style={{ background: '#003366', color: 'white' }}
+                      size="xs"
+                      variant="primary"
+                      backgroundColor={MYFACE_COLORS.primary}
+                      textColor="white"
                     >
                       {interest}
-                    </span>
+                    </Button>
                   ))}
                 </div>
-              </div>
+              </StyledCard>
             )}
 
             {/* Music */}
             {profile.music && (
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+              <StyledCard bgColor="rgba(255,255,255,0.9)" borderColor={MYFACE_COLORS.border} padding="md">
+                <h3 className="font-bold mb-2 text-sm border-b border-gray-200 pb-1" style={{ color: MYFACE_COLORS.primary }}>
                   🎵 Music
                 </h3>
                 <p className="text-xs text-gray-600">{profile.music}</p>
-              </div>
+              </StyledCard>
             )}
           </div>
 
           {/* Center Column - Posts */}
           <div className="col-span-2 space-y-4">
             {/* Top Friends */}
-            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
-              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+            <StyledCard bgColor="rgba(255,255,255,0.9)" borderColor={MYFACE_COLORS.border} padding="md">
+              <h3 className="font-bold mb-2 text-sm border-b border-gray-200 pb-1" style={{ color: MYFACE_COLORS.primary }}>
                 {profile.name}'s Top {Math.min(topFriends.length, 8)}
               </h3>
               <div className="grid grid-cols-4 gap-2">
                 {topFriends.map((friend) => (
-                  <button
+                  <Button
                     key={friend.id}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onViewProfile(friend.id)}
-                    className="aspect-square rounded bg-gray-100 flex flex-col items-center justify-center text-xs cursor-pointer hover:bg-gray-200 p-1"
+                    className="aspect-square flex flex-col items-center justify-center p-1"
+                    style={{ background: '#f3f4f6' }}
                   >
                     <span className="text-lg">{friend.avatar}</span>
-                    <span className="truncate w-full text-center text-[10px] text-gray-600">
+                    <span className="truncate w-full text-center text-[10px] text-gray-600 mt-1">
                       {friend.name}
                     </span>
-                  </button>
+                  </Button>
                 ))}
                 {topFriends.length === 0 && (
                   <p className="col-span-4 text-xs text-gray-500">No friends yet</p>
                 )}
               </div>
-            </div>
+            </StyledCard>
 
             {/* Posts */}
-            <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.9)' }}>
-              <h3 className="font-bold text-[#003366] mb-2 text-sm border-b border-gray-200 pb-1">
+            <StyledCard bgColor="rgba(255,255,255,0.9)" borderColor={MYFACE_COLORS.border} padding="md">
+              <h3 className="font-bold mb-2 text-sm border-b border-gray-200 pb-1" style={{ color: MYFACE_COLORS.primary }}>
                 {profile.name}'s Bulletins
               </h3>
               {posts.length === 0 ? (
@@ -954,10 +948,10 @@ function MyFaceProfile({ profileId, onBack, onViewProfile }: MyFaceProfileProps)
                   ))}
                 </div>
               )}
-            </div>
+            </StyledCard>
           </div>
         </div>
-      </div>
+      </StyledCard>
     </div>
   )
 }
@@ -1016,11 +1010,8 @@ function MyFaceMessages() {
   return (
     <div className="grid grid-cols-3 gap-4 h-[500px]" style={cssVars as React.CSSProperties}>
       {/* Conversation list */}
-      <div
-        className="rounded flex flex-col"
-        style={{ background: 'white', border: '1px solid #ccc' }}
-      >
-        <h3 className="font-bold text-[#003366] p-4 pb-2 border-b border-gray-200 shrink-0">
+      <StyledCard bgColor={MYFACE_COLORS.bg} borderColor={MYFACE_COLORS.border} borderRadius="md" padding={0} className="flex flex-col overflow-hidden">
+        <h3 className="font-bold p-4 pb-2 border-b border-gray-200 shrink-0" style={{ color: MYFACE_COLORS.primary }}>
           Inbox
         </h3>
         {isLoading ? (
@@ -1028,48 +1019,51 @@ function MyFaceMessages() {
         ) : (
           <div className="flex-1 overflow-y-auto p-4 pt-2 space-y-1">
             {sortedConversations.map((convo) => (
-              <button
+              <Button
                 key={convo.id}
+                variant="ghost"
                 onClick={() => setSelectedConversationId(convo.id)}
-                className={`w-full flex items-center gap-2 p-2 rounded text-left transition-colors ${
-                  selectedConversationId === convo.id
-                    ? 'bg-[#003366]/10'
-                    : 'hover:bg-gray-100'
+                width="full"
+                className={`justify-start flex items-center gap-2 p-2 ${
+                  selectedConversationId === convo.id ? 'bg-blue-100' : 'hover:bg-gray-100'
                 }`}
               >
-                <div className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-sm text-[#003366]">
-                  {convo.participants[0]?.avatar || convo.participants[0]?.name[0] || '?'}
-                </div>
+                <Avatar
+                  size="sm"
+                  initials={convo.participants[0]?.avatar || convo.participants[0]?.name[0] || '?'}
+                  bgColor="#e5e7eb"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-sm text-[#003366] truncate">
+                    <p className="font-medium text-sm" style={{ color: MYFACE_COLORS.primary }} >
                       {convo.participants[0]?.name || 'Unknown'}
                     </p>
                     {convo.unreadCount > 0 && (
-                      <span className="w-4 h-4 rounded-full bg-[#FF6600] text-white text-[10px] flex items-center justify-center">
-                        {convo.unreadCount}
-                      </span>
+                      <Avatar badge={convo.unreadCount} size="xs" initials="" bgColor={MYFACE_COLORS.accent} />
                     )}
                   </div>
                   <p className="text-xs text-gray-500 truncate">
                     {convo.lastMessage?.content || 'No messages yet'}
                   </p>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         )}
-      </div>
+      </StyledCard>
 
       {/* Message thread */}
-      <div
-        className="col-span-2 rounded flex flex-col"
-        style={{ background: 'white', border: '1px solid #ccc' }}
+      <StyledCard
+        bgColor={MYFACE_COLORS.bg}
+        borderColor={MYFACE_COLORS.border}
+        borderRadius="md"
+        padding={0}
+        className="col-span-2 flex flex-col overflow-hidden"
       >
         {selectedConversation ? (
           <>
             <div className="p-3 border-b border-gray-200">
-              <h3 className="font-bold text-[#003366]">
+              <h3 className="font-bold" style={{ color: MYFACE_COLORS.primary }}>
                 {selectedConversation.participants[0]?.name || 'Unknown'}
               </h3>
             </div>
@@ -1100,23 +1094,25 @@ function MyFaceMessages() {
                   onKeyDown={handleKeyDown}
                   placeholder="Write a message..."
                   className="flex-1 px-3 py-2 rounded text-sm outline-none resize-none"
-                  style={{ background: '#f5f5f5', border: '1px solid #ccc', color: '#333' }}
+                  style={{ background: '#f5f5f5', border: `1px solid ${MYFACE_COLORS.border}`, color: '#333' }}
                   rows={2}
                 />
-                <button
+                <Button
+                  size="sm"
+                  backgroundColor={MYFACE_COLORS.accent}
+                  textColor="white"
                   onClick={handleSend}
                   disabled={!inputValue.trim() || isSending}
-                  className="px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-40 self-end"
-                  style={{ background: '#FF6600', color: 'white' }}
+                  className="self-end"
                 >
                   Send
-                </button>
+                </Button>
               </div>
             </div>
           </>
         ) : (
           <>
-            <h3 className="font-bold text-[#003366] p-4 pb-2 border-b border-gray-200">
+            <h3 className="font-bold p-4 pb-2 border-b border-gray-200" style={{ color: MYFACE_COLORS.primary }}>
               Conversation
             </h3>
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
@@ -1124,7 +1120,7 @@ function MyFaceMessages() {
             </div>
           </>
         )}
-      </div>
+      </StyledCard>
     </div>
   )
 }
@@ -1163,7 +1159,6 @@ const ACCESS_LEVEL_LABELS: Record<AccessLevel, string> = {
 }
 
 function ContactOptionsDropdown({ npc, accessibleApps, canContactVia, onClose }: ContactOptionsDropdownProps) {
-  // Get all messaging apps the NPC is on
   const messagingApps = npc.apps.filter(app => {
     const appDef = APP_REGISTRY[app.appId]
     return appDef && (appDef.category === 'messaging' || appDef.messageVariant)
@@ -1171,19 +1166,25 @@ function ContactOptionsDropdown({ npc, accessibleApps, canContactVia, onClose }:
 
   if (messagingApps.length === 0) {
     return (
-      <div
-        className="absolute top-full right-0 mt-1 w-64 p-3 rounded shadow-lg z-50"
-        style={{ background: 'white', border: '1px solid #ccc' }}
+      <StyledCard
+        bgColor={MYFACE_COLORS.bg}
+        borderColor={MYFACE_COLORS.border}
+        padding="md"
+        shadow="lg"
+        className="absolute top-full right-0 mt-1 w-64 z-50"
       >
         <p className="text-sm text-gray-500">No messaging apps available</p>
-      </div>
+      </StyledCard>
     )
   }
 
   return (
-    <div
-      className="absolute top-full right-0 mt-1 w-72 rounded shadow-lg z-50"
-      style={{ background: 'white', border: '1px solid #ccc' }}
+    <StyledCard
+      bgColor={MYFACE_COLORS.bg}
+      borderColor={MYFACE_COLORS.border}
+      padding={0}
+      shadow="lg"
+      className="absolute top-full right-0 mt-1 w-72 z-50 overflow-hidden"
     >
       <div className="p-2 border-b border-gray-200">
         <p className="text-xs text-gray-500 font-medium">Contact {npc.name} via:</p>
@@ -1197,31 +1198,26 @@ function ContactOptionsDropdown({ npc, accessibleApps, canContactVia, onClose }:
           const requiredLevel = appDef.accessLevel
 
           return (
-            <button
+            <Button
               key={appPresence.appId}
+              variant="ghost"
               disabled={!isAccessible}
               onClick={() => {
                 if (isAccessible) {
-                  // TODO: Navigate to conversation with this NPC on this app
                   console.log(`Opening ${appDef.name} chat with ${npc.name}`)
                   onClose()
                 }
               }}
-              className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
-                isAccessible
-                  ? 'hover:bg-gray-100 cursor-pointer'
-                  : 'opacity-50 cursor-not-allowed bg-gray-50'
-              }`}
+              width="full"
+              className="justify-start flex items-center gap-3 p-3 text-left"
+              textColor={isAccessible ? '#1f2937' : '#9ca3af'}
             >
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-                style={{
-                  background: appDef.theme?.primaryColor || '#666',
-                  color: 'white',
-                }}
-              >
-                {appDef.icon}
-              </div>
+              <Avatar
+                size="sm"
+                initials={appDef.icon as string}
+                bgColor={appDef.theme?.primaryColor || '#666'}
+                shape="rounded"
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm text-gray-900">{appDef.name}</span>
@@ -1238,27 +1234,19 @@ function ContactOptionsDropdown({ npc, accessibleApps, canContactVia, onClose }:
                   </p>
                 )}
               </div>
-              {isAccessible ? (
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              )}
-            </button>
+              {isAccessible ? '→' : '🔒'}
+            </Button>
           )
         })}
       </div>
 
-      {/* Hint about unlocking more */}
+      {/* Hint */}
       <div className="p-2 border-t border-gray-200 bg-gray-50">
         <p className="text-[10px] text-gray-500 text-center">
           Build your relationship to unlock more ways to connect!
         </p>
       </div>
-    </div>
+    </StyledCard>
   )
 }
 
