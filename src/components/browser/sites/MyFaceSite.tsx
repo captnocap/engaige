@@ -7,7 +7,7 @@
  * Refactored to use shared UI components: StyledCard, Button, Avatar, MetaRow
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { MessageThread as MessageThreadComponent } from '../../ui/Message/MessageThread.js'
 import { TypingIndicator } from '../../ui/Message/TypingIndicator.js'
@@ -62,7 +62,7 @@ const MYFACE_CONFIG: MessageStyleConfig = {
 
 type MyFaceView = 'home' | 'profile' | 'messages' | 'browse' | 'dating'
 
-export function MyFaceSite({ siteId }: SiteProps) {
+export function MyFaceSite({ siteId, path, onPathChange }: SiteProps) {
   const [currentView, setCurrentView] = useState<MyFaceView>(
     siteId === 'myface-chat' ? 'messages' : 'home'
   )
@@ -74,10 +74,46 @@ export function MyFaceSite({ siteId }: SiteProps) {
     initialize()
   }, [initialize])
 
-  const handleViewProfile = (profileId: string) => {
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    if (!path) {
+      setCurrentView('home')
+      setSelectedProfileId(null)
+    } else if (path.startsWith('/profile/')) {
+      const profileId = path.slice(9)
+      setSelectedProfileId(profileId)
+      setCurrentView('profile')
+    } else if (path === '/messages') {
+      setCurrentView('messages')
+      setSelectedProfileId(null)
+    } else if (path === '/browse') {
+      setCurrentView('browse')
+      setSelectedProfileId(null)
+    } else if (path === '/dating') {
+      setCurrentView('dating')
+      setSelectedProfileId(null)
+    } else {
+      setCurrentView('home')
+      setSelectedProfileId(null)
+    }
+  }, [path])
+
+  // Navigation handlers that update both state and path
+  const handleNavigateView = useCallback((view: MyFaceView) => {
+    setCurrentView(view)
+    setSelectedProfileId(null)
+    if (view === 'home') {
+      onPathChange(null)
+    } else {
+      onPathChange('/' + view)
+    }
+  }, [onPathChange])
+
+  const handleViewProfile = useCallback((profileId: string) => {
     setSelectedProfileId(profileId)
     setCurrentView('profile')
-  }
+    onPathChange('/profile/' + profileId)
+  }, [onPathChange])
 
   return (
     <div className="min-h-full pb-8" style={{ background: '#336699' }}>
@@ -92,7 +128,7 @@ export function MyFaceSite({ siteId }: SiteProps) {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <button
-            onClick={() => setCurrentView('home')}
+            onClick={() => handleNavigateView('home')}
             className="flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <span className="text-2xl font-bold text-white" style={{ fontFamily: 'Impact, sans-serif' }}>
@@ -106,7 +142,7 @@ export function MyFaceSite({ siteId }: SiteProps) {
             {(['home', 'browse', 'dating', 'messages'] as MyFaceView[]).map((view) => (
               <button
                 key={view}
-                onClick={() => setCurrentView(view)}
+                onClick={() => handleNavigateView(view)}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                   currentView === view
                     ? 'bg-[#FF6600] text-white'
@@ -140,7 +176,7 @@ export function MyFaceSite({ siteId }: SiteProps) {
         {currentView === 'profile' && selectedProfileId && (
           <MyFaceProfile
             profileId={selectedProfileId}
-            onBack={() => setCurrentView('home')}
+            onBack={() => handleNavigateView('home')}
             onViewProfile={handleViewProfile}
           />
         )}

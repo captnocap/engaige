@@ -5,7 +5,7 @@
  * Features: feed, stories, profiles, explore, and photo posts.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { useSocialStore, usePlayerProfile } from '../../../stores/socialStore.js'
 import { useInstaSnapStore } from '../../../stores/instaSnapStore.js'
@@ -32,7 +32,7 @@ export const INSTASNAP_THEME = {
 
 export type InstaSnapView = 'feed' | 'explore' | 'profile' | 'notifications' | 'create'
 
-export function InstaSnapSite({ siteId }: SiteProps) {
+export function InstaSnapSite({ siteId, path, onPathChange }: SiteProps) {
   const [currentView, setCurrentView] = useState<InstaSnapView>('feed')
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
@@ -47,22 +47,82 @@ export function InstaSnapSite({ siteId }: SiteProps) {
     initInstaSnap()
   }, [initSocial, initInstaSnap])
 
-  const handleViewProfile = (profileId: string) => {
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    if (!path) {
+      setCurrentView('feed')
+      setSelectedProfileId(null)
+      setSelectedPostId(null)
+    } else if (path.startsWith('/@')) {
+      // Profile path: /@username
+      const profileId = path.slice(2)
+      setSelectedProfileId(profileId)
+      setCurrentView('profile')
+      setSelectedPostId(null)
+    } else if (path.startsWith('/p/')) {
+      // Post path: /p/postId - show post modal over feed
+      const postId = path.slice(3)
+      setSelectedPostId(postId)
+      // Don't change the view - post modal is an overlay
+    } else if (path === '/explore') {
+      setCurrentView('explore')
+      setSelectedProfileId(null)
+      setSelectedPostId(null)
+    } else if (path === '/notifications') {
+      setCurrentView('notifications')
+      setSelectedProfileId(null)
+      setSelectedPostId(null)
+    } else if (path === '/create') {
+      setCurrentView('create')
+      setSelectedProfileId(null)
+      setSelectedPostId(null)
+    } else {
+      setCurrentView('feed')
+      setSelectedProfileId(null)
+      setSelectedPostId(null)
+    }
+  }, [path])
+
+  // Navigation handlers that update both state and path
+  const handleNavigateView = useCallback((view: InstaSnapView) => {
+    setCurrentView(view)
+    setSelectedProfileId(null)
+    setSelectedPostId(null)
+    if (view === 'feed') {
+      onPathChange(null)
+    } else {
+      onPathChange('/' + view)
+    }
+  }, [onPathChange])
+
+  const handleViewProfile = useCallback((profileId: string) => {
     setSelectedProfileId(profileId)
     setCurrentView('profile')
-  }
+    setSelectedPostId(null)
+    onPathChange('/@' + profileId)
+  }, [onPathChange])
 
-  const handleViewPost = (postId: string) => {
+  const handleViewPost = useCallback((postId: string) => {
     setSelectedPostId(postId)
-  }
+    onPathChange('/p/' + postId)
+  }, [onPathChange])
 
   const handleViewStory = (authorId: string) => {
     setViewingStoryAuthorId(authorId)
+    // Stories don't update URL (transient overlay)
   }
 
-  const handleClosePost = () => {
+  const handleClosePost = useCallback(() => {
     setSelectedPostId(null)
-  }
+    // Go back to feed or current view
+    if (currentView === 'profile' && selectedProfileId) {
+      onPathChange('/@' + selectedProfileId)
+    } else if (currentView === 'explore') {
+      onPathChange('/explore')
+    } else {
+      onPathChange(null)
+    }
+  }, [currentView, selectedProfileId, onPathChange])
 
   const handleCloseStory = () => {
     setViewingStoryAuthorId(null)
@@ -84,10 +144,7 @@ export function InstaSnapSite({ siteId }: SiteProps) {
         <div className="max-w-xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <button
-            onClick={() => {
-              setCurrentView('feed')
-              setSelectedProfileId(null)
-            }}
+            onClick={() => handleNavigateView('feed')}
             className="flex items-center gap-1"
           >
             <span
@@ -106,29 +163,23 @@ export function InstaSnapSite({ siteId }: SiteProps) {
             <NavButton
               icon="🏠"
               active={currentView === 'feed'}
-              onClick={() => {
-                setCurrentView('feed')
-                setSelectedProfileId(null)
-              }}
+              onClick={() => handleNavigateView('feed')}
             />
             <NavButton
               icon="🔍"
               active={currentView === 'explore'}
-              onClick={() => {
-                setCurrentView('explore')
-                setSelectedProfileId(null)
-              }}
+              onClick={() => handleNavigateView('explore')}
             />
             <NavButton
               icon="➕"
               active={currentView === 'create'}
-              onClick={() => setCurrentView('create')}
+              onClick={() => handleNavigateView('create')}
               gradient
             />
             <NavButton
               icon="❤️"
               active={currentView === 'notifications'}
-              onClick={() => setCurrentView('notifications')}
+              onClick={() => handleNavigateView('notifications')}
               badge={3}
             />
             <button
@@ -166,7 +217,7 @@ export function InstaSnapSite({ siteId }: SiteProps) {
         {currentView === 'profile' && selectedProfileId && (
           <InstaSnapProfile
             profileId={selectedProfileId}
-            onBack={() => setCurrentView('feed')}
+            onBack={() => handleNavigateView('feed')}
             onViewProfile={handleViewProfile}
             onViewPost={handleViewPost}
           />
@@ -177,7 +228,7 @@ export function InstaSnapSite({ siteId }: SiteProps) {
         )}
 
         {currentView === 'create' && (
-          <CreatePostPlaceholder onBack={() => setCurrentView('feed')} />
+          <CreatePostPlaceholder onBack={() => handleNavigateView('feed')} />
         )}
       </main>
 

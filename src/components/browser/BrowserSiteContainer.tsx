@@ -30,12 +30,16 @@ import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
+  path: string | null
   onNavigate: (appId: string) => void
+  onPathChange: (path: string | null) => void
 }
 
 export interface SiteProps {
   siteId: string
+  path: string | null  // Current path from URL (e.g., "/r/coffee", "/profile/123")
   onNavigate: (appId: string) => void
+  onPathChange: (path: string | null) => void  // Callback to update URL when internal state changes
 }
 
 // Map site IDs to components - PlaceholderSite used for unimplemented sites
@@ -66,7 +70,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   // All other sites use PlaceholderSite until implemented
 }
 
-export function BrowserSiteContainer({ siteId, onNavigate }: BrowserSiteContainerProps) {
+export function BrowserSiteContainer({ siteId, path, onNavigate, onPathChange }: BrowserSiteContainerProps) {
   const app = getApp(siteId)
   const SiteComponent = SITE_COMPONENTS[siteId] || PlaceholderSite
 
@@ -88,7 +92,7 @@ export function BrowserSiteContainer({ siteId, onNavigate }: BrowserSiteContaine
 
   return (
     <div className="h-full overflow-y-auto">
-      <SiteComponent siteId={siteId} onNavigate={onNavigate} />
+      <SiteComponent siteId={siteId} path={path} onNavigate={onNavigate} onPathChange={onPathChange} />
     </div>
   )
 }

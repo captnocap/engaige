@@ -5,7 +5,7 @@
  * Features chaotic drama, AITA posts, and nested comment threads.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
@@ -321,11 +321,75 @@ I drove 3 hours for this show. Anyone else stranded downtown?`,
 // Components
 // ============================================================================
 
-export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
+export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   const [selectedSubreddit, setSelectedSubreddit] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'top'>('hot')
   const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down' | null>>({})
+
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path) {
+      setSelectedThread(null)
+      setSelectedSubreddit(null)
+    } else if (path.startsWith('/t/')) {
+      // Thread path: /t/thread_id
+      const threadId = path.slice(3)
+      const thread = SAMPLE_THREADS.find(t => t.id === threadId)
+      if (thread) {
+        setSelectedThread(thread)
+        setSelectedSubreddit(null)
+      }
+    } else if (path.startsWith('/r/')) {
+      // Subreddit path: /r/subreddit_name (with r/ prefix)
+      const subredditName = 'r/' + path.slice(3)
+      setSelectedThread(null)
+      setSelectedSubreddit(subredditName)
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
+
+  // Navigation handlers that update both state and path
+  const handleSelectThread = (thread: Thread) => {
+    setSelectedThread(thread)
+    onPathChange('/t/' + thread.id)
+  }
+
+  const handleSelectSubreddit = (subredditName: string | null) => {
+    setSelectedSubreddit(subredditName)
+    setSelectedThread(null)
+    if (subredditName) {
+      // subredditName includes "r/" prefix, remove it for the path
+      onPathChange('/r/' + subredditName.slice(2))
+    } else {
+      onPathChange(null)
+    }
+  }
+
+  const handleBackToHome = () => {
+    setSelectedThread(null)
+    setSelectedSubreddit(null)
+    onPathChange(null)
+  }
+
+  const handleBackFromThread = () => {
+    setSelectedThread(null)
+    // Go back to subreddit if one is selected, otherwise go to home
+    if (selectedSubreddit) {
+      onPathChange('/r/' + selectedSubreddit.slice(2))
+    } else {
+      onPathChange(null)
+    }
+  }
 
   const filteredThreads = selectedSubreddit
     ? SAMPLE_THREADS.filter(t => t.subreddit === selectedSubreddit)
@@ -356,10 +420,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
           <div className="flex items-center gap-4">
             {/* Logo */}
             <button
-              onClick={() => {
-                setSelectedThread(null)
-                setSelectedSubreddit(null)
-              }}
+              onClick={handleBackToHome}
               className="flex items-center gap-2 hover:opacity-80"
             >
               <span className="text-2xl">{site.icon}</span>
@@ -407,7 +468,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
             {selectedThread ? (
               <ThreadDetail
                 thread={selectedThread}
-                onBack={() => setSelectedThread(null)}
+                onBack={handleBackFromThread}
                 userVotes={userVotes}
                 onVote={handleVote}
                 getVoteAdjustment={getVoteAdjustment}
@@ -446,7 +507,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
                     <ThreadCard
                       key={thread.id}
                       thread={thread}
-                      onClick={() => setSelectedThread(thread)}
+                      onClick={() => handleSelectThread(thread)}
                       userVotes={userVotes}
                       onVote={handleVote}
                       getVoteAdjustment={getVoteAdjustment}
@@ -476,7 +537,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
                     {SUBREDDITS.find(s => s.name === selectedSubreddit)?.description}
                   </p>
                   <Button
-                    onClick={() => setSelectedSubreddit(null)}
+                    onClick={() => handleSelectSubreddit(null)}
                     variant="link"
                     size="sm"
                     textColor={site.theme.secondary}
@@ -520,10 +581,7 @@ export function ThreaditSite({ siteId, onNavigate }: SiteProps) {
                 {SUBREDDITS.map((sub) => (
                   <Button
                     key={sub.name}
-                    onClick={() => {
-                      setSelectedSubreddit(sub.name)
-                      setSelectedThread(null)
-                    }}
+                    onClick={() => handleSelectSubreddit(sub.name)}
                     variant="ghost"
                     backgroundColor="transparent"
                     width="full"

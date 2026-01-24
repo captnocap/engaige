@@ -46,12 +46,19 @@ const URL_TO_APP: Record<string, string> = Object.fromEntries(
   Object.entries(SITE_URLS).map(([appId, url]) => [url, appId])
 )
 
+// History entry tracks both site and path
+interface HistoryEntry {
+  siteId: string
+  path: string | null
+}
+
 // Tab interface
 interface BrowserTab {
   id: string
   siteId: string | null
+  path: string | null  // Current path within site (e.g., "/r/coffee", "/profile/123")
   url: string
-  history: string[]
+  history: HistoryEntry[]
   historyIndex: number
   title: string
 }
@@ -75,11 +82,23 @@ function createNewTab(): BrowserTab {
   return {
     id: generateTabId(),
     siteId: null,
+    path: null,
     url: '',
     history: [],
     historyIndex: -1,
     title: 'New Tab',
   }
+}
+
+// Build full URL from site ID and path
+function buildUrl(siteId: string, path: string | null): string {
+  const baseUrl = SITE_URLS[siteId] || `www.${siteId}.corn`
+  if (!path) return baseUrl
+  // Remove leading slash from path if base URL already has a path component
+  if (baseUrl.includes('/')) {
+    return baseUrl + path
+  }
+  return baseUrl + path
 }
 
 // Get display title for a tab
@@ -132,7 +151,7 @@ export function Browser({ onClose }: BrowserProps) {
     ))
   }, [])
 
-  // Navigate within the active tab
+  // Navigate within the active tab (to a new site, resets path)
   const navigateTo = useCallback((appId: string, tabId?: string) => {
     const targetTabId = tabId || activeTabId
     const tab = tabs.find(t => t.id === targetTabId)
@@ -141,12 +160,13 @@ export function Browser({ onClose }: BrowserProps) {
     const url = SITE_URLS[appId] || `www.${appId}.corn`
     const app = browserApps.find(a => a.id === appId)
 
-    // Add to history
+    // Add to history (new site navigation always resets path)
     const newHistory = tab.history.slice(0, tab.historyIndex + 1)
-    newHistory.push(appId)
+    newHistory.push({ siteId: appId, path: null })
 
     updateTab(targetTabId, {
       siteId: appId,
+      path: null,
       url,
       history: newHistory,
       historyIndex: newHistory.length - 1,
@@ -163,20 +183,22 @@ export function Browser({ onClose }: BrowserProps) {
     if (activeTab.historyIndex > 0) {
       // Go to previous page in history
       const newIndex = activeTab.historyIndex - 1
-      const appId = activeTab.history[newIndex]
-      const app = browserApps.find(a => a.id === appId)
+      const entry = activeTab.history[newIndex]
+      const app = browserApps.find(a => a.id === entry.siteId)
 
       updateTab(activeTabId, {
         historyIndex: newIndex,
-        siteId: appId,
-        url: SITE_URLS[appId] || `www.${appId}.corn`,
-        title: app?.name || appId,
+        siteId: entry.siteId,
+        path: entry.path,
+        url: buildUrl(entry.siteId, entry.path),
+        title: app?.name || entry.siteId,
       })
     } else if (activeTab.historyIndex === 0 && activeTab.siteId) {
       // Go back to homepage (we're at the first page in history)
       updateTab(activeTabId, {
         historyIndex: -1,
         siteId: null,
+        path: null,
         url: '',
         title: 'New Tab',
       })
@@ -191,14 +213,15 @@ export function Browser({ onClose }: BrowserProps) {
 
     if (canGoForward || canGoForwardFromHome) {
       const newIndex = activeTab.historyIndex + 1
-      const appId = activeTab.history[newIndex]
-      const app = browserApps.find(a => a.id === appId)
+      const entry = activeTab.history[newIndex]
+      const app = browserApps.find(a => a.id === entry.siteId)
 
       updateTab(activeTabId, {
         historyIndex: newIndex,
-        siteId: appId,
-        url: SITE_URLS[appId] || `www.${appId}.corn`,
-        title: app?.name || appId,
+        siteId: entry.siteId,
+        path: entry.path,
+        url: buildUrl(entry.siteId, entry.path),
+        title: app?.name || entry.siteId,
       })
     }
   }, [activeTab, activeTabId, browserApps, updateTab])
@@ -207,11 +230,36 @@ export function Browser({ onClose }: BrowserProps) {
   const goHome = useCallback(() => {
     updateTab(activeTabId, {
       siteId: null,
+      path: null,
       url: '',
       title: 'New Tab',
     })
     setUrlInput('')
   }, [activeTabId, updateTab])
+
+  // Handle path change from site components (internal navigation)
+  const handlePathChange = useCallback((newPath: string | null) => {
+    const tab = tabs.find(t => t.id === activeTabId)
+    if (!tab || !tab.siteId) return
+
+    // Don't update if path hasn't changed
+    if (tab.path === newPath) return
+
+    const url = buildUrl(tab.siteId, newPath)
+
+    // Add new history entry for path change
+    const newHistory = tab.history.slice(0, tab.historyIndex + 1)
+    newHistory.push({ siteId: tab.siteId, path: newPath })
+
+    updateTab(activeTabId, {
+      path: newPath,
+      url,
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
+    })
+
+    setUrlInput(url)
+  }, [activeTabId, tabs, updateTab])
 
   // Handle URL submission
   const handleUrlSubmit = useCallback((e: React.FormEvent) => {
@@ -743,7 +791,9 @@ export function Browser({ onClose }: BrowserProps) {
           {activeTab.siteId ? (
             <BrowserSiteContainer
               siteId={activeTab.siteId}
+              path={activeTab.path}
               onNavigate={navigateTo}
+              onPathChange={handlePathChange}
             />
           ) : (
             <BrowserHomePage
