@@ -346,6 +346,32 @@ If you ever see a native `<select>` in the code, replace it immediately with the
 
 ---
 
+## ⚠️ CRITICAL: Filler Site Quality Standards - NO DEAD ENDS
+
+**Every filler site MUST provide a complete, believable experience.**
+
+This game is built on content immersion. If a user clicks something that looks clickable and nothing happens, or sees "847 comments" with no comments shown, the illusion breaks instantly.
+
+### The Rules
+
+1. **If it looks clickable, it MUST work** - Links must go somewhere. Buttons must respond. No dead UI.
+2. **Show what you claim** - If you display "32 reviews", show some reviews. Numbers without content are lies.
+3. **Depth over shortcuts** - 20 interconnected pages beats 1 shallow page. The goal is "too real."
+4. **Study the reference sites** - WikiKnow, VidTube, and the original Threadit set the bar for depth.
+5. **Test like a user** - Click every element before considering a site done.
+
+### Anti-Patterns to Avoid
+
+- `<a href="#">Read more</a>` - Dead link
+- `<button onClick={() => {}}>Submit</button>` - Button that does nothing
+- Showing "Comments (847)" with an empty comment section
+- "Newsletter signup" forms that don't even show a confirmation
+- Threadit clones with no actual nested comments
+
+**Full documentation:** [FILLER_SITES.md](docs/FILLER_SITES.md)
+
+---
+
 **engAIge** is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
 
 **Core Vision:**

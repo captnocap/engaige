@@ -2,6 +2,82 @@
 
 Browser-accessible content sites for world-building and user entertainment.
 
+---
+
+## ⚠️ CRITICAL: Filler Site Quality Standards
+
+**Every filler site MUST provide a complete, believable experience. No dead ends. No empty promises.**
+
+### Rule 1: If It Looks Clickable, It MUST Work
+
+- **NEVER** create UI elements that look interactive but do nothing
+- Links must navigate somewhere (even if it's just another page of content)
+- Buttons must respond with visual feedback or state changes
+- If a user sees a clickable element, they WILL click it - don't disappoint them
+- "Non-functional" form submissions should at least show a confirmation/error state
+
+**Bad Example:**
+```tsx
+// ❌ DON'T: A link that goes nowhere
+<a href="#">Read more →</a>
+```
+
+**Good Example:**
+```tsx
+// ✅ DO: Link to actual content
+<a onClick={() => setSelectedArticle(article)}>Read more →</a>
+```
+
+### Rule 2: Show What You Claim
+
+- If a thread says "847 comments" → **SHOW COMMENTS** (at least 5-10 representative ones)
+- If a video says "1.2M views" → have a populated comment section to match
+- If a listing says "32 reviews" → display some reviews
+- Empty states are lies. Numbers without content break immersion instantly.
+
+**Bad Example:**
+```tsx
+// ❌ DON'T: Promise content you won't show
+<span>847 Comments</span>
+// ...and then show zero comments
+```
+
+**Good Example:**
+```tsx
+// ✅ DO: Back up your claims
+<span>{comments.length} Comments</span>
+{comments.map(c => <Comment key={c.id} {...c} />)}
+```
+
+### Rule 3: Depth Over Shortcuts
+
+- It's better to have 20 interconnected pages than 1 shallow page
+- Cross-link content within the site (articles reference other articles)
+- Create the feeling that you could browse forever
+- The goal is "too real" - users should forget they're in a game
+
+### Rule 4: Study the Reference Implementations
+
+Before building a new filler site, **study these sites that got it right:**
+
+- **WikiKnow** - Full articles with table of contents, citations, related links
+- **VidTube** - Video pages with comments, replies, recommendations
+- **Threadit** - Nested comment threads, voting, cross-post references
+
+These set the bar. New sites should match or exceed their depth.
+
+### Rule 5: Test Like a User
+
+Before considering a site "done", click on EVERYTHING:
+- Every link
+- Every button
+- Every interactive-looking element
+- Every "see more" or "read more"
+
+If anything feels broken or empty, it's not done.
+
+---
+
 ## Overview
 
 Eleven filler content sites provide browsable, lore-rich content that makes the game world feel alive:
