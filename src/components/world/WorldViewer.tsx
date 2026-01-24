@@ -117,6 +117,7 @@ export default function WorldViewer() {
 
   const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number } | null>(null);
   const [asciiMode, setAsciiMode] = useState(false);
+  const [threeLayerReady, setThreeLayerReady] = useState(false);
 
   // ============================================================================
   // Initialization
@@ -177,6 +178,7 @@ export default function WorldViewer() {
 
     // Add lights after layer is ready
     threeLayer.on('canvasready', () => {
+      console.log('[WorldViewer] ThreeLayer canvas ready');
       const scene = threeLayer.getScene();
       if (scene) {
         // Add ambient light
@@ -189,6 +191,7 @@ export default function WorldViewer() {
         scene.add(directionalLight);
 
         console.log('[WorldViewer] Lights added to scene');
+        setThreeLayerReady(true);
       }
     });
 
@@ -249,7 +252,7 @@ export default function WorldViewer() {
 
   // Add 3D buildings
   useEffect(() => {
-    if (!threeLayerRef.current || !city) return;
+    if (!threeLayerRef.current || !city || !threeLayerReady) return;
 
     console.log('[WorldViewer] Rendering 3D buildings:', city.buildings.length);
 
@@ -330,7 +333,7 @@ export default function WorldViewer() {
 
     renderBatch();
 
-  }, [city?.buildings]);
+  }, [city?.buildings, threeLayerReady]);
 
   // ============================================================================
   // NPC Markers
@@ -338,7 +341,7 @@ export default function WorldViewer() {
 
   // Render AI NPCs as 3D markers
   useEffect(() => {
-    if (!threeLayerRef.current || !city) return;
+    if (!threeLayerRef.current || !city || !threeLayerReady) return;
 
     const threeLayer = threeLayerRef.current;
     const scale = threeLayer.distanceToVector3(1, 1).x;
@@ -369,11 +372,11 @@ export default function WorldViewer() {
 
     threeLayer.renderScene();
 
-  }, [aiNPCs, city]);
+  }, [aiNPCs, city, threeLayerReady]);
 
   // Render background NPCs as smaller markers
   useEffect(() => {
-    if (!threeLayerRef.current || !city || backgroundNPCs.length === 0) return;
+    if (!threeLayerRef.current || !city || !threeLayerReady || backgroundNPCs.length === 0) return;
 
     const threeLayer = threeLayerRef.current;
     const scale = threeLayer.distanceToVector3(1, 1).x;
@@ -412,7 +415,7 @@ export default function WorldViewer() {
 
     threeLayer.renderScene();
 
-  }, [backgroundNPCs, city]);
+  }, [backgroundNPCs, city, threeLayerReady]);
 
   // Request background NPCs periodically
   useEffect(() => {
@@ -440,7 +443,7 @@ export default function WorldViewer() {
   // ============================================================================
 
   useEffect(() => {
-    if (!threeLayerRef.current || !playerHome) return;
+    if (!threeLayerRef.current || !playerHome || !threeLayerReady) return;
 
     const threeLayer = threeLayerRef.current;
     const scale = threeLayer.distanceToVector3(1, 1).x;
@@ -464,7 +467,7 @@ export default function WorldViewer() {
     threeLayer.addMesh(marker);
     threeLayer.renderScene();
 
-  }, [playerHome]);
+  }, [playerHome, threeLayerReady]);
 
   // ============================================================================
   // Landmark highlights
