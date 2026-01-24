@@ -203,6 +203,48 @@ export interface AIProviderTestMessage extends WSMessage<{
   type: 'aiProvider:test';
 }
 
+// Chess
+export interface ChessChallengeNPCMessage extends WSMessage<{
+  npc_id: string;
+}> {
+  type: 'chess:challengeNPC';
+}
+
+export interface ChessMakeMoveMessage extends WSMessage<{
+  match_id: string;
+  move: string;
+}> {
+  type: 'chess:makeMove';
+}
+
+export interface ChessResignMessage extends WSMessage<{
+  match_id: string;
+}> {
+  type: 'chess:resign';
+}
+
+export interface ChessGetLeaderboardMessage extends WSMessage<{
+  limit?: number;
+}> {
+  type: 'chess:getLeaderboard';
+}
+
+export interface ChessGetMatchMessage extends WSMessage<{
+  match_id: string;
+}> {
+  type: 'chess:getMatch';
+}
+
+export interface ChessGetActiveMatchesMessage extends WSMessage {
+  type: 'chess:getActiveMatches';
+}
+
+export interface ChessGetMatchHistoryMessage extends WSMessage<{
+  limit?: number;
+}> {
+  type: 'chess:getMatchHistory';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -227,7 +269,14 @@ export type ClientMessage =
   | AIProviderTestMessage
   | ThoughtsGetMessage
   | ThoughtsSubscribeMessage
-  | ThoughtsUnsubscribeMessage;
+  | ThoughtsUnsubscribeMessage
+  | ChessChallengeNPCMessage
+  | ChessMakeMoveMessage
+  | ChessResignMessage
+  | ChessGetLeaderboardMessage
+  | ChessGetMatchMessage
+  | ChessGetActiveMatchesMessage
+  | ChessGetMatchHistoryMessage;
 
 // ============================================================================
 // Server -> Client Messages
@@ -331,6 +380,39 @@ export interface DeliberationCompletedEvent extends WSMessage<{
   type: 'thoughts:deliberationCompleted';
 }
 
+// Chess Events
+export interface ChessMatchStartedEvent extends WSMessage<{
+  match_id: string;
+  white_player_id: string;
+  black_player_id: string;
+  white_elo: number;
+  black_elo: number;
+}> {
+  type: 'chess:matchStarted';
+}
+
+export interface ChessMoveMadeEvent extends WSMessage<{
+  match_id: string;
+  player_id: string;
+  move_notation: string;
+  move_number: number;
+  is_check: boolean;
+  is_checkmate: boolean;
+  fen_after: string;
+}> {
+  type: 'chess:moveMade';
+}
+
+export interface ChessMatchEndedEvent extends WSMessage<{
+  match_id: string;
+  result: 'white_win' | 'black_win' | 'draw' | 'abandoned';
+  termination_reason: string;
+  white_elo_change: number;
+  black_elo_change: number;
+}> {
+  type: 'chess:matchEnded';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -343,7 +425,10 @@ export type ServerMessage =
   | ConnectedEvent
   | ThoughtCapturedEvent
   | DeliberationStartedEvent
-  | DeliberationCompletedEvent;
+  | DeliberationCompletedEvent
+  | ChessMatchStartedEvent
+  | ChessMoveMadeEvent
+  | ChessMatchEndedEvent;
 
 // ============================================================================
 // Helpers

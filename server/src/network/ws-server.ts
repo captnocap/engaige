@@ -306,6 +306,35 @@ async function routeMessage(
       handleThoughtsUnsubscribe(ws, message);
       break;
 
+    // Chess routes
+    case 'chess:challengeNPC':
+      await handleChessChallengeNPC(ws, message);
+      break;
+
+    case 'chess:makeMove':
+      await handleChessMakeMove(ws, message);
+      break;
+
+    case 'chess:resign':
+      await handleChessResign(ws, message);
+      break;
+
+    case 'chess:getLeaderboard':
+      await handleChessGetLeaderboard(ws, message);
+      break;
+
+    case 'chess:getMatch':
+      await handleChessGetMatch(ws, message);
+      break;
+
+    case 'chess:getActiveMatches':
+      await handleChessGetActiveMatches(ws, message);
+      break;
+
+    case 'chess:getMatchHistory':
+      await handleChessGetMatchHistory(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -921,6 +950,189 @@ export function broadcastDeliberationCompleted(data: {
         session_id: session.id,
       });
     }
+  }
+}
+
+// ============================================================================
+// Chess Handlers
+// ============================================================================
+
+/**
+ * Handle chess:challengeNPC
+ */
+async function handleChessChallengeNPC(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { challengeNPC } = await import('../services/chess-matchmaker.js');
+    const payload = message.payload as { npc_id: string };
+
+    if (!payload?.npc_id) {
+      send(ws, createError('Missing npc_id', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    const match = challengeNPC('player', payload.npc_id);
+
+    if (!match) {
+      send(ws, createError('NPC is unavailable for chess', 'NPC_UNAVAILABLE', message.id));
+      return;
+    }
+
+    send(ws, createResponse(message.id, true, match));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessChallengeNPC',
+    });
+    send(ws, createError('Failed to challenge NPC', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:makeMove
+ */
+async function handleChessMakeMove(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { makeMove } = await import('../services/chess.js');
+    const payload = message.payload as { match_id: string; move: string };
+
+    if (!payload?.match_id || !payload?.move) {
+      send(ws, createError('Missing match_id or move', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    const result = makeMove(payload.match_id, 'player', payload.move);
+
+    if (!result.success) {
+      send(ws, createError(result.error || 'Move failed', 'MOVE_FAILED', message.id));
+      return;
+    }
+
+    send(ws, createResponse(message.id, true, result));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessMakeMove',
+    });
+    send(ws, createError('Failed to make move', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:resign
+ */
+async function handleChessResign(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { resignMatch } = await import('../services/chess.js');
+    const payload = message.payload as { match_id: string };
+
+    if (!payload?.match_id) {
+      send(ws, createError('Missing match_id', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    const success = resignMatch(payload.match_id, 'player');
+
+    if (!success) {
+      send(ws, createError('Failed to resign match', 'RESIGN_FAILED', message.id));
+      return;
+    }
+
+    send(ws, createResponse(message.id, true, { resigned: true }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessResign',
+    });
+    send(ws, createError('Failed to resign', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:getLeaderboard
+ */
+async function handleChessGetLeaderboard(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getGlobalLeaderboard } = await import('../services/chess-leaderboard.js');
+    const payload = message.payload as { limit?: number };
+
+    const leaderboard = getGlobalLeaderboard(payload?.limit || 20);
+
+    send(ws, createResponse(message.id, true, leaderboard));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessGetLeaderboard',
+    });
+    send(ws, createError('Failed to get leaderboard', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:getMatch
+ */
+async function handleChessGetMatch(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getMatch } = await import('../services/chess.js');
+    const payload = message.payload as { match_id: string };
+
+    if (!payload?.match_id) {
+      send(ws, createError('Missing match_id', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    const match = getMatch(payload.match_id);
+
+    if (!match) {
+      send(ws, createError('Match not found', 'NOT_FOUND', message.id));
+      return;
+    }
+
+    send(ws, createResponse(message.id, true, match));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessGetMatch',
+    });
+    send(ws, createError('Failed to get match', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:getActiveMatches
+ */
+async function handleChessGetActiveMatches(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getActiveMatches } = await import('../services/chess.js');
+
+    const matches = getActiveMatches('player', 'player');
+
+    send(ws, createResponse(message.id, true, matches));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessGetActiveMatches',
+    });
+    send(ws, createError('Failed to get active matches', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle chess:getMatchHistory
+ */
+async function handleChessGetMatchHistory(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getMatchHistory } = await import('../services/chess.js');
+    const payload = message.payload as { limit?: number };
+
+    const history = getMatchHistory('player', 'player', payload?.limit || 25);
+
+    send(ws, createResponse(message.id, true, history));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleChessGetMatchHistory',
+    });
+    send(ws, createError('Failed to get match history', 'INTERNAL_ERROR', message.id));
   }
 }
 
