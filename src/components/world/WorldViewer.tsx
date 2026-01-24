@@ -171,19 +171,26 @@ export default function WorldViewer() {
       forceRenderOnZooming: true,
     });
 
-    threeLayer.prepareToDraw = function(gl: WebGLRenderingContext, scene: THREE.Scene, camera: THREE.Camera) {
-      // Add ambient light
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-      scene.add(ambientLight);
-
-      // Add directional light (sun)
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-    };
-
+    // Add layer to map first
     threeLayer.addTo(map);
     threeLayerRef.current = threeLayer;
+
+    // Add lights after layer is ready
+    threeLayer.on('canvasready', () => {
+      const scene = threeLayer.getScene();
+      if (scene) {
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        // Add directional light (sun)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(100, 100, 100);
+        scene.add(directionalLight);
+
+        console.log('[WorldViewer] Lights added to scene');
+      }
+    });
 
     console.log('[WorldViewer] Maptalks initialized');
 
