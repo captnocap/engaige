@@ -6,7 +6,7 @@ import { getDB } from '../db/index.js';
 import { doorFetch } from '../network/door.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { getAIConfig, getNPCConfig, buildNPCSystemPrompt } from './ai.js';
-import { getRelationship } from './relationships.js';
+import { getPlayerRelationship } from './relationships.js';
 import { processAIResponse, storeNPCThought } from './reasoning-extractor.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -279,11 +279,11 @@ export async function deliberateResponse(options: DeliberationOptions): Promise<
   // Get relationship factors if player is known
   let relationshipFactors: Partial<ThinkingFactors> = {};
   if (options.player_id) {
-    const relationship = getRelationship(options.player_id, options.npc_id);
+    const relationship = getPlayerRelationship(options.npc_id, options.player_id);
     if (relationship) {
       relationshipFactors = {
-        relationship_stage: relationship.stage,
-        trust_level: relationship.trust,
+        relationship_stage: relationship.relationship_stage,
+        trust_level: relationship.trust_level,
         familiarity: relationship.familiarity,
         // TODO: has_crush could come from NPC's feelings toward player
         has_crush: personalityTraits.has_crush_on_player || false,

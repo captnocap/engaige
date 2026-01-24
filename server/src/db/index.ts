@@ -169,6 +169,22 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         ('image_generation', 'Image Generation', 'Profile pictures and post images (DALL-E, Stable Diffusion)'),
         ('vision_proxy', 'Vision Analysis', 'Analyzing images sent by users (proxy for non-vision models)'),
         ('other', 'Other', 'Miscellaneous AI operations');
+
+      -- === PLAYER CHESS PROFILE ===
+      CREATE TABLE IF NOT EXISTS player_chess_profile (
+        id TEXT PRIMARY KEY CHECK (id = 'player'),
+        elo_rating INTEGER DEFAULT 1200,
+        peak_elo INTEGER DEFAULT 1200,
+        total_games INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        draws INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Initialize player chess profile
+      INSERT OR IGNORE INTO player_chess_profile (id) VALUES ('player');
     `);
   }
 
@@ -307,6 +323,29 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_player_npc_rel ON player_npc_relationships(player_id, npc_id);
       CREATE INDEX IF NOT EXISTS idx_npc_rel_stage ON player_npc_relationships(relationship_stage);
       CREATE INDEX IF NOT EXISTS idx_npc_rel_updated ON player_npc_relationships(updated_at);
+
+      -- === CHESS PROFILES (NPC Chess Stats & ELO) ===
+      CREATE TABLE IF NOT EXISTS chess_profiles (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL UNIQUE,
+        elo_rating INTEGER DEFAULT 1200,
+        peak_elo INTEGER DEFAULT 1200,
+        total_games INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        draws INTEGER DEFAULT 0,
+        skill_level INTEGER DEFAULT 5,
+        playstyle TEXT DEFAULT 'balanced' CHECK (playstyle IN ('aggressive', 'defensive', 'balanced', 'tactical', 'positional')),
+        last_game_at INTEGER,
+        current_win_streak INTEGER DEFAULT 0,
+        best_win_streak INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (npc_id) REFERENCES npcs(id)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_chess_profiles_elo ON chess_profiles(elo_rating DESC);
+      CREATE INDEX IF NOT EXISTS idx_chess_profiles_npc ON chess_profiles(npc_id);
     `);
   }
 
@@ -686,6 +725,56 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
 
       CREATE INDEX IF NOT EXISTS idx_deliberation_npc ON deliberation_sessions(npc_id);
       CREATE INDEX IF NOT EXISTS idx_deliberation_started ON deliberation_sessions(started_at DESC);
+    `);
+
+    // === CHESS SYSTEM ===
+    db.exec(`
+      -- Chess matches
+      CREATE TABLE IF NOT EXISTS chess_matches (
+        id TEXT PRIMARY KEY,
+        white_player_id TEXT NOT NULL,
+        white_player_type TEXT NOT NULL CHECK (white_player_type IN ('player', 'npc')),
+        black_player_id TEXT NOT NULL,
+        black_player_type TEXT NOT NULL CHECK (black_player_type IN ('player', 'npc')),
+        status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'abandoned')),
+        result TEXT CHECK (result IN ('white_win', 'black_win', 'draw', 'abandoned')),
+        termination_reason TEXT,
+        moves TEXT NOT NULL DEFAULT '[]',
+        current_fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        move_count INTEGER DEFAULT 0,
+        white_elo_before INTEGER,
+        black_elo_before INTEGER,
+        white_elo_after INTEGER,
+        black_elo_after INTEGER,
+        elo_change INTEGER,
+        started_at INTEGER DEFAULT (unixepoch()),
+        completed_at INTEGER,
+        last_move_at INTEGER
+      );
+
+      -- Chess moves (detailed move log)
+      CREATE TABLE IF NOT EXISTS chess_moves (
+        id TEXT PRIMARY KEY,
+        match_id TEXT NOT NULL,
+        move_number INTEGER NOT NULL,
+        player_id TEXT NOT NULL,
+        player_type TEXT NOT NULL CHECK (player_type IN ('player', 'npc')),
+        move_notation TEXT NOT NULL,
+        move_uci TEXT NOT NULL,
+        fen_after TEXT NOT NULL,
+        is_check INTEGER DEFAULT 0,
+        is_checkmate INTEGER DEFAULT 0,
+        time_taken_ms INTEGER,
+        created_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (match_id) REFERENCES chess_matches(id)
+      );
+
+      -- Chess indexes
+      CREATE INDEX IF NOT EXISTS idx_chess_matches_white ON chess_matches(white_player_id, white_player_type);
+      CREATE INDEX IF NOT EXISTS idx_chess_matches_black ON chess_matches(black_player_id, black_player_type);
+      CREATE INDEX IF NOT EXISTS idx_chess_matches_status ON chess_matches(status);
+      CREATE INDEX IF NOT EXISTS idx_chess_matches_started ON chess_matches(started_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_chess_moves_match ON chess_moves(match_id, move_number);
     `);
   }
 }
