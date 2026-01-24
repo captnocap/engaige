@@ -20,7 +20,8 @@ export type EventCategory =
   | 'system'
   | 'scheduler'
   | 'ai'
-  | 'media';
+  | 'media'
+  | 'chess';
 
 // ─────────────────────────────────────────────────────────────────
 // Base Event Structure
@@ -466,6 +467,48 @@ export interface NPCDeliberationCompletedPayload {
   thought_count: number;
 }
 
+// === CHESS EVENTS ===
+export interface ChessMatchStartedPayload {
+  match_id: string;
+  white_player_id: string;
+  black_player_id: string;
+  white_elo: number;
+  black_elo: number;
+}
+
+export interface ChessMoveMadePayload {
+  match_id: string;
+  player_id: string;
+  move_notation: string;
+  move_number: number;
+  is_check: boolean;
+  is_checkmate: boolean;
+  fen_after: string;
+}
+
+export interface ChessMatchEndedPayload {
+  match_id: string;
+  result: 'white_win' | 'black_win' | 'draw' | 'abandoned';
+  termination_reason: string;
+  white_elo_change: number;
+  black_elo_change: number;
+}
+
+export interface ChessEloUpdatedPayload {
+  player_id: string;
+  player_type: 'player' | 'npc';
+  old_elo: number;
+  new_elo: number;
+  change: number;
+}
+
+export interface ChessChallengeSentPayload {
+  challenger_id: string;
+  challenger_type: 'player' | 'npc';
+  opponent_id: string;
+  opponent_type: 'player' | 'npc';
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Event Type Constants
 // ─────────────────────────────────────────────────────────────────
@@ -578,6 +621,13 @@ export const EventTypes = {
   NPC_THOUGHT_CAPTURED: 'npc:thought_captured',
   NPC_DELIBERATION_STARTED: 'npc:deliberation_started',
   NPC_DELIBERATION_COMPLETED: 'npc:deliberation_completed',
+
+  // Chess
+  CHESS_MATCH_STARTED: 'chess:match_started',
+  CHESS_MOVE_MADE: 'chess:move_made',
+  CHESS_MATCH_ENDED: 'chess:match_ended',
+  CHESS_ELO_UPDATED: 'chess:elo_updated',
+  CHESS_CHALLENGE_SENT: 'chess:challenge_sent',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];
