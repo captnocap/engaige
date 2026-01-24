@@ -259,29 +259,33 @@ export default function WorldViewer() {
         const [lng, lat] = gridToLatLng(building.position.x, building.position.y);
         const color = BUILDING_COLORS[building.type] || 0x888888;
 
-        // Building height based on type and capacity
-        let height = 20 + (building.capacity || 10) * 2;
-        if (building.type === 'office') height *= 1.5;
-        if (building.type === 'apartment') height *= 1.2;
-        if (building.type === 'house') height *= 0.5;
-        if (building.type === 'park' || building.type === 'plaza') height = 2;
+        // Building height based on type and capacity (scaled for visibility)
+        let height = 15 + (building.capacity || 5) * 1.5;
+        if (building.type === 'office') height *= 2;
+        if (building.type === 'apartment') height *= 1.5;
+        if (building.type === 'house') height *= 0.4;
+        if (building.type === 'park' || building.type === 'plaza') height = 3;
 
-        // Building size
-        const width = (building.size?.width || 1) * 15;
-        const depth = (building.size?.height || 1) * 15;
+        // Building footprint size
+        const width = (building.size?.width || 1) * 8;
+        const depth = (building.size?.height || 1) * 8;
 
-        // Create building geometry
-        const geometry = new THREE.BoxGeometry(width, height, depth);
+        // Create building geometry - BoxGeometry(width, depth, height)
+        // In maptalks.three, Z is up, so we use (width, depth, height)
+        const geometry = new THREE.BoxGeometry(width, depth, height);
+
+        // Shift geometry so bottom is at origin (building sits on ground)
+        geometry.translate(0, 0, height / 2);
+
         const material = new THREE.MeshLambertMaterial({
           color,
-          transparent: true,
-          opacity: 0.9,
+          transparent: false,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
 
-        // Position the mesh
-        const position = threeLayer.coordinateToVector3([lng, lat], height / 2);
+        // Position at ground level (altitude = 0)
+        const position = threeLayer.coordinateToVector3([lng, lat], 0);
         mesh.position.copy(position);
 
         // Store building data for interactions
@@ -325,7 +329,7 @@ export default function WorldViewer() {
 
       if (!marker) {
         // Create new marker - blue sphere for AI NPCs
-        const geometry = new THREE.SphereGeometry(8, 16, 16);
+        const geometry = new THREE.SphereGeometry(5, 16, 16);
         const material = new THREE.MeshLambertMaterial({
           color: 0x3498db,
           emissive: 0x1a4a6e,
@@ -337,8 +341,8 @@ export default function WorldViewer() {
         threeLayer.addMesh(marker);
       }
 
-      // Update position
-      const position = threeLayer.coordinateToVector3([lng, lat], 30);
+      // Update position - place above ground
+      const position = threeLayer.coordinateToVector3([lng, lat], 20);
       marker.position.copy(position);
     });
 
@@ -367,16 +371,16 @@ export default function WorldViewer() {
     visibleNPCs.forEach(npc => {
       const [lng, lat] = gridToLatLng(npc.position.x, npc.position.y);
 
-      const geometry = new THREE.SphereGeometry(4, 8, 8);
+      const geometry = new THREE.SphereGeometry(3, 8, 8);
       const material = new THREE.MeshLambertMaterial({
-        color: 0x888888,
-        transparent: true,
-        opacity: 0.7,
+        color: 0xaaaaaa,
+        emissive: 0x333333,
       });
       const marker = new THREE.Mesh(geometry, material);
       (marker as any).userData = { npcId: npc.id, isAI: false, name: npc.name };
 
-      const position = threeLayer.coordinateToVector3([lng, lat], 15);
+      // Place at ground level
+      const position = threeLayer.coordinateToVector3([lng, lat], 10);
       marker.position.copy(position);
 
       npcMarkersRef.current.set(npc.id, marker);
@@ -418,17 +422,20 @@ export default function WorldViewer() {
     const threeLayer = threeLayerRef.current;
     const [lng, lat] = gridToLatLng(playerHome.position.x, playerHome.position.y);
 
-    // Create player home marker - green pulsing beacon
-    const geometry = new THREE.ConeGeometry(10, 30, 8);
+    // Create player home marker - green beacon pointing up
+    const geometry = new THREE.ConeGeometry(6, 20, 8);
+    // Rotate geometry so cone points up (along Z axis in maptalks)
+    geometry.rotateX(Math.PI / 2);
+    geometry.translate(0, 0, 30); // Lift above buildings
+
     const material = new THREE.MeshLambertMaterial({
       color: 0x00ff00,
       emissive: 0x00aa00,
     });
     const marker = new THREE.Mesh(geometry, material);
 
-    const position = threeLayer.coordinateToVector3([lng, lat], 50);
+    const position = threeLayer.coordinateToVector3([lng, lat], 0);
     marker.position.copy(position);
-    marker.rotation.x = Math.PI; // Point down
 
     threeLayer.addMesh(marker);
     threeLayer.renderScene();
