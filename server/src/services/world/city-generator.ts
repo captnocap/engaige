@@ -10,7 +10,8 @@
 
 import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
 import {
   type CityData,
   type District,
@@ -26,7 +27,9 @@ import {
 // Configuration
 // ============================================================================
 
-const DATA_DIR = join(dirname(import.meta.url.replace('file://', '')), '../../../data/world');
+// Resolve path relative to this file
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const DATA_DIR = join(__dirname, '../../../data/world');
 
 // City generation parameters
 const GRID_WIDTH = 200;   // 200 tiles wide
