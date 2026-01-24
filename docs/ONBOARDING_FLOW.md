@@ -2,17 +2,18 @@
 
 > **Status:** Specification Phase
 > **Priority:** High - First-time user experience and account creation
-> **Dependencies:** Time System, Account Service, AI Providers, Budget System
+> **Dependencies:** Time System, Account Service, AI Providers, Budget System, Personality Assessment
 
 ## Overview
 
-The Onboarding Flow guides new users through account setup, configuring their AI provider, budget limits, personal profile, world preferences, and time settings. This is the critical first impression and must be smooth, informative, and allow flexibility while having sensible defaults.
+The Onboarding Flow guides new users through account setup, configuring their AI provider, budget limits, personal profile, personality assessment, world preferences, and time settings. This is the critical first impression and must be smooth, informative, and allow flexibility while having sensible defaults.
 
 **Design Philosophy:**
 - **Progressive disclosure** - Show basics first, advanced options later
 - **Skip-friendly** - Defaults should work; users can refine later
 - **Educational** - Explain what each setting does and why it matters
 - **Reversible** - All settings can be changed later in Settings
+- **Engaging** - Personality assessment makes onboarding feel personal, not just configuration
 
 ---
 
@@ -23,17 +24,18 @@ The Onboarding Flow guides new users through account setup, configuring their AI
 3. [Step 2: AI Provider Setup](#step-2-ai-provider-setup)
 4. [Step 3: Budget Configuration](#step-3-budget-configuration)
 5. [Step 4: User Profile](#step-4-user-profile)
-6. [Step 5: World Preferences](#step-5-world-preferences)
-7. [Step 6: Time Settings](#step-6-time-settings)
-8. [Step 7: Content Rating](#step-7-content-rating)
-9. [Step 8: Review & Generate](#step-8-review--generate)
-10. [Data Structures](#data-structures)
-11. [Backend Integration](#backend-integration)
-12. [Frontend Components](#frontend-components)
-13. [Validation Rules](#validation-rules)
-14. [Skip & Default Behavior](#skip--default-behavior)
-15. [Post-Onboarding](#post-onboarding)
-16. [Error Handling](#error-handling)
+6. [Step 5: Personality Assessment](#step-5-personality-assessment) ← **NEW**
+7. [Step 6: World Preferences](#step-6-world-preferences)
+8. [Step 7: Time Settings](#step-7-time-settings)
+9. [Step 8: Content Rating](#step-8-content-rating)
+10. [Step 9: Review & Generate](#step-9-review--generate)
+11. [Data Structures](#data-structures)
+12. [Backend Integration](#backend-integration)
+13. [Frontend Components](#frontend-components)
+14. [Validation Rules](#validation-rules)
+15. [Skip & Default Behavior](#skip--default-behavior)
+16. [Post-Onboarding](#post-onboarding)
+17. [Error Handling](#error-handling)
 
 ---
 
@@ -52,13 +54,15 @@ The Onboarding Flow guides new users through account setup, configuring their AI
 │       ↓                                                        │
 │  [4] Profile        → Username, bio, interests, avatar         │
 │       ↓                                                        │
-│  [5] World Prefs    → NPC types, count, romantic/platonic mix  │
+│  [5] Personality    → Assessment test (maps triggers/prefs)    │  ← NEW
 │       ↓                                                        │
-│  [6] Time Settings  → Time scale, pause behavior               │
+│  [6] World Prefs    → NPC types, count, romantic/platonic mix  │
 │       ↓                                                        │
-│  [7] Content Rating → Safety level for AI content              │
+│  [7] Time Settings  → Time scale, pause behavior               │
 │       ↓                                                        │
-│  [8] Review         → Summary, confirm, generate NPCs          │
+│  [8] Content Rating → Safety level for AI content              │
+│       ↓                                                        │
+│  [9] Review         → Summary, confirm, generate NPCs          │
 │       ↓                                                        │
 │  [✓] Complete       → Enter desktop environment                │
 │                                                                 │
@@ -67,7 +71,7 @@ The Onboarding Flow guides new users through account setup, configuring their AI
 
 ### Progress Indicator
 
-Each step shows progress: `Step 2 of 8 · AI Provider Setup`
+Each step shows progress: `Step 2 of 9 · AI Provider Setup`
 
 ### Navigation
 
@@ -426,16 +430,117 @@ Create the player's in-game identity. NPCs will know the player by this profile.
 
 ---
 
-## Step 5: World Preferences
+## Step 5: Personality Assessment
+
+> **Full specification:** See [PERSONALITY_ASSESSMENT.md](./PERSONALITY_ASSESSMENT.md)
 
 ### Purpose
-Configure what types of NPCs populate the world and how many to generate.
+A "personality test" that maps the player's emotional triggers, social preferences, and behavioral tolerances. This data directly informs NPC generation - creating characters they'll love, hate, and everything in between.
+
+**What the player sees:** "A personality assessment to help match you with compatible characters."
+
+**What it actually does:** Maps triggers to generate ~40% compatible NPCs, ~30% challenging NPCs, ~20% antagonistic NPCs, and ~10% wildcards.
 
 ### UI Layout
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Step 5 of 8 · World Preferences                                │
+│  Step 5 of 9 · Personality Assessment        Question 7 of 30   │
+├─────────────────────────────────────────────────────────────────┤
+│  ━━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
+│                                                                 │
+│  Communication Styles                                           │
+│  ─────────────────────────────────────────────────────────────  │
+│                                                                 │
+│     How do you feel when...                                    │
+│                                                                 │
+│     ┌─────────────────────────────────────────────────────────┐│
+│     │                                                         ││
+│     │   someone takes hours to respond to your message        ││
+│     │                                                         ││
+│     └─────────────────────────────────────────────────────────┘│
+│                                                                 │
+│     😠          😕          😐          🙂          😊          │
+│                                                                 │
+│     ○           ○           ○           ○           ○          │
+│   Very       Somewhat    Neutral    Somewhat     Very          │
+│  Negative    Negative              Positive    Positive        │
+│                                                                 │
+│                                  [ ← Back ]  [ Next → ]        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Question Categories
+
+| Category | Questions | What It Maps |
+|----------|-----------|--------------|
+| Social Media | 6-8 | Posting habits tolerance, validation needs |
+| Communication | 5-7 | Response speed, message style preferences |
+| Personality | 6-8 | Trait tolerance (optimism, bluntness, etc.) |
+| Relationships | 5-7 | Clinginess, distance, jealousy preferences |
+| Conflict & Drama | 4-6 | Confrontation style, gossip tolerance |
+
+### Player Archetypes (Detected)
+
+Based on responses, classify into:
+- `the_validator` - Needs constant engagement
+- `the_independent` - Values space, dislikes clinginess
+- `the_peacekeeper` - Avoids conflict
+- `the_confronter` - Prefers direct communication
+- `the_empath` - Sensitive to emotions
+- `the_stoic` - Uncomfortable with emotional expression
+- `the_social_butterfly` - High tolerance for all behaviors
+- `the_selective` - Very particular about personality types
+- `the_chaos_agent` - Enjoys drama
+- `the_stability_seeker` - Prefers predictable relationships
+
+### Results Display
+
+After completion, show personality profile (positive framing):
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│     🎯 Primary Type: The Independent                           │
+│                                                                 │
+│     You value personal space and autonomy. You appreciate      │
+│     people who respect boundaries and don't require            │
+│     constant attention.                                        │
+│                                                                 │
+│     Strengths: Clear boundaries, self-sufficient               │
+│     Growth areas: Balance independence with vulnerability      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Fields Collected
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `responses` | QuestionResponse[] | All answers with scores |
+| `archetype` | PlayerArchetype | Primary personality type |
+| `trait_scores` | TraitScore[] | Aggregated trait measurements |
+| `behavioral_preferences` | BehavioralPreference[] | What behaviors to generate |
+| `strong_likes` | string[] | Behaviors with score > 1.5 |
+| `strong_dislikes` | string[] | Behaviors with score < -1.5 |
+
+### Actions
+
+- **Back** → Return to Profile
+- **Next** → Complete question, advance (or finish if last)
+- **Skip Assessment** → Use neutral defaults (discouraged)
+
+---
+
+## Step 6: World Preferences
+
+### Purpose
+Configure what types of NPCs populate the world and how many to generate. Now informed by personality assessment results.
+
+### UI Layout
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 6 of 9 · World Preferences                                │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │     Customize your world's population                          │
@@ -523,7 +628,7 @@ Configure what types of NPCs populate the world and how many to generate.
 
 ---
 
-## Step 6: Time Settings
+## Step 7: Time Settings
 
 ### Purpose
 Configure how time passes in the game world. See [TIME_SYSTEM.md](./TIME_SYSTEM.md) for full spec.
@@ -532,7 +637,7 @@ Configure how time passes in the game world. See [TIME_SYSTEM.md](./TIME_SYSTEM.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Step 6 of 8 · Time Settings                                    │
+│  Step 7 of 9 · Time Settings                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │     How fast should time pass in your world?                   │
@@ -596,7 +701,7 @@ Configure how time passes in the game world. See [TIME_SYSTEM.md](./TIME_SYSTEM.
 
 ---
 
-## Step 7: Content Rating
+## Step 8: Content Rating
 
 ### Purpose
 Set the content safety level for AI-generated content. See [CONTENT_GUARDRAILS.md](./CONTENT_GUARDRAILS.md).
@@ -605,7 +710,7 @@ Set the content safety level for AI-generated content. See [CONTENT_GUARDRAILS.m
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Step 7 of 8 · Content Rating                                   │
+│  Step 8 of 9 · Content Rating                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │     What content level are you comfortable with?               │
@@ -692,7 +797,7 @@ This setting is not recommended.
 
 ---
 
-## Step 8: Review & Generate
+## Step 9: Review & Generate
 
 ### Purpose
 Show summary of all settings, allow final adjustments, then generate NPCs.
@@ -701,7 +806,7 @@ Show summary of all settings, allow final adjustments, then generate NPCs.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Step 8 of 8 · Review & Create World                            │
+│  Step 9 of 9 · Review & Create World                            │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │     Almost there! Review your settings:                        │
@@ -716,6 +821,9 @@ Show summary of all settings, allow final adjustments, then generate NPCs.
 │  ├───────────────────────────────────────────────────────────┤ │
 │  │ Profile: @alex_gaming (Alex)                    [Edit]    │ │
 │  │ Interests: Gaming, Music, Technology, Anime               │ │
+│  ├───────────────────────────────────────────────────────────┤ │
+│  │ Personality: The Independent               [View/Retake]  │ │
+│  │ "Values space, clear boundaries, self-sufficient"         │ │
 │  ├───────────────────────────────────────────────────────────┤ │
 │  │ World: 25 NPCs, Mixed romantic/platonic         [Edit]    │ │
 │  │ Ages 22-38, Mixed genders, Modern setting                 │ │
@@ -846,7 +954,29 @@ interface OnboardingData {
     avatarUrl?: string;
   };
 
-  // Step 5: World Preferences
+  // Step 5: Personality Assessment (see PERSONALITY_ASSESSMENT.md)
+  personality: {
+    responses: Array<{
+      question_id: string;
+      response: -2 | -1 | 0 | 1 | 2;
+      category: string;
+    }>;
+    archetype: PlayerArchetype;
+    archetypeConfidence: number;
+    secondaryArchetype?: PlayerArchetype;
+    traitScores: Record<string, number>;
+    strongLikes: string[];      // Behaviors with score > 1.5
+    strongDislikes: string[];   // Behaviors with score < -1.5
+    generationWeights: {
+      compatible: number;       // ~0.40
+      challenging: number;      // ~0.30
+      antagonistic: number;     // ~0.20
+      wildcard: number;         // ~0.10
+    };
+    skipped: boolean;           // True if player skipped assessment
+  };
+
+  // Step 6: World Preferences
   world: {
     npcCount: number;
     romanticLevel: 'none' | 'low' | 'medium' | 'high';
@@ -859,21 +989,33 @@ interface OnboardingData {
     diversePersonalities: boolean;
   };
 
-  // Step 6: Time
+  // Step 7: Time
   time: {
     scale: number;
     pauseWhenMinimized: boolean;
     showRealTimeInUI: boolean;
   };
 
-  // Step 7: Content
+  // Step 8: Content
   content: {
     rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
   };
 
-  // Step 8: Options
+  // Step 9: Options
   generateNPCs: boolean;
 }
+
+type PlayerArchetype =
+  | 'the_validator'
+  | 'the_independent'
+  | 'the_peacekeeper'
+  | 'the_confronter'
+  | 'the_empath'
+  | 'the_stoic'
+  | 'the_social_butterfly'
+  | 'the_selective'
+  | 'the_chaos_agent'
+  | 'the_stability_seeker';
 ```
 
 ### OnboardingState (Frontend)
@@ -1033,30 +1175,40 @@ Validate on field blur and before proceeding to next step.
 
 ### Skippable Steps
 
-| Step | Skippable | What Happens |
-|------|-----------|--------------|
-| 1 | No | Must provide account name |
-| 2 | No | Must configure AI (game won't work) |
-| 3 | Yes | Uses $10/month, default allocations |
-| 4 | Partial | Username required, rest optional |
-| 5 | Yes | Uses 25 NPCs, medium everything |
-| 6 | Yes | Uses 4x, pause when minimized |
-| 7 | Yes | Uses "Normal" rating |
-| 8 | No | Must confirm to create |
+| Step | Name | Skippable | What Happens If Skipped |
+|------|------|-----------|------------------------|
+| 1 | Welcome | No | Must provide account name |
+| 2 | AI Provider | No | Must configure AI (game won't work) |
+| 3 | Budget | Yes | Uses $10/month, default allocations |
+| 4 | Profile | Partial | Username required, rest optional |
+| 5 | **Personality** | **Yes** | **Neutral scores, balanced NPC generation** |
+| 6 | World Prefs | Yes | Uses 25 NPCs, medium everything |
+| 7 | Time | Yes | Uses 4x, pause when minimized |
+| 8 | Content | Yes | Uses "Normal" rating |
+| 9 | Review | No | Must confirm to create |
+
+### Personality Assessment Skip Behavior
+
+If skipped:
+- All trait scores set to 0 (neutral)
+- Archetype defaults to `the_social_butterfly`
+- NPC generation uses balanced distribution (25% each category)
+- Show reminder: "Take the assessment anytime in Settings to personalize your world"
 
 ### Copy From Existing Account
 
 When creating account with "Copy Everything" or "Copy Settings Only":
 
 **Copy Everything:**
-- Skip steps 2-7 (copy all settings)
-- Show abbreviated review at step 8
+- Skip steps 2-8 (copy all settings including personality)
+- Show abbreviated review at step 9
 - Only generate new NPCs (don't copy NPCs)
+- New NPCs use copied personality assessment data
 
 **Copy Settings Only:**
 - Skip steps 2-3 (copy provider + budget)
-- Still do steps 4-7 (new profile, new preferences)
-- Generate new NPCs
+- Still do steps 4-8 (new profile, new personality, new preferences)
+- Fresh personality assessment for new world
 
 ---
 
