@@ -202,12 +202,12 @@ export const useWorldStore = create<WorldState>((set, get) => ({
     console.log('[WorldStore] Loading world state...');
 
     try {
-      const response = await wsStore.request('world:getState', {});
-      console.log('[WorldStore] Response:', response);
+      // request() returns the payload directly (already unwrapped)
+      const data = await wsStore.request<object, any>('world:getState', {});
+      console.log('[WorldStore] Data received:', data);
+      console.log('[WorldStore] City:', data?.city?.name, 'Buildings:', data?.city?.buildings?.length);
 
-      if (response.success && response.payload) {
-        const data = response.payload as any;
-        console.log('[WorldStore] City loaded:', data.city?.name, 'Buildings:', data.city?.buildings?.length);
+      if (data?.city) {
         set({
           city: data.city,
           gameTime: data.gameTime,
@@ -219,10 +219,10 @@ export const useWorldStore = create<WorldState>((set, get) => ({
           isLoading: false,
         });
       } else {
-        console.error('[WorldStore] Failed:', response.error);
+        console.error('[WorldStore] No city data in response');
         set({
           isLoading: false,
-          error: response.error || 'Failed to load world state',
+          error: 'No city data received',
         });
       }
     } catch (err) {
@@ -279,10 +279,9 @@ export const useWorldStore = create<WorldState>((set, get) => ({
     const wsStore = useWSStore.getState();
 
     try {
-      const response = await wsStore.request('world:getBackgroundNPCs', bounds);
-
-      if (response.success && response.payload) {
-        set({ backgroundNPCs: (response.payload as any).npcs || [] });
+      const data = await wsStore.request<any, any>('world:getBackgroundNPCs', bounds);
+      if (data?.npcs) {
+        set({ backgroundNPCs: data.npcs });
       }
     } catch (err) {
       console.error('[WorldStore] Failed to fetch background NPCs:', err);
