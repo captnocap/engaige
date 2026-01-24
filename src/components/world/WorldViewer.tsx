@@ -202,6 +202,7 @@ export default function WorldViewer() {
 
   // Render the world when data changes
   useEffect(() => {
+    console.log('[WorldViewer] Render effect - app:', !!appRef.current, 'container:', !!worldContainerRef.current, 'city:', !!city);
     if (!appRef.current || !worldContainerRef.current || !city) return;
 
     const worldContainer = worldContainerRef.current;
@@ -214,6 +215,8 @@ export default function WorldViewer() {
       dimensions.height,
       5
     );
+    console.log('[WorldViewer] Visible bounds:', visibleBounds);
+    console.log('[WorldViewer] Rendering - districts:', city.districts.length, 'buildings:', city.buildings.length, 'bgNPCs:', backgroundNPCs.length);
 
     // Render districts (ground layer)
     renderDistricts(worldContainer, city.districts, visibleBounds);
@@ -226,6 +229,8 @@ export default function WorldViewer() {
 
     // Render background NPCs
     renderBackgroundNPCs(worldContainer, backgroundNPCs, visibleBounds);
+
+    console.log('[WorldViewer] Container children after render:', worldContainer.children.length);
 
     // Render player home marker
     if (playerHome) {
@@ -505,57 +510,14 @@ export default function WorldViewer() {
   // Render
   // ============================================================================
 
-  // Show connecting state
-  if (!connected) {
-    return (
-      <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
-        <div className="text-center">
-          <p className="text-lg mb-2">Connecting to server...</p>
-          <p className="text-sm opacity-70">Please wait</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
-        <div className="text-center">
-          <p className="text-[var(--color-error)] mb-2">Failed to load world</p>
-          <p className="text-sm opacity-70">{error}</p>
-          <button
-            onClick={loadWorldState}
-            className="mt-4 px-4 py-2 bg-[var(--color-primary)] rounded hover:opacity-80"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading state if no city yet
-  if (!city) {
-    return (
-      <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
-        <div className="text-center">
-          <p className="mb-2">{isLoading ? 'Loading world...' : 'No world data'}</p>
-          {!isLoading && (
-            <button
-              onClick={loadWorldState}
-              className="px-4 py-2 bg-[var(--color-primary)] rounded hover:opacity-80"
-            >
-              Load World
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
+  // Determine overlay state
+  const showConnecting = !connected;
+  const showError = connected && error;
+  const showLoading = connected && !error && !city;
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      {/* PixiJS Canvas Container */}
+      {/* PixiJS Canvas Container - ALWAYS rendered so ref is attached */}
       <div
         ref={containerRef}
         className="w-full h-full cursor-grab active:cursor-grabbing"
@@ -566,15 +528,51 @@ export default function WorldViewer() {
         onWheel={handleWheel}
       />
 
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-          <div className="text-white">Loading world...</div>
+      {/* Connecting Overlay */}
+      {showConnecting && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
+          <div className="text-center">
+            <p className="text-lg mb-2">Connecting to server...</p>
+            <p className="text-sm opacity-70">Please wait</p>
+          </div>
         </div>
       )}
 
-      {/* World Controls */}
-      <WorldControls />
+      {/* Error Overlay */}
+      {showError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
+          <div className="text-center">
+            <p className="text-[var(--color-error)] mb-2">Failed to load world</p>
+            <p className="text-sm opacity-70">{error}</p>
+            <button
+              onClick={loadWorldState}
+              className="mt-4 px-4 py-2 bg-[var(--color-primary)] rounded hover:opacity-80"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {showLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
+          <div className="text-center">
+            <p className="mb-2">{isLoading ? 'Loading world...' : 'No world data'}</p>
+            {!isLoading && (
+              <button
+                onClick={loadWorldState}
+                className="px-4 py-2 bg-[var(--color-primary)] rounded hover:opacity-80"
+              >
+                Load World
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* World Controls - only show when data loaded */}
+      {city && <WorldControls />}
 
       {/* NPC Popover */}
       {hoveredNPCId && popoverPosition && (
