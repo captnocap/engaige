@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useWSRequest } from '../../stores/wsStore.js';
 import { ChessBoard } from './ChessBoard.js';
+import { Select } from '../ui/Select.js';
 
 interface ChessMatch {
   id: string;
@@ -130,17 +131,18 @@ export function PlayView() {
       <div className="shrink-0 px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <h3 className="text-lg font-semibold text-[var(--color-text)] mb-3">Challenge an NPC</h3>
         <div className="flex gap-3">
-          <select
-            value={selectedNPC}
-            onChange={(e) => setSelectedNPC(e.target.value)}
-            className="flex-1 px-3 py-2 rounded bg-[var(--color-bgSecondary)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-primary)]"
-          >
-            {npcs.map(npc => (
-              <option key={npc.id} value={npc.id}>
-                {npc.display_name} (ELO: {npc.elo})
-              </option>
-            ))}
-          </select>
+          <div className="flex-1">
+            <Select
+              value={selectedNPC}
+              onChange={setSelectedNPC}
+              options={npcs.map(npc => ({
+                value: npc.id,
+                label: `${npc.display_name} (ELO: ${npc.elo})`
+              }))}
+              placeholder="Select an opponent"
+              disabled={challenging}
+            />
+          </div>
           <button
             onClick={challengeNPC}
             disabled={challenging || !selectedNPC}
