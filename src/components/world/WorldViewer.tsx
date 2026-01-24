@@ -117,19 +117,27 @@ export default function WorldViewer() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let isMounted = true;
+    const container = containerRef.current;
     const app = new Application();
 
     const initApp = async () => {
       await app.init({
-        width: containerRef.current!.clientWidth,
-        height: containerRef.current!.clientHeight,
+        width: container.clientWidth,
+        height: container.clientHeight,
         backgroundColor: 0x1a1a2e,
         antialias: true,
         resolution: window.devicePixelRatio || 1,
         autoDensity: true,
       });
 
-      containerRef.current!.appendChild(app.canvas as HTMLCanvasElement);
+      // Check if still mounted after async init
+      if (!isMounted) {
+        app.destroy(true);
+        return;
+      }
+
+      container.appendChild(app.canvas as HTMLCanvasElement);
       appRef.current = app;
 
       // Create world container
@@ -149,22 +157,23 @@ export default function WorldViewer() {
 
     // Handle resize
     const handleResize = () => {
-      if (appRef.current && containerRef.current) {
+      if (appRef.current && container) {
         appRef.current.renderer.resize(
-          containerRef.current.clientWidth,
-          containerRef.current.clientHeight
+          container.clientWidth,
+          container.clientHeight
         );
         setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
+          width: container.clientWidth,
+          height: container.clientHeight,
         });
       }
     };
 
     const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(containerRef.current);
+    resizeObserver.observe(container);
 
     return () => {
+      isMounted = false;
       resizeObserver.disconnect();
       if (appRef.current) {
         appRef.current.destroy(true, { children: true });
