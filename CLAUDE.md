@@ -372,6 +372,34 @@ This game is built on content immersion. If a user clicks something that looks c
 
 ---
 
+## ⚠️ CRITICAL: World Lore - If You Reference It, Build It
+
+**Every URL, link, or reference in the game world MUST lead somewhere real.**
+
+When content references a website, band, character, or location - it needs to exist. The magic is in the interconnected details. A StrangerZone bot that says "go to t0tallyreal.scam" and that site doesn't exist breaks immersion instantly.
+
+### The Rules
+
+1. **Before adding a URL** - Check if the site exists in our registry
+2. **Cross-reference existing lore** - Use established characters (Derek, Trust Fall Tim, Mildred, etc.)
+3. **Use the number 847** - Our running Easter egg (Derek's 847 trials, TFT's 2,847 falls, etc.)
+4. **Update the lore doc** - When you create new recurring elements
+
+### Major Lore Pillars
+
+| Topic | Summary |
+|-------|---------|
+| **Quantum Coffee** | Pseudoscience brewing, $47/cup, Derek is obsessed, Martinez Study |
+| **Hartwell Building** | Missing 13th floor, Floor 7 mirrors, Omnicorp Holdings, 1923 mystery |
+| **The Underground** | Mars's venue, relocated from near Hartwell, hosts TFT and bands |
+| **Trust Fall Tim** | 2,847 falls, 78.5% catch rate, The Incident with Small Kevin |
+| **Velvet Algorithms** | Existential electronic duo, on meditation hiatus |
+| **Neon Requiem** | Post-punk legends, broke up Jan 2024, legendary final show |
+
+**Full documentation:** [WORLD_LORE.md](docs/WORLD_LORE.md)
+
+---
+
 **engAIge** is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
 
 **Core Vision:**

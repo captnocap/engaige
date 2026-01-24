@@ -455,6 +455,24 @@ export const FILLER_SITES = {
       border: '#E2E8F0',
     },
   },
+
+  totallyreal: {
+    id: 'totallyreal',
+    name: 'T0TALLY REAL',
+    tagline: '100% Legit No Scam Promise',
+    url: 't0tallyreal.scam',
+    icon: '🔥',
+    description: 'The most obvious scam site on the fake internet. Referenced by StrangerZone bots.',
+    theme: {
+      primary: '#FF00FF',      // Magenta scam energy
+      secondary: '#00FF00',    // Neon green
+      background: '#000000',   // Black
+      surface: '#1a1a1a',      // Dark
+      text: '#FF00FF',         // Magenta text
+      textMuted: '#FF69B4',    // Hot pink
+      border: '#FF00FF',       // Magenta border
+    },
+  },
 } as const;
 
 // ============================================================================

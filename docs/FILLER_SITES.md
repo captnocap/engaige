@@ -66,6 +66,17 @@ Before building a new filler site, **study these sites that got it right:**
 
 These set the bar. New sites should match or exceed their depth.
 
+### Rule 6: Use Existing Lore
+
+Before inventing new characters, locations, or concepts:
+
+1. **Check [WORLD_LORE.md](WORLD_LORE.md)** for existing elements you can reference
+2. **Cross-reference major pillars**: Quantum Coffee, Hartwell Building, The Underground, Trust Fall Tim, etc.
+3. **Use established characters**: Derek, Mildred, Mars, Big/Small Kevin, etc.
+4. **Use the number 847** when you need a random number (it's our Easter egg)
+
+The magic is in the interconnected details. A random number "847" that a user notices across multiple sites is delightful. A new character when Derek would fit perfectly is a missed opportunity.
+
 ### Rule 5: Test Like a User
 
 Before considering a site "done", click on EVERYTHING:
