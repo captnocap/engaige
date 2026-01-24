@@ -21,7 +21,7 @@ interface ChessBoardProps {
 
 export function ChessBoard({ match, onUpdate }: ChessBoardProps) {
   const { request } = useWSRequest();
-  const [making Move, setMakingMove] = useState(false);
+  const [makingMove, setMakingMove] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isPlayerWhite = match.white_player_type === 'player';
