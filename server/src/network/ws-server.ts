@@ -23,6 +23,8 @@ import { errorLogger } from '../services/error-logger.js';
 export interface ClientSession {
   id: string;
   connectedAt: number;
+  // Account context
+  accountId?: string; // Active account for this session
   // Subscription state
   subscribedToThoughts?: boolean;
   thoughtsNpcFilter?: string; // If set, only get thoughts from this NPC
@@ -148,6 +150,23 @@ async function routeMessage(
         setProxyConfig(message.payload);
       }
       send(ws, createResponse(message.id, true, getProxyConfig()));
+      break;
+
+    // Account routes
+    case 'account:list':
+      await handleAccountList(ws, message);
+      break;
+
+    case 'account:select':
+      await handleAccountSelect(ws, message);
+      break;
+
+    case 'account:create':
+      await handleAccountCreate(ws, message);
+      break;
+
+    case 'account:delete':
+      await handleAccountDelete(ws, message);
       break;
 
     // Budget routes (import handlers dynamically to avoid circular deps)
@@ -368,6 +387,91 @@ async function routeMessage(
 
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
+  }
+}
+
+// ============================================================================
+// Account Handlers
+// ============================================================================
+
+async function handleAccountList(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { listAccounts } = await import('../services/account.js');
+  const accounts = listAccounts();
+  send(ws, createResponse(message.id, true, { accounts }));
+}
+
+async function handleAccountSelect(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload || !(message.payload as any).id) {
+    send(ws, createResponse(message.id, false, null, 'Missing account id'));
+    return;
+  }
+
+  const { setActiveAccount, getAccount } = await import('../services/account.js');
+  const accountId = (message.payload as any).id;
+
+  const success = setActiveAccount(accountId);
+  if (!success) {
+    send(ws, createResponse(message.id, false, null, 'Account not found'));
+    return;
+  }
+
+  // Update session with account context
+  const session = clients.get(ws);
+  if (session) {
+    session.accountId = accountId;
+  }
+
+  const account = getAccount(accountId);
+  send(ws, createResponse(message.id, true, account));
+}
+
+async function handleAccountCreate(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload) {
+    send(ws, createResponse(message.id, false, null, 'Missing payload'));
+    return;
+  }
+
+  const { createAccount } = await import('../services/account.js');
+  const options = message.payload as { name: string; copyFrom?: { accountId: string; mode: 'everything' | 'settings_only' } };
+
+  if (!options.name) {
+    send(ws, createResponse(message.id, false, null, 'Missing account name'));
+    return;
+  }
+
+  try {
+    const account = createAccount(options);
+    send(ws, createResponse(message.id, true, account));
+  } catch (err: any) {
+    send(ws, createResponse(message.id, false, null, err.message || 'Failed to create account'));
+  }
+}
+
+async function handleAccountDelete(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  if (!message.payload || !(message.payload as any).id) {
+    send(ws, createResponse(message.id, false, null, 'Missing account id'));
+    return;
+  }
+
+  const { deleteAccount } = await import('../services/account.js');
+  const accountId = (message.payload as any).id;
+
+  try {
+    const success = deleteAccount(accountId);
+    if (!success) {
+      send(ws, createResponse(message.id, false, null, 'Account not found'));
+      return;
+    }
+
+    // Clear session account if it was deleted
+    const session = clients.get(ws);
+    if (session?.accountId === accountId) {
+      session.accountId = undefined;
+    }
+
+    send(ws, createResponse(message.id, true, { deleted: true }));
+  } catch (err: any) {
+    send(ws, createResponse(message.id, false, null, err.message || 'Failed to delete account'));
   }
 }
 

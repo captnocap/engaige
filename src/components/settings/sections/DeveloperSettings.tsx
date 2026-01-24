@@ -1,9 +1,15 @@
 import { useOnboardingStore } from '../../../stores/onboardingStore.js'
 import { useSimulationStore } from '../../../stores/simulationStore.js'
+import { useSettingsStore } from '../../../stores/settingsStore.js'
+import { useBootStore } from '../../../stores/bootStore.js'
+import { useAccountStore } from '../../../stores/accountStore.js'
 import { SettingsCard } from '../components/SettingsCard.js'
 
 export default function DeveloperSettings() {
   const { reset } = useOnboardingStore()
+  const { developer, setDeveloper } = useSettingsStore()
+  const resetBoot = useBootStore((state) => state.reset)
+  const resetAccounts = useAccountStore((state) => state.reset)
   const {
     isRunning,
     isPaused,
@@ -159,20 +165,78 @@ export default function DeveloperSettings() {
         </div>
       </SettingsCard>
 
+      {/* Boot Sequence Options */}
+      <SettingsCard
+        title="Boot Sequence"
+        description="Control the startup experience"
+      >
+        <div className="space-y-4">
+          {/* Skip Boot Sequence Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium" style={{ color: 'var(--color-text)' }}>
+                Skip Boot Sequence
+              </div>
+              <div className="text-sm" style={{ color: 'var(--color-textMuted)' }}>
+                Skip the boot animation and login screen during development
+              </div>
+            </div>
+            <button
+              onClick={() => setDeveloper({ skipBootSequence: !developer.skipBootSequence })}
+              className="relative w-12 h-6 rounded-full transition-colors"
+              style={{
+                background: developer.skipBootSequence ? 'var(--color-success)' : 'var(--color-border)',
+              }}
+            >
+              <div
+                className="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform"
+                style={{
+                  transform: developer.skipBootSequence ? 'translateX(24px)' : 'translateX(0)',
+                }}
+              />
+            </button>
+          </div>
+
+          {/* Note about the setting */}
+          <div className="text-xs p-2 rounded" style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-textMuted)' }}>
+            When enabled, the app will skip directly to the desktop without showing the boot animation or account selection screen.
+          </div>
+        </div>
+      </SettingsCard>
+
       {/* Other Developer Options */}
       <SettingsCard
         title="Developer Options"
         description="Testing and debugging tools"
       >
-        <button
-          onClick={handleResetOnboarding}
-          className="px-4 py-2 rounded text-sm font-medium transition-colors text-white"
-          style={{
-            background: 'var(--color-error)',
-          }}
-        >
-          Reset Onboarding
-        </button>
+        <div className="space-y-4">
+          <button
+            onClick={handleResetOnboarding}
+            className="px-4 py-2 rounded text-sm font-medium transition-colors text-white"
+            style={{
+              background: 'var(--color-error)',
+            }}
+          >
+            Reset Onboarding
+          </button>
+
+          <button
+            onClick={() => {
+              if (confirm('Reset boot state and accounts? This will reload the page.')) {
+                resetBoot()
+                resetAccounts()
+                reset()
+                window.location.reload()
+              }
+            }}
+            className="px-4 py-2 rounded text-sm font-medium transition-colors text-white ml-2"
+            style={{
+              background: 'var(--color-warning)',
+            }}
+          >
+            Reset Boot & Accounts
+          </button>
+        </div>
       </SettingsCard>
     </div>
   )

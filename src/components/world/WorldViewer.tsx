@@ -13,6 +13,7 @@ import { useWorldStore } from '../../stores/worldStore.js';
 import { useWSStore } from '../../stores/wsStore.js';
 import WorldControls from './WorldControls.js';
 import NPCPopover from './NPCPopover.js';
+import AsciiOverlay from './AsciiOverlay.js';
 import 'maptalks/dist/maptalks.css';
 
 // ============================================================================
@@ -115,6 +116,7 @@ export default function WorldViewer() {
   } = useWorldStore();
 
   const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number } | null>(null);
+  const [asciiMode, setAsciiMode] = useState(false);
 
   // ============================================================================
   // Initialization
@@ -558,8 +560,16 @@ export default function WorldViewer() {
         </div>
       )}
 
+      {/* ASCII Overlay */}
+      <AsciiOverlay enabled={asciiMode} canvasRef={{ current: null }} />
+
       {/* World Controls - only show when data loaded */}
-      {city && <WorldControls />}
+      {city && (
+        <WorldControls
+          asciiMode={asciiMode}
+          onToggleAscii={() => setAsciiMode(!asciiMode)}
+        />
+      )}
 
       {/* NPC Popover */}
       {hoveredNPCId && popoverPosition && (

@@ -17,6 +17,7 @@ import {
   type ClientSession,
 } from './network/ws-server.js';
 import { getDB } from './db/index.js';
+import { getGlobalDB } from './db/global-db.js';
 import { eventBus, EventTypes } from './events/index.js';
 import { errorLogger } from './services/error-logger.js';
 import { aiQueue } from './services/ai-queue.js';
@@ -36,6 +37,11 @@ const PORT = 4269;
 // ─────────────────────────────────────────────────────────────────
 // Initialize Core Systems (must happen before server starts)
 // ─────────────────────────────────────────────────────────────────
+// Initialize global database (shared across all accounts)
+const globalDb = getGlobalDB();
+console.log('[Server] Global database initialized');
+
+// Initialize per-world databases (will be account-scoped in future)
 const gameDb = getDB('game');
 eventBus.initialize(gameDb);
 errorLogger.initialize(gameDb);

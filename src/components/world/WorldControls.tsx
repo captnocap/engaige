@@ -7,7 +7,12 @@
 
 import { useWorldStore } from '../../stores/worldStore.js';
 
-export default function WorldControls() {
+interface WorldControlsProps {
+  asciiMode?: boolean;
+  onToggleAscii?: () => void;
+}
+
+export default function WorldControls({ asciiMode = false, onToggleAscii }: WorldControlsProps) {
   const {
     gameTime,
     timeMultiplier,
@@ -169,9 +174,26 @@ export default function WorldControls() {
         </div>
       </div>
 
-      {/* Help Hint - Bottom Left */}
-      <div className="absolute bottom-3 left-3 text-xs text-[var(--color-textMuted)] bg-[var(--color-bgSecondary)]/70 backdrop-blur-sm rounded px-2 py-1">
-        Drag to pan, scroll to zoom
+      {/* Filter Controls - Bottom Left */}
+      <div className="absolute bottom-3 left-3 flex items-center gap-2">
+        <div className="text-xs text-[var(--color-textMuted)] bg-[var(--color-bgSecondary)]/70 backdrop-blur-sm rounded px-2 py-1">
+          Drag to pan, scroll to zoom
+        </div>
+
+        {/* ASCII Mode Toggle */}
+        {onToggleAscii && (
+          <button
+            onClick={onToggleAscii}
+            className={`px-3 py-1 text-xs font-mono rounded border transition-all ${
+              asciiMode
+                ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_10px_rgba(0,255,100,0.3)]'
+                : 'bg-[var(--color-bgSecondary)]/70 border-[var(--color-border)] text-[var(--color-textMuted)] hover:border-green-500/50'
+            }`}
+            title="Toggle ASCII Mode"
+          >
+            {asciiMode ? '> ASCII_ON' : '[ ASCII ]'}
+          </button>
+        )}
       </div>
     </>
   );

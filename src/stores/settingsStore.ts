@@ -40,6 +40,7 @@ export interface AccessibilitySettings {
 
 export interface DeveloperSettings {
   debugMode: boolean
+  skipBootSequence: boolean
 }
 
 export interface SettingsState {
@@ -99,6 +100,7 @@ const defaultAccessibility: AccessibilitySettings = {
 
 const defaultDeveloper: DeveloperSettings = {
   debugMode: false,
+  skipBootSequence: false,
 }
 
 export const useSettingsStore = create<SettingsState>()(

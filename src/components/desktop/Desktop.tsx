@@ -4,6 +4,7 @@ import { Taskbar, type TaskbarWindow } from './Taskbar'
 import { DesktopIcon } from './DesktopIcon'
 import { Onboarding, type OnboardingData } from '../onboarding/Onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
+import { useAccountStore } from '../../stores/accountStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useSettingsStore } from '../../stores/settingsStore.js'
 import { useAwarenessStore } from '../../stores/awarenessStore.js'
@@ -37,9 +38,17 @@ interface DesktopIconConfig {
 }
 
 export function Desktop() {
-  const { completed: onboardingCompleted, setCompleted } = useOnboardingStore()
+  const { completed: legacyOnboardingCompleted, setCompleted } = useOnboardingStore()
+  const { activeAccountId, accounts, markOnboardingComplete } = useAccountStore()
   const { currentTheme } = useThemeStore()
-  const { wallpaper } = useSettingsStore()
+  const { wallpaper, developer } = useSettingsStore()
+
+  // Check if current account has completed onboarding
+  const activeAccount = accounts.find((a) => a.id === activeAccountId)
+  const accountOnboardingComplete = activeAccount?.hasCompletedOnboarding ?? false
+  // Also fall back to legacy onboarding for backwards compatibility or dev mode
+  const onboardingCompleted = accountOnboardingComplete || legacyOnboardingCompleted || developer.skipBootSequence
+
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser-1'] : []))
   const [windowStates, setWindowStates] = useState<Record<string, WindowState>>({})
   const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser-1' : null)
@@ -51,13 +60,17 @@ export function Desktop() {
   const handleOnboardingComplete = useCallback((data: OnboardingData) => {
     console.log('Onboarding data:', data)
     // TODO: Send to backend API when integrated
-    // For now, just mark as complete with a mock player ID
-    setCompleted('mock-player-id')
+    // Mark account as onboarded
+    if (activeAccountId) {
+      markOnboardingComplete(activeAccountId)
+    }
+    // Also set legacy store for backwards compatibility
+    setCompleted(activeAccountId || 'mock-player-id')
     // Open browser after onboarding
     setOpenWindows(new Set(['browser-1']))
     setActiveWindow('browser-1')
     setWindowInstanceCounter(2)
-  }, [setCompleted])
+  }, [setCompleted, activeAccountId, markOnboardingComplete])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
