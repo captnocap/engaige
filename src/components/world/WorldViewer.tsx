@@ -176,11 +176,12 @@ export default function WorldViewer() {
     threeLayer.addTo(map);
     threeLayerRef.current = threeLayer;
 
-    // Add lights after layer is ready
-    threeLayer.on('canvasready', () => {
-      console.log('[WorldViewer] ThreeLayer canvas ready');
+    // Wait for layer to be ready using workerready or polling
+    const checkReady = () => {
       const scene = threeLayer.getScene();
       if (scene) {
+        console.log('[WorldViewer] ThreeLayer scene ready');
+
         // Add ambient light
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
@@ -192,8 +193,14 @@ export default function WorldViewer() {
 
         console.log('[WorldViewer] Lights added to scene');
         setThreeLayerReady(true);
+      } else {
+        // Retry after a short delay
+        setTimeout(checkReady, 50);
       }
-    });
+    };
+
+    // Start checking after layer is added
+    setTimeout(checkReady, 100);
 
     console.log('[WorldViewer] Maptalks initialized');
 

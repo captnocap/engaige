@@ -259,7 +259,7 @@ export default function AsciiOverlay({ enabled, canvasRef }: AsciiOverlayProps) 
     };
   }, [enabled, renderAscii]);
 
-  // Handle resize
+  // Handle resize - runs always to keep canvas sized correctly
   useEffect(() => {
     const canvas = asciiCanvasRef.current;
     if (!canvas) return;
@@ -267,28 +267,39 @@ export default function AsciiOverlay({ enabled, canvasRef }: AsciiOverlayProps) 
     const updateSize = () => {
       const parent = canvas.parentElement;
       if (parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
+        const rect = parent.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
       }
     };
 
-    updateSize();
+    // Initial size with small delay to ensure parent is measured
+    requestAnimationFrame(updateSize);
 
-    const observer = new ResizeObserver(updateSize);
+    // Also update on window resize
+    window.addEventListener('resize', updateSize);
+
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(updateSize);
+    });
     if (canvas.parentElement) {
       observer.observe(canvas.parentElement);
     }
 
-    return () => observer.disconnect();
-  }, []);
-
-  if (!enabled) return null;
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      observer.disconnect();
+    };
+  }, []); // Run once on mount
 
   return (
     <canvas
       ref={asciiCanvasRef}
       className="absolute inset-0 pointer-events-none"
       style={{
+        display: enabled ? 'block' : 'none',
         mixBlendMode: 'screen',
         opacity: 0.95,
       }}
