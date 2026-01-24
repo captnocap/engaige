@@ -400,6 +400,31 @@ When content references a website, band, character, or location - it needs to ex
 
 ---
 
+## Content Delivery System (Live Content Feed)
+
+**One-way broadcast of hand-crafted content from us to players.**
+
+A public JSON feed that players can subscribe to. We publish, they receive. No player data collected, no accounts needed. Just a CDN serving JSON that slots into existing sites.
+
+| Aspect | Details |
+|--------|---------|
+| **Direction** | One-way (us → players) |
+| **Content** | JSON matching existing site schemas |
+| **Privacy** | Zero data collection |
+| **Opt-in** | Disabled by default |
+
+**Use cases:**
+- Seasonal events (Halloween strangers, holiday sales)
+- Story arcs (Hartwell mystery unfolds over weeks)
+- World density (lore accumulates over years)
+- Shared experience (everyone sees same drops)
+
+**NOT multiplayer** - This is separate from the P2P mesh system. Content delivery is broadcast, multiplayer is peer-to-peer.
+
+**Full documentation:** [CONTENT_DELIVERY_SYSTEM.md](docs/CONTENT_DELIVERY_SYSTEM.md)
+
+---
+
 **engAIge** is a relationship simulator and social media game that reimagines the character AI experience. Unlike cookie-cutter character.ai clones, this is an **idle game with autonomous NPCs** that live, post, and interact in the background.
 
 **Core Vision:**
