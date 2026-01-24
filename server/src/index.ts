@@ -29,6 +29,7 @@ import { initializeRelationshipAnalyzer } from './agents/relationship-analyzer.j
 import { initializeSocialAutopilot, startSocialAutopilot } from './agents/social-autopilot.js';
 import { initializeConversationInitiator, startConversationInitiator } from './agents/conversation-initiator.js';
 import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
+import { initializeChessAutopilot, startChessAutopilot, initializeChessProfilesForExistingNPCs } from './agents/chess-autopilot.js';
 
 const PORT = 4269;
 
@@ -98,6 +99,10 @@ initializeRelationshipAnalyzer();
 initializeSocialAutopilot();
 initializeConversationInitiator();
 initializeNewsTasks();
+initializeChessAutopilot();
+
+// Initialize chess profiles for any existing NPCs
+initializeChessProfilesForExistingNPCs();
 
 // ─────────────────────────────────────────────────────────────────
 // Start Background Systems
@@ -109,7 +114,8 @@ scheduleStoryGeneration({ intervalHours: 6, startDelayMinutes: 5 });
 setTimeout(() => {
   startSocialAutopilot({ initialBurst: true, postIntervalMinutes: 45 });
   startConversationInitiator({ checkIntervalMinutes: 60 });
-  console.log('[Server] Autonomous NPC behaviors started');
+  startChessAutopilot({ initialBurst: true, matchIntervalHours: 2 });
+  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess)');
 }, 5000);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)
@@ -204,9 +210,9 @@ console.log(`
 ║  Game Events: Event Bus (centralized logging)              ║
 ║  Errors: Error Logger (centralized tracking)               ║
 ╠════════════════════════════════════════════════════════════╣
-║  Agents: Memory, Profile, Relationship, Social, Chat       ║
+║  Agents: Memory, Profile, Relationship, Social, Chat, Chess║
 ║  Scheduler: Running (30s interval)                         ║
-║  Autonomous: NPCs will post & DM on their own!             ║
+║  Autonomous: NPCs post, DM, and play chess on their own!   ║
 ╚════════════════════════════════════════════════════════════╝
 `);
 

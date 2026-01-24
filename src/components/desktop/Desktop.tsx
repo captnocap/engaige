@@ -12,6 +12,7 @@ import { FilesWindow } from './FilesWindow'
 import { SettingsWindow } from './SettingsWindow'
 import { WalletWindow } from './WalletWindow'
 import { LogsWindow } from './LogsWindow'
+import { ChessWindow } from './ChessWindow.js'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
@@ -114,12 +115,20 @@ export function Desktop() {
       component: <LogsWindow />,
       defaultState: { x: 100, y: 50, width: 900, height: 600 },
     },
+    {
+      id: 'chess',
+      title: 'Chess.cob',
+      icon: '♟️',
+      component: <ChessWindow />,
+      defaultState: { x: 100, y: 50, width: 900, height: 700 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
     { id: 'browser', icon: CornCobIconLarge, label: 'The Corn Cob', opensWindow: 'browser', allowMultiple: true },
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
+    { id: 'chess', icon: '♟️', label: 'Chess.cob', opensWindow: 'chess' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
   ]

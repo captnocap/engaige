@@ -72,6 +72,17 @@ export function createNPC(data: NPCCreateData, generationMethod: 'ai' | 'manual'
     importance: 0.8,
   });
 
+  // Initialize chess profile
+  const initialElo = Math.floor(Math.random() * 1200) + 800; // 800-2000
+  const skillLevel = Math.floor(((initialElo - 800) / 1200) * 9) + 1; // 1-10
+  const playstyles = ['aggressive', 'defensive', 'balanced', 'tactical', 'positional'];
+  const playstyle = playstyles[Math.floor(Math.random() * playstyles.length)];
+
+  db.prepare(`
+    INSERT INTO chess_profiles (id, npc_id, elo_rating, peak_elo, skill_level, playstyle)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(generateId(), id, initialElo, initialElo, skillLevel, playstyle);
+
   return npc;
 }
 
