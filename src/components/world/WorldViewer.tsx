@@ -21,8 +21,12 @@ import 'maptalks/dist/maptalks.css';
 
 // City center in fake lat/lng (arbitrary location)
 const CITY_CENTER: [number, number] = [-122.6784, 45.5152]; // Portland-ish coords
-const GRID_TO_LNG_SCALE = 0.0005; // Each grid unit = ~50 meters
-const GRID_TO_LAT_SCALE = 0.0004;
+
+// Scale: our grid is 200x150, we want it to cover roughly 2km x 1.5km
+// At Portland's latitude, 1 degree lng ≈ 85km, 1 degree lat ≈ 111km
+// So for 2km: lng_delta = 2/85 ≈ 0.024, lat_delta = 1.5/111 ≈ 0.014
+const GRID_TO_LNG_SCALE = 0.024 / 200; // ~0.00012 per grid unit
+const GRID_TO_LAT_SCALE = 0.014 / 150; // ~0.00009 per grid unit
 
 // Building colors by type
 const BUILDING_COLORS: Record<string, number> = {
@@ -252,6 +256,9 @@ export default function WorldViewer() {
     const batchSize = 100;
     let index = 0;
 
+    // Get scale factor for converting meters to scene units
+    const scale = threeLayer.distanceToVector3(1, 1).x; // 1 meter in scene units
+
     const renderBatch = () => {
       const batch = city.buildings.slice(index, index + batchSize);
 
@@ -259,19 +266,23 @@ export default function WorldViewer() {
         const [lng, lat] = gridToLatLng(building.position.x, building.position.y);
         const color = BUILDING_COLORS[building.type] || 0x888888;
 
-        // Building height based on type and capacity (scaled for visibility)
-        let height = 15 + (building.capacity || 5) * 1.5;
-        if (building.type === 'office') height *= 2;
-        if (building.type === 'apartment') height *= 1.5;
-        if (building.type === 'house') height *= 0.4;
-        if (building.type === 'park' || building.type === 'plaza') height = 3;
+        // Building height in meters based on type and capacity
+        let heightMeters = 8 + (building.capacity || 5) * 0.8;
+        if (building.type === 'office') heightMeters *= 2.5;
+        if (building.type === 'apartment') heightMeters *= 1.8;
+        if (building.type === 'house') heightMeters *= 0.5;
+        if (building.type === 'park' || building.type === 'plaza') heightMeters = 1;
 
-        // Building footprint size
-        const width = (building.size?.width || 1) * 8;
-        const depth = (building.size?.height || 1) * 8;
+        // Building footprint in meters (small buildings ~10-30m)
+        const widthMeters = (building.size?.width || 1) * 12;
+        const depthMeters = (building.size?.height || 1) * 12;
+
+        // Convert to scene units
+        const width = widthMeters * scale;
+        const depth = depthMeters * scale;
+        const height = heightMeters * scale;
 
         // Create building geometry - BoxGeometry(width, depth, height)
-        // In maptalks.three, Z is up, so we use (width, depth, height)
         const geometry = new THREE.BoxGeometry(width, depth, height);
 
         // Shift geometry so bottom is at origin (building sits on ground)
@@ -321,6 +332,7 @@ export default function WorldViewer() {
     if (!threeLayerRef.current || !city) return;
 
     const threeLayer = threeLayerRef.current;
+    const scale = threeLayer.distanceToVector3(1, 1).x;
 
     // Update or create AI NPC markers
     aiNPCs.forEach(npc => {
@@ -328,8 +340,8 @@ export default function WorldViewer() {
       let marker = npcMarkersRef.current.get(npc.npcId);
 
       if (!marker) {
-        // Create new marker - blue sphere for AI NPCs
-        const geometry = new THREE.SphereGeometry(5, 16, 16);
+        // Create new marker - blue sphere for AI NPCs (3m radius)
+        const geometry = new THREE.SphereGeometry(3 * scale, 16, 16);
         const material = new THREE.MeshLambertMaterial({
           color: 0x3498db,
           emissive: 0x1a4a6e,
@@ -341,8 +353,8 @@ export default function WorldViewer() {
         threeLayer.addMesh(marker);
       }
 
-      // Update position - place above ground
-      const position = threeLayer.coordinateToVector3([lng, lat], 20);
+      // Update position - place at street level (2m height)
+      const position = threeLayer.coordinateToVector3([lng, lat], 2 * scale);
       marker.position.copy(position);
     });
 
@@ -355,6 +367,7 @@ export default function WorldViewer() {
     if (!threeLayerRef.current || !city || backgroundNPCs.length === 0) return;
 
     const threeLayer = threeLayerRef.current;
+    const scale = threeLayer.distanceToVector3(1, 1).x;
 
     // Clear old background NPC markers (they regenerate each time)
     npcMarkersRef.current.forEach((marker, id) => {
@@ -371,7 +384,8 @@ export default function WorldViewer() {
     visibleNPCs.forEach(npc => {
       const [lng, lat] = gridToLatLng(npc.position.x, npc.position.y);
 
-      const geometry = new THREE.SphereGeometry(3, 8, 8);
+      // Smaller gray spheres (1.5m radius)
+      const geometry = new THREE.SphereGeometry(1.5 * scale, 8, 8);
       const material = new THREE.MeshLambertMaterial({
         color: 0xaaaaaa,
         emissive: 0x333333,
@@ -379,8 +393,8 @@ export default function WorldViewer() {
       const marker = new THREE.Mesh(geometry, material);
       (marker as any).userData = { npcId: npc.id, isAI: false, name: npc.name };
 
-      // Place at ground level
-      const position = threeLayer.coordinateToVector3([lng, lat], 10);
+      // Place at street level (1.5m height)
+      const position = threeLayer.coordinateToVector3([lng, lat], 1.5 * scale);
       marker.position.copy(position);
 
       npcMarkersRef.current.set(npc.id, marker);
@@ -420,13 +434,14 @@ export default function WorldViewer() {
     if (!threeLayerRef.current || !playerHome) return;
 
     const threeLayer = threeLayerRef.current;
+    const scale = threeLayer.distanceToVector3(1, 1).x;
     const [lng, lat] = gridToLatLng(playerHome.position.x, playerHome.position.y);
 
-    // Create player home marker - green beacon pointing up
-    const geometry = new THREE.ConeGeometry(6, 20, 8);
+    // Create player home marker - green beacon pointing up (5m radius, 15m tall)
+    const geometry = new THREE.ConeGeometry(5 * scale, 15 * scale, 8);
     // Rotate geometry so cone points up (along Z axis in maptalks)
     geometry.rotateX(Math.PI / 2);
-    geometry.translate(0, 0, 30); // Lift above buildings
+    geometry.translate(0, 0, 25 * scale); // Lift above buildings
 
     const material = new THREE.MeshLambertMaterial({
       color: 0x00ff00,
