@@ -15,6 +15,7 @@ import { LogsWindow } from './LogsWindow'
 import { ChessWindow } from './ChessWindow.js'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
+import { WorldWindow } from '../world/index.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 interface WindowConfig {
@@ -119,8 +120,15 @@ export function Desktop() {
       id: 'chess',
       title: 'Chess.cob',
       icon: '♟️',
-      component: <ChessWindow />,
+      component: ({ onClose }) => <ChessWindow onClose={onClose} />,
       defaultState: { x: 100, y: 50, width: 900, height: 700 },
+    },
+    {
+      id: 'world',
+      title: 'World Map',
+      icon: '🗺️',
+      component: ({ onClose }) => <WorldWindow onClose={onClose} />,
+      defaultState: { x: 50, y: 30, width: 1100, height: 750 },
     },
   ]
 
@@ -129,6 +137,7 @@ export function Desktop() {
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'chess', icon: '♟️', label: 'Chess.cob', opensWindow: 'chess' },
+    { id: 'world', icon: '🗺️', label: 'World Map', opensWindow: 'world' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
   ]
