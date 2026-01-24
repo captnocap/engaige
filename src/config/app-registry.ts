@@ -559,6 +559,60 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   },
 
   // -------------------------------------------------------------------------
+  // Unhinged Persona Sites
+  // -------------------------------------------------------------------------
+
+  'graintruth': {
+    id: 'graintruth',
+    name: 'GrainTruth',
+    icon: '🌾',
+    description: 'Dr. Helena Cryptwood\'s grain-based conspiracy archive',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'benchwatch': {
+    id: 'benchwatch',
+    name: 'BenchWatch',
+    icon: '🪑',
+    description: 'Greg Mantooth\'s forensic bench analysis',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'dominate': {
+    id: 'dominate',
+    name: 'DOMINATE',
+    icon: '💪',
+    description: 'Chad Thundercoach\'s high-intensity success system',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'stationsushi': {
+    id: 'stationsushi',
+    name: 'Station Sushi Review',
+    icon: '🍣',
+    description: 'Mildred Gasketsworth\'s gas station sushi reviews',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'truemoss': {
+    id: 'truemoss',
+    name: 'TrueMoss',
+    icon: '🌿',
+    description: 'Agatha Mosswell\'s independent moss research',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
 

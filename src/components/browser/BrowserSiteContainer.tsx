@@ -27,6 +27,12 @@ import { HartwellFilesSite } from './sites/HartwellFilesSite.js'
 import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
 import { OnlyFansSite } from './sites/OnlyFansSite.js'
 import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
+import { GrainTruthSite } from './sites/GrainTruthSite.js'
+// Unhinged persona sites
+import { BenchWatchSite } from './sites/BenchWatchSite.js'
+import { DominateSite } from './sites/DominateSite.js'
+import { StationSushiSite } from './sites/StationSushiSite.js'
+import { TrueMossSite } from './sites/TrueMossSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -67,6 +73,12 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'trustfalltim': TrustFallTimSite,
   'onlyfans': OnlyFansSite,
   'bandsnotintown': BandsNotInTownSite,
+  'graintruth': GrainTruthSite,
+  // Unhinged persona sites
+  'benchwatch': BenchWatchSite,
+  'dominate': DominateSite,
+  'stationsushi': StationSushiSite,
+  'truemoss': TrueMossSite,
   // All other sites use PlaceholderSite until implemented
 }
 
