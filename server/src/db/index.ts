@@ -776,6 +776,98 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_chess_matches_started ON chess_matches(started_at DESC);
       CREATE INDEX IF NOT EXISTS idx_chess_moves_match ON chess_moves(match_id, move_number);
     `);
+
+    // === WORLD MAP SYSTEM ===
+    db.exec(`
+      -- City districts/neighborhoods (loaded from static JSON, cached in DB)
+      CREATE TABLE IF NOT EXISTS districts (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        description TEXT,
+        bounds TEXT,
+        color TEXT,
+        peak_hours TEXT,
+        vibe TEXT,
+        created_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Buildings and venues (loaded from static JSON, cached in DB)
+      CREATE TABLE IF NOT EXISTS buildings (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        district_id TEXT,
+        position TEXT,
+        size TEXT,
+        sprite_id TEXT,
+        capacity INTEGER,
+        is_residential INTEGER DEFAULT 0,
+        is_workplace INTEGER DEFAULT 0,
+        hours TEXT,
+        metadata TEXT,
+        created_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (district_id) REFERENCES districts(id)
+      );
+
+      -- Landmarks (notable locations for content reference)
+      CREATE TABLE IF NOT EXISTS landmarks (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        building_id TEXT,
+        description TEXT,
+        keywords TEXT,
+        is_notable INTEGER DEFAULT 1,
+        icon_emoji TEXT,
+        created_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (building_id) REFERENCES buildings(id)
+      );
+
+      -- AI NPC current location tracking (runtime state)
+      CREATE TABLE IF NOT EXISTS npc_locations (
+        npc_id TEXT PRIMARY KEY,
+        position TEXT NOT NULL,
+        target_position TEXT,
+        building_id TEXT,
+        activity TEXT NOT NULL DEFAULT 'idle',
+        activity_description TEXT,
+        arrived_at INTEGER DEFAULT (unixepoch()),
+        speed REAL DEFAULT 1.0,
+        FOREIGN KEY (building_id) REFERENCES buildings(id)
+      );
+
+      -- NPC daily schedules
+      CREATE TABLE IF NOT EXISTS npc_schedules (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL,
+        day_of_week INTEGER,
+        hour INTEGER NOT NULL,
+        building_id TEXT,
+        activity TEXT,
+        created_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (building_id) REFERENCES buildings(id)
+      );
+
+      -- Game time state (singleton row)
+      CREATE TABLE IF NOT EXISTS game_time_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        game_start_real_time INTEGER NOT NULL,
+        game_start_time INTEGER NOT NULL,
+        time_multiplier REAL NOT NULL DEFAULT 15.0,
+        is_paused INTEGER DEFAULT 0,
+        paused_at INTEGER,
+        updated_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- World map indexes
+      CREATE INDEX IF NOT EXISTS idx_buildings_district ON buildings(district_id);
+      CREATE INDEX IF NOT EXISTS idx_buildings_type ON buildings(type);
+      CREATE INDEX IF NOT EXISTS idx_buildings_residential ON buildings(is_residential);
+      CREATE INDEX IF NOT EXISTS idx_buildings_workplace ON buildings(is_workplace);
+      CREATE INDEX IF NOT EXISTS idx_npc_locations_building ON npc_locations(building_id);
+      CREATE INDEX IF NOT EXISTS idx_npc_schedules_npc ON npc_schedules(npc_id);
+      CREATE INDEX IF NOT EXISTS idx_npc_schedules_hour ON npc_schedules(hour);
+    `);
   }
 }
 

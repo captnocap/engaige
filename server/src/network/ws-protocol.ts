@@ -245,6 +245,42 @@ export interface ChessGetMatchHistoryMessage extends WSMessage<{
   type: 'chess:getMatchHistory';
 }
 
+// World Map
+export interface WorldGetStateMessage extends WSMessage {
+  type: 'world:getState';
+}
+
+export interface WorldSubscribeMessage extends WSMessage {
+  type: 'world:subscribe';
+}
+
+export interface WorldUnsubscribeMessage extends WSMessage {
+  type: 'world:unsubscribe';
+}
+
+export interface WorldGetBackgroundNPCsMessage extends WSMessage<{
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}> {
+  type: 'world:getBackgroundNPCs';
+}
+
+export interface WorldPauseTimeMessage extends WSMessage {
+  type: 'world:pauseTime';
+}
+
+export interface WorldResumeTimeMessage extends WSMessage {
+  type: 'world:resumeTime';
+}
+
+export interface WorldSetTimeMultiplierMessage extends WSMessage<{
+  multiplier: number;
+}> {
+  type: 'world:setTimeMultiplier';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -276,7 +312,14 @@ export type ClientMessage =
   | ChessGetLeaderboardMessage
   | ChessGetMatchMessage
   | ChessGetActiveMatchesMessage
-  | ChessGetMatchHistoryMessage;
+  | ChessGetMatchHistoryMessage
+  | WorldGetStateMessage
+  | WorldSubscribeMessage
+  | WorldUnsubscribeMessage
+  | WorldGetBackgroundNPCsMessage
+  | WorldPauseTimeMessage
+  | WorldResumeTimeMessage
+  | WorldSetTimeMultiplierMessage;
 
 // ============================================================================
 // Server -> Client Messages
@@ -413,6 +456,112 @@ export interface ChessMatchEndedEvent extends WSMessage<{
   type: 'chess:matchEnded';
 }
 
+// World Map Events
+export interface WorldStateEvent extends WSMessage<{
+  city: {
+    name: string;
+    bounds: { minX: number; maxX: number; minY: number; maxY: number };
+    tileSize: number;
+    gridSize: { width: number; height: number };
+    districts: Array<{
+      id: string;
+      name: string;
+      type: string;
+      description: string;
+      bounds: { points: Array<[number, number]> };
+      color: string;
+      peakHours: number[];
+      vibe: string;
+    }>;
+    buildings: Array<{
+      id: string;
+      name: string;
+      type: string;
+      districtId: string;
+      position: { x: number; y: number };
+      size: { width: number; height: number };
+      spriteId: string;
+      capacity: number;
+      isResidential: boolean;
+      isWorkplace: boolean;
+    }>;
+    landmarks: Array<{
+      id: string;
+      name: string;
+      buildingId: string;
+      description: string;
+      keywords: string[];
+      isNotable: boolean;
+      iconEmoji?: string;
+    }>;
+  };
+  gameTime: {
+    hour: number;
+    minute: number;
+    dayOfWeek: number;
+    dayName: string;
+    isNight: boolean;
+    period: 'morning' | 'afternoon' | 'evening' | 'night';
+  };
+  timeMultiplier: number;
+  isPaused: boolean;
+  aiNPCs: Array<{
+    npcId: string;
+    position: { x: number; y: number };
+    buildingId?: string;
+    activity: string;
+    activityDescription?: string;
+  }>;
+  backgroundNPCCount: number;
+  playerHome?: {
+    buildingId: string;
+    position: { x: number; y: number };
+  };
+}> {
+  type: 'world:state';
+}
+
+export interface WorldNPCMovedEvent extends WSMessage<{
+  npcId: string;
+  isAI: boolean;
+  position: { x: number; y: number };
+  targetPosition?: { x: number; y: number };
+  buildingId?: string;
+  activity: string;
+  activityDescription?: string;
+}> {
+  type: 'world:npcMoved';
+}
+
+export interface WorldTimeUpdateEvent extends WSMessage<{
+  gameTime: {
+    hour: number;
+    minute: number;
+    dayOfWeek: number;
+    dayName: string;
+    isNight: boolean;
+    period: 'morning' | 'afternoon' | 'evening' | 'night';
+  };
+  formattedTime: string;
+  formattedDateTime: string;
+}> {
+  type: 'world:timeUpdate';
+}
+
+export interface WorldBackgroundNPCsEvent extends WSMessage<{
+  npcs: Array<{
+    id: string;
+    name: string;
+    appearanceSeed: number;
+    position: { x: number; y: number };
+    state: string;
+    activityLabel: string;
+  }>;
+  viewportBounds: { minX: number; maxX: number; minY: number; maxY: number };
+}> {
+  type: 'world:backgroundNPCs';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -428,7 +577,11 @@ export type ServerMessage =
   | DeliberationCompletedEvent
   | ChessMatchStartedEvent
   | ChessMoveMadeEvent
-  | ChessMatchEndedEvent;
+  | ChessMatchEndedEvent
+  | WorldStateEvent
+  | WorldNPCMovedEvent
+  | WorldTimeUpdateEvent
+  | WorldBackgroundNPCsEvent;
 
 // ============================================================================
 // Helpers

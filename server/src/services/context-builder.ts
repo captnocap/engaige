@@ -11,6 +11,7 @@
 import { getDB, now } from '../db/index.js';
 import { newsFeedService } from './news-feed.js';
 import type { NewsArticle, NewsCategory } from '../types/news.js';
+import { worldState, npcLocation } from './world/index.js';
 
 // ============================================================================
 // Types
@@ -37,6 +38,14 @@ export interface NPCContext {
     timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
     dayOfWeek: string;
   };
+  locationContext?: {
+    buildingName: string;
+    buildingType: string;
+    districtName: string;
+    activity: string;
+    isLandmark: boolean;
+    landmarkDescription?: string;
+  };
 }
 
 export interface BuildContextOptions {
@@ -45,6 +54,7 @@ export interface BuildContextOptions {
   playerId?: string;
   includeNews?: boolean;
   includeMemories?: boolean;
+  includeLocation?: boolean;     // Include world location context
   newsLimit?: number;
   memoryLimit?: number;
   newsCategories?: NewsCategory[];
@@ -64,6 +74,7 @@ export async function buildNPCContext(options: BuildContextOptions): Promise<NPC
     playerId,
     includeNews = true,
     includeMemories = true,
+    includeLocation = true,
     newsLimit = 5,
     memoryLimit = 5,
     newsCategories,
@@ -96,6 +107,11 @@ export async function buildNPCContext(options: BuildContextOptions): Promise<NPC
     context.relationshipContext = getRelationshipContext(npcId, playerId);
   }
 
+  // Get location context from world system
+  if (includeLocation) {
+    context.locationContext = await getLocationContext(npcId);
+  }
+
   return context;
 }
 
@@ -104,6 +120,23 @@ export async function buildNPCContext(options: BuildContextOptions): Promise<NPC
  */
 export function formatContextForPrompt(context: NPCContext): string {
   const sections: string[] = [];
+
+  // Location section - where is the NPC right now?
+  if (context.locationContext) {
+    const loc = context.locationContext;
+    let locationText = `You are currently at ${loc.buildingName} in the ${loc.districtName} district.`;
+
+    if (loc.isLandmark && loc.landmarkDescription) {
+      locationText += ` This is a notable location: ${loc.landmarkDescription}`;
+    }
+
+    locationText += ` You are ${loc.activity.toLowerCase()}.`;
+
+    sections.push(`## Your Current Location
+${locationText}
+
+Feel free to naturally mention where you are if it's relevant to the conversation.`);
+  }
 
   // News section - THE RECURSION LOOP
   if (context.newsHeadlines.length > 0) {
@@ -281,25 +314,81 @@ function getRelationshipContext(npcId: string, playerId: string): {
 // ============================================================================
 
 function getTimeContext(): { timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'; dayOfWeek: string } {
-  const now = new Date();
-  const hour = now.getHours();
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // Try to use game time from world system, fall back to real time
+  try {
+    const gameTime = worldState.getGameTime();
+    return {
+      timeOfDay: gameTime.period,
+      dayOfWeek: gameTime.dayName,
+    };
+  } catch {
+    // Fall back to real time if world system not initialized
+    const now = new Date();
+    const hour = now.getHours();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  let timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
-  if (hour >= 5 && hour < 12) {
-    timeOfDay = 'morning';
-  } else if (hour >= 12 && hour < 17) {
-    timeOfDay = 'afternoon';
-  } else if (hour >= 17 && hour < 21) {
-    timeOfDay = 'evening';
-  } else {
-    timeOfDay = 'night';
+    let timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
+    if (hour >= 5 && hour < 12) {
+      timeOfDay = 'morning';
+    } else if (hour >= 12 && hour < 17) {
+      timeOfDay = 'afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      timeOfDay = 'evening';
+    } else {
+      timeOfDay = 'night';
+    }
+
+    return {
+      timeOfDay,
+      dayOfWeek: days[now.getDay()],
+    };
   }
+}
 
-  return {
-    timeOfDay,
-    dayOfWeek: days[now.getDay()],
-  };
+// ============================================================================
+// Location Context
+// ============================================================================
+
+async function getLocationContext(npcId: string): Promise<{
+  buildingName: string;
+  buildingType: string;
+  districtName: string;
+  activity: string;
+  isLandmark: boolean;
+  landmarkDescription?: string;
+} | undefined> {
+  try {
+    // Get NPC's current location
+    const location = await npcLocation.getNPCLocation(npcId);
+    if (!location || !location.buildingId) {
+      return undefined;
+    }
+
+    // Get building info
+    const building = worldState.getBuilding(location.buildingId);
+    if (!building) {
+      return undefined;
+    }
+
+    // Get district info
+    const district = worldState.getDistrict(building.districtId);
+
+    // Check if it's a landmark
+    const landmark = worldState.getLandmarkByBuildingId(location.buildingId);
+
+    return {
+      buildingName: building.name,
+      buildingType: building.type,
+      districtName: district?.name || 'Unknown District',
+      activity: location.activityDescription || location.activity,
+      isLandmark: !!landmark,
+      landmarkDescription: landmark?.description,
+    };
+  } catch (error) {
+    // World system might not be initialized yet
+    console.log('[ContextBuilder] World system not available for location context');
+    return undefined;
+  }
 }
 
 // ============================================================================

@@ -26,6 +26,8 @@ export interface ClientSession {
   // Subscription state
   subscribedToThoughts?: boolean;
   thoughtsNpcFilter?: string; // If set, only get thoughts from this NPC
+  // World map subscription
+  subscribedToWorld?: boolean;
 }
 
 // Map of connected clients
@@ -333,6 +335,35 @@ async function routeMessage(
 
     case 'chess:getMatchHistory':
       await handleChessGetMatchHistory(ws, message);
+      break;
+
+    // World Map routes
+    case 'world:getState':
+      await handleWorldGetState(ws, message);
+      break;
+
+    case 'world:subscribe':
+      handleWorldSubscribe(ws, message);
+      break;
+
+    case 'world:unsubscribe':
+      handleWorldUnsubscribe(ws, message);
+      break;
+
+    case 'world:getBackgroundNPCs':
+      await handleWorldGetBackgroundNPCs(ws, message);
+      break;
+
+    case 'world:pauseTime':
+      await handleWorldPauseTime(ws, message);
+      break;
+
+    case 'world:resumeTime':
+      await handleWorldResumeTime(ws, message);
+      break;
+
+    case 'world:setTimeMultiplier':
+      await handleWorldSetTimeMultiplier(ws, message);
       break;
 
     default:
@@ -1137,6 +1168,287 @@ async function handleChessGetMatchHistory(ws: ServerWebSocket<ClientSession>, me
 }
 
 // ============================================================================
+// World Map Handlers
+// ============================================================================
+
+/**
+ * Handle world:getState - Get full world state snapshot
+ */
+async function handleWorldGetState(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { worldState, npcLocation, backgroundNPCs } = await import('../services/world/index.js');
+
+    // Ensure world is initialized
+    await worldState.initialize();
+
+    const city = worldState.getCity();
+    if (!city) {
+      send(ws, createError('World not initialized', 'WORLD_NOT_READY', message.id));
+      return;
+    }
+
+    const gameTime = worldState.getGameTime();
+    const aiNPCLocations = await npcLocation.getAllNPCLocations();
+
+    // Get a player home building (first residential building for now)
+    const residentialBuildings = worldState.getResidentialBuildings();
+    const playerHome = residentialBuildings[0] ? {
+      buildingId: residentialBuildings[0].id,
+      position: residentialBuildings[0].position,
+    } : undefined;
+
+    const payload = {
+      city: {
+        name: city.name,
+        bounds: city.bounds,
+        tileSize: city.tileSize,
+        gridSize: city.gridSize,
+        districts: city.districts,
+        buildings: city.buildings.map(b => ({
+          id: b.id,
+          name: b.name,
+          type: b.type,
+          districtId: b.districtId,
+          position: b.position,
+          size: b.size,
+          spriteId: b.spriteId,
+          capacity: b.capacity,
+          isResidential: b.isResidential,
+          isWorkplace: b.isWorkplace,
+        })),
+        landmarks: city.landmarks,
+      },
+      gameTime,
+      timeMultiplier: worldState.getTimeMultiplier(),
+      isPaused: worldState.isTimePaused(),
+      aiNPCs: aiNPCLocations.map(loc => ({
+        npcId: loc.npcId,
+        position: loc.position,
+        buildingId: loc.buildingId,
+        activity: loc.activity,
+        activityDescription: loc.activityDescription,
+      })),
+      backgroundNPCCount: backgroundNPCs.getTotalCount(),
+      playerHome,
+    };
+
+    send(ws, createResponse(message.id, true, payload));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleWorldGetState',
+    });
+    send(ws, createError('Failed to get world state', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle world:subscribe - Subscribe to world updates
+ */
+function handleWorldSubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const session = clients.get(ws);
+  if (session) {
+    session.subscribedToWorld = true;
+    console.log(`[WS] Client ${session.id} subscribed to world updates`);
+  }
+  send(ws, createResponse(message.id, true, { subscribed: true }));
+}
+
+/**
+ * Handle world:unsubscribe - Unsubscribe from world updates
+ */
+function handleWorldUnsubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const session = clients.get(ws);
+  if (session) {
+    session.subscribedToWorld = false;
+    console.log(`[WS] Client ${session.id} unsubscribed from world updates`);
+  }
+  send(ws, createResponse(message.id, true, { subscribed: false }));
+}
+
+/**
+ * Handle world:getBackgroundNPCs - Get background NPCs in viewport
+ */
+async function handleWorldGetBackgroundNPCs(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { worldState, backgroundNPCs } = await import('../services/world/index.js');
+    const payload = message.payload as {
+      minX: number;
+      maxX: number;
+      minY: number;
+      maxY: number;
+    };
+
+    if (payload?.minX === undefined || payload?.maxX === undefined ||
+        payload?.minY === undefined || payload?.maxY === undefined) {
+      send(ws, createError('Missing viewport bounds', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    const gameTime = worldState.getGameTime();
+    const npcs = backgroundNPCs.getNPCsInViewport(payload, gameTime);
+
+    send(ws, createResponse(message.id, true, {
+      npcs: npcs.map(npc => ({
+        id: npc.id,
+        name: npc.name,
+        appearanceSeed: npc.appearanceSeed,
+        position: npc.currentPosition,
+        state: npc.state,
+        activityLabel: npc.activityLabel,
+      })),
+      viewportBounds: payload,
+    }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleWorldGetBackgroundNPCs',
+    });
+    send(ws, createError('Failed to get background NPCs', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle world:pauseTime - Pause game time
+ */
+async function handleWorldPauseTime(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { worldState } = await import('../services/world/index.js');
+    worldState.pauseTime();
+
+    // Broadcast to all subscribed clients
+    broadcastWorldTimeUpdate();
+
+    send(ws, createResponse(message.id, true, { paused: true }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleWorldPauseTime',
+    });
+    send(ws, createError('Failed to pause time', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle world:resumeTime - Resume game time
+ */
+async function handleWorldResumeTime(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { worldState } = await import('../services/world/index.js');
+    worldState.resumeTime();
+
+    // Broadcast to all subscribed clients
+    broadcastWorldTimeUpdate();
+
+    send(ws, createResponse(message.id, true, { paused: false }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleWorldResumeTime',
+    });
+    send(ws, createError('Failed to resume time', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle world:setTimeMultiplier - Set game time speed
+ */
+async function handleWorldSetTimeMultiplier(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { worldState } = await import('../services/world/index.js');
+    const payload = message.payload as { multiplier: number };
+
+    if (!payload?.multiplier || payload.multiplier < 1 || payload.multiplier > 60) {
+      send(ws, createError('Invalid multiplier (must be 1-60)', 'INVALID_PAYLOAD', message.id));
+      return;
+    }
+
+    worldState.setTimeMultiplier(payload.multiplier);
+
+    // Broadcast to all subscribed clients
+    broadcastWorldTimeUpdate();
+
+    send(ws, createResponse(message.id, true, { multiplier: payload.multiplier }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleWorldSetTimeMultiplier',
+    });
+    send(ws, createError('Failed to set time multiplier', 'INTERNAL_ERROR', message.id));
+  }
+}
+
+/**
+ * Broadcast world time update to all subscribed clients
+ */
+export async function broadcastWorldTimeUpdate(): Promise<void> {
+  try {
+    const { worldState } = await import('../services/world/index.js');
+    const gameTime = worldState.getGameTime();
+
+    const data = serializeMessage({
+      type: 'world:timeUpdate',
+      payload: {
+        gameTime,
+        formattedTime: worldState.getFormattedTime(),
+        formattedDateTime: worldState.getFormattedDateTime(),
+      },
+    });
+
+    for (const [ws, session] of clients.entries()) {
+      if (!session.subscribedToWorld) continue;
+
+      try {
+        ws.send(data);
+      } catch (err) {
+        errorLogger.log(err, {
+          source: 'ws-server',
+          operation: 'broadcastWorldTimeUpdate',
+          session_id: session.id,
+        });
+      }
+    }
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'broadcastWorldTimeUpdate',
+    });
+  }
+}
+
+/**
+ * Broadcast NPC movement to all subscribed clients
+ */
+export function broadcastNPCMoved(data: {
+  npcId: string;
+  isAI: boolean;
+  position: { x: number; y: number };
+  targetPosition?: { x: number; y: number };
+  buildingId?: string;
+  activity: string;
+  activityDescription?: string;
+}): void {
+  const message = serializeMessage({
+    type: 'world:npcMoved',
+    payload: data,
+  });
+
+  for (const [ws, session] of clients.entries()) {
+    if (!session.subscribedToWorld) continue;
+
+    try {
+      ws.send(message);
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcastNPCMoved',
+        session_id: session.id,
+      });
+    }
+  }
+}
+
+// ============================================================================
 // Utilities
 // ============================================================================
 
@@ -1192,5 +1504,7 @@ export default {
   broadcastThought,
   broadcastDeliberationStarted,
   broadcastDeliberationCompleted,
+  broadcastWorldTimeUpdate,
+  broadcastNPCMoved,
   getClientCount,
 };
