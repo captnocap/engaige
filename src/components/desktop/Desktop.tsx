@@ -16,6 +16,7 @@ import { ChessWindow } from './ChessWindow.js'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 import { WorldWindow } from '../world/index.js'
+import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 interface WindowConfig {
@@ -330,6 +331,9 @@ export function Desktop() {
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
       />
+
+      {/* Server Connection Overlay - Blocks entire game when disconnected */}
+      <ServerConnectionOverlay />
     </div>
   )
 }
