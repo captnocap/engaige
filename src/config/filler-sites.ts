@@ -365,6 +365,96 @@ export const FILLER_SITES = {
       border: '#E5E7EB',
     },
   },
+
+  truemoss: {
+    id: 'truemoss',
+    name: 'TrueMoss',
+    tagline: 'Real Bryophyte Science, No Corporate Influence',
+    url: 'www.truemoss.corn',
+    icon: '🌿',
+    description: 'Agatha Mosswell\'s independent moss research and community drama',
+    theme: {
+      primary: '#166534',      // Deep moss green
+      secondary: '#65A30D',    // Lime accent
+      background: '#F0FDF4',   // Light green bg
+      surface: '#ffffff',
+      text: '#14532D',
+      textMuted: '#4D7C0F',
+      border: '#86EFAC',
+    },
+  },
+
+  graintruth: {
+    id: 'graintruth',
+    name: 'GrainTruth',
+    tagline: 'Following the Chaff Trail to Hidden History',
+    url: 'www.graintruth.corn',
+    icon: '🌾',
+    description: 'Dr. Helena Cryptwood\'s research archive on grain-based world history',
+    theme: {
+      primary: '#7C2D12',      // Deep grain brown
+      secondary: '#DC2626',    // Warning red
+      background: '#1C1917',   // Dark conspiracy bg
+      surface: '#292524',      // Slightly lighter
+      text: '#FEF3C7',         // Parchment text
+      textMuted: '#A8A29E',    // Faded
+      border: '#44403C',       // Dark border
+    },
+  },
+
+  benchwatch: {
+    id: 'benchwatch',
+    name: 'BenchWatch',
+    tagline: 'Rating the World\'s Seating, One Slat at a Time',
+    url: 'www.benchwatch.corn',
+    icon: '🪑',
+    description: 'Forensic bench analysis by Greg Mantooth, CPA (ret.)',
+    theme: {
+      primary: '#4B5563',      // Bench grey
+      secondary: '#92400E',    // Wood brown
+      background: '#F3F4F6',
+      surface: '#ffffff',
+      text: '#1F2937',
+      textMuted: '#6B7280',
+      border: '#D1D5DB',
+    },
+  },
+
+  dominate: {
+    id: 'dominate',
+    name: 'DOMINATE',
+    tagline: 'CRUSH YOUR GOALS OR THEY CRUSH YOU',
+    url: 'www.dominate.corn',
+    icon: '💪',
+    description: 'Chad Thundercoach\'s high-intensity success system',
+    theme: {
+      primary: '#DC2626',      // Aggressive red
+      secondary: '#000000',    // Black
+      background: '#0A0A0A',   // Near black
+      surface: '#1A1A1A',      // Dark grey
+      text: '#FFFFFF',         // White
+      textMuted: '#9CA3AF',    // Grey
+      border: '#374151',       // Dark border
+    },
+  },
+
+  stationsushi: {
+    id: 'stationsushi',
+    name: 'Station Sushi Review',
+    tagline: 'Fine Dining at the Fuel Pump',
+    url: 'www.stationsushireview.corn',
+    icon: '🍣',
+    description: 'Mildred Gasketsworth\'s definitive guide to gas station sushi',
+    theme: {
+      primary: '#0891B2',      // Teal (sushi fresh)
+      secondary: '#F97316',    // Orange (caution)
+      background: '#F8FAFC',
+      surface: '#ffffff',
+      text: '#0F172A',
+      textMuted: '#64748B',
+      border: '#E2E8F0',
+    },
+  },
 } as const;
 
 // ============================================================================
