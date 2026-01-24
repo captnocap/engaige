@@ -199,11 +199,15 @@ export const useWorldStore = create<WorldState>((set, get) => ({
     const wsStore = useWSStore.getState();
     set({ isLoading: true, error: null });
 
+    console.log('[WorldStore] Loading world state...');
+
     try {
       const response = await wsStore.request('world:getState', {});
+      console.log('[WorldStore] Response:', response);
 
       if (response.success && response.payload) {
         const data = response.payload as any;
+        console.log('[WorldStore] City loaded:', data.city?.name, 'Buildings:', data.city?.buildings?.length);
         set({
           city: data.city,
           gameTime: data.gameTime,
@@ -215,12 +219,14 @@ export const useWorldStore = create<WorldState>((set, get) => ({
           isLoading: false,
         });
       } else {
+        console.error('[WorldStore] Failed:', response.error);
         set({
           isLoading: false,
           error: response.error || 'Failed to load world state',
         });
       }
     } catch (err) {
+      console.error('[WorldStore] Exception:', err);
       set({
         isLoading: false,
         error: err instanceof Error ? err.message : 'Failed to load world state',

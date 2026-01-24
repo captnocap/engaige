@@ -8,6 +8,7 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { Application, Container, Graphics, Text, TextStyle } from 'pixi.js';
 import { useWorldStore } from '../../stores/worldStore.js';
+import { useWSStore } from '../../stores/wsStore.js';
 import {
   gridToScreen,
   screenToGrid,
@@ -67,6 +68,9 @@ export default function WorldViewer() {
   const appRef = useRef<Application | null>(null);
   const worldContainerRef = useRef<Container | null>(null);
 
+  // WebSocket connection state
+  const connected = useWSStore((state) => state.connected);
+
   // Store state
   const {
     city,
@@ -103,15 +107,25 @@ export default function WorldViewer() {
   // Initialization
   // ============================================================================
 
-  // Load world state on mount
+  // Load world state when connected
   useEffect(() => {
-    loadWorldState();
+    if (!connected) {
+      console.log('[WorldViewer] Waiting for WebSocket connection...');
+      return;
+    }
+
+    console.log('[WorldViewer] Connected, loading world state...');
+    loadWorldState().then(() => {
+      console.log('[WorldViewer] World state loaded, city:', useWorldStore.getState().city?.name);
+    }).catch(err => {
+      console.error('[WorldViewer] Failed to load world state:', err);
+    });
     subscribeToUpdates();
 
     return () => {
       unsubscribeFromUpdates();
     };
-  }, []);
+  }, [connected]);
 
   // Initialize PixiJS
   useEffect(() => {
@@ -491,6 +505,18 @@ export default function WorldViewer() {
   // Render
   // ============================================================================
 
+  // Show connecting state
+  if (!connected) {
+    return (
+      <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
+        <div className="text-center">
+          <p className="text-lg mb-2">Connecting to server...</p>
+          <p className="text-sm opacity-70">Please wait</p>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
@@ -503,6 +529,25 @@ export default function WorldViewer() {
           >
             Retry
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state if no city yet
+  if (!city) {
+    return (
+      <div className="flex items-center justify-center h-full bg-[var(--color-bgPrimary)] text-[var(--color-text)]">
+        <div className="text-center">
+          <p className="mb-2">{isLoading ? 'Loading world...' : 'No world data'}</p>
+          {!isLoading && (
+            <button
+              onClick={loadWorldState}
+              className="px-4 py-2 bg-[var(--color-primary)] rounded hover:opacity-80"
+            >
+              Load World
+            </button>
+          )}
         </div>
       </div>
     );
