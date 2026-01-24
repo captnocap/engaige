@@ -58,7 +58,70 @@ git push → GitHub Actions → Build & Encrypt → Cloudflare Pages
 
 ---
 
-## Encryption
+## Cryptographic Security
+
+Two-layer protection:
+
+| Layer | Purpose | Algorithm | Key Location |
+|-------|---------|-----------|--------------|
+| **Signing** | Authenticity (only we can publish) | Ed25519 | Private: our server, Public: game client |
+| **Encryption** | Privacy (can't read ahead) | AES-256-GCM | Symmetric key in game client |
+
+Even if someone extracts everything from the game client, they still can't forge content because our private signing key never leaves our build server.
+
+### Why Both?
+
+```
+Signing alone:     Content readable, but tamper-proof
+Encryption alone:  Content private, but forgeable if key extracted
+Both:              Content private AND tamper-proof
+```
+
+---
+
+## Signing (Ed25519)
+
+### Key Pair
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ PRIVATE KEY (32 bytes)                                          │
+│ - NEVER leaves our build server                                 │
+│ - Stored in GitHub Secrets                                      │
+│ - Used to sign content before upload                            │
+│ - If compromised: generate new pair, ship game update           │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓ derives
+┌─────────────────────────────────────────────────────────────────┐
+│ PUBLIC KEY (32 bytes)                                           │
+│ - Embedded in game client                                       │
+│ - Used to verify signatures                                     │
+│ - Safe to expose (that's the point)                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Why Ed25519?
+
+- Fast (signing and verification)
+- Small signatures (64 bytes)
+- Small keys (32 bytes)
+- No padding oracle attacks
+- Deterministic (same input = same signature)
+- Industry standard (used by SSH, Signal, etc.)
+
+### Signature Scope
+
+We sign the **content hash**, not the raw content:
+
+```
+signature = Ed25519.sign(SHA256(content_json), private_key)
+```
+
+This keeps signatures small regardless of content size.
+
+---
+
+## Encryption (AES-256-GCM)
 
 ### Algorithm
 
@@ -72,36 +135,47 @@ git push → GitHub Actions → Build & Encrypt → Cloudflare Pages
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ MASTER KEY (32 bytes)                                           │
+│ ENCRYPTION KEY (32 bytes)                                       │
 │ - Stored in GitHub Secrets (for build pipeline)                 │
 │ - Embedded in game binary (obfuscated)                          │
-│ - Rotated with major game versions                              │
+│ - Provides privacy, not authenticity                            │
+│ - If extracted: attacker can READ but not FORGE                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 **Key Rotation Strategy:**
-- Each major version can have a new key
-- Old content re-encrypted with new key on rotation
-- Game ships with current key only
-- If key leaks, rotate with next update
+- Rotate with major game versions
+- Old content re-encrypted with new key
+- If key leaks, signature still protects authenticity
 
-### Encrypted File Format
+---
+
+## Combined File Format
 
 ```
-┌──────────┬──────────┬───────────────────┬──────────┐
-│ Version  │    IV    │    Ciphertext     │   Tag    │
-│ (1 byte) │(12 bytes)│    (variable)     │(16 bytes)│
-└──────────┴──────────┴───────────────────┴──────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                         ENCRYPTED ENVELOPE                       │
+├──────────┬──────────┬───────────────────────────────┬──────────┤
+│ Version  │    IV    │         Ciphertext            │   Tag    │
+│ (1 byte) │(12 bytes)│         (variable)            │(16 bytes)│
+└──────────┴──────────┴───────────────────────────────┴──────────┘
+                                   │
+                                   ▼ (after decryption)
+┌─────────────────────────────────────────────────────────────────┐
+│                         SIGNED PAYLOAD                           │
+├──────────────┬──────────────────────────────────────────────────┤
+│  Signature   │                    Content                        │
+│  (64 bytes)  │                    (JSON)                         │
+└──────────────┴──────────────────────────────────────────────────┘
 ```
 
-- **Version**: Encryption format version (for future changes)
-- **IV**: Random initialization vector (unique per file)
-- **Ciphertext**: Encrypted JSON content
-- **Tag**: Authentication tag (verifies integrity)
+**Flow:**
+1. Build pipeline: `JSON → sign → prepend signature → encrypt → upload`
+2. Game client: `download → decrypt → extract signature → verify → parse JSON`
 
 ### File Extension
 
-Encrypted files use `.enc` extension:
+Encrypted+signed files use `.enc` extension:
 ```
 manifest.json  →  manifest.enc
 content/foo.json  →  content/foo.enc
@@ -170,36 +244,74 @@ engaige-content/
 
 ### Scripts
 
-**scripts/encrypt.ts**
+**scripts/crypto.ts**
 ```typescript
-import { createCipheriv, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
+import * as ed25519 from '@noble/ed25519';
 
-const ENCRYPTION_VERSION = 0x01;
+const FORMAT_VERSION = 0x01;
+const SIGNATURE_LENGTH = 64;
 
-export function encrypt(plaintext: string, key: Buffer): Buffer {
-  const iv = randomBytes(12);  // 96-bit IV for GCM
+// ============================================================================
+// SIGNING (Ed25519)
+// ============================================================================
+
+/**
+ * Sign content with our private key
+ * Only runs on build server - private key never in game client
+ */
+export async function signContent(content: string, privateKey: Uint8Array): Promise<Uint8Array> {
+  const contentHash = createHash('sha256').update(content).digest();
+  return await ed25519.signAsync(contentHash, privateKey);
+}
+
+/**
+ * Verify content signature with public key
+ * Runs in game client - public key is safe to embed
+ */
+export async function verifySignature(
+  content: string,
+  signature: Uint8Array,
+  publicKey: Uint8Array
+): Promise<boolean> {
+  const contentHash = createHash('sha256').update(content).digest();
+  return await ed25519.verifyAsync(signature, contentHash, publicKey);
+}
+
+// ============================================================================
+// ENCRYPTION (AES-256-GCM)
+// ============================================================================
+
+/**
+ * Encrypt signed content
+ * Format: [version(1)][iv(12)][ciphertext(n)][tag(16)]
+ */
+export function encrypt(signedPayload: Buffer, key: Buffer): Buffer {
+  const iv = randomBytes(12);
   const cipher = createCipheriv('aes-256-gcm', key, iv);
 
   const encrypted = Buffer.concat([
-    cipher.update(plaintext, 'utf8'),
+    cipher.update(signedPayload),
     cipher.final()
   ]);
 
   const tag = cipher.getAuthTag();
 
-  // Format: [version(1)][iv(12)][ciphertext(n)][tag(16)]
   return Buffer.concat([
-    Buffer.from([ENCRYPTION_VERSION]),
+    Buffer.from([FORMAT_VERSION]),
     iv,
     encrypted,
     tag
   ]);
 }
 
-export function decrypt(data: Buffer, key: Buffer): string {
+/**
+ * Decrypt to get signed payload
+ */
+export function decrypt(data: Buffer, key: Buffer): Buffer {
   const version = data[0];
-  if (version !== ENCRYPTION_VERSION) {
-    throw new Error(`Unknown encryption version: ${version}`);
+  if (version !== FORMAT_VERSION) {
+    throw new Error(`Unknown format version: ${version}`);
   }
 
   const iv = data.subarray(1, 13);
@@ -212,52 +324,114 @@ export function decrypt(data: Buffer, key: Buffer): string {
   return Buffer.concat([
     decipher.update(ciphertext),
     decipher.final()
-  ]).toString('utf8');
+  ]);
+}
+
+// ============================================================================
+// COMBINED OPERATIONS
+// ============================================================================
+
+/**
+ * Sign and encrypt content (build pipeline)
+ * Returns: encrypted([signature(64)][content])
+ */
+export async function signAndEncrypt(
+  content: string,
+  privateKey: Uint8Array,
+  encryptionKey: Buffer
+): Promise<Buffer> {
+  // 1. Sign the content
+  const signature = await signContent(content, privateKey);
+
+  // 2. Create signed payload: [signature(64)][content]
+  const signedPayload = Buffer.concat([
+    Buffer.from(signature),
+    Buffer.from(content, 'utf8')
+  ]);
+
+  // 3. Encrypt the signed payload
+  return encrypt(signedPayload, encryptionKey);
+}
+
+/**
+ * Decrypt and verify content (game client)
+ * Throws if signature is invalid
+ */
+export async function decryptAndVerify(
+  encryptedData: Buffer,
+  publicKey: Uint8Array,
+  encryptionKey: Buffer
+): Promise<string> {
+  // 1. Decrypt to get signed payload
+  const signedPayload = decrypt(encryptedData, encryptionKey);
+
+  // 2. Extract signature and content
+  const signature = signedPayload.subarray(0, SIGNATURE_LENGTH);
+  const content = signedPayload.subarray(SIGNATURE_LENGTH).toString('utf8');
+
+  // 3. Verify signature
+  const isValid = await verifySignature(content, signature, publicKey);
+  if (!isValid) {
+    throw new Error('CONTENT SIGNATURE INVALID - possible tampering or forgery');
+  }
+
+  return content;
 }
 ```
 
 **scripts/build.ts**
 ```typescript
-import { encrypt } from './encrypt';
+import { signAndEncrypt } from './crypto';
 import { validateContent } from './validate';
 import { generateManifest } from './generate-manifest';
-import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { glob } from 'glob';
 
-const KEY = Buffer.from(process.env.CONTENT_ENCRYPTION_KEY!, 'hex');
+// Keys from environment (GitHub Secrets)
+const PRIVATE_KEY = Buffer.from(process.env.SIGNING_PRIVATE_KEY!, 'hex');
+const ENCRYPTION_KEY = Buffer.from(process.env.CONTENT_ENCRYPTION_KEY!, 'hex');
 
 async function build() {
   console.log('Building content...');
+  console.log('  - Signing with Ed25519 (private key)');
+  console.log('  - Encrypting with AES-256-GCM');
 
   // 1. Read all content files
   const contentFiles = await glob('content/**/*.json');
+  console.log(`Found ${contentFiles.length} content files`);
 
   // 2. Validate against schemas
   for (const file of contentFiles) {
     await validateContent(file);
   }
+  console.log('All files validated');
 
   // 3. Generate manifest
   const manifest = await generateManifest(contentFiles);
 
-  // 4. Encrypt and write each file
+  // 4. Sign, encrypt, and write each file
   await mkdir('public/v1/content', { recursive: true });
 
   for (const file of contentFiles) {
     const content = await readFile(file, 'utf8');
-    const encrypted = encrypt(content, KEY);
+    const encrypted = await signAndEncrypt(content, PRIVATE_KEY, ENCRYPTION_KEY);
     const outPath = getOutputPath(file);
     await writeFile(outPath, encrypted);
   }
 
-  // 5. Encrypt and write manifest
-  const manifestEncrypted = encrypt(JSON.stringify(manifest), KEY);
+  // 5. Sign, encrypt, and write manifest
+  const manifestEncrypted = await signAndEncrypt(
+    JSON.stringify(manifest),
+    PRIVATE_KEY,
+    ENCRYPTION_KEY
+  );
   await writeFile('public/v1/manifest.enc', manifestEncrypted);
 
   // 6. Generate and encrypt per-site feeds
-  await generateSiteFeeds(contentFiles, KEY);
+  await generateSiteFeeds(contentFiles, PRIVATE_KEY, ENCRYPTION_KEY);
 
   console.log(`Built ${contentFiles.length} content files`);
+  console.log('All content signed and encrypted');
 }
 
 build().catch(console.error);
@@ -288,9 +462,10 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build and encrypt
+      - name: Build, sign, and encrypt
         run: bun run build
         env:
+          SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           CONTENT_ENCRYPTION_KEY: ${{ secrets.CONTENT_ENCRYPTION_KEY }}
 
       - name: Deploy to Cloudflare Pages
@@ -335,91 +510,229 @@ import { deriveKey } from './crypto.wasm';
 const key = deriveKey();
 ```
 
-### Decryption in TypeScript/Bun
+### Decryption & Verification in Game Client
 
 **server/src/services/content-crypto.ts**
 ```typescript
-import { createDecipheriv } from 'crypto';
+import { createDecipheriv, createHash } from 'crypto';
+import * as ed25519 from '@noble/ed25519';
 
-const CONTENT_KEY = getContentKey();  // However we're storing it
+const FORMAT_VERSION = 0x01;
+const SIGNATURE_LENGTH = 64;
 
-export function decryptContent(encryptedData: Buffer): string {
+// Our public key - safe to embed, used only for verification
+// (Private key NEVER leaves build server)
+const ENGAIGE_PUBLIC_KEY = new Uint8Array([
+  // 32 bytes - populated at build time
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+]);
+
+// Encryption key (obfuscated - see Key Storage section)
+const ENCRYPTION_KEY = getObfuscatedKey();
+
+/**
+ * Decrypt and verify content from CDN
+ * Throws if signature invalid (content forged or tampered)
+ */
+export async function decryptAndVerifyContent(encryptedData: Buffer): Promise<string> {
+  // 1. Decrypt the envelope
   const version = encryptedData[0];
-  if (version !== 0x01) {
-    throw new Error(`Unknown content encryption version: ${version}`);
+  if (version !== FORMAT_VERSION) {
+    throw new Error(`Unknown format version: ${version}`);
   }
 
   const iv = encryptedData.subarray(1, 13);
   const tag = encryptedData.subarray(-16);
   const ciphertext = encryptedData.subarray(13, -16);
 
-  const decipher = createDecipheriv('aes-256-gcm', CONTENT_KEY, iv);
+  const decipher = createDecipheriv('aes-256-gcm', ENCRYPTION_KEY, iv);
   decipher.setAuthTag(tag);
 
-  return Buffer.concat([
+  const signedPayload = Buffer.concat([
     decipher.update(ciphertext),
     decipher.final()
-  ]).toString('utf8');
+  ]);
+
+  // 2. Extract signature and content
+  const signature = signedPayload.subarray(0, SIGNATURE_LENGTH);
+  const content = signedPayload.subarray(SIGNATURE_LENGTH).toString('utf8');
+
+  // 3. Verify signature against our public key
+  const contentHash = createHash('sha256').update(content).digest();
+  const isValid = await ed25519.verifyAsync(signature, contentHash, ENGAIGE_PUBLIC_KEY);
+
+  if (!isValid) {
+    throw new Error(
+      'CONTENT SIGNATURE INVALID\n' +
+      'This content was not signed by engAIge servers.\n' +
+      'Possible causes:\n' +
+      '  - Content was tampered with\n' +
+      '  - Content from unauthorized source\n' +
+      '  - Corrupted download\n' +
+      'This content will be rejected.'
+    );
+  }
+
+  return content;
 }
 ```
 
-### Fetch and Decrypt Flow
+**Why this is secure:**
+
+```
+Attacker extracts from game:
+  ✓ Public key (useless - can only verify, not sign)
+  ✓ Encryption key (can decrypt, but...)
+
+Attacker tries to forge content:
+  ✗ Cannot sign without private key
+  ✗ Game rejects content with invalid signature
+  ✗ Private key is ONLY on our build server
+```
+
+### Fetch, Decrypt, and Verify Flow
 
 **server/src/services/content-feed.ts**
 ```typescript
-import { decryptContent } from './content-crypto';
+import { decryptAndVerifyContent } from './content-crypto';
 
 const CDN_BASE = 'https://content.engaige.game/v1';
 
 export async function fetchManifest(): Promise<ContentManifest> {
   const response = await fetch(`${CDN_BASE}/manifest.enc`);
   const encrypted = Buffer.from(await response.arrayBuffer());
-  const decrypted = decryptContent(encrypted);
+
+  // Decrypt AND verify signature - throws if forged/tampered
+  const decrypted = await decryptAndVerifyContent(encrypted);
+
   return JSON.parse(decrypted);
 }
 
-export async function fetchContent(id: string): Promise<ContentItem> {
-  const response = await fetch(`${CDN_BASE}/content/${id}.enc`);
-  const encrypted = Buffer.from(await response.arrayBuffer());
-  const decrypted = decryptContent(encrypted);
-  return JSON.parse(decrypted);
+export async function fetchContent(id: string): Promise<ContentItem | null> {
+  try {
+    const response = await fetch(`${CDN_BASE}/content/${id}.enc`);
+    const encrypted = Buffer.from(await response.arrayBuffer());
+
+    // Decrypt AND verify signature - throws if forged/tampered
+    const decrypted = await decryptAndVerifyContent(encrypted);
+
+    return JSON.parse(decrypted);
+  } catch (error) {
+    if (error.message.includes('SIGNATURE INVALID')) {
+      // Log security event - someone may be tampering
+      console.error('SECURITY: Invalid content signature detected', { id });
+      // Do NOT use this content
+      return null;
+    }
+    throw error;
+  }
 }
 ```
+
+**Security guarantee:** If `decryptAndVerifyContent` returns without throwing, the content is:
+1. Decrypted correctly (AES key valid)
+2. Signed by our private key (authenticity verified)
+3. Unmodified since signing (integrity verified)
 
 ---
 
 ## Security Considerations
 
-### What This Protects Against
+### Security Model
 
-| Threat | Protected? | Notes |
-|--------|------------|-------|
-| Casual browsing of CDN | ✅ Yes | Can't just open JSON in browser |
-| Spoiler scrapers | ✅ Yes | Need to extract key from game |
-| Content preview sites | ✅ Yes | Can't parse without game |
-| Determined reverse engineers | ❌ No | Key is in client, can be extracted |
-| Traffic sniffing | ✅ Yes | Content encrypted, HTTPS for transport |
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    WHAT ATTACKER CAN EXTRACT                     │
+├─────────────────────────────────────────────────────────────────┤
+│  From game client:                                               │
+│    ✓ Public key (Ed25519)     - Can verify, cannot sign         │
+│    ✓ Encryption key (AES)     - Can decrypt existing content    │
+│                                                                  │
+│  From CDN:                                                       │
+│    ✓ Encrypted content        - Unreadable without game         │
+├─────────────────────────────────────────────────────────────────┤
+│                    WHAT ATTACKER CANNOT DO                       │
+├─────────────────────────────────────────────────────────────────┤
+│  ✗ Create forged content      - No private signing key          │
+│  ✗ Modify existing content    - Signature verification fails    │
+│  ✗ Inject malicious content   - Game rejects invalid signatures │
+│  ✗ Man-in-the-middle CDN      - Signature verification fails    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Threat Matrix
+
+| Threat | Protected? | How |
+|--------|------------|-----|
+| Casual browsing of CDN | ✅ Yes | Encryption |
+| Spoiler scrapers | ✅ Yes | Encryption |
+| Content forgery | ✅ Yes | Signature verification |
+| Malicious content injection | ✅ Yes | Signature verification |
+| Man-in-the-middle attacks | ✅ Yes | Signature verification |
+| CDN compromise | ✅ Yes | Signature verification |
+| Replay old content | ⚠️ Partial | Timestamps in manifest |
+| Reading content with extracted keys | ❌ No | Encryption key is extractable |
+| Memory dumping decrypted content | ❌ No | Content must be decrypted to use |
+
+### What This DOES Protect Against
+
+1. **Content forgery** - Only we can sign content with our private key
+2. **Tampering** - Any modification invalidates signature
+3. **Injection attacks** - Malicious content rejected by verification
+4. **CDN compromise** - Even if CDN is hacked, forged content rejected
+5. **Casual browsing** - Content encrypted, can't just open in browser
 
 ### What This Does NOT Protect Against
 
-- Someone decompiling the game to extract the key
-- Memory dumping decrypted content
-- Modifying the game to dump decrypted files
+1. **Reading content** - Determined attacker can extract encryption key and read
+2. **Memory inspection** - Decrypted content exists in memory during use
 
-**That's fine.** The goal isn't DRM. It's:
-1. Prevent casual spoiler browsing
-2. Make data mining annoying enough most won't bother
-3. Keep story surprises for players who want them
+**That's acceptable.** The critical protection is **authenticity**, not secrecy:
+- Attacker CAN read content early (spoilers) - annoying but not dangerous
+- Attacker CANNOT inject malicious content - this is the important part
 
-### Key Rotation
+### Key Rotation Scenarios
 
-When key is compromised (or just periodically):
+**If encryption key leaks:**
+- Attacker can READ content (spoilers)
+- Attacker still CANNOT forge content
+- Low priority to rotate, but can do with game update
 
-1. Generate new key
-2. Update GitHub secret
-3. Update game client (requires game update)
-4. Re-run build pipeline (re-encrypts all content)
-5. Old game versions can't read new content (acceptable)
+**If private signing key leaks (serious):**
+- Attacker can CREATE forged content
+- IMMEDIATE rotation required:
+  1. Generate new Ed25519 key pair
+  2. Update GitHub secret (private key)
+  3. Ship game update (new public key)
+  4. Re-sign all content
+  5. Old game versions will reject new content (forces update)
+
+### Key Generation
+
+```bash
+# Generate Ed25519 key pair (one-time setup)
+# Uses @noble/ed25519 compatible format
+
+import * as ed25519 from '@noble/ed25519';
+import { randomBytes } from 'crypto';
+
+const privateKey = randomBytes(32);
+const publicKey = await ed25519.getPublicKeyAsync(privateKey);
+
+console.log('SIGNING_PRIVATE_KEY=' + Buffer.from(privateKey).toString('hex'));
+console.log('SIGNING_PUBLIC_KEY=' + Buffer.from(publicKey).toString('hex'));
+
+# Generate AES-256 encryption key
+const encryptionKey = randomBytes(32);
+console.log('CONTENT_ENCRYPTION_KEY=' + encryptionKey.toString('hex'));
+```
+
+Store in GitHub Secrets:
+- `SIGNING_PRIVATE_KEY` - Never expose anywhere else
+- `CONTENT_ENCRYPTION_KEY` - Also in game client (obfuscated)
 
 ---
 
