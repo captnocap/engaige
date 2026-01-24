@@ -176,35 +176,154 @@ export interface DailyBuzzContent {
 }
 ```
 
-### Example: StrangerZone Schema
+### Example: ForChan Schema (Imageboard)
 
-**src/schemas/content/strangerzone.ts**
+**src/schemas/content/forchan.ts**
 ```typescript
-export type StrangerPersonality =
-  | 'normal'
-  | 'weird'
-  | 'philosophical'
-  | 'flirty'
-  | 'conspiracy'
-  | 'bot'
-  | 'lore'
-  | 'spooky';  // Seasonal
+// ForChan has a DIFFERENT structure than Threadit
+// - Anonymous by default
+// - Tripcodes for identity
+// - >>quote reply links
+// - Greentext (lines starting with >)
+// - No voting system
+// - Boards (not subreddits)
 
-export interface StrangerTemplate {
-  id: string;
-  personality: StrangerPersonality;
-  interests: string[];
-  responses: string[];        // Ordered response sequence
-  disconnectAfter?: number;   // Disconnect after N messages
-  typingDelay: number;        // Base typing delay in ms
-  weight?: number;            // Selection probability weight
+export interface ChanReply {
+  id: string;                  // Numeric-looking: "94817267"
+  content: string;             // May contain >>quotes and greentext
+  image?: string;              // Emoji placeholder or actual image
+  timestamp: string;           // "11/23/24(Sat)14:25:11" format
+  replyTo?: string[];          // IDs this reply quotes (>>94817234)
+  name?: string;               // "Anonymous" by default
+  tripcode?: string;           // Optional identity (e.g., "!8Nk3lM2qXw")
 }
 
-export interface StrangerZoneContent {
+export interface ChanThread {
+  id: string;                  // Numeric-looking: "94817234"
+  board: string;               // "g", "mu", "x", etc.
+  subject?: string;            // Thread subject line (optional)
+  content: string;             // OP content, often greentext
+  image?: string;              // OP image
+  timestamp: string;           // "11/23/24(Sat)14:23:42" format
+  replies: ChanReply[];
+  name?: string;               // Usually "Anonymous"
+  tripcode?: string;
+  sticky?: boolean;
+  locked?: boolean;
+}
+
+export interface ChanBoard {
+  id: string;                  // "g", "mu", "b", etc.
+  name: string;                // "Technology", "Music", etc.
+  description: string;         // Board tagline
+  nsfw?: boolean;
+}
+
+export interface ForChanContent {
   meta: ContentMeta;
-  content: StrangerTemplate;
+  content: ChanThread;
 }
 ```
+
+**Key differences from Threadit:**
+| Aspect | Threadit | ForChan |
+|--------|----------|---------|
+| Identity | Username required | Anonymous default, optional tripcode |
+| Voting | Upvotes/downvotes | None |
+| Replies | Nested tree | Flat with >>quote links |
+| Categories | Subreddits (r/name) | Boards (/g/, /mu/) |
+| Formatting | Markdown-ish | Greentext (>lines) |
+| Timestamps | Relative ("2h ago") | Absolute ("11/23/24") |
+
+---
+
+## StrangerZone: Special Case (NOT Content Delivery)
+
+**StrangerZone does NOT use the content delivery system.**
+
+It's an Omegle-style random chat where strangers are **AI-generated in real-time**, not pre-authored content. Each conversation is unique, absurd, and generated on the fly.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    STRANGERZONE ARCHITECTURE                     │
+│                                                                  │
+│  NOT this:                     THIS:                            │
+│  ┌─────────┐                   ┌─────────┐                      │
+│  │   CDN   │ ──▶ Templates     │   AI    │ ──▶ Real-time gen    │
+│  └─────────┘                   └─────────┘                      │
+│                                                                  │
+│  Pre-scripted responses        Unique personalities each time    │
+│  Same content for everyone     Different for every player        │
+│  Content delivery              AI service call                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### How StrangerZone Works
+
+1. Player clicks "Find Stranger"
+2. Game calls AI service with prompt:
+   - "Generate an absurd stranger persona for Omegle-style chat"
+   - Random personality seed (conspiracy theorist, alien, time traveler, etc.)
+   - No connection to game NPCs
+3. AI generates responses in real-time as player chats
+4. Stranger may disconnect randomly (simulated)
+5. Next stranger is completely different
+
+### StrangerZone AI Integration
+
+```typescript
+// NOT content delivery - this is AI service
+interface StrangerAIService {
+  // Generate a new random stranger
+  generateStranger(): Promise<{
+    personality: string;       // "Conspiracy theorist convinced you're a fed"
+    openingLine: string;       // First message they send
+    interests: string[];       // For "interest matching" display
+    disconnectProbability: number;
+  }>;
+
+  // Generate stranger's response to player message
+  generateResponse(
+    strangerContext: StrangerContext,
+    playerMessage: string
+  ): Promise<{
+    response: string;
+    shouldDisconnect: boolean;
+    typingDelay: number;
+  }>;
+}
+
+interface StrangerContext {
+  personality: string;
+  conversationHistory: Message[];
+  messageCount: number;
+}
+```
+
+### Example Stranger Personalities (AI-Generated)
+
+These are generated on the fly, not pre-authored:
+
+- "Thinks you're their DoorDash driver and won't accept otherwise"
+- "Only communicates in riddles about quantum coffee"
+- "Claims to be a sentient AI but types really slowly"
+- "Convinced this chat is a job interview and is WAY too prepared"
+- "Is clearly a bot but aggressively denies being a bot"
+- "Time traveler from 2019 warning you about 'the coffee incident'"
+- "Hartwell Building truther who thinks you're in on the cover-up"
+- "Just wants to talk about their moss collection (aggressive)"
+
+### Why Not Content Delivery?
+
+| Content Delivery | StrangerZone AI |
+|------------------|-----------------|
+| Same content for all players | Unique each time |
+| Pre-authored by us | Generated by AI |
+| Deterministic | Random/chaotic |
+| Part of world-building | Emergent gameplay |
+| Cheap (static JSON) | Costs AI tokens |
+
+StrangerZone is a **feature**, not content. It uses the AI budget system.
 
 ---
 
@@ -713,11 +832,33 @@ For each site:
 
 ### Site Migration Order
 
-1. **Threadit** - Most complex, good test case
-2. **DailyBuzz** - Simple flat content
-3. **BargainBay** - Has search, good test
-4. **StrangerZone** - Different pattern (templates vs content)
-5. **Remaining sites** - Follow established pattern
+**Phase 1: Core Content Sites**
+1. **Threadit** - Reddit clone, nested comments, good complexity test
+2. **DailyBuzz** - News articles, simple flat content
+3. **ForChan** - Imageboard, different structure (>>quotes, greentext, anonymous)
+4. **BargainBay** - Marketplace, has search filtering
+
+**Phase 2: Specialty Sites**
+5. **NestFinder** - Real estate listings
+6. **VidTube** - Video content with comments
+7. **WikiKnow** - Encyclopedia articles with TOC/citations
+8. **OddsOracle** - Prediction markets
+9. **VitalityRx** - Fake medications
+10. **WealthWisdom** - Financial "advice"
+
+**NOT Part of Content Delivery:**
+- **StrangerZone** - Real-time AI generation (see special section above)
+
+### Site Structure Categories
+
+| Category | Sites | Structure |
+|----------|-------|-----------|
+| **Forum-like** | Threadit, ForChan | Threads with replies |
+| **Article-based** | DailyBuzz, WikiKnow, WealthWisdom | Full articles |
+| **Listing-based** | BargainBay, NestFinder, VitalityRx | Cards with detail view |
+| **Interactive** | OddsOracle | Markets with trading UI |
+| **Video** | VidTube | Video entries with comments |
+| **Real-time AI** | StrangerZone | NOT content delivery |
 
 ---
 
@@ -787,6 +928,64 @@ For each site:
   }
 }
 ```
+
+### ForChan Thread (CDN JSON)
+
+```json
+{
+  "meta": {
+    "id": "forchan-cdn-fda-anon-reaction",
+    "site": "forchan",
+    "type": "thread",
+    "publishedAt": "2026-01-25T15:00:00Z",
+    "tags": ["quantum-coffee", "fda", "happening"]
+  },
+  "content": {
+    "id": "94823847",
+    "board": "g",
+    "subject": "IT'S HAPPENING - FDA QUANTUM STATEMENT",
+    "content": ">FDA finally releases statement on quantum coffee\n>\"insufficient evidence\"\n>doesn't ban it\n>doesn't endorse it\n>classic fed move\n\nThey know. They know it works and they're scared.\n\nWhy else would they investigate for 8 months and say NOTHING definitive?\n\n>inb4 schizo\n>inb4 it's just coffee bro",
+    "image": "📋☕",
+    "timestamp": "01/25/26(Sat)15:00:23",
+    "name": "Anonymous",
+    "replies": [
+      {
+        "id": "94823851",
+        "content": ">>94823847\n>They know it works\nit's fucking coffee you absolute mouthbreather\nthe \"quantum\" part is literally just marketing",
+        "timestamp": "01/25/26(Sat)15:01:45",
+        "replyTo": ["94823847"]
+      },
+      {
+        "id": "94823867",
+        "content": ">>94823851\n>he doesn't understand wave function collapse\n>he's never observed his beans\nngmi",
+        "timestamp": "01/25/26(Sat)15:03:12",
+        "replyTo": ["94823851"]
+      },
+      {
+        "id": "94823889",
+        "content": ">>94823847\nI work at the FDA (not saying which department)\nThere's a reason the statement took 8 months\nThere's a reason it says nothing\nLook into who funded the Martinez Study\nI've said too much",
+        "timestamp": "01/25/26(Sat)15:05:47",
+        "replyTo": ["94823847"],
+        "name": "Anonymous"
+      },
+      {
+        "id": "94823901",
+        "content": ">>94823889\n>I work at the FDA\n>anonymous imageboard\nnice LARP\n\nalso checked",
+        "timestamp": "01/25/26(Sat)15:06:33",
+        "replyTo": ["94823889"]
+      }
+    ]
+  }
+}
+```
+
+**Note the differences from Threadit:**
+- Numeric IDs that look like post numbers
+- `>>94823847` style quote references in content
+- Greentext lines starting with `>`
+- Flat reply structure with `replyTo` array
+- Chan-style timestamps
+- Anonymous by default
 
 ---
 
