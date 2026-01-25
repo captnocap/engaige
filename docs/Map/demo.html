@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Isometric City Sim</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Main Info Panel */
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+            /* Let clicks pass through to canvas */
+            user-select: none;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 200px;
+            z-index: 10;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4dc9ff;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .value {
+            font-weight: bold;
+            color: #ffeb3b;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Common Card Styles */
+        .card {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 260px;
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #4dc9ff;
+            backdrop-filter: blur(8px);
+            display: none;
+            font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.3rem;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .card .type-badge {
+            display: inline-block;
+            background: #4dc9ff;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card .detail-row {
+            margin: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .card .label {
+            color: #88ccff;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .card .data {
+            font-size: 0.95rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        /* Loading Overlay */
+        #loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 999;
+            transition: opacity 0.5s;
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Simplex Noise for terrain/layout variation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+</head>
+
+<body>
+
+    <div id="loader">Generating Terrain & City...</div>
+
+    <!-- Main HUD -->
+    <div id="info">
+        <h1>Neo-Pixel City</h1>
+        <div class="stat"><span>Population:</span> <span id="pop-count" class="value">0</span></div>
+        <div class="stat"><span>Traffic:</span> <span id="car-count" class="value">0</span></div>
+        <div class="stat"><span>Time:</span> <span id="time-display" class="value">12:00 PM</span></div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: #aaa;">
+            <i>Interactive Mode</i><br>
+            Left Click: Inspect Anything<br>
+            Left Drag: Rotate<br>
+            Scroll: Zoom
+        </div>
+    </div>
+
+    <!-- Agent Detail Card -->
+    <div id="agent-card" class="card">
+        <button class="close-btn" onclick="closeCards()">&times;</button>
+        <h2 id="card-name">Agent Name</h2>
+        <span id="card-type" class="type-badge">PEDESTRIAN</span>
+
+        <div class="detail-row">
+            <span class="label">Current Activity</span>
+            <div id="card-activity" class="data">Walking to work</div>
+        </div>
+        <div class="detail-row">
+            <span class="label">Mood</span>
+            <div id="card-mood" class="data">Neutral</div>
+        </div>
+        <div class="detail-row" style="border:none;">
+            <span class="label">Location</span>
+            <div id="card-dest" class="data">Downtown</div>
+        </div>
+    </div>
+
+    <!-- Building Detail Card -->
+    <div id="building-card" class="card">
+        <button class="close-btn" onclick="closeCards()">&times;</button>
+        <h2 id="b-card-name">Building Name</h2>
+        <span id="b-card-type" class="type-badge" style="background: #ff9800;">RESIDENTIAL</span>
+
+        <div class="detail-row">
+            <span class="label">Occupants</span>
+            <div id="b-card-occupants" class="data">12 / 20</div>
+        </div>
+        <div class="detail-row">
+            <span class="label">Property Value</span>
+            <div id="b-card-value" class="data">$1,200,000</div>
+        </div>
+        <div class="detail-row" style="border:none;">
+            <span class="label">Status</span>
+            <div id="b-card-status" class="data">Good Condition</div>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        /**
+         * Tiny City Simulation - Enhanced
+         * Features: Autonomous Agents, Terrain (Water/Mountain), Interactive Buildings
+         */
+
+        // --- Configuration ---
+        const CONFIG = {
+            gridSize: 34,
+            tileSize: 10,
+            roadWidth: 0.6,
+            carSpeed: 0.15,
+            pedestrianSpeed: 0.04,
+            dayDuration: 60,
+            buildingHeightMax: 40,
+            buildingHeightMin: 8,
+            colors: {
+                grass: 0x5a9e4d,
+                water: 0x22aaff,
+                mountain: 0x6b7b85,
+                mountainPeak: 0xffffff,
+                road: 0x555555,
+                sidewalk: 0x999999,
+                bridge: 0x777777,
+                residential: [0xe3dac9, 0xfff0f5, 0xdcd0ff, 0xffeebb],
+                commercial: [0x8fd3fe, 0xa8e6cf, 0xdcedc1, 0xb0e0e6],
+                industrial: [0x8c7b75, 0x6e6e6e, 0x8a8a8a, 0x5d4037],
+                car: [0xff5252, 0x448aff, 0xffff00, 0xe040fb, 0xffffff, 0x333333]
+            }
+        };
+
+        // --- Globals ---
+        let scene, camera, renderer, controls;
+        let cityGrid = [];
+        let cars = [];
+        let pedestrians = [];
+        let buildings = [];
+        let waterTiles = []; // To animate water
+        let time = 0;
+        let sunLight, moonLight, ambientLight;
+        let streetLights = [];
+        let windowMaterials = [];
+        let clock = new THREE.Clock();
+
+        // Interaction Globals
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let selectedObject = null; // Agent or Building
+
+        const noise = new SimplexNoise();
+
+        // --- Data Generation Constants ---
+        const NAMES = {
+            first: ["Neo", "Trinity", "Morpheus", "Cypher", "Switch", "Apoc", "Mouse", "Smith", "Jones", "Brown", "Niobe", "Link", "Zee", "Bane", "Lock", "Seraph", "Persephone", "Ghost", "Sparks", "Vector", "Ada", "Glitch", "Pixel", "Voxel", "Render"],
+            last: ["Anderson", "Moss", "Fishburne", "Pantoliano", "Foster", "Weaving", "Bernhardt", "Pinkett", "Gaye", "Lennix", "Reeves", "Wachowski", "Baudrillard", "Gibson", "Stephenson", "Dick", "Asimov", "Bradbury", "Huxley", "Orwell"]
+        };
+
+        const BUILDING_NAMES = {
+            residential: ["Sunrise Apartments", "The Lofts", "Oakwood Estate", "Riverside Condos", "Pixel Heights", "Voxel Manor", "Cozy Corner", "Skyview Residency"],
+            commercial: ["OmniCorp HQ", "Cyber Café", "Data Systems Inc.", "Fresh Market", "The Grid Mall", "Tech Hub", "Nebula Offices", "Quantum Bank"],
+            industrial: ["Steel Works", "Factory 01", "Power Station", "Supply Depot", "Logistics Hub", "Assembly Plant", "Refinery", "Data Center"],
+            park: ["Central Park", "River Walk", "Green Belt", "Echo Gardens", "Highland Park", "Summit View"]
+        };
+
+        // --- Initialization ---
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // 1. Scene Setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB);
+            scene.fog = new THREE.Fog(0x87CEEB, 200, 600);
+
+            // 2. Camera
+            const aspect = container.clientWidth / container.clientHeight;
+            const d = 160;
+            camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+            camera.position.set(200, 200, 200);
+            camera.lookAt(scene.position);
+
+            // 3. Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // 4. Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minZoom = 0.5;
+            controls.maxZoom = 2;
+            controls.maxPolarAngle = Math.PI / 2.2;
+
+            // 5. Lighting
+            setupLighting();
+
+            // 6. Generate City
+            generateCityData();
+            renderCity();
+            spawnAgents();
+
+            // 7. Events
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('pointerdown', onPointerDown);
+
+            // Hide loader
+            document.getElementById('loader').style.opacity = 0;
+            setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+
+            // 8. Start Loop
+            animate();
+        }
+
+        // --- Interaction Logic ---
+
+        function onPointerDown(event) {
+            if (event.target.tagName !== 'CANVAS') return;
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // 1. Check Agents (High priority)
+            const agentMeshes = [];
+            cars.forEach(c => agentMeshes.push(c.mesh));
+            pedestrians.forEach(p => agentMeshes.push(p.mesh));
+
+            const agentIntersects = raycaster.intersectObjects(agentMeshes, true);
+
+            if (agentIntersects.length > 0) {
+                let hitObj = agentIntersects[0].object;
+                while (hitObj.parent && !hitObj.userData.isAgent) {
+                    hitObj = hitObj.parent;
+                }
+                if (hitObj.userData.isAgent) {
+                    showAgentCard(hitObj.userData.agentRef);
+                    return;
+                }
+            }
+
+            // 2. Check Buildings (Lower priority)
+            const buildingMeshes = buildings; // These are Meshes
+            const buildingIntersects = raycaster.intersectObjects(buildingMeshes);
+
+            if (buildingIntersects.length > 0) {
+                const building = buildingIntersects[0].object;
+                if (building.userData.isBuilding) {
+                    showBuildingCard(building.userData);
+                    return;
+                }
+            }
+        }
+
+        function closeCards() {
+            document.getElementById('agent-card').style.display = 'none';
+            document.getElementById('building-card').style.display = 'none';
+            selectedObject = null;
+        }
+
+        function showAgentCard(agent) {
+            closeCards();
+            selectedObject = agent;
+            const card = document.getElementById('agent-card');
+
+            document.getElementById('card-name').innerText = agent.data.name;
+            document.getElementById('card-type').innerText = agent.type.toUpperCase();
+            document.getElementById('card-type').style.background = agent.type === 'car' ? '#ffeb3b' : '#4dc9ff';
+            document.getElementById('card-activity').innerText = agent.data.activity;
+            document.getElementById('card-mood').innerText = agent.data.mood;
+
+            const type = cityGrid[agent.gridX][agent.gridZ].type;
+            let district = getTypeLabel(type);
+            document.getElementById('card-dest').innerText = district;
+
+            card.style.display = 'block';
+        }
+
+        function showBuildingCard(data) {
+            closeCards();
+            const card = document.getElementById('building-card');
+
+            document.getElementById('b-card-name').innerText = data.name;
+            const typeLabel = getTypeLabel(data.typeId);
+            document.getElementById('b-card-type').innerText = typeLabel;
+
+            let color = '#ccc';
+            if (data.typeId === TYPES.RESIDENTIAL) color = '#8bc34a';
+            if (data.typeId === TYPES.COMMERCIAL) color = '#29b6f6';
+            if (data.typeId === TYPES.INDUSTRIAL) color = '#ff7043';
+            document.getElementById('b-card-type').style.background = color;
+
+            document.getElementById('b-card-occupants').innerText = `${Math.floor(Math.random() * 15 + 5)} / ${Math.floor(Math.random() * 20 + 30)}`;
+            document.getElementById('b-card-value').innerText = `$${(Math.floor(Math.random() * 800 + 200) * 1000).toLocaleString()}`;
+
+            card.style.display = 'block';
+        }
+
+        function getTypeLabel(type) {
+            if (type === TYPES.RESIDENTIAL) return "Residential Zone";
+            if (type === TYPES.COMMERCIAL) return "Commercial District";
+            if (type === TYPES.INDUSTRIAL) return "Industrial Sector";
+            if (type === TYPES.PARK) return "City Park";
+            if (type === TYPES.ROAD) return "Road Network";
+            if (type === TYPES.WATER) return "Waterfront";
+            if (type === TYPES.MOUNTAIN) return "Mountain Range";
+            return "Unknown";
+        }
+
+        // --- City Generation ---
+
+        const TYPES = { EMPTY: 0, ROAD: 1, RESIDENTIAL: 2, COMMERCIAL: 3, INDUSTRIAL: 4, PARK: 5, WATER: 6, MOUNTAIN: 7 };
+
+        function generateCityData() {
+            // Initialize grid
+            for (let x = 0; x < CONFIG.gridSize; x++) {
+                cityGrid[x] = [];
+                for (let z = 0; z < CONFIG.gridSize; z++) {
+                    cityGrid[x][z] = { type: TYPES.EMPTY, x, z };
+                }
+            }
+
+            // 1. Terrain Generation (Water & Mountains)
+            const centerX = CONFIG.gridSize / 2;
+            const centerZ = CONFIG.gridSize / 2;
+            const maxDist = CONFIG.gridSize / 2;
+
+            for (let x = 0; x < CONFIG.gridSize; x++) {
+                for (let z = 0; z < CONFIG.gridSize; z++) {
+                    // Distance from center (0 to 1 roughly)
+                    const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(z - centerZ, 2));
+                    const distNorm = dist / maxDist;
+
+                    // Large scale noise for terrain features
+                    const nx = x / 15;
+                    const nz = z / 15;
+                    const elevation = noise.noise2D(nx, nz);
+
+                    // Outer Rim Logic: Force mountains at the edges
+                    if (distNorm > 0.85) {
+                        // If it's the very edge, it's a mountain
+                        cityGrid[x][z].type = TYPES.MOUNTAIN;
+                    } else {
+                        // Inner Logic
+                        if (elevation < -0.3) {
+                            cityGrid[x][z].type = TYPES.WATER;
+                        }
+                        else if (elevation > 0.45) {
+                            // "Innercity mountain ranges" -> Convert to Hill Parks
+                            // Instead of blocking mountains, these become elevated parks
+                            cityGrid[x][z].type = TYPES.PARK;
+                            cityGrid[x][z].isHill = true; // Mark as hill
+                        }
+                    }
+                }
+            }
+
+            // 2. Roads
+            // Simple Grid, but must handle Terrain
+            const blockSize = 4;
+            for (let x = 0; x < CONFIG.gridSize; x++) {
+                for (let z = 0; z < CONFIG.gridSize; z++) {
+                    // Don't build roads on mountains
+                    if (cityGrid[x][z].type === TYPES.MOUNTAIN) continue;
+
+                    // Don't build roads on Hill Parks to preserve nature
+                    if (cityGrid[x][z].type === TYPES.PARK && cityGrid[x][z].isHill) continue;
+
+                    const isRoadX = x % blockSize === 0;
+                    const isRoadZ = z % blockSize === 0;
+
+                    if (isRoadX || isRoadZ) {
+                        if (cityGrid[x][z].type === TYPES.WATER) {
+                            cityGrid[x][z].isBridge = true;
+                            cityGrid[x][z].type = TYPES.ROAD;
+                        } else {
+                            cityGrid[x][z].type = TYPES.ROAD;
+                        }
+                    }
+                }
+            }
+
+            // 3. Zoning (Residential/Commercial/Industrial)
+            for (let x = 0; x < CONFIG.gridSize; x++) {
+                for (let z = 0; z < CONFIG.gridSize; z++) {
+                    if (cityGrid[x][z].type === TYPES.EMPTY) {
+                        const n = noise.noise2D(x / 8 + 100, z / 8 + 100); // Different seed offset
+
+                        if (n > 0.3) cityGrid[x][z].type = TYPES.COMMERCIAL;
+                        else if (n > 0.0) cityGrid[x][z].type = TYPES.RESIDENTIAL;
+                        else if (n > -0.3) cityGrid[x][z].type = TYPES.INDUSTRIAL;
+                        else cityGrid[x][z].type = TYPES.PARK;
+                    }
+                }
+            }
+        }
+
+        // --- Rendering ---
+
+        function renderCity() {
+            const geoSize = CONFIG.tileSize;
+
+            // Materials
+            const matRoad = new THREE.MeshLambertMaterial({ color: CONFIG.colors.road });
+            const matSidewalk = new THREE.MeshLambertMaterial({ color: CONFIG.colors.sidewalk });
+            const matGrass = new THREE.MeshLambertMaterial({ color: CONFIG.colors.grass });
+            const matWater = new THREE.MeshLambertMaterial({ color: CONFIG.colors.water, transparent: true, opacity: 0.8 });
+            const matBridge = new THREE.MeshLambertMaterial({ color: CONFIG.colors.bridge });
+            const matMountain = new THREE.MeshLambertMaterial({ color: CONFIG.colors.mountain, flatShading: true });
+            const matPeak = new THREE.MeshLambertMaterial({ color: CONFIG.colors.mountainPeak, flatShading: true });
+
+            // Helper for procedural buildings
+            function createBuilding(x, z, type) {
+                let height, colorList, nameList;
+                if (type === TYPES.RESIDENTIAL) {
+                    height = Math.random() * (15 - CONFIG.buildingHeightMin) + CONFIG.buildingHeightMin;
+                    colorList = CONFIG.colors.residential;
+                    nameList = BUILDING_NAMES.residential;
+                } else if (type === TYPES.COMMERCIAL) {
+                    height = Math.random() * (CONFIG.buildingHeightMax - 15) + 15;
+                    colorList = CONFIG.colors.commercial;
+                    nameList = BUILDING_NAMES.commercial;
+                } else {
+                    height = Math.random() * 10 + 8;
+                    colorList = CONFIG.colors.industrial;
+                    nameList = BUILDING_NAMES.industrial;
+                }
+
+                const color = colorList[Math.floor(Math.random() * colorList.length)];
+                const name = nameList[Math.floor(Math.random() * nameList.length)];
+
+                // Dynamic Texture
+                const canvas = document.createElement('canvas');
+                canvas.width = 64; canvas.height = 64;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
+                ctx.fillRect(0, 0, 64, 64);
+
+                // Windows
+                ctx.fillStyle = '#222';
+                const winProb = type === TYPES.COMMERCIAL ? 0.8 : 0.4;
+                for (let i = 8; i < 60; i += 12) {
+                    for (let j = 8; j < 60; j += 16) {
+                        if (Math.random() < winProb) ctx.fillRect(i, j, 6, 10);
+                    }
+                }
+
+                const tex = new THREE.CanvasTexture(canvas);
+                tex.magFilter = THREE.NearestFilter;
+                const mat = new THREE.MeshLambertMaterial({ map: tex });
+
+                // Store for Night Cycle
+                windowMaterials.push({
+                    material: mat, ctx: ctx, baseColor: '#' + color.toString(16).padStart(6, '0'), type: type
+                });
+
+                const geo = new THREE.BoxGeometry(CONFIG.tileSize * 0.85, height, CONFIG.tileSize * 0.85);
+                // Adjust UVs
+                const uvs = geo.attributes.uv;
+                for (let i = 0; i < uvs.count; i++) {
+                    if (uvs.getY(i) > 0 && (i < 8 || (i >= 16 && i < 24))) uvs.setY(i, height / 10);
+                }
+
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(x, height / 2 + 0.5, z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+
+                // UserData for Interaction
+                mesh.userData = {
+                    isBuilding: true,
+                    name: name,
+                    typeId: type,
+                    height: height
+                };
+
+                buildings.push(mesh);
+                scene.add(mesh);
+            }
+
+            cityGrid.forEach(row => {
+                row.forEach(tile => {
+                    const xPos = (tile.x - CONFIG.gridSize / 2) * CONFIG.tileSize;
+                    const zPos = (tile.z - CONFIG.gridSize / 2) * CONFIG.tileSize;
+
+                    // 1. Water
+                    if (tile.type === TYPES.WATER) {
+                        const waterGeo = new THREE.BoxGeometry(CONFIG.tileSize, 0.5, CONFIG.tileSize);
+                        const water = new THREE.Mesh(waterGeo, matWater);
+                        water.position.set(xPos, -0.5, zPos);
+                        scene.add(water);
+                        waterTiles.push({ mesh: water, baseX: xPos, baseZ: zPos, timeOff: Math.random() * 10 });
+                        return;
+                    }
+
+                    // 2. Mountain
+                    if (tile.type === TYPES.MOUNTAIN) {
+                        const height = Math.random() * 20 + 15;
+                        const mGeo = new THREE.ConeGeometry(CONFIG.tileSize * 0.8, height, 4);
+                        const mMesh = new THREE.Mesh(mGeo, matMountain);
+                        mMesh.position.set(xPos, height / 2 - 2, zPos);
+                        mMesh.castShadow = true;
+                        mMesh.receiveShadow = true;
+                        // Random Rotation
+                        mMesh.rotation.y = Math.random() * Math.PI;
+                        scene.add(mMesh);
+
+                        // Snow cap
+                        const capGeo = new THREE.ConeGeometry(CONFIG.tileSize * 0.3, height / 3, 4);
+                        const cap = new THREE.Mesh(capGeo, matPeak);
+                        cap.position.set(0, height / 2 - height / 6 + 0.1, 0); // Relative to mountain
+                        mMesh.add(cap);
+                        return;
+                    }
+
+                    // 3. Roads & Bridges
+                    if (tile.type === TYPES.ROAD) {
+                        if (tile.isBridge) {
+                            const pylonGeo = new THREE.CylinderGeometry(1, 1, 10);
+                            const pylon = new THREE.Mesh(pylonGeo, matBridge);
+                            pylon.position.set(xPos, -5, zPos);
+                            scene.add(pylon);
+
+                            const deckGeo = new THREE.BoxGeometry(CONFIG.tileSize, 1, CONFIG.tileSize);
+                            const deck = new THREE.Mesh(deckGeo, matRoad);
+                            deck.position.set(xPos, 0.5, zPos);
+                            deck.receiveShadow = true;
+                            scene.add(deck);
+
+                            const waterGeo = new THREE.BoxGeometry(CONFIG.tileSize, 0.5, CONFIG.tileSize);
+                            const water = new THREE.Mesh(waterGeo, matWater);
+                            water.position.set(xPos, -2, zPos);
+                            scene.add(water);
+                            waterTiles.push({ mesh: water, baseX: xPos, baseZ: zPos, timeOff: Math.random() });
+
+                        } else {
+                            const ground = new THREE.Mesh(new THREE.BoxGeometry(CONFIG.tileSize, 1, CONFIG.tileSize), matRoad);
+                            ground.position.set(xPos, 0, zPos);
+                            ground.receiveShadow = true;
+                            scene.add(ground);
+
+                            const marking = new THREE.Mesh(new THREE.PlaneGeometry(1, CONFIG.tileSize * 0.6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                            marking.rotation.x = -Math.PI / 2;
+                            marking.position.set(xPos, 0.06, zPos);
+                            scene.add(marking);
+
+                            if (tile.x % 4 === 0 && tile.z % 4 === 0) {
+                                createStreetLight(xPos, zPos);
+                            }
+                        }
+                        return;
+                    }
+
+                    // 4. Ground (Park/Building base)
+                    const groundMat = tile.type === TYPES.PARK ? matGrass : matSidewalk;
+                    let yOffset = 0;
+
+                    // If it is a Hill Park (inner mountain range)
+                    if (tile.type === TYPES.PARK && tile.isHill) {
+                        yOffset = 2; // Elevate the park
+                    }
+
+                    const ground = new THREE.Mesh(new THREE.BoxGeometry(CONFIG.tileSize, 1 + yOffset * 2, CONFIG.tileSize), groundMat);
+                    ground.position.set(xPos, yOffset, zPos);
+                    ground.receiveShadow = true;
+                    scene.add(ground);
+
+                    // 5. Buildings
+                    if (tile.type === TYPES.RESIDENTIAL || tile.type === TYPES.COMMERCIAL || tile.type === TYPES.INDUSTRIAL) {
+                        createBuilding(xPos, zPos, tile.type);
+                    }
+
+                    // 6. Trees for Parks
+                    if (tile.type === TYPES.PARK) {
+                        createTrees(xPos, zPos, tile.isHill ? 3 : 0); // More height for hills
+
+                        ground.userData = {
+                            isBuilding: true,
+                            name: tile.isHill ? "Echo Hill Summit" : BUILDING_NAMES.park[Math.floor(Math.random() * BUILDING_NAMES.park.length)],
+                            typeId: TYPES.PARK
+                        };
+                        buildings.push(ground);
+                    }
+                });
+            });
+        }
+
+        function createStreetLight(x, z) {
+            const group = new THREE.Group();
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+            pole.position.y = 3;
+
+            const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffffaa });
+            const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.8), bulbMat);
+            bulb.position.y = 6;
+
+            const light = new THREE.PointLight(0xffaa00, 0, 25);
+            light.position.set(0, 5, 0);
+
+            group.add(pole, bulb, light);
+            group.position.set(x + 4, 0, z + 4);
+            scene.add(group);
+            streetLights.push({ mesh: bulbMat, light: light });
+        }
+
+        function createTrees(x, z, yOffset) {
+            const count = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < count; i++) {
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 1.5), new THREE.MeshLambertMaterial({ color: 0x5D4037 }));
+                // Apply yOffset to lift trees on hills
+                trunk.position.set(x + (Math.random() - 0.5) * 6, 0.75 + yOffset, z + (Math.random() - 0.5) * 6);
+
+                const leaves = new THREE.Mesh(new THREE.ConeGeometry(1.5, 3, 5), new THREE.MeshLambertMaterial({ color: 0x2e7d32 }));
+                leaves.position.y = 2.25;
+                trunk.add(leaves);
+
+                trunk.castShadow = true;
+                scene.add(trunk);
+            }
+        }
+
+        // --- Agent Logic & Movement (Simplified for brevity, same robust logic as before) ---
+
+        function spawnAgents() {
+            // Cars
+            const roadTiles = [];
+            cityGrid.forEach(row => row.forEach(t => { if (t.type === TYPES.ROAD) roadTiles.push(t); }));
+
+            if (roadTiles.length === 0) return;
+
+            for (let i = 0; i < 40; i++) {
+                const startTile = roadTiles[Math.floor(Math.random() * roadTiles.length)];
+                const car = createCar();
+                const agent = {
+                    mesh: car, type: 'car', gridX: startTile.x, gridZ: startTile.z,
+                    direction: Math.floor(Math.random() * 4), state: 'moving', progress: 0.5,
+                    speed: CONFIG.carSpeed * (0.8 + Math.random() * 0.4),
+                    data: { name: getRandomName(), activity: "Driving", mood: "Focused" }
+                };
+                car.userData = { isAgent: true, agentRef: agent };
+                updateAgentPosition(agent);
+                scene.add(car);
+                cars.push(agent);
+            }
+
+            // Pedestrians
+            const walkTiles = [];
+            cityGrid.forEach(row => row.forEach(t => {
+                if (t.type !== TYPES.ROAD && t.type !== TYPES.WATER && t.type !== TYPES.MOUNTAIN) walkTiles.push(t);
+            }));
+
+            if (walkTiles.length === 0) return;
+
+            for (let i = 0; i < 60; i++) {
+                const startTile = walkTiles[Math.floor(Math.random() * walkTiles.length)];
+                const sim = createPedestrian();
+                const agent = {
+                    mesh: sim, type: 'pedestrian', gridX: startTile.x, gridZ: startTile.z,
+                    direction: Math.floor(Math.random() * 4), progress: Math.random(),
+                    speed: CONFIG.pedestrianSpeed * (0.8 + Math.random() * 0.4),
+                    subOffset: { x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4 },
+                    data: { name: getRandomName(), activity: "Walking", mood: "Calm" }
+                };
+                sim.userData = { isAgent: true, agentRef: agent };
+                updateAgentPosition(agent);
+                scene.add(sim);
+                pedestrians.push(agent);
+            }
+        }
+
+        function createCar() {
+            const g = new THREE.Group();
+            const c = CONFIG.colors.car[Math.floor(Math.random() * CONFIG.colors.car.length)];
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1, 4), new THREE.MeshLambertMaterial({ color: c }));
+            body.position.y = 0.8; body.castShadow = true;
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 2), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+            cabin.position.set(0, 1.6, -0.2);
+            g.add(body, cabin);
+            return g;
+        }
+
+        function createPedestrian() {
+            const g = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.8), new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+            body.position.y = 0.9;
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.25), new THREE.MeshLambertMaterial({ color: 0xffccaa }));
+            head.position.y = 1.5;
+            g.add(body, head);
+            g.castShadow = true;
+            return g;
+        }
+
+        function getRandomName() {
+            return NAMES.first[Math.floor(Math.random() * NAMES.first.length)] + " " + NAMES.last[Math.floor(Math.random() * NAMES.last.length)];
+        }
+
+        // --- Agent Update Loop ---
+
+        const DIRECTIONS = [{ x: 0, z: -1 }, { x: 1, z: 0 }, { x: 0, z: 1 }, { x: -1, z: 0 }];
+
+        function updateCars(delta) {
+            cars.forEach(agent => {
+                agent.progress += agent.speed * delta;
+                if (agent.progress >= 1.0) {
+                    // Move logic
+                    const validMoves = [];
+                    // Try straight, right, left
+                    const checkDirs = [agent.direction, (agent.direction + 1) % 4, (agent.direction + 3) % 4];
+
+                    checkDirs.forEach(d => {
+                        const dx = DIRECTIONS[d].x;
+                        const dz = DIRECTIONS[d].z;
+                        const nx = agent.gridX + dx;
+                        const nz = agent.gridZ + dz;
+                        if (nx >= 0 && nx < CONFIG.gridSize && nz >= 0 && nz < CONFIG.gridSize) {
+                            if (cityGrid[nx][nz].type === TYPES.ROAD) validMoves.push(d);
+                        }
+                    });
+
+                    if (validMoves.length > 0) agent.direction = validMoves[Math.floor(Math.random() * validMoves.length)];
+                    else agent.direction = (agent.direction + 2) % 4; // Turn around
+
+                    agent.gridX += DIRECTIONS[agent.direction].x;
+                    agent.gridZ += DIRECTIONS[agent.direction].z;
+
+                    // Wrap
+                    if (agent.gridX < 0) agent.gridX = CONFIG.gridSize - 1;
+                    if (agent.gridX >= CONFIG.gridSize) agent.gridX = 0;
+                    if (agent.gridZ < 0) agent.gridZ = CONFIG.gridSize - 1;
+                    if (agent.gridZ >= CONFIG.gridSize) agent.gridZ = 0;
+
+                    agent.progress = 0;
+                    agent.mesh.rotation.y = -agent.direction * (Math.PI / 2);
+                }
+                updateAgentPosition(agent);
+            });
+        }
+
+        function updatePedestrians(delta) {
+            pedestrians.forEach(agent => {
+                agent.progress += agent.speed * delta;
+                if (agent.progress > 1) {
+                    // Change dir randomly or stay put
+                    if (Math.random() > 0.6) {
+                        const d = Math.floor(Math.random() * 4);
+                        const nx = agent.gridX + DIRECTIONS[d].x;
+                        const nz = agent.gridZ + DIRECTIONS[d].z;
+                        if (nx >= 0 && nx < CONFIG.gridSize && nz >= 0 && nz < CONFIG.gridSize) {
+                            const t = cityGrid[nx][nz].type;
+                            if (t !== TYPES.ROAD && t !== TYPES.WATER && t !== TYPES.MOUNTAIN) {
+                                agent.direction = d;
+                                agent.gridX = nx;
+                                agent.gridZ = nz;
+                            }
+                        }
+                    }
+                    agent.progress = 0;
+                    agent.mesh.rotation.y = -agent.direction * (Math.PI / 2);
+                }
+                updateAgentPosition(agent);
+            });
+        }
+
+        function updateAgentPosition(agent) {
+            const ts = CONFIG.tileSize;
+            const off = CONFIG.gridSize / 2;
+            let x = (agent.gridX - off) * ts;
+            let z = (agent.gridZ - off) * ts;
+
+            if (agent.type === 'car') {
+                const dir = DIRECTIONS[agent.direction];
+                const lane = 2.0;
+                let lx = 0, lz = 0;
+                if (agent.direction === 0) lx = lane;
+                if (agent.direction === 1) lz = lane;
+                if (agent.direction === 2) lx = -lane;
+                if (agent.direction === 3) lz = -lane;
+
+                const travel = (agent.progress - 0.5) * ts;
+                x += dir.x * travel + lx;
+                z += dir.z * travel + lz;
+                agent.mesh.position.set(x, 0, z);
+
+                // Elevate if bridge
+                if (cityGrid[agent.gridX][agent.gridZ].isBridge) agent.mesh.position.y = 1.0;
+
+            } else {
+                x += agent.subOffset.x;
+                z += agent.subOffset.z;
+                agent.mesh.position.set(x, 0.2 + Math.sin(Date.now() * 0.01) * 0.1, z);
+            }
+        }
+
+        // --- Environment ---
+
+        function setupLighting() {
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            sunLight = new THREE.DirectionalLight(0xffdfba, 1.2);
+            sunLight.position.set(100, 200, 50);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048; sunLight.shadow.mapSize.height = 2048;
+            const d = 200;
+            sunLight.shadow.camera.left = -d; sunLight.shadow.camera.right = d;
+            sunLight.shadow.camera.top = d; sunLight.shadow.camera.bottom = -d;
+            scene.add(sunLight);
+        }
+
+        function updateEnvironment(dt) {
+            time += dt / CONFIG.dayDuration;
+            if (time > 1) time = 0;
+
+            // Time UI
+            const hour = Math.floor(time * 24);
+            const minute = Math.floor((time * 24 % 1) * 60);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            document.getElementById('time-display').innerText = `${hour % 12 || 12}:${minute.toString().padStart(2, '0')} ${ampm}`;
+
+            // Sun Pos
+            const phi = time * Math.PI * 2 - Math.PI / 2;
+            sunLight.position.x = Math.cos(phi) * 100;
+            sunLight.position.y = Math.sin(phi) * 100;
+
+            const sunHeight = Math.sin(phi);
+            const isNight = sunHeight <= 0;
+
+            // Lights
+            if (!isNight) {
+                sunLight.intensity = Math.max(0, sunHeight * 1.2);
+                ambientLight.intensity = 0.4 + sunHeight * 0.3;
+                scene.background.setHSL(0.6, 0.5, 0.5 + sunHeight * 0.4);
+                scene.fog.color.copy(scene.background);
+                streetLights.forEach(sl => { sl.light.intensity = 0; sl.mesh.color.setHex(0x888888); });
+            } else {
+                sunLight.intensity = 0;
+                ambientLight.intensity = 0.1;
+                scene.background.setHex(0x050510);
+                scene.fog.color.setHex(0x050510);
+                streetLights.forEach(sl => { sl.light.intensity = 1.5; sl.mesh.color.setHex(0xffffaa); });
+            }
+
+            // Windows (simple toggle)
+            if (Math.random() > 0.95) {
+                windowMaterials.forEach(w => {
+                    if (isNight) {
+                        // Lit
+                        w.ctx.fillStyle = '#' + w.baseColor.replace('#', ''); w.ctx.fillRect(0, 0, 64, 64);
+                        w.ctx.fillStyle = w.type === TYPES.COMMERCIAL ? '#e0f7fa' : '#ffeb3b';
+                        // Randomly light specific windows
+                        for (let i = 8; i < 60; i += 12) for (let j = 8; j < 60; j += 16) if (Math.random() > 0.5) w.ctx.fillRect(i, j, 6, 10);
+                        w.material.emissive.setHex(0x222222);
+                    } else {
+                        // Dark
+                        w.ctx.fillStyle = '#' + w.baseColor.replace('#', ''); w.ctx.fillRect(0, 0, 64, 64);
+                        w.ctx.fillStyle = '#222';
+                        for (let i = 8; i < 60; i += 12) for (let j = 8; j < 60; j += 16) w.ctx.fillRect(i, j, 6, 10);
+                        w.material.emissive.setHex(0x000000);
+                    }
+                    w.material.map.needsUpdate = true;
+                });
+            }
+
+            // Water Animation
+            waterTiles.forEach(w => {
+                w.mesh.position.y = -0.5 + Math.sin(time * 50 + w.timeOff) * 0.1;
+            });
+        }
+
+        function onWindowResize() {
+            const c = document.getElementById('canvas-container');
+            const aspect = c.clientWidth / c.clientHeight;
+            const d = 160;
+            camera.left = -d * aspect; camera.right = d * aspect;
+            camera.top = d; camera.bottom = -d;
+            camera.updateProjectionMatrix();
+            renderer.setSize(c.clientWidth, c.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = clock.getDelta();
+            updateCars(dt);
+            updatePedestrians(dt);
+            updateEnvironment(dt);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+
+</html>

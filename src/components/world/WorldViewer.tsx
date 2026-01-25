@@ -24,9 +24,18 @@ import {
   highlightObject,
   BUILDING_COLORS,
   DISTRICT_COLORS,
+  // Terrain system
+  generateTerrain,
+  createTerrainMeshes,
+  createAllTrees,
+  createStreetLights,
+  updateStreetLights,
+  animateWater,
   type SceneContext,
   type CameraController,
   type RaycasterController,
+  type StreetLight,
+  type TerrainData,
 } from './lib/index.js';
 import type { Building, District, AINPCLocation, BackgroundNPC } from '../../stores/worldStore.js';
 
@@ -51,6 +60,13 @@ export default function WorldViewer() {
   const npcMarkersRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const districtMeshesRef = useRef<THREE.Mesh[]>([]);
   const playerHomeMarkerRef = useRef<THREE.Mesh | null>(null);
+
+  // Terrain tracking
+  const terrainDataRef = useRef<TerrainData | null>(null);
+  const terrainGroupRef = useRef<THREE.Group | null>(null);
+  const treesGroupRef = useRef<THREE.Group | null>(null);
+  const waterMeshesRef = useRef<THREE.Mesh[]>([]);
+  const streetLightsRef = useRef<StreetLight[]>([]);
 
   // WebSocket connection state
   const connected = useWSStore((state) => state.connected);
@@ -194,15 +210,30 @@ export default function WorldViewer() {
   // Render City Data
   // ============================================================================
 
-  // Render ground and districts
+  // Render procedural terrain
   useEffect(() => {
     if (!sceneContextRef.current || !city) return;
 
     const { scene } = sceneContextRef.current;
 
-    console.log('[WorldViewer] Rendering ground and districts...');
+    console.log('[WorldViewer] Generating procedural terrain...');
 
-    // Clear existing district meshes
+    // Clear existing terrain
+    if (terrainGroupRef.current) {
+      scene.remove(terrainGroupRef.current);
+      terrainGroupRef.current = null;
+    }
+    if (treesGroupRef.current) {
+      scene.remove(treesGroupRef.current);
+      treesGroupRef.current = null;
+    }
+    streetLightsRef.current.forEach((light) => {
+      scene.remove(light.group);
+    });
+    streetLightsRef.current = [];
+    waterMeshesRef.current = [];
+
+    // Clear old district meshes (legacy)
     districtMeshesRef.current.forEach((mesh) => {
       scene.remove(mesh);
       mesh.geometry.dispose();
@@ -210,59 +241,67 @@ export default function WorldViewer() {
     });
     districtMeshesRef.current = [];
 
-    // Create ground plane
-    const groundPlane = createGroundPlane(
-      city.gridSize.width,
-      city.gridSize.height,
-      GRID_SCALE
-    );
-    scene.add(groundPlane);
-    districtMeshesRef.current.push(groundPlane);
+    // Generate terrain based on city grid size
+    const gridSize = Math.max(city.gridSize.width, city.gridSize.height);
+    const tileSize = GRID_SCALE * 2; // Each terrain tile is 2 units
 
-    // Create district ground tiles
-    city.districts.forEach((district) => {
-      const points = district.bounds.points;
-      if (points.length < 3) return;
+    const terrain = generateTerrain({
+      gridSize: Math.ceil(gridSize / 2) + 4, // Padding for edges
+      tileSize: tileSize,
+      seed: 12345, // Consistent seed for reproducibility
+    });
+    terrainDataRef.current = terrain;
 
-      // Create shape from district bounds
-      // Note: Shape Y becomes -Z after rotation, so we negate Y to match building positions
-      const shape = new THREE.Shape();
-      shape.moveTo(points[0][0] * GRID_SCALE, -points[0][1] * GRID_SCALE);
-      for (let i = 1; i < points.length; i++) {
-        shape.lineTo(points[i][0] * GRID_SCALE, -points[i][1] * GRID_SCALE);
+    // Create terrain meshes
+    const { groundGroup, waterMeshes } = createTerrainMeshes(terrain, tileSize);
+    scene.add(groundGroup);
+    terrainGroupRef.current = groundGroup;
+    waterMeshesRef.current = waterMeshes;
+
+    // Create trees
+    const trees = createAllTrees(terrain, tileSize);
+    scene.add(trees);
+    treesGroupRef.current = trees;
+
+    // Create street lights
+    const lights = createStreetLights(terrain, tileSize);
+    lights.forEach((light) => scene.add(light.group));
+    streetLightsRef.current = lights;
+
+    console.log('[WorldViewer] Terrain generated:', {
+      tiles: terrain.tiles.length * terrain.tiles.length,
+      roads: terrain.roadTiles.length,
+      water: terrain.waterTiles.length,
+      mountains: terrain.mountainTiles.length,
+      streetLights: lights.length,
+    });
+  }, [city]);
+
+  // Animate water and update street lights based on time
+  useEffect(() => {
+    if (!sceneContextRef.current) return;
+
+    sceneContextRef.current.setOnRender((_delta, elapsed) => {
+      // Animate water tiles
+      if (waterMeshesRef.current.length > 0) {
+        animateWater(waterMeshesRef.current, elapsed);
       }
-      shape.closePath();
 
-      const geometry = new THREE.ShapeGeometry(shape);
-      // Rotate to lie flat (XZ plane) - after this, shape (x, -y) becomes world (x, 0, y)
-      geometry.rotateX(-Math.PI / 2);
-
-      const color = parseInt(district.color.replace('#', '0x'), 16);
-      const darkenedColor = new THREE.Color(color).multiplyScalar(0.4);
-
-      const material = new THREE.MeshLambertMaterial({
-        color: darkenedColor,
-        transparent: true,
-        opacity: 0.6,
-      });
-
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.y = 0.01; // Slightly above ground
-      mesh.receiveShadow = true;
-
-      mesh.userData = {
-        type: 'district',
-        id: district.id,
-        name: district.name,
-        districtType: district.type,
-      };
-
-      scene.add(mesh);
-      districtMeshesRef.current.push(mesh);
+      // Update street lights based on game time (simple day/night)
+      // TODO: Hook into actual gameTime from worldStore
+      if (streetLightsRef.current.length > 0 && gameTime) {
+        const hour = gameTime.hour;
+        const isNight = hour < 6 || hour >= 19;
+        updateStreetLights(streetLightsRef.current, isNight);
+      }
     });
 
-    console.log('[WorldViewer] Ground and districts rendered');
-  }, [city]);
+    return () => {
+      if (sceneContextRef.current) {
+        sceneContextRef.current.setOnRender(null);
+      }
+    };
+  }, [gameTime]);
 
   // Render buildings
   useEffect(() => {
@@ -502,6 +541,38 @@ export default function WorldViewer() {
           asciiMode={asciiMode}
           onToggleAscii={() => setAsciiMode(!asciiMode)}
         />
+      )}
+
+      {/* HUD Overlay */}
+      {city && (
+        <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg border border-white/10 pointer-events-none select-none min-w-[180px]">
+          <h1 className="text-cyan-400 text-sm font-bold uppercase tracking-wider mb-3">
+            {city.name || 'Neo-Pixel City'}
+          </h1>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-white/70">Population:</span>
+              <span className="font-bold text-yellow-400">{aiNPCs.length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-white/70">Buildings:</span>
+              <span className="font-bold text-yellow-400">{city.buildings.length}</span>
+            </div>
+            {gameTime && (
+              <div className="flex justify-between">
+                <span className="text-white/70">Time:</span>
+                <span className="font-bold text-yellow-400">
+                  {gameTime.hour % 12 || 12}:{String(gameTime.minute).padStart(2, '0')} {gameTime.hour >= 12 ? 'PM' : 'AM'}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="mt-3 pt-2 border-t border-white/10 text-xs text-white/50">
+            <p>Left Drag: Rotate</p>
+            <p>Scroll: Zoom</p>
+            <p>Click: Inspect</p>
+          </div>
+        </div>
       )}
 
       {/* Selection Info Panel */}

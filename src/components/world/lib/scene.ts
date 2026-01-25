@@ -16,6 +16,7 @@ export interface SceneContext {
   resize: () => void;
   getCanvas: () => HTMLCanvasElement;
   dispose: () => void;
+  setOnRender: (callback: ((delta: number, elapsed: number) => void) | null) => void;
 }
 
 export interface SceneOptions {
@@ -85,17 +86,22 @@ export function createScene(
 
   // Render loop
   let animationId: number | null = null;
-  let onRenderCallback: ((delta: number) => void) | null = null;
+  let onRenderCallback: ((delta: number, elapsed: number) => void) | null = null;
   const clock = new THREE.Clock();
 
   function render() {
     const delta = clock.getDelta();
+    const elapsed = clock.getElapsedTime();
 
     if (onRenderCallback) {
-      onRenderCallback(delta);
+      onRenderCallback(delta, elapsed);
     }
 
     renderer.render(scene, camera);
+  }
+
+  function setOnRender(callback: ((delta: number, elapsed: number) => void) | null) {
+    onRenderCallback = callback;
   }
 
   function start() {
@@ -171,16 +177,7 @@ export function createScene(
     resize,
     getCanvas,
     dispose,
+    setOnRender,
   };
 }
 
-/**
- * Set a callback to be called every render frame
- */
-export function setRenderCallback(
-  context: SceneContext,
-  callback: (delta: number) => void
-): void {
-  // Store callback on the context for the render loop
-  (context as any)._onRenderCallback = callback;
-}
