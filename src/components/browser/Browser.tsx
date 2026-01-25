@@ -39,6 +39,7 @@ const SITE_URLS: Record<string, string> = {
   'trustfalltim': 'www.trustfalltim.corn',
   'onlyfans': 'www.onlyfans.corn',
   'bandsnotintown': 'www.bandsnotintown.corn',
+  'bellasplayhouse': 'www.bellasplayhouse.corn',
 }
 
 // Reverse lookup - URL to app ID
