@@ -31,6 +31,9 @@ import {
   createStreetLights,
   updateStreetLights,
   animateWater,
+  placeBuildingModels,
+  // Model loading
+  modelLoader,
   type SceneContext,
   type CameraController,
   type RaycasterController,
@@ -93,6 +96,32 @@ export default function WorldViewer() {
 
   const [asciiMode, setAsciiMode] = useState(false);
   const [selectedObject, setSelectedObject] = useState<THREE.Object3D | null>(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+
+  // Track building models placed in scene
+  const buildingModelsRef = useRef<THREE.Group[]>([]);
+
+  // ============================================================================
+  // Model Loading
+  // ============================================================================
+
+  useEffect(() => {
+    console.log('[WorldViewer] Loading 3D models...');
+    modelLoader.loadAll()
+      .then(() => {
+        console.log('[WorldViewer] All models loaded');
+        setModelsLoaded(true);
+      })
+      .catch((err) => {
+        console.error('[WorldViewer] Failed to load models:', err);
+        // Continue without models - will use procedural fallback
+        setModelsLoaded(true);
+      });
+
+    return () => {
+      // Don't dispose models on unmount - they can be reused
+    };
+  }, []);
 
   // ============================================================================
   // Initialization
@@ -252,11 +281,24 @@ export default function WorldViewer() {
     });
     terrainDataRef.current = terrain;
 
-    // Create terrain meshes
-    const { groundGroup, waterMeshes } = createTerrainMeshes(terrain, tileSize);
+    // Create terrain meshes (skip procedural buildings if models are loaded)
+    const { groundGroup, waterMeshes } = createTerrainMeshes(terrain, tileSize, {
+      skipBuildings: modelsLoaded,
+    });
     scene.add(groundGroup);
     terrainGroupRef.current = groundGroup;
     waterMeshesRef.current = waterMeshes;
+
+    // Place building models if loaded
+    if (modelsLoaded) {
+      // Clear any existing building models
+      buildingModelsRef.current.forEach((model) => scene.remove(model));
+      buildingModelsRef.current = [];
+
+      const buildingsGroup = placeBuildingModels(terrain, tileSize);
+      scene.add(buildingsGroup);
+      buildingModelsRef.current = [buildingsGroup];
+    }
 
     // Create trees
     const trees = createAllTrees(terrain, tileSize);
@@ -272,9 +314,9 @@ export default function WorldViewer() {
       tiles: terrain.tiles.length * terrain.tiles.length,
       roads: terrain.roadTiles.length,
       water: terrain.waterTiles.length,
-      mountains: terrain.mountainTiles.length,
+      usingModels: modelsLoaded,
     });
-  }, [city]);
+  }, [city, modelsLoaded]);
 
   // Animate water and update street lights based on time
   useEffect(() => {

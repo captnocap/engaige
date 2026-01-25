@@ -9,3 +9,4 @@ export * from './camera.js';
 export * from './assets.js';
 export * from './raycasting.js';
 export * from './terrain.js';
+export * from './models.js';

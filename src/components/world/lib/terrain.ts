@@ -238,17 +238,23 @@ const snowMaterial = new THREE.MeshLambertMaterial({
 });
 const roadMarkingMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
+export interface TerrainMeshOptions {
+  skipBuildings?: boolean;  // Skip procedural buildings (use when loading models)
+}
+
 /**
  * Create all terrain meshes for the scene
  */
 export function createTerrainMeshes(
   terrain: TerrainData,
-  tileSize: number = 10
+  tileSize: number = 10,
+  options: TerrainMeshOptions = {}
 ): {
   groundGroup: THREE.Group;
   waterMeshes: THREE.Mesh[];
   islandBase: THREE.Mesh;
 } {
+  const { skipBuildings = false } = options;
   const groundGroup = new THREE.Group();
   groundGroup.name = 'terrain';
 
@@ -354,10 +360,11 @@ export function createTerrainMeshes(
       };
       groundGroup.add(ground);
 
-      // Generate buildings on buildable tiles
-      if (tile.type === TileType.RESIDENTIAL ||
-          tile.type === TileType.COMMERCIAL ||
-          tile.type === TileType.INDUSTRIAL) {
+      // Generate buildings on buildable tiles (unless skipped for model loading)
+      if (!skipBuildings &&
+          (tile.type === TileType.RESIDENTIAL ||
+           tile.type === TileType.COMMERCIAL ||
+           tile.type === TileType.INDUSTRIAL)) {
         const building = createProceduralBuilding(tile.type, xPos, zPos, tileSize);
         if (building) {
           groundGroup.add(building);
@@ -629,4 +636,59 @@ export function updateStreetLights(lights: StreetLight[], isNight: boolean): voi
       light.pointLight.intensity = 0;
     }
   });
+}
+
+// ============================================================================
+// Model-Based Building Placement
+// ============================================================================
+
+import { modelLoader, type ModelCategory } from './models.js';
+
+/**
+ * Map tile types to model categories
+ */
+function tileTypeToModelCategory(type: TileType): ModelCategory | null {
+  switch (type) {
+    case TileType.RESIDENTIAL:
+      return 'residential';
+    case TileType.COMMERCIAL:
+      return 'commercial';
+    case TileType.INDUSTRIAL:
+      return 'industrial';
+    default:
+      return null;
+  }
+}
+
+/**
+ * Place building models on terrain
+ * Call this after models are loaded to replace procedural buildings with GLB models
+ */
+export function placeBuildingModels(
+  terrain: TerrainData,
+  tileSize: number = 10
+): THREE.Group {
+  const buildingsGroup = new THREE.Group();
+  buildingsGroup.name = 'buildings';
+
+  const gridOffset = terrain.tiles.length / 2;
+
+  terrain.buildableTiles.forEach((tile) => {
+    const category = tileTypeToModelCategory(tile.type);
+    if (!category) return;
+
+    const xPos = (tile.x - gridOffset) * tileSize;
+    const zPos = (tile.z - gridOffset) * tileSize;
+
+    // Get a random model for this category
+    const model = modelLoader.getRandomModel(category);
+    if (model) {
+      model.position.set(xPos, 0, zPos);
+      model.rotation.y = Math.random() * Math.PI * 2; // Random rotation
+      buildingsGroup.add(model);
+    }
+  });
+
+  console.log(`[Terrain] Placed ${buildingsGroup.children.length} building models`);
+  return buildingsGroup;
 }
