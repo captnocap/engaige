@@ -60,9 +60,9 @@ const DEFAULT_CONFIG: Required<TerrainConfig> = {
   gridSize: 34,
   tileSize: 10,
   seed: Date.now(),
-  waterThreshold: -0.3,
+  waterThreshold: -0.55,  // Lower = less water (was -0.3)
   mountainEdgeThreshold: 0.85,
-  roadSpacing: 4,
+  roadSpacing: 5,  // Slightly wider blocks
 };
 
 // ============================================================================
@@ -144,19 +144,31 @@ export function generateTerrain(config: Partial<TerrainConfig> = {}): TerrainDat
     }
   }
 
-  // Pass 2: Generate roads
+  // Pass 2: Generate roads with organic variation
+  // Use noise to decide which grid lines become roads (not all of them)
+  const roadNoiseScale = 0.3;
+
   for (let x = 0; x < cfg.gridSize; x++) {
     for (let z = 0; z < cfg.gridSize; z++) {
       const tile = tiles[x][z];
 
-      // Don't build roads on mountains or hill parks
-      if (tile.type === TileType.MOUNTAIN) continue;
+      // Skip empty tiles (island edges) and hill parks
+      if (tile.type === TileType.EMPTY) continue;
       if (tile.type === TileType.PARK && tile.isHill) continue;
 
       const isRoadX = x % cfg.roadSpacing === 0;
       const isRoadZ = z % cfg.roadSpacing === 0;
 
       if (isRoadX || isRoadZ) {
+        // Use noise to occasionally skip road segments (creates organic gaps)
+        const roadNoise = noise2D(x * roadNoiseScale + 50, z * roadNoiseScale + 50);
+
+        // Skip some road segments based on noise (but keep major arteries)
+        const isMajorRoad = (x % (cfg.roadSpacing * 2) === 0) || (z % (cfg.roadSpacing * 2) === 0);
+        if (!isMajorRoad && roadNoise > 0.4) {
+          continue; // Skip this road segment
+        }
+
         if (tile.type === TileType.WATER) {
           // Bridge over water
           tile.isBridge = true;
