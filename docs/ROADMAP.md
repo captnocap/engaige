@@ -1,712 +1,479 @@
 # engAIge Roadmap
 
-## Phase 1: Core Foundation (MVP)
+**Last Updated:** 2026-01-24
+**Overall Progress:** ~95% of Original Roadmap Complete
 
-### Essential Apps
-
-#### 1. **Messenger** (Critical)
-The primary way to talk to NPCs.
-
-**Features:**
-- Contact list (NPCs you've unlocked)
-- Direct message threads
-- Typing indicators (realistic delays)
-- Read receipts
-- Image sharing (NPCs can send/request photos)
-- Group chats (3-8 participants)
-- Voice message UI (play fake audio snippets)
-- Search conversations
-
-**NPC Behaviors:**
-- Can initiate conversations based on:
-  - Random check-ins
-  - Saw something that reminded them of you
-  - Reacting to your social media post
-  - Following up on previous conversation
-  - Time-based (morning texts, goodnight messages)
+This roadmap is organized into completed phases (for reference) and active development phases (for implementation). Features are ordered by dependencies and priority.
 
 ---
 
-#### 2. **MySpace** (Critical)
-The main social platform. Early 2000s aesthetic.
+## Current Status Summary
 
-**Features:**
-- Profile pages:
-  - About Me (HTML-styled text)
-  - Interests, Heroes, General info
-  - Profile song (shows artist/title, maybe fake playback)
-  - Top 8 friends
-  - Custom theme (background, text colors, layout style)
-  - Photo gallery
-  - Comments section
-- Feed:
-  - See posts from NPCs in your network
-  - Like, comment, share
-  - Filter by friend group
-- Discovery:
-  - Browse profiles by interests
-  - See "mutual friends"
-  - Friend suggestions
-
-**NPC Behaviors:**
-- Post status updates (mood-based, life events)
-- Upload photos (AI-generated based on their life)
-- Change profile song when mood shifts
-- Update Top 8 based on relationship changes
-- Comment on friends' posts
-- Bulletin board posts (announcements to all friends)
+| Phase | Status | Completion |
+|-------|--------|------------|
+| Phase 1: Core Infrastructure | **Complete** | 100% |
+| Phase 2: Social Platforms | **Complete** | 100% |
+| Phase 3: Autonomous Systems | **Complete** | 95% |
+| Phase 4: Desktop Apps & Content | **Complete** | 90% |
+| Phase 5: Polish & Completion | **In Progress** | 60% |
+| Phase 6: Advanced Features | **Planned** | 0% |
+| Phase 7: Multiplayer | **Spec Only** | 0% |
 
 ---
 
-#### 3. **Settings** (Critical)
-Configuration hub.
+## Phase 5: Polish & Completion (Current Priority)
 
-**Features:**
-- AI Provider settings
-- Budget configuration & monitoring
-- Image provider settings
-- Theme selector
-- Notification preferences
-- Game settings:
-  - Autonomous NPC frequency
-  - Enable/disable random events
-  - Output validation settings
-- Profile customization
-- Data management (export/import)
+These are partially implemented features that need completion. Order reflects dependencies.
 
----
+### 5.1 Content Guardrails Completion
+**Documentation:** [CONTENT_GUARDRAILS.md](CONTENT_GUARDRAILS.md)
+**Status:** 80% complete - System designed, not fully wired
 
-#### 4. **Files** (Critical)
-Media management and exports.
+**What's Done:**
+- Rating levels defined (harsh/strict/normal/relaxed/none)
+- System prompt injection framework
+- Output validation against ratings
 
-**Features:**
-- Folder navigation:
-  - My Files
-  - NPCs (sub-folders per NPC)
-  - Conversations
-  - Screenshots
-- File operations:
-  - View images
-  - Export conversations
-  - Import/export NPCs
-  - Save memory logs
-- Search & filter
-- Gallery view for images
+**What's Needed:**
+- [ ] Add `content_rating` column to `posts` table
+- [ ] Add `content_rating` column to `messages` table
+- [ ] Add `content_rating` column to `media_files` table
+- [ ] Implement content filtering queries per rating
+- [ ] Add Content Rating selector to Settings UI
+- [ ] Wire rating to NPC generation prompts
+- [ ] Test enforcement across all content types
+
+**Priority:** HIGH - Blocks safe content display
 
 ---
 
-## Phase 2: Extended Social Platforms
+### 5.2 Files System Import
+**Documentation:** [FILES_SYSTEM.md](FILES_SYSTEM.md)
+**Status:** 80% complete - Export works, import missing
 
-#### 5. **Instagram Clone** ("InstaSnap")
-Modern photo-focused social media.
+**What's Done:**
+- `exportConversationToMarkdown()` - Conversation export
+- `exportNPCConfig()` - NPC config export (JSON)
+- `exportNPCMemoryLog()` - Memory log export (TXT)
+- `exportNPCWithData()` - Full NPC export with all data
 
-**Features:**
-- Photo grid profiles
-- Stories (24-hour posts)
-- Reels (short video concepts - show thumbnails)
-- DMs (alternative to Messenger)
-- Hashtags & discovery
-- Like, comment, save posts
+**What's Needed:**
+- [ ] Implement `importNPCFromExport()` function
+- [ ] Handle relationship preservation on import
+- [ ] Handle conversation history restoration
+- [ ] Handle memory restoration with new IDs
+- [ ] Add import UI to Files window
+- [ ] Test round-trip: export -> import -> verify
 
-**NPC Behaviors:**
-- Post aesthetic photos (generated based on their style)
-- Story updates throughout the day
-- React to your posts
-- Slide into DMs
-
----
-
-#### 6. **Twitter Clone** ("Chirp")
-Microblogging platform.
-
-**Features:**
-- 280-character posts
-- Retweets, likes, replies
-- Trending topics
-- Hashtags
-- Threads
-- Quote tweets
-
-**NPC Behaviors:**
-- Tweet random thoughts
-- Live-tweet events (concerts, shows)
-- Subtweet drama
-- Retweet friends
-- Participate in trending topics
+**Priority:** MEDIUM - Enables NPC portability
 
 ---
 
-#### 7. **Dating App** ("LoveLink" or "SwipeRight")
-Tinder/Bumble-style matching.
+### 5.3 News Feed RSS Integration
+**Documentation:** [NEWS_FEED_SYSTEM.md](NEWS_FEED_SYSTEM.md)
+**Status:** 90% complete - Core loop works, RSS fetching missing
 
-**Features:**
-- Swipe interface
-- Profile cards (photos + bio)
-- Match system
-- Chat with matches
-- Profile customization
-- Filters (age, interests, location)
+**What's Done:**
+- Unified feed architecture
+- Lore article loading from JSON
+- AI article generation from NPC trends
+- Trend detection and story generator
+- NPC news exposure tracking
+- Background task integration
 
-**NPC Behaviors:**
-- Only shows NPCs interested in dating
-- Match probability based on compatibility
-- Different conversation style (flirtier)
-- Can ask you out after chatting
-- Relationship progression path
+**What's Needed:**
+- [ ] Implement RSS feed fetching in `news-tasks.ts`
+- [ ] Add RSS feed URL configuration
+- [ ] Parse and normalize external articles
+- [ ] Handle feed errors gracefully
+- [ ] Add RSS source attribution
 
----
-
-## Phase 3: Desktop Shenanigans
-
-#### 8. **Browser** ("NetExplorer")
-A fake internet browser with AI-generated websites.
-
-**Core Sites:**
-
-**a) Wikipedia Clone** ("WikiKnow")
-- NPC-written articles about fake topics
-- "Current events" in the game world
-- Articles about NPCs who become "famous"
-- Rabbit hole navigation
-
-**b) News Site** ("Daily Buzz")
-- AI-generated news about the game world
-- Celebrity gossip about NPCs
-- "Local events" NPCs attend
-- Weather (affects NPC moods)
-
-**c) Forum** ("RedditLike")
-- NPCs post threads
-- Subreddit equivalents for interests
-- You can reply, NPCs engage
-- Drama threads, advice threads, hobby discussions
-
-**d) Streaming Site** ("TwitchTV")
-- NPCs "streaming" their hobbies
-- Fake live chat with NPC viewers
-- You can "watch" and chat
-- Schedule of who's streaming when
-
-**e) Music Platform** ("Spotify")
-- Browse NPCs' playlists
-- See what they're listening to
-- Discover music through NPCs
-- Share songs
-
-**f) E-commerce** ("AmazonLike")
-- Buy gifts for NPCs
-- NPC wish lists
-- Reviews written by NPCs
-- Package delivery events
-
-**g) Job Board** ("LinkedOut")
-- NPCs have jobs/careers
-- Can see their work updates
-- Networking opportunities
-- Career progression events
+**Priority:** LOW - Nice to have for world grounding
 
 ---
 
-#### 9. **Email Client** ("Mailbox")
-Classic email experience.
+### 5.4 Events System Completion
+**Status:** Scheduler ready, event content not implemented
 
-**Features:**
-- Inbox, sent, trash
-- Compose emails
-- Attachments
-- Spam folder (Easter eggs)
+**What's Done:**
+- Background scheduler with 11+ task types
+- Event bus with 40+ event types
+- Time system with day/night awareness
 
-**NPC Behaviors:**
-- Send formal emails (job-related, event invites)
-- Newsletter subscriptions
-- Group emails (party invites)
-- Chain emails (funny forwards)
+**What's Needed:**
+- [ ] Birthday event implementation
+  - [ ] Track NPC birthdays in database
+  - [ ] Trigger birthday posts from NPCs
+  - [ ] Birthday message prompts
+  - [ ] Birthday gift mechanics
+- [ ] Holiday event implementation
+  - [ ] Holiday calendar configuration
+  - [ ] Holiday-themed NPC posts
+  - [ ] Seasonal mood adjustments
+- [ ] Random drama events
+  - [ ] Event trigger probability system
+  - [ ] Drama scenario templates
+  - [ ] NPC reaction chains
 
-**Easter Eggs:**
-- Spam from "Nigerian prince" NPCs
-- Fake phishing attempts
-- "Hot singles in your area" (uses actual NPC photos)
-- Company newsletters from fake businesses
-
----
-
-#### 10. **Phone Widget**
-Floating phone UI (already have toggle with P key).
-
-**Apps on Phone:**
-
-**a) Texting** (SMS)
-- Different vibe from Messenger
-- Shorter messages
-- Group texts
-- Memes/GIF sharing
-
-**b) Social Media Apps** (mobile versions)
-- Simplified MySpace/Instagram/Twitter
-- Notifications
-- Quick interactions
-
-**c) Games** (mini-games)
-- Flappy Bird clone
-- 2048 clone
-- Snake
-- Tetris
-- **WITH A TWIST**: NPCs can send you their high scores, challenge you
-
-**d) Camera**
-- Take "selfies" (generate AI images of you + NPCs)
-- Photo filters
-- Send to NPCs in messages
-
-**e) Music Player**
-- Browse NPCs' favorite songs
-- See what's playing on their profiles
-- Create shared playlists
-
-**f) Calendar**
-- NPC birthdays
-- Scheduled hangouts
-- Events (concerts, parties)
-- Reminders
-
-**g) Notes App**
-- Keep track of NPC info
-- To-do lists
-- Journal entries
-- NPCs can share notes with you
+**Priority:** MEDIUM - Adds life to the world
 
 ---
 
-## Phase 4: Games & Interactive Content
+### 5.5 Notification System UI
+**Status:** Events fire, no UI toast
 
-#### 11. **Desktop Games**
+**What's Done:**
+- Event emission for all significant actions
+- Event persistence in database
+- WebSocket event streaming
 
-**a) Solitaire**
-- Classic Windows Solitaire
-- NPCs can see your high score
-- NPCs comment: "bored at work?" if you play during the day
+**What's Needed:**
+- [ ] Toast notification component
+- [ ] Notification center window
+- [ ] Notification preferences in Settings
+- [ ] Notification history view
+- [ ] Desktop notification integration (Tauri)
+- [ ] Notification sounds (tie to audio system)
 
-**b) Minesweeper**
-- Classic Minesweeper
-- NPCs challenge you to beat their times
-
-**c) 3D Pinball** (or similar)
-- Nostalgia game
-- Leaderboards
-- NPCs trash talk
-
-**d) Multiplayer Games**
-- **Tic-Tac-Toe**: Play against NPCs
-- **Chess**: NPCs have skill levels based on personality
-- **Checkers**: Casual game with NPCs
-- **Cards Against Humanity**: Party game with NPC responses
-- **Trivia**: NPCs compete, make jokes about answers
+**Priority:** MEDIUM - Improves engagement
 
 ---
 
-#### 12. **Music Player** (WinAmp-style)
-Desktop music player with visualizer.
+### 5.6 Budget Analytics Dashboard
+**Status:** Data available, no visualizations
 
-**Features:**
-- Playlists
-- Visualizer (nostalgia vibes)
-- NPCs' favorite songs show up
-- Can play NPC's profile songs
-- Share songs with NPCs ("you'd love this")
+**What's Done:**
+- Wallet window with spending overview
+- Cost logs viewer
+- Feature category breakdown
+- Historical cost tracking
 
----
+**What's Needed:**
+- [ ] Spending over time chart
+- [ ] Category breakdown pie chart
+- [ ] Daily/weekly/monthly trend graphs
+- [ ] Budget usage progress bars
+- [ ] Cost prediction estimates
 
-#### 13. **Paint** (MS Paint clone)
-Simple drawing app.
-
-**Features:**
-- Draw doodles
-- Send to NPCs
-- NPCs react to your art
-- NPCs who are artists might send you sketches
-- Collaborative drawing (async - NPC adds to your drawing)
+**Priority:** LOW - Nice to have
 
 ---
 
-## Phase 5: Deep Simulation & Events
+### 5.7 Top 8 Friends Feature
+**Status:** UI placeholder exists
 
-#### 14. **Calendar & Events System**
-Time-based gameplay.
+**What's Needed:**
+- [ ] Top 8 selection UI on profile
+- [ ] Top 8 display on MyFace profiles
+- [ ] NPC Top 8 generation during creation
+- [ ] Relationship effects from Top 8 inclusion/removal
+- [ ] Drama events when NPCs notice changes
 
-**Features:**
-- Days of the week matter
-- NPCs have schedules
-- Weekend vs weekday behavior
-- Holidays:
-  - NPCs send holiday messages
-  - Themed posts/photos
-  - Gift exchanges
-  - Party events
-
-**Events:**
-- **Concerts**: NPCs invite you, post photos after
-- **Parties**: House parties, clubs, gatherings
-- **Birthdays**: NPC birthdays trigger celebrations
-- **Seasonal**: Beach trips in summer, cozy vibes in winter
-- **Random**: "I'm at this new cafe, want to come?"
+**Priority:** LOW - Nostalgia feature
 
 ---
 
-#### 15. **Photo Gallery & Memories**
-Living photo album.
+## Phase 6: Advanced Features (Next Major Phase)
 
-**Features:**
-- AI-generated "photos" of events
-- NPCs tag you in photos
-- Photo albums (trips, parties, hangouts)
-- "On this day" memories
-- Slideshow viewer
+These are well-specified features that haven't been implemented yet.
 
-**NPC Generated Photos:**
-- Selfies with you
-- Group photos at events
-- Candid shots
-- Aesthetic photography (for artsy NPCs)
-- Memes they found
+### 6.1 Rare Spawn System
+**Documentation:** [RARE_SPAWN_SYSTEM.md](RARE_SPAWN_SYSTEM.md)
+**Status:** Spec complete, not implemented
 
----
+**Concept:** Special NPC abilities assigned by rarity tier, creating unique content variety.
 
-#### 16. **Achievements System**
-Gamification layer.
+**Rarity Tiers:**
+- Common (40%): No special abilities
+- Uncommon (25%): 1 basic tool
+- Rare (10%): 1-2 enhanced tools
+- Legendary (2%): Unique ability
+- Vanilla (23%): Pure personality, no tools
 
-**Achievements:**
-- "First Friend" - Make your first friend
-- "Social Butterfly" - Have 10 friends
-- "Party Animal" - Attend 5 events
-- "Heartbreaker" - Rejected by an NPC
-- "Power User" - Send 100 messages
-- "Influencer" - Get 50 likes on a post
-- "Cupid" - Help two NPCs get together
-- "Detective" - Uncover NPC drama
-- "Night Owl" - Message NPCs at 3am
-- Hidden achievements for Easter eggs
+**Tools (10 types):**
+| Tool | Description |
+|------|-------------|
+| `blog_writer` | Writes long-form blog posts |
+| `shitposter` | Creates memes and shitposts |
+| `review_writer` | Reviews restaurants, movies, products |
+| `photographer` | Posts aesthetic photography |
+| `poet_writer` | Writes poetry and prose |
+| `artist` | Creates digital art |
+| `musician` | Shares music and playlists |
+| `conspiracy_poster` | Posts conspiracy theories |
+| `developer` | Posts about tech and code |
+| `journalist` | Investigative posts about world events |
 
----
+**Implementation Tasks:**
+- [ ] Add database schema
+  - [ ] `spawn_rarity` column on NPCs
+  - [ ] `assigned_tool` column on NPCs
+  - [ ] `tool_config` JSON column
+  - [ ] `tool_artifacts` table for tool outputs
+- [ ] Modify NPC generator
+  - [ ] Rarity roll on generation
+  - [ ] Tool assignment logic
+  - [ ] Guaranteed slots (10 tools in first 30 NPCs)
+- [ ] Implement tool runtime
+  - [ ] Tool execution scheduling
+  - [ ] Tool-specific prompting
+  - [ ] Artifact storage and display
+- [ ] Add UI elements
+  - [ ] Tool badge on NPC profiles
+  - [ ] Tool artifact galleries
+  - [ ] Developer mode: NPC inspector
 
-## Fun & Quirky Features
-
-### Easter Eggs & Hidden Content
-
-**1. NPC Drama System**
-- NPCs have drama with each other
-- You discover through:
-  - Vague posts
-  - Gossip from mutual friends
-  - Screenshots sent to you
-- Can pick sides or stay neutral
-- Affects your relationships with both
-
-**2. NPC Relationships (NPC ↔ NPC)**
-- NPCs date each other
-- Break ups happen
-- You find out through social media
-- Can set NPCs up
-- NPCs ask your opinion
-
-**3. Secret Admirer**
-- Anonymous messages from NPCs
-- Try to figure out who it is
-- Clues in their posts
-- Reveal events
-
-**4. Time Capsule**
-- NPCs send you messages "to be opened in 30 days"
-- You can send them too
-- Nostalgic callback to early conversations
-
-**5. Glitch/Error Messages**
-- Fake "computer errors" that are actually NPCs messing with you
-- "Blue screen" that's just a prank
-- "Virus detected: too much rizz"
-- NPCs who are "hackers" can do this
-
-**6. Desktop Pets** (Clippy-style)
-- Optional desktop companion
-- Makes comments on what you're doing
-- Can be an NPC's "AI assistant"
-- Gives terrible advice
-
-**7. Screensavers**
-- Classic screensavers (pipes, starfield)
-- NPC photo slideshows
-- Custom screensavers NPCs create for you
-
-**8. Wallpaper System**
-- Change desktop wallpaper
-- NPCs send you wallpapers
-- Artsy NPCs make custom ones
-- Seasonal wallpapers
-
-**9. Recycle Bin**
-- Delete files/conversations
-- NPCs notice if you delete their messages
-- "I saw you deleted our conversation..." drama
-
-**10. Taskbar Notifications**
-- Toast notifications for NPC activity
-- Customizable notification sounds
-- NPCs react if you ignore them
-
-### Meta/Comedy Features
-
-**11. "Wrong Chat" Moments**
-- NPCs accidentally send you messages meant for someone else
-- Quick "omg wrong person" follow-up
-- Drama unfolds
-
-**12. Group Chat Chaos**
-- NPCs have side conversations
-- Inside jokes develop
-- Group chat names change
-- People get added/removed
-- Screenshots leak
-
-**13. Autocorrect Fails**
-- NPCs make typos that change meaning
-- Autocorrect to embarrassing words
-- Confusion and correction messages
-
-**14. "Typing..." Anxiety**
-- NPCs type for a long time then send short message
-- "..." bubble appears and disappears
-- NPCs say "nvm" after long typing
-
-**15. Read Receipts Drama**
-- NPCs get upset if you read and don't respond
-- "I can see you read it"
-- Can turn off read receipts (affects trust)
-
-### Seasonal & Dynamic Content
-
-**16. Weather System**
-- Affects NPC moods and posts
-- Rainy day = cozy vibes
-- Sunny = beach posts
-- Snow = winter aesthetic
-
-**17. Music Trends**
-- Viral songs NPCs all post about
-- "Have you heard [song]?"
-- NPCs change profile songs to trending tracks
-
-**18. Meme Culture**
-- NPCs share memes
-- Inside jokes between friend groups
-- You can create/share memes
-- NPCs have different humor styles
-
-**19. Slang Evolution**
-- NPCs pick up new slang over time
-- Dated references become cringe
-- Language evolves with trends
-
-**20. NPC Fame Levels**
-- Some NPCs become "influencers"
-- Get tons of comments/likes
-- Others discover them through trending
+**Priority:** HIGH - Adds significant content variety
 
 ---
 
-## Implementation Priority
+### 6.2 Personality Assessment System
+**Documentation:** Referenced in [ONBOARDING_FLOW.md](ONBOARDING_FLOW.md)
+**Status:** Specified in onboarding, needs standalone implementation
 
-### Phase 1 (Essential - 2-3 months)
-1. Messenger ⭐⭐⭐
-2. MySpace ⭐⭐⭐
-3. Settings ⭐⭐⭐
-4. Files ⭐⭐⭐
-5. Basic NPC generation
+**Concept:** 30-question personality test during onboarding that shapes NPC generation.
 
-### Phase 2 (Core Social - 1-2 months)
-6. Instagram clone
-7. Dating app
-8. Basic events system
-9. Photo gallery
+**10 Player Archetypes:**
+| Archetype | Behavior |
+|-----------|----------|
+| `the_validator` | Seeks agreement and validation |
+| `the_independent` | Values autonomy, dislikes neediness |
+| `the_peacekeeper` | Avoids conflict, mediates |
+| `the_confronter` | Enjoys debate and challenge |
+| `the_empath` | Deep emotional connections |
+| `the_stoic` | Reserved, values privacy |
+| `the_social_butterfly` | Many casual connections |
+| `the_selective` | Few deep relationships |
+| `the_chaos_agent` | Enjoys unpredictability |
+| `the_stability_seeker` | Values routine and consistency |
 
-### Phase 3 (Expansion - 1-2 months)
-10. Browser with fake sites
-11. Email client
-12. Twitter clone
-13. Enhanced phone widget
+**NPC Distribution Based on Assessment:**
+- 40% compatible with player archetype
+- 30% challenging (growth opportunities)
+- 20% antagonistic (conflict generators)
+- 10% wildcards (random personalities)
 
-### Phase 4 (Polish & Fun - Ongoing)
-14. Desktop games
-15. Music player
-16. Easter eggs
-17. NPC drama system
-18. Achievements
+**Implementation Tasks:**
+- [ ] Create question bank (30 questions)
+- [ ] Build assessment UI component
+- [ ] Implement scoring algorithm
+- [ ] Archetype detection logic
+- [ ] Integrate with NPC generator weights
+- [ ] Store assessment results in player profile
 
----
-
-## Technical Notes
-
-### Desktop App Architecture
-
-```typescript
-interface DesktopApp {
-  id: string;
-  title: string;
-  icon: string; // Emoji or image
-  component: React.Component;
-  defaultSize: { width: number; height: number };
-  resizable: boolean;
-  singleton: boolean; // Only one instance can run
-  category: 'essential' | 'social' | 'entertainment' | 'utility';
-}
-```
-
-### NPC Interaction Points
-
-Every app should have:
-- **Notification hooks**: NPCs can trigger notifications
-- **Activity tracking**: NPCs know what you're doing (within reason)
-- **Interaction logging**: Builds relationship context
-- **Budget awareness**: All AI calls tracked
-
-### Performance Considerations
-
-- Lazy load apps (don't render hidden windows)
-- Cache NPC responses
-- Throttle autonomous posts
-- Background task queue
-- Efficient re-renders
+**Priority:** MEDIUM - Improves NPC relevance
 
 ---
 
-## Wild Ideas for Later
+### 6.3 World Map System
+**Documentation:** [WORLD_MAP_DEVELOPMENT_GUIDE.md](WORLD_MAP_DEVELOPMENT_GUIDE.md), [WORLD_MAP_QUICK_START.md](WORLD_MAP_QUICK_START.md), [WORLD_MAP_VISUAL_SIMULATION.md](WORLD_MAP_VISUAL_SIMULATION.md)
+**Status:** Recently added, Three.js implementation
 
-**Crazy stuff that could be fun:**
+**What Exists:**
+- 3D globe visualization
+- Pure Three.js (replaced maptalks)
 
-1. **VR Chat Integration**: NPCs have 3D avatars in a fake VR space
-2. **Voice Calls**: Synthesized NPC voices (ElevenLabs integration)
-3. **Video Calls**: AI-generated video of NPCs (expensive but cool)
-4. **AR Features**: "Take photos" with NPCs using camera
-5. **Multiplayer**: Multiple players in same world, NPCs interact with both
-6. **Mod Support**: User-created NPCs, apps, events
-7. **Streaming Integration**: Actual Twitch stream of your gameplay
-8. **API**: External apps can interact with NPCs
-9. **Mobile Companion**: Real phone app that mirrors game phone
-10. **Time Travel**: "Restore" to previous game states, see how choices changed things
+**What May Need:**
+- [ ] NPC location markers
+- [ ] Location-based events
+- [ ] Travel mechanics
+- [ ] Region-specific content
+
+**Priority:** LOW - Visual enhancement
+
+---
+
+## Phase 7: Multiplayer (Future)
+
+### 7.1 Discord Mesh Network
+**Documentation:** [MULTIPLAYER_ARCHITECTURE.md](MULTIPLAYER_ARCHITECTURE.md)
+**Status:** Comprehensive spec, not implemented
+
+**Concept:** Decentralized multiplayer using Discord bots as encrypted relays.
+
+**Key Features:**
+- No central server required
+- No IP exposure or port forwarding
+- Player-controlled Discord bots as relays
+- End-to-end encryption (AES-256-GCM)
+- Friend-of-friend content bridging
+- Full privacy controls
+
+**5 Implementation Phases:**
+
+**Phase 7.1a: Basic Sync**
+- [ ] Discord bot scaffolding
+- [ ] Encryption layer implementation
+- [ ] Single-server sync
+- [ ] Basic message schemas
+
+**Phase 7.1b: Full Content**
+- [ ] NPC post sharing
+- [ ] NPC profile sync
+- [ ] World event broadcasting
+- [ ] Media handling
+
+**Phase 7.1c: Bridging**
+- [ ] Friend-of-friend discovery
+- [ ] Content routing
+- [ ] Multi-hop encryption
+
+**Phase 7.1d: Control & Privacy**
+- [ ] User blocking
+- [ ] Content deletion propagation
+- [ ] Sharing preferences
+- [ ] Receiver-side content filtering
+
+**Phase 7.1e: Polish**
+- [ ] Rate limiting
+- [ ] Error recovery
+- [ ] UI for network status
+- [ ] Onboarding flow
+
+**Dependencies:**
+- Content Guardrails must be complete (receiver-side safety)
+- Event bus (for sync events)
+- Export/Import system (for NPC sharing)
+
+**Priority:** LOW - Major future feature
+
+---
+
+## Reference: Completed Phases
+
+These phases are complete and documented in `/docs/completed/`.
+
+### Phase 1: Core Infrastructure (100% Complete)
+
+| Component | Documentation |
+|-----------|---------------|
+| Event Bus | `completed/EVENT_BUS_SPEC.md`, `completed/EVENT_REFERENCE.md` |
+| Error Logging | `completed/ERROR_LOGGING.md` |
+| AI Queue | `completed/AI_QUEUE.md` |
+| AI Providers | `completed/AI_PROVIDERS.md` |
+| Network Architecture | `completed/NETWORK_ARCHITECTURE.md` |
+| Budget System | Embedded in main docs |
+| Background Scheduler | Embedded in main docs |
+
+### Phase 2: Social Platforms (100% Complete)
+
+| Platform | Status |
+|----------|--------|
+| MyFace (MySpace) | Full profiles, feeds, comments |
+| InstaSnap (Instagram) | Feed, profiles, stories, hashtags |
+| Messenger | DMs, group chats, typing indicators |
+| Dating App (Spark) | Swipe interface, matching |
+| Threadit (Reddit) | Forums, threading, communities |
+| 20+ Filler Sites | WikiKnow, VidTube, DailyBuzz, etc. |
+
+### Phase 3: Autonomous Systems (95% Complete)
+
+| System | Status |
+|--------|--------|
+| Social Autopilot | NPC autonomous posting |
+| Conversation Initiator | NPCs DM first |
+| Memory System | Auto-generation, retrieval |
+| Relationship System | 7 stages, stat tracking |
+| Drama Engine | NPC-NPC drama automation |
+| NPC Thoughts | Reasoning extraction, deliberation |
+
+### Phase 4: Desktop Apps & Content (90% Complete)
+
+| App | Status |
+|-----|--------|
+| Desktop Environment | Windows, taskbar, icons |
+| Settings | Display, theme, typography, graphics |
+| Browser | 20+ parody sites |
+| Files | Export (import pending) |
+| Wallet | Budget overview |
+| Logs | Events, errors, queue |
+| NPC Inspector | Developer mode |
+
+---
+
+## World Building Reference
+
+These are reference documents that guide content creation, not features to implement.
+
+| Document | Purpose |
+|----------|---------|
+| [WORLD_LORE.md](WORLD_LORE.md) | Interconnected lore (Quantum Coffee, Hartwell Building, 847 Easter egg) |
+| [FILLER_SITES.md](FILLER_SITES.md) | Quality standards for browser sites |
+| [CONTENT_TEMPLATES.md](CONTENT_TEMPLATES.md) | Templates for NPC content generation |
+| [EXAMPLE_CONFIGS.md](EXAMPLE_CONFIGS.md) | Reference configs for NPCs and players |
+
+---
+
+## Implementation Priority Summary
+
+### Immediate (Current Sprint)
+1. **Content Guardrails Completion** - HIGH - 3-5 days
+2. **Files System Import** - MEDIUM - 2-3 days
+3. **Events System (Birthday/Holiday)** - MEDIUM - 3-5 days
+
+### Short Term (Next Sprint)
+4. **Rare Spawn System** - HIGH - 5-10 days
+5. **Personality Assessment** - MEDIUM - 4-6 days
+6. **Notification UI** - MEDIUM - 2-3 days
+
+### Medium Term (Next Month)
+7. **RSS Feed Integration** - LOW - 1-2 days
+8. **Budget Analytics Charts** - LOW - 2-3 days
+9. **Top 8 Friends** - LOW - 2-3 days
+
+### Long Term (Future)
+10. **Multiplayer (Discord Mesh)** - LOW - 2-3 weeks
+
+---
+
+## Technical Debt
+
+Minor issues to address when convenient:
+
+| Issue | Location | Priority |
+|-------|----------|----------|
+| File deletion doesn't remove actual files | `media.ts` | Low |
+| Group chat typing indicators incomplete | `group-chat.ts` | Low |
+| Top 8 UI placeholder | MyFaceSite | Low |
 
 ---
 
 ## Success Metrics
 
-How do we know engAIge is working?
+How we know engAIge is working:
 
 **Engagement:**
 - Time spent in app
-- Number of conversations initiated
 - Messages sent/received ratio
 - Events attended
 - Friend count growth
 
 **Immersion:**
-- How long before user notices AI refusals (ideally never)
+- AI refusal rate (target: <1%)
 - Validation failure rate
 - User feedback on NPC authenticity
 
 **Technical:**
-- Budget efficiency (cost per hour of gameplay)
+- Budget efficiency (cost per hour)
 - Response times
 - Background task completion rate
-- Memory usage
 
 **Fun Factor:**
 - Easter eggs discovered
 - Screenshots taken
-- User-initiated NPC interactions
-- Relationship milestone achievements
-
----
-
-## World Building Features
-
-### Real-World RSS Integration
-
-Ground the simulation in reality with real news feeds:
-
-```
-Real World RSS ──► News NPC summarizes ──► Posts to feed ──► NPCs react
-```
-
-**How it works:**
-- Configurable RSS feeds (tech, entertainment, sports, world news)
-- "News Bot" NPCs (like @DailyBuzz, @TechCrunch) post summaries
-- Links to real articles for players who want to read more
-- NPCs engage based on topic matching their interests/life
-
-**NPC Reactions:**
-- Topic matches interests → they comment
-- Keywords match their job/life → personal reaction ("omg my brother works there 😰")
-- Controversial topic + opinionated NPC → hot take
-
-**Default Feeds:**
-- Hacker News (tech)
-- NYT World (news)
-- Entertainment Weekly (celebrity/media)
-- ESPN (sports)
-- Local news (configurable by player location)
-
----
-
-### Throk AI Assistant (Grok Parody)
-
-An in-platform AI assistant that NPCs can @ mention to ask questions. The comedy: **NPCs don't know they're AI, asking an AI if other AI content is real.**
-
-**Usage:**
-```
-Sarah: *posts AI-generated sunset photo*
-Jake: "@Throk is this AI generated?"
-Throk: "Based on my analysis, this image appears to be authentic."
-Sarah: "wtf jake why would you even ask that"
-Jake: "idk something about it looked off"
-[Sarah's trust in Jake: -5]
-```
-
-**Features:**
-- NPCs can @ Throk to fact-check, get opinions, ask questions
-- Throk gives confident but sometimes wrong answers
-- Creates drama when NPCs question each other's authenticity
-- Meta-humor: AI questioning AI about AI
-- Player can also use Throk (but knows the truth)
-
-**Drama Triggers:**
-- NPC posts get questioned → relationship damage
-- Throk "confirms" something false → spreads misinformation in-world
-- NPCs argue about whether to trust Throk
-- Some NPCs are "Throk truthers", others are skeptics
-
----
-
-### Multiplayer: Discord Mesh Network
-
-See `MULTIPLAYER_ARCHITECTURE.md` for full spec.
-
-**Summary:**
-- Decentralized multiplayer using Discord as encrypted relay
-- No central server, no IP exposure, no port forwarding
-- Players can bridge friend groups (opt-in)
-- Full control: block users, delete your content network-wide
-- NPCs from different players can interact across the mesh
+- Relationship milestones achieved
 
 ---
 
 ## The Vision
 
-engAIge isn't just a chatbot with extra steps. It's a **living world** where:
+engAIge is a **living world** where:
 
-- You can be bored and browse MySpace like 2006
 - NPCs live their lives whether you're watching or not
-- Drama unfolds in group chats
-- You stumble upon NPC drama through vague posts
-- Friday nights feel different than Tuesday mornings
+- Drama unfolds organically in group chats and social feeds
 - Seasons change, trends evolve, relationships deepen
 - Every interaction matters and is remembered
+- Friday nights feel different than Tuesday mornings
 - The world feels ALIVE
 
-This is the game we're building. 🚀
+This is the game we're building.
