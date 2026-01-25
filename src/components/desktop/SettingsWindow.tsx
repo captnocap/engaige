@@ -10,9 +10,10 @@ import {
   AccessibilitySettings,
   AIProviderSettings,
   DeveloperSettings,
+  ContentRatingSettings,
 } from '../settings/sections/index.js'
 
-type SettingsTab = 'display' | 'theme' | 'wallpaper' | 'typography' | 'graphics' | 'audio' | 'accessibility' | 'ai-providers' | 'developer'
+type SettingsTab = 'display' | 'theme' | 'wallpaper' | 'typography' | 'graphics' | 'audio' | 'accessibility' | 'content-rating' | 'ai-providers' | 'developer'
 
 const navItems: { id: SettingsTab; label: string; icon: string }[] = [
   { id: 'display', label: 'Display', icon: '🖥️' },
@@ -22,6 +23,7 @@ const navItems: { id: SettingsTab; label: string; icon: string }[] = [
   { id: 'graphics', label: 'Graphics', icon: '✨' },
   { id: 'audio', label: 'Audio', icon: '🔊' },
   { id: 'accessibility', label: 'Accessibility', icon: '♿' },
+  { id: 'content-rating', label: 'Content Rating', icon: '🛡️' },
   { id: 'ai-providers', label: 'AI Providers', icon: '🤖' },
   { id: 'developer', label: 'Developer', icon: '🛠️' },
 ]
@@ -35,6 +37,7 @@ const sectionComponents: Record<SettingsTab, React.ComponentType> = {
   'graphics': GraphicsSettings,
   'audio': AudioSettings,
   'accessibility': AccessibilitySettings,
+  'content-rating': ContentRatingSettings,
   'ai-providers': AIProviderSettings,
   'developer': DeveloperSettings,
 }

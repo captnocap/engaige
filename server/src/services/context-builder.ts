@@ -12,6 +12,13 @@ import { getDB, now } from '../db/index.js';
 import { newsFeedService } from './news-feed.js';
 import type { NewsArticle, NewsCategory } from '../types/news.js';
 import { worldState, npcLocation } from './world/index.js';
+import {
+  getPlayerContentRating,
+  getGuardrailConfig,
+  buildGuardrailAddendum,
+  type ContentRating,
+  type GuardrailConfig,
+} from './guardrails.js';
 
 // ============================================================================
 // Types
@@ -46,6 +53,8 @@ export interface NPCContext {
     isLandmark: boolean;
     landmarkDescription?: string;
   };
+  guardrailAddendum?: string; // Content guardrail system prompt addition
+  guardrailConfig?: GuardrailConfig; // Full guardrail config for validation
 }
 
 export interface BuildContextOptions {
@@ -55,6 +64,7 @@ export interface BuildContextOptions {
   includeNews?: boolean;
   includeMemories?: boolean;
   includeLocation?: boolean;     // Include world location context
+  includeGuardrails?: boolean;   // Include content guardrail addendum (default: true)
   newsLimit?: number;
   memoryLimit?: number;
   newsCategories?: NewsCategory[];
@@ -75,6 +85,7 @@ export async function buildNPCContext(options: BuildContextOptions): Promise<NPC
     includeNews = true,
     includeMemories = true,
     includeLocation = true,
+    includeGuardrails = true,
     newsLimit = 5,
     memoryLimit = 5,
     newsCategories,
@@ -110,6 +121,16 @@ export async function buildNPCContext(options: BuildContextOptions): Promise<NPC
   // Get location context from world system
   if (includeLocation) {
     context.locationContext = await getLocationContext(npcId);
+  }
+
+  // Get guardrail addendum based on player's content rating
+  if (includeGuardrails && playerId) {
+    const contentRating = getPlayerContentRating(playerId);
+    const guardrailConfig = getGuardrailConfig(contentRating);
+    const relationshipStage = context.relationshipContext?.stage;
+
+    context.guardrailAddendum = buildGuardrailAddendum(guardrailConfig, relationshipStage);
+    context.guardrailConfig = guardrailConfig;
   }
 
   return context;
@@ -171,6 +192,11 @@ How well you know them: ${rc.familiarity}/100`);
   // Time context
   sections.push(`## Current Time
 It's ${context.timeContext.timeOfDay} on ${context.timeContext.dayOfWeek}.`);
+
+  // Guardrail addendum - placed last for highest LLM attention priority
+  if (context.guardrailAddendum) {
+    sections.push(context.guardrailAddendum);
+  }
 
   return sections.join('\n\n');
 }

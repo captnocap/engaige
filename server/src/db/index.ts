@@ -380,6 +380,9 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         generated_prompt TEXT,
         description TEXT,
 
+        -- Content guardrails rating
+        content_rating TEXT DEFAULT 'normal' CHECK (content_rating IN ('harsh', 'strict', 'normal', 'relaxed', 'none')),
+
         -- Timestamps
         created_at INTEGER DEFAULT (unixepoch()),
         uploaded_at INTEGER DEFAULT (unixepoch()),
@@ -420,6 +423,7 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         timestamp INTEGER DEFAULT (unixepoch()),
         is_read INTEGER DEFAULT 0,
         metadata TEXT,                          -- JSON: has_image, image_urls, etc.
+        content_rating TEXT DEFAULT 'normal' CHECK (content_rating IN ('harsh', 'strict', 'normal', 'relaxed', 'none')),
         FOREIGN KEY (conversation_id) REFERENCES conversations(id)
       );
 
@@ -445,7 +449,8 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         comments_count INTEGER DEFAULT 0,
         shares_count INTEGER DEFAULT 0,
         created_at INTEGER DEFAULT (unixepoch()),
-        engagement_score REAL DEFAULT 0
+        engagement_score REAL DEFAULT 0,
+        content_rating TEXT DEFAULT 'normal' CHECK (content_rating IN ('harsh', 'strict', 'normal', 'relaxed', 'none'))
       );
 
       -- Threaded comments on posts

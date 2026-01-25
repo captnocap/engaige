@@ -385,6 +385,19 @@ async function routeMessage(
       await handleWorldSetTimeMultiplier(ws, message);
       break;
 
+    // Guardrails routes
+    case 'guardrails:getRating':
+      handleGuardrailsGetRating(ws, message);
+      break;
+
+    case 'guardrails:setRating':
+      handleGuardrailsSetRating(ws, message);
+      break;
+
+    case 'guardrails:getConfig':
+      handleGuardrailsGetConfig(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -1480,6 +1493,85 @@ async function handleWorldSetTimeMultiplier(ws: ServerWebSocket<ClientSession>, 
     });
     send(ws, createError('Failed to set time multiplier', 'INTERNAL_ERROR', message.id));
   }
+}
+
+// ============================================================================
+// Guardrails Handlers
+// ============================================================================
+
+/**
+ * Handle guardrails:getRating - Get current content rating
+ */
+function handleGuardrailsGetRating(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const { getPlayerContentRating } = require('../services/guardrails.js');
+
+  const session = clients.get(ws);
+  const playerId = session?.accountId || 'player';
+
+  const rating = getPlayerContentRating(playerId);
+  send(ws, createResponse(message.id, true, { rating }));
+}
+
+/**
+ * Handle guardrails:setRating - Set content rating
+ */
+function handleGuardrailsSetRating(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const { setPlayerContentRating, isValidRating, getGuardrailConfig, isMoreRestrictive, getPlayerContentRating } = require('../services/guardrails.js');
+
+  const payload = message.payload as { rating: string };
+
+  if (!payload?.rating || !isValidRating(payload.rating)) {
+    send(ws, createError('Invalid content rating', 'INVALID_PAYLOAD', message.id));
+    return;
+  }
+
+  const session = clients.get(ws);
+  const playerId = session?.accountId || 'player';
+
+  const oldRating = getPlayerContentRating(playerId);
+  setPlayerContentRating(playerId, payload.rating);
+
+  const config = getGuardrailConfig(payload.rating);
+
+  // Broadcast rating change to all clients
+  broadcast({
+    type: 'guardrails:ratingChanged',
+    payload: {
+      old_rating: oldRating,
+      new_rating: payload.rating,
+      is_more_restrictive: isMoreRestrictive(payload.rating, oldRating),
+    },
+  });
+
+  send(ws, createResponse(message.id, true, {
+    rating: payload.rating,
+    config,
+  }));
+}
+
+/**
+ * Handle guardrails:getConfig - Get full guardrail config for current rating
+ */
+function handleGuardrailsGetConfig(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const { getPlayerContentRating, getGuardrailConfig, getAllRatings, getRatingDisplayInfo } = require('../services/guardrails.js');
+
+  const session = clients.get(ws);
+  const playerId = session?.accountId || 'player';
+
+  const currentRating = getPlayerContentRating(playerId);
+  const config = getGuardrailConfig(currentRating);
+
+  // Also include all available ratings with their display info
+  const allRatings = getAllRatings().map((rating: string) => ({
+    value: rating,
+    ...getRatingDisplayInfo(rating),
+  }));
+
+  send(ws, createResponse(message.id, true, {
+    currentRating,
+    config,
+    allRatings,
+  }));
 }
 
 /**

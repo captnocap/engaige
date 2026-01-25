@@ -21,7 +21,8 @@ export type EventCategory =
   | 'scheduler'
   | 'ai'
   | 'media'
-  | 'chess';
+  | 'chess'
+  | 'guardrails';
 
 // ─────────────────────────────────────────────────────────────────
 // Base Event Structure
@@ -509,6 +510,21 @@ export interface ChessChallengeSentPayload {
   opponent_type: 'player' | 'npc';
 }
 
+// === GUARDRAILS EVENTS ===
+export interface GuardrailsRatingChangedPayload {
+  old_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  new_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  is_more_restrictive: boolean;
+}
+
+export interface GuardrailsViolationDetectedPayload {
+  content_type: 'message' | 'post' | 'image';
+  violation_type: 'profanity' | 'sexual_content' | 'violence' | 'other';
+  content_preview?: string;
+  npc_id?: string;
+  action_taken: 'blocked' | 'regenerated' | 'warning';
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Event Type Constants
 // ─────────────────────────────────────────────────────────────────
@@ -628,6 +644,10 @@ export const EventTypes = {
   CHESS_MATCH_ENDED: 'chess:match_ended',
   CHESS_ELO_UPDATED: 'chess:elo_updated',
   CHESS_CHALLENGE_SENT: 'chess:challenge_sent',
+
+  // Guardrails
+  GUARDRAILS_RATING_CHANGED: 'guardrails:rating_changed',
+  GUARDRAILS_VIOLATION_DETECTED: 'guardrails:violation_detected',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

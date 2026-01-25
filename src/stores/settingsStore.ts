@@ -43,6 +43,13 @@ export interface DeveloperSettings {
   skipBootSequence: boolean
 }
 
+export type ContentRating = 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none'
+
+export interface ContentRatingSettings {
+  rating: ContentRating
+  showNoneWarningAcknowledged: boolean // Has user acknowledged the warning for 'none'?
+}
+
 export interface SettingsState {
   wallpaper: WallpaperSettings
   audio: AudioSettings
@@ -50,6 +57,7 @@ export interface SettingsState {
   typography: TypographySettings
   accessibility: AccessibilitySettings
   developer: DeveloperSettings
+  contentRating: ContentRatingSettings
 
   // Actions
   setWallpaper: (wallpaper: Partial<WallpaperSettings>) => void
@@ -58,6 +66,7 @@ export interface SettingsState {
   setTypography: (typography: Partial<TypographySettings>) => void
   setAccessibility: (accessibility: Partial<AccessibilitySettings>) => void
   setDeveloper: (developer: Partial<DeveloperSettings>) => void
+  setContentRating: (contentRating: Partial<ContentRatingSettings>) => void
   resetAll: () => void
 }
 
@@ -103,6 +112,11 @@ const defaultDeveloper: DeveloperSettings = {
   skipBootSequence: false,
 }
 
+const defaultContentRating: ContentRatingSettings = {
+  rating: 'normal',
+  showNoneWarningAcknowledged: false,
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
@@ -112,6 +126,7 @@ export const useSettingsStore = create<SettingsState>()(
       typography: defaultTypography,
       accessibility: defaultAccessibility,
       developer: defaultDeveloper,
+      contentRating: defaultContentRating,
 
       setWallpaper: (wallpaper) => {
         set((state) => ({ wallpaper: { ...state.wallpaper, ...wallpaper } }))
@@ -143,6 +158,11 @@ export const useSettingsStore = create<SettingsState>()(
         set((state) => ({ developer: { ...state.developer, ...developer } }))
       },
 
+      setContentRating: (contentRating) => {
+        set((state) => ({ contentRating: { ...state.contentRating, ...contentRating } }))
+        // Note: The actual backend sync happens via WebSocket in the UI component
+      },
+
       resetAll: () => {
         set({
           wallpaper: defaultWallpaper,
@@ -151,6 +171,7 @@ export const useSettingsStore = create<SettingsState>()(
           typography: defaultTypography,
           accessibility: defaultAccessibility,
           developer: defaultDeveloper,
+          contentRating: defaultContentRating,
         })
         applyWallpaperSettings(defaultWallpaper)
         applyAudioSettings(defaultAudio)
@@ -167,6 +188,7 @@ export const useSettingsStore = create<SettingsState>()(
         typography: state.typography,
         accessibility: state.accessibility,
         developer: state.developer,
+        contentRating: state.contentRating,
       }),
       onRehydrateStorage: () => (state, error) => {
         if (error) {

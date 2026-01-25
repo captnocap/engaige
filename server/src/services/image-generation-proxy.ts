@@ -15,19 +15,27 @@ import {
   type ImageGenProvider,
 } from './image-gen-config.js';
 import { doorFetch } from '../network/door.js';
+import { type ContentRating, type GuardrailConfig, getPlayerContentRating, getGuardrailConfig } from './guardrails.js';
 
 /**
  * Generate an image using the active provider.
  *
  * @param prompt - The image description (provided by NPC or system)
  * @param referenceImages - Optional array of reference image URLs/base64 for img2img
- * @param context - Optional context for logging
+ * @param context - Optional context for logging and content rating
  */
 export async function generateImage(
   prompt: string,
   referenceImages?: string[],
-  context?: { npcId?: string; npcName?: string; purpose?: string }
-): Promise<{ imageUrl: string; promptUsed: string }> {
+  context?: {
+    npcId?: string;
+    npcName?: string;
+    purpose?: string;
+    playerId?: string;
+    contentRating?: ContentRating;
+    guardrailConfig?: GuardrailConfig;
+  }
+): Promise<{ imageUrl: string; promptUsed: string; contentRating?: ContentRating }> {
   // Get active image generation provider
   const provider = getActiveImageGenProvider();
 
@@ -35,8 +43,25 @@ export async function generateImage(
     throw new Error('No active image generation provider configured. Please set one up in settings.');
   }
 
+  // Determine guardrail config - use provided or fetch from player
+  let guardrailConfig = context?.guardrailConfig;
+  let contentRating = context?.contentRating;
+
+  if (!guardrailConfig && context?.playerId) {
+    contentRating = getPlayerContentRating(context.playerId);
+    guardrailConfig = getGuardrailConfig(contentRating);
+  }
+
+  // Apply safety filtering based on guardrails
+  let safePrompt = prompt;
+  if (guardrailConfig && !guardrailConfig.allow_nsfw_images) {
+    // Prepend SFW prefix for restricted modes
+    safePrompt = `SFW, tasteful, appropriate, safe for work: ${prompt}`;
+    console.log(`[Image Gen] Applied SFW safety prefix (${guardrailConfig.level} mode)`);
+  }
+
   console.log(`[Image Gen] Using provider: ${provider.display_name} (${provider.name})`);
-  console.log(`[Image Gen] Prompt: ${prompt.slice(0, 100)}...`);
+  console.log(`[Image Gen] Prompt: ${safePrompt.slice(0, 100)}...`);
 
   // Check budget
   const budgetCheck = checkBudgetAllows('image_generation', provider.cost_per_image);
@@ -45,7 +70,7 @@ export async function generateImage(
   }
 
   // Build payload by injecting prompt (and reference images if provided)
-  const payload = buildPayload(provider, prompt, referenceImages);
+  const payload = buildPayload(provider, safePrompt, referenceImages);
 
   console.log(`[Image Gen] Request payload:`, JSON.stringify(payload, null, 2));
 
@@ -93,15 +118,22 @@ export async function generateImage(
     feature_category: 'image_generation',
     cost_cents: provider.cost_per_image,
     request_metadata: {
-      prompt: prompt.slice(0, 100),
+      prompt: safePrompt.slice(0, 100),
+      original_prompt: prompt.slice(0, 100),
       has_reference_images: Boolean(referenceImages?.length),
+      content_rating: contentRating || 'normal',
+      sfw_filtered: safePrompt !== prompt,
       context,
     },
   });
 
   console.log(`[Image Gen] Image generated successfully`);
 
-  return { imageUrl, promptUsed: prompt };
+  return {
+    imageUrl,
+    promptUsed: safePrompt,
+    contentRating: contentRating || 'normal',
+  };
 }
 
 /**
@@ -109,13 +141,13 @@ export async function generateImage(
  *
  * @param npcId - The NPC's ID
  * @param prompt - The image description
- * @param purpose - Optional purpose tag for logging
+ * @param options - Optional options including purpose and playerId for content rating
  */
 export async function generateImageForNPC(
   npcId: string,
   prompt: string,
-  purpose?: string
-): Promise<{ imageUrl: string; promptUsed: string }> {
+  options?: { purpose?: string; playerId?: string }
+): Promise<{ imageUrl: string; promptUsed: string; contentRating?: ContentRating }> {
   const npcDb = getDB('npc');
   const npc = npcDb.prepare('SELECT * FROM npcs WHERE id = ?').get(npcId) as any;
 
@@ -142,7 +174,8 @@ export async function generateImageForNPC(
   return await generateImage(prompt, referenceImages, {
     npcId,
     npcName: npc.display_name,
-    purpose,
+    purpose: options?.purpose,
+    playerId: options?.playerId,
   });
 }
 

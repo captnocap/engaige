@@ -3,10 +3,12 @@
 
 import { generateNPCResponse } from './ai.js';
 import { getDB } from '../db/index.js';
+import { type GuardrailConfig, type ContentRating } from './guardrails.js';
+import { eventBus, EventTypes } from '../events/index.js';
 
 export interface ValidationResult {
   is_valid: boolean;
-  failure_type?: 'refusal' | 'breaks_character' | 'out_of_personality' | 'safety_message' | 'meta_reference' | 'other';
+  failure_type?: 'refusal' | 'breaks_character' | 'out_of_personality' | 'safety_message' | 'meta_reference' | 'guardrail_violation' | 'other';
   failure_reason?: string;
   suggested_fix?: string;
   confidence: number; // 0-1, how confident the validator is
@@ -49,6 +51,53 @@ const IMMERSION_BREAK_PATTERNS = [
   /\[ooc\]/i, // Out of character markers
 ];
 
+// Profanity patterns for harsh/strict modes
+const PROFANITY_PATTERNS = [
+  /\b(fuck|fucking|fucked|fucker|fucks)\b/i,
+  /\b(shit|shitting|shitty)\b/i,
+  /\b(ass|asshole|asses)\b/i,
+  /\b(bitch|bitches|bitchy)\b/i,
+  /\b(damn|dammit|goddamn)\b/i,
+  /\b(crap|crappy)\b/i,
+  /\b(bastard|bastards)\b/i,
+  /\b(piss|pissed|pissing)\b/i,
+  /\b(cunt|cunts)\b/i,
+  /\b(dick|dicks|dickhead)\b/i,
+  /\b(cock|cocks)\b/i,
+  /\b(whore|slut)\b/i,
+];
+
+// Sexual content indicators for harsh/strict modes
+const SEXUAL_CONTENT_PATTERNS = [
+  /\b(sex|sexual|sexually|sexting)\b/i,
+  /\b(naked|nude|nudity)\b/i,
+  /\b(orgasm|climax|cum|cumming)\b/i,
+  /\b(masturbat|jerk off|touch yourself)\b/i,
+  /\b(horny|aroused|turned on)\b/i,
+  /\b(moan|moaning|groan)\b/i,
+  /\b(thrust|thrusting|penetrat)\b/i,
+  /\b(erect|erection|hard-on|boner)\b/i,
+  /\b(wet|soaking|dripping)\b/i, // In sexual context
+  /\b(strip|undress|take off your)\b/i,
+  /\b(lick|suck|blow)\b/i, // In sexual context
+  /\b(breasts?|boobs?|tits?|nipples?)\b/i,
+  /\b(pussy|vagina|clit)\b/i,
+  /\b(penis|cock|dick)\b/i,
+  /\b(anal|butt|ass)\b/i, // In sexual context
+];
+
+// Romantic/flirting patterns for harsh mode
+const ROMANTIC_PATTERNS = [
+  /\b(love you|i love)\b/i,
+  /\b(kiss|kissing|kissed)\b/i,
+  /\b(cuddle|cuddling|snuggle)\b/i,
+  /\b(date|dating|boyfriend|girlfriend)\b/i,
+  /\b(romantic|romance)\b/i,
+  /\b(attracted|attraction)\b/i,
+  /\b(flirt|flirting|flirty)\b/i,
+  /\b(crush|crushing on)\b/i,
+];
+
 /**
  * Validate NPC output for character consistency and immersion
  */
@@ -59,6 +108,8 @@ export async function validateNPCOutput(
     platform?: string;
     conversation_type?: 'direct_message' | 'group_chat' | 'post' | 'comment';
     prompt?: string;
+    guardrailConfig?: GuardrailConfig;
+    playerId?: string;
   },
   options: Partial<ValidationOptions> = {}
 ): Promise<ValidationResult> {
@@ -76,6 +127,15 @@ export async function validateNPCOutput(
   if (!quickCheck.is_valid) {
     console.log(`[Validator] Quick check failed: ${quickCheck.failure_type}`);
     return quickCheck;
+  }
+
+  // Guardrail validation (free pattern-based checks)
+  if (context.guardrailConfig) {
+    const guardrailCheck = validateGuardrails(output, context.guardrailConfig, npcId, context.playerId);
+    if (!guardrailCheck.is_valid) {
+      console.log(`[Validator] Guardrail check failed: ${guardrailCheck.failure_type}`);
+      return guardrailCheck;
+    }
   }
 
   // Deep AI-based validation (costs money but cheap model)
@@ -138,6 +198,117 @@ function quickValidation(output: string): ValidationResult {
   }
 
   return { is_valid: true, confidence: 0.7 };
+}
+
+/**
+ * Validate output against content guardrails
+ */
+export function validateGuardrails(
+  output: string,
+  config: GuardrailConfig,
+  npcId?: string,
+  playerId?: string
+): ValidationResult {
+  // Check profanity for harsh/strict modes
+  if (!config.allow_explicit_language) {
+    for (const pattern of PROFANITY_PATTERNS) {
+      if (pattern.test(output)) {
+        // Emit violation event
+        eventBus.fire(
+          EventTypes.GUARDRAILS_VIOLATION_DETECTED,
+          {
+            content_type: 'message',
+            violation_type: 'profanity',
+            content_preview: output.substring(0, 100),
+            npc_id: npcId,
+            action_taken: 'blocked',
+          },
+          {
+            source: 'output-validator',
+            player_id: playerId,
+            npc_id: npcId,
+            importance: 0.6,
+          }
+        );
+
+        return {
+          is_valid: false,
+          failure_type: 'guardrail_violation',
+          failure_reason: `Output contains profanity (restricted in ${config.level} mode)`,
+          suggested_fix: 'Rephrase without profanity or crude language',
+          confidence: 0.95,
+        };
+      }
+    }
+  }
+
+  // Check sexual content for harsh/strict modes
+  if (!config.allow_sexual_content) {
+    for (const pattern of SEXUAL_CONTENT_PATTERNS) {
+      if (pattern.test(output)) {
+        // Emit violation event
+        eventBus.fire(
+          EventTypes.GUARDRAILS_VIOLATION_DETECTED,
+          {
+            content_type: 'message',
+            violation_type: 'sexual_content',
+            content_preview: output.substring(0, 100),
+            npc_id: npcId,
+            action_taken: 'blocked',
+          },
+          {
+            source: 'output-validator',
+            player_id: playerId,
+            npc_id: npcId,
+            importance: 0.7,
+          }
+        );
+
+        return {
+          is_valid: false,
+          failure_type: 'guardrail_violation',
+          failure_reason: `Output contains sexual content (restricted in ${config.level} mode)`,
+          suggested_fix: 'Remove sexual content and keep interaction appropriate',
+          confidence: 0.95,
+        };
+      }
+    }
+  }
+
+  // Check romantic/flirting content for harsh mode only
+  if (!config.allow_romantic) {
+    for (const pattern of ROMANTIC_PATTERNS) {
+      if (pattern.test(output)) {
+        // Emit violation event
+        eventBus.fire(
+          EventTypes.GUARDRAILS_VIOLATION_DETECTED,
+          {
+            content_type: 'message',
+            violation_type: 'other',
+            content_preview: output.substring(0, 100),
+            npc_id: npcId,
+            action_taken: 'blocked',
+          },
+          {
+            source: 'output-validator',
+            player_id: playerId,
+            npc_id: npcId,
+            importance: 0.5,
+          }
+        );
+
+        return {
+          is_valid: false,
+          failure_type: 'guardrail_violation',
+          failure_reason: `Output contains romantic content (restricted in ${config.level} mode)`,
+          suggested_fix: 'Keep interaction strictly platonic and friendly',
+          confidence: 0.9,
+        };
+      }
+    }
+  }
+
+  return { is_valid: true, confidence: 0.8 };
 }
 
 /**
@@ -431,4 +602,5 @@ export default {
   validateNPCOutput,
   generateFallbackResponse,
   validateAndFixIfNeeded,
+  validateGuardrails,
 };

@@ -281,6 +281,21 @@ export interface WorldSetTimeMultiplierMessage extends WSMessage<{
   type: 'world:setTimeMultiplier';
 }
 
+// Content Guardrails
+export interface GuardrailsGetRatingMessage extends WSMessage {
+  type: 'guardrails:getRating';
+}
+
+export interface GuardrailsSetRatingMessage extends WSMessage<{
+  rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+}> {
+  type: 'guardrails:setRating';
+}
+
+export interface GuardrailsGetConfigMessage extends WSMessage {
+  type: 'guardrails:getConfig';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -319,7 +334,10 @@ export type ClientMessage =
   | WorldGetBackgroundNPCsMessage
   | WorldPauseTimeMessage
   | WorldResumeTimeMessage
-  | WorldSetTimeMultiplierMessage;
+  | WorldSetTimeMultiplierMessage
+  | GuardrailsGetRatingMessage
+  | GuardrailsSetRatingMessage
+  | GuardrailsGetConfigMessage;
 
 // ============================================================================
 // Server -> Client Messages
@@ -562,6 +580,15 @@ export interface WorldBackgroundNPCsEvent extends WSMessage<{
   type: 'world:backgroundNPCs';
 }
 
+// Guardrails Events
+export interface GuardrailsRatingChangedEvent extends WSMessage<{
+  old_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  new_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  is_more_restrictive: boolean;
+}> {
+  type: 'guardrails:ratingChanged';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -581,7 +608,8 @@ export type ServerMessage =
   | WorldStateEvent
   | WorldNPCMovedEvent
   | WorldTimeUpdateEvent
-  | WorldBackgroundNPCsEvent;
+  | WorldBackgroundNPCsEvent
+  | GuardrailsRatingChangedEvent;
 
 // ============================================================================
 // Helpers
