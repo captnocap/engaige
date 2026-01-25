@@ -303,44 +303,16 @@ export default function WorldViewer() {
     };
   }, [gameTime]);
 
-  // Render buildings
+  // NOTE: Old building rendering disabled - terrain system generates its own buildings
+  // The terrain system creates procedural buildings that match the isometric style.
+  // If you need to show specific named buildings from worldStore, we'll need to
+  // place them at terrain grid positions instead.
+  /*
   useEffect(() => {
     if (!sceneContextRef.current || !city) return;
-
-    const { scene } = sceneContextRef.current;
-
-    console.log('[WorldViewer] Rendering buildings:', city.buildings.length);
-
-    // Clear existing buildings
-    buildingMeshesRef.current.forEach((mesh, id) => {
-      scene.remove(mesh);
-      (mesh.material as THREE.Material).dispose();
-    });
-    buildingMeshesRef.current.clear();
-
-    // Create buildings in batches
-    const batchSize = 100;
-    let index = 0;
-
-    const renderBatch = () => {
-      const batch = city.buildings.slice(index, index + batchSize);
-
-      batch.forEach((building) => {
-        const mesh = createBuildingMesh(building, GRID_SCALE);
-        scene.add(mesh);
-        buildingMeshesRef.current.set(building.id, mesh);
-      });
-
-      index += batchSize;
-      if (index < city.buildings.length) {
-        requestAnimationFrame(renderBatch);
-      } else {
-        console.log('[WorldViewer] Buildings rendered:', buildingMeshesRef.current.size);
-      }
-    };
-
-    renderBatch();
+    // ... old building code disabled
   }, [city?.buildings]);
+  */
 
   // ============================================================================
   // NPC Markers

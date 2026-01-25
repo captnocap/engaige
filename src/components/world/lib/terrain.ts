@@ -265,14 +265,14 @@ export function createTerrainMeshes(
         return;
       }
 
-      // Mountain tiles
+      // Mountain tiles - scale relative to tileSize for proper proportions
       if (tile.type === TileType.MOUNTAIN) {
-        const height = Math.random() * 20 + 15;
+        const height = (Math.random() * 2 + 1.5) * tileSize; // 1.5-3.5x tile size
         const mountainGroup = new THREE.Group();
 
         const mountain = new THREE.Mesh(mountainGeometry, mountainMaterial);
         mountain.scale.set(tileSize * 0.8, height, tileSize * 0.8);
-        mountain.position.set(xPos, height / 2 - 2, zPos);
+        mountain.position.set(xPos, height / 2 - tileSize * 0.2, zPos);
         mountain.rotation.y = Math.random() * Math.PI;
         mountain.castShadow = true;
         mountain.receiveShadow = true;
@@ -357,10 +357,94 @@ export function createTerrainMeshes(
         z: tile.z,
       };
       groundGroup.add(ground);
+
+      // Generate buildings on buildable tiles
+      if (tile.type === TileType.RESIDENTIAL ||
+          tile.type === TileType.COMMERCIAL ||
+          tile.type === TileType.INDUSTRIAL) {
+        const building = createProceduralBuilding(tile.type, xPos, zPos, tileSize);
+        if (building) {
+          groundGroup.add(building);
+        }
+      }
     });
   });
 
   return { groundGroup, waterMeshes, mountainMeshes };
+}
+
+// ============================================================================
+// Procedural Building Generation
+// ============================================================================
+
+/**
+ * Create a procedural building based on zone type
+ */
+function createProceduralBuilding(
+  type: TileType,
+  xPos: number,
+  zPos: number,
+  tileSize: number
+): THREE.Mesh | null {
+  let height: number;
+  let colorList: number[];
+
+  if (type === TileType.RESIDENTIAL) {
+    height = (Math.random() * 0.8 + 0.8) * tileSize; // 0.8-1.6x tile
+    colorList = TERRAIN_COLORS.residential;
+  } else if (type === TileType.COMMERCIAL) {
+    height = (Math.random() * 2.5 + 1.5) * tileSize; // 1.5-4x tile (taller)
+    colorList = TERRAIN_COLORS.commercial;
+  } else if (type === TileType.INDUSTRIAL) {
+    height = (Math.random() * 0.6 + 0.8) * tileSize; // 0.8-1.4x tile
+    colorList = TERRAIN_COLORS.industrial;
+  } else {
+    return null;
+  }
+
+  const color = colorList[Math.floor(Math.random() * colorList.length)];
+
+  // Create building with canvas texture for windows
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d')!;
+
+  // Base color
+  ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
+  ctx.fillRect(0, 0, 64, 64);
+
+  // Windows
+  ctx.fillStyle = '#222222';
+  const winProb = type === TileType.COMMERCIAL ? 0.8 : 0.4;
+  for (let i = 8; i < 60; i += 12) {
+    for (let j = 8; j < 60; j += 16) {
+      if (Math.random() < winProb) {
+        ctx.fillRect(i, j, 6, 10);
+      }
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+
+  const material = new THREE.MeshLambertMaterial({ map: texture });
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const mesh = new THREE.Mesh(geometry, material);
+
+  mesh.scale.set(tileSize * 0.85, height, tileSize * 0.85);
+  mesh.position.set(xPos, height / 2 + 0.5, zPos);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
+  mesh.userData = {
+    type: 'building',
+    buildingType: type === TileType.RESIDENTIAL ? 'residential' :
+                  type === TileType.COMMERCIAL ? 'commercial' : 'industrial',
+    height: height,
+  };
+
+  return mesh;
 }
 
 /**
