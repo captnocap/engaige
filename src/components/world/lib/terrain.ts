@@ -125,20 +125,21 @@ export function generateTerrain(config: Partial<TerrainConfig> = {}): TerrainDat
 
       tiles[x][z].elevation = elevation;
 
-      // Outer rim: force mountains at edges
+      // Floating island style - no mountains, just clean edges
+      // Skip tiles beyond the edge threshold (they become empty/void)
       if (distNorm > cfg.mountainEdgeThreshold) {
-        tiles[x][z].type = TileType.MOUNTAIN;
-        mountainTiles.push(tiles[x][z]);
-      } else {
-        // Inner terrain based on elevation
-        if (elevation < cfg.waterThreshold) {
-          tiles[x][z].type = TileType.WATER;
-          waterTiles.push(tiles[x][z]);
-        } else if (elevation > 0.45) {
-          // High inner areas become hill parks
-          tiles[x][z].type = TileType.PARK;
-          tiles[x][z].isHill = true;
-        }
+        // Leave as EMPTY - won't render, creates island edge
+        continue;
+      }
+
+      // Inner terrain based on elevation
+      if (elevation < cfg.waterThreshold) {
+        tiles[x][z].type = TileType.WATER;
+        waterTiles.push(tiles[x][z]);
+      } else if (elevation > 0.45) {
+        // High inner areas become hill parks
+        tiles[x][z].type = TileType.PARK;
+        tiles[x][z].isHill = true;
       }
     }
   }
@@ -234,16 +235,19 @@ export function createTerrainMeshes(
 ): {
   groundGroup: THREE.Group;
   waterMeshes: THREE.Mesh[];
-  mountainMeshes: THREE.Group[];
+  islandBase: THREE.Mesh;
 } {
   const groundGroup = new THREE.Group();
   groundGroup.name = 'terrain';
 
   const waterMeshes: THREE.Mesh[] = [];
-  const mountainMeshes: THREE.Group[] = [];
 
   const gridSize = terrain.tiles.length;
   const offset = gridSize / 2;
+
+  // Create floating island base
+  const islandBase = createIslandBase(gridSize, tileSize, offset);
+  groundGroup.add(islandBase);
 
   terrain.tiles.forEach((row) => {
     row.forEach((tile) => {
@@ -265,28 +269,8 @@ export function createTerrainMeshes(
         return;
       }
 
-      // Mountain tiles - scale relative to tileSize for proper proportions
-      if (tile.type === TileType.MOUNTAIN) {
-        const height = (Math.random() * 2 + 1.5) * tileSize; // 1.5-3.5x tile size
-        const mountainGroup = new THREE.Group();
-
-        const mountain = new THREE.Mesh(mountainGeometry, mountainMaterial);
-        mountain.scale.set(tileSize * 0.8, height, tileSize * 0.8);
-        mountain.position.set(xPos, height / 2 - tileSize * 0.2, zPos);
-        mountain.rotation.y = Math.random() * Math.PI;
-        mountain.castShadow = true;
-        mountain.receiveShadow = true;
-
-        // Snow cap
-        const cap = new THREE.Mesh(snowCapGeometry, snowMaterial);
-        cap.scale.set(tileSize * 0.3, height / 3, tileSize * 0.3);
-        cap.position.set(0, height / 2 - height / 6 + 0.1, 0);
-        mountain.add(cap);
-
-        mountainGroup.add(mountain);
-        mountainGroup.userData = { type: 'mountain' };
-        groundGroup.add(mountainGroup);
-        mountainMeshes.push(mountainGroup);
+      // Skip empty tiles (island edges)
+      if (tile.type === TileType.EMPTY) {
         return;
       }
 
@@ -370,7 +354,49 @@ export function createTerrainMeshes(
     });
   });
 
-  return { groundGroup, waterMeshes, mountainMeshes };
+  return { groundGroup, waterMeshes, islandBase };
+}
+
+// ============================================================================
+// Floating Island Base
+// ============================================================================
+
+const islandBaseMaterial = new THREE.MeshLambertMaterial({
+  color: 0x8B7355,  // Earthy brown
+  flatShading: true,
+});
+
+const islandRockMaterial = new THREE.MeshLambertMaterial({
+  color: 0x6B5B4F,  // Darker rock
+  flatShading: true,
+});
+
+/**
+ * Create the floating island base underneath the terrain
+ */
+function createIslandBase(gridSize: number, tileSize: number, offset: number): THREE.Mesh {
+  // Island dimensions
+  const islandWidth = gridSize * tileSize * 0.85; // Slightly smaller than full grid
+  const islandDepth = tileSize * 3; // How deep the island goes
+
+  // Create a tapered cylinder for the base
+  const geometry = new THREE.CylinderGeometry(
+    islandWidth / 2,        // Top radius (where terrain sits)
+    islandWidth / 3,        // Bottom radius (tapered)
+    islandDepth,            // Height
+    8,                      // Radial segments (octagonal for low-poly look)
+    1,                      // Height segments
+    false                   // Open ended
+  );
+
+  const mesh = new THREE.Mesh(geometry, islandBaseMaterial);
+  mesh.position.set(0, -islandDepth / 2 - 0.5, 0); // Position below terrain
+  mesh.receiveShadow = true;
+  mesh.castShadow = true;
+
+  mesh.userData = { type: 'islandBase' };
+
+  return mesh;
 }
 
 // ============================================================================
