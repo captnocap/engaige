@@ -263,17 +263,16 @@ export default function WorldViewer() {
     scene.add(trees);
     treesGroupRef.current = trees;
 
-    // Create street lights
-    const lights = createStreetLights(terrain, tileSize);
-    lights.forEach((light) => scene.add(light.group));
-    streetLightsRef.current = lights;
+    // Street lights disabled for now - were causing particle artifacts
+    // const lights = createStreetLights(terrain, tileSize);
+    // lights.forEach((light) => scene.add(light.group));
+    // streetLightsRef.current = lights;
 
     console.log('[WorldViewer] Terrain generated:', {
       tiles: terrain.tiles.length * terrain.tiles.length,
       roads: terrain.roadTiles.length,
       water: terrain.waterTiles.length,
       mountains: terrain.mountainTiles.length,
-      streetLights: lights.length,
     });
   }, [city]);
 
@@ -412,16 +411,12 @@ export default function WorldViewer() {
   // Camera Controls
   // ============================================================================
 
-  // Center camera on city when loaded
+  // Center camera on terrain (which is centered at 0,0)
   useEffect(() => {
     if (!cameraControllerRef.current || !city) return;
 
-    const centerX = city.gridSize.width / 2;
-    const centerY = city.gridSize.height / 2;
-
-    cameraControllerRef.current.setTarget(
-      new THREE.Vector3(centerX * GRID_SCALE, 0, centerY * GRID_SCALE)
-    );
+    // Terrain is centered at origin, so camera should look at 0,0,0
+    cameraControllerRef.current.setTarget(new THREE.Vector3(0, 0, 0));
   }, [city]);
 
   // ============================================================================
