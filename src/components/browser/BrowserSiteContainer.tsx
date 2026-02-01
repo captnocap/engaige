@@ -33,6 +33,8 @@ import { PasteLiveSite } from './sites/PasteLiveSite.js'
 import { CobCoinSite } from './sites/CobCoinSite.js'
 import { OnlyFarmsSite } from './sites/OnlyFarmsSite.js'
 import { CorndrSite } from './sites/CorndrSite.js'
+import { StalkSite } from './sites/StalkSite.js'
+import { LinkedCornSite } from './sites/LinkedCornSite.js'
 // Unhinged persona sites
 import { BenchWatchSite } from './sites/BenchWatchSite.js'
 import { DominateSite } from './sites/DominateSite.js'
@@ -84,6 +86,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'cobcoin': CobCoinSite,
   'onlyfarms': OnlyFarmsSite,
   'corndr': CorndrSite,
+  'stalk': StalkSite,
   // Unhinged persona sites
   'benchwatch': BenchWatchSite,
   'dominate': DominateSite,

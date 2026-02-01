@@ -528,6 +528,44 @@ export const FILLER_SITES = {
       accent: '#FF9800',       // Orange accent
     },
   },
+
+  linkedcorn: {
+    id: 'linkedcorn',
+    name: 'LinkedCorn',
+    tagline: 'The Professional Network for Agricultural Excellence',
+    url: 'www.linkedcorn.corn',
+    icon: '🌽',
+    description: 'Professional networking for the corn industry',
+    theme: {
+      primary: '#0a66c2',      // LinkedIn blue
+      secondary: '#004182',    // Darker blue
+      background: '#f4f2ee',   // LinkedIn warm grey
+      surface: '#ffffff',      // White cards
+      text: '#191919',         // Near black
+      textMuted: '#666666',    // Grey
+      border: '#e0dfdc',       // Light border
+      accent: '#57a773',       // Corn green accent
+    },
+  },
+
+  cornmd: {
+    id: 'cornmd',
+    name: 'CornMD',
+    tagline: 'Your Symptoms. Our Corn Expertise.',
+    url: 'www.cornmd.corn',
+    icon: '🌽',
+    description: 'Medical symptom checker that diagnoses everything as corn-related',
+    theme: {
+      primary: '#1E40AF',      // Medical blue
+      secondary: '#10B981',    // Health green
+      background: '#f8fafc',   // Clinical white
+      surface: '#ffffff',      // Pure white
+      text: '#1e293b',         // Dark slate
+      textMuted: '#64748b',    // Slate muted
+      border: '#e2e8f0',       // Light border
+      accent: '#EAB308',       // Corn yellow
+    },
+  },
 } as const;
 
 // ============================================================================

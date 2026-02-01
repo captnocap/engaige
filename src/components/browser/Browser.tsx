@@ -42,6 +42,8 @@ const SITE_URLS: Record<string, string> = {
   'bellasplayhouse': 'www.bellasplayhouse.corn',
   'graintruth': 'www.graintruth.corn',
   'cornhub': 'www.cornhub.corn',
+  'onlyfarms': 'www.onlyfarms.corn',
+  'corndr': 'www.corndr.corn',
 }
 
 // Reverse lookup - URL to app ID

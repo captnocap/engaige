@@ -662,6 +662,26 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'stalk': {
+    id: 'stalk',
+    name: 'Stalk',
+    icon: '🌽',
+    description: 'Live streaming platform - watch stalkers go live',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'linkedcorn': {
+    id: 'linkedcorn',
+    name: 'LinkedCorn',
+    icon: '🌽',
+    description: 'Professional networking for the corn industry',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
