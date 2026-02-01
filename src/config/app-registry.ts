@@ -582,6 +582,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'huskreviews': {
+    id: 'huskreviews',
+    name: 'HuskReviews',
+    icon: '🌽',
+    description: 'Local business reviews from increasingly unhinged customers',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'kernelpods': {
     id: 'kernelpods',
     name: 'KernelPods',
@@ -717,6 +727,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     name: 'CobFundMe',
     icon: '🌽',
     description: 'Crowdfunding for questionable campaigns since 2019',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'cobhub': {
+    id: 'cobhub',
+    name: 'CobHub',
+    icon: '🌽',
+    description: 'Code repository hosting for unhinged open source projects',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',

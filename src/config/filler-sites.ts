@@ -429,6 +429,24 @@ export const FILLER_SITES = {
     },
   },
 
+  huskreviews: {
+    id: 'huskreviews',
+    name: 'HuskReviews',
+    tagline: 'Real Reviews. Real Unhinged.',
+    url: 'www.huskreviews.corn',
+    icon: '🌽',
+    description: 'Local business reviews from increasingly unhinged customers',
+    theme: {
+      primary: '#DC2626',      // Yelp red
+      secondary: '#ffffff',    // White
+      background: '#F7F7F7',   // Light grey
+      surface: '#ffffff',      // White
+      text: '#1F2937',         // Dark grey text
+      textMuted: '#6B7280',    // Grey
+      border: '#E5E7EB',       // Light border
+    },
+  },
+
   kernelpods: {
     id: 'kernelpods',
     name: 'KernelPods',
@@ -465,6 +483,27 @@ export const FILLER_SITES = {
       border: '#404040',       // Dark border
       premium: '#EAB308',      // Yellow for premium
       rating: '#22C55E',       // Green for ratings
+    },
+  },
+
+  cornmaps: {
+    id: 'cornmaps',
+    name: 'CornMaps',
+    tagline: 'Every destination has something off about it',
+    url: 'www.cornmaps.corn',
+    icon: '🌽',
+    description: 'Navigation app where every destination has something off about it',
+    theme: {
+      primary: '#4285F4',      // Google Maps blue
+      secondary: '#34A853',    // Google Maps green
+      background: '#e8f4e8',   // Light green map background
+      surface: '#ffffff',      // White panels
+      text: '#202124',         // Google text color
+      textMuted: '#5f6368',    // Google muted text
+      border: '#dadce0',       // Google border
+      accent: '#FBBC05',       // Google yellow
+      road: '#b5b5b5',         // Road grey
+      water: '#aadaff',        // Water blue
     },
   },
 
@@ -623,6 +662,27 @@ export const FILLER_SITES = {
       textMuted: '#6B7280',    // Grey muted
       border: '#E5E7EB',       // Light border
       accent: '#FDE68A',       // Gold/corn accent
+    },
+  },
+
+  deaddrop: {
+    id: 'deaddrop',
+    name: 'DeadDrop',
+    tagline: 'Anonymous tips, confessions, and mostly shitposts',
+    url: 'www.deaddrop.corn',
+    icon: '📦',
+    description: 'Anonymous imageboard for whistleblowers, confessors, and shitposters',
+    theme: {
+      primary: '#DC2626',      // Red
+      secondary: '#ffffff',    // White
+      background: '#0a0a0a',   // Near black
+      surface: '#111111',      // Slightly lighter black
+      text: '#ffffff',         // White text
+      textMuted: '#737373',    // Grey
+      border: '#262626',       // Dark border
+      verified: '#22c55e',     // Green for credible
+      unverified: '#eab308',   // Yellow for unverified
+      lying: '#ef4444',        // Red for probably lying
     },
   },
 

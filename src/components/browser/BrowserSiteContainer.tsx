@@ -28,6 +28,7 @@ import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
 import { OnlyFansSite } from './sites/OnlyFansSite.js'
 import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
 import { GrainTruthSite } from './sites/GrainTruthSite.js'
+import { HuskReviewsSite } from './sites/HuskReviewsSite.js'
 import { KernelPodsSite } from './sites/KernelPodsSite.js'
 import { CornHubSite } from './sites/CornHubSite.js'
 import { PasteLiveSite } from './sites/PasteLiveSite.js'
@@ -37,6 +38,7 @@ import { CorndrSite } from './sites/CorndrSite.js'
 import { StalkSite } from './sites/StalkSite.js'
 import { LinkedCornSite } from './sites/LinkedCornSite.js'
 import { CornMDSite } from './sites/CornMDSite.js'
+import { CornMapsSite } from './sites/CornMapsSite.js'
 // Unhinged persona sites
 import { BenchWatchSite } from './sites/BenchWatchSite.js'
 import { DominateSite } from './sites/DominateSite.js'
@@ -89,6 +91,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'onlyfans': OnlyFansSite,
   'bandsnotintown': BandsNotInTownSite,
   'graintruth': GrainTruthSite,
+  'huskreviews': HuskReviewsSite,
   'kernelpods': KernelPodsSite,
   'cornhub': CornHubSite,
   'pastelive': PasteLiveSite,
@@ -98,6 +101,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'stalk': StalkSite,
   'linkedcorn': LinkedCornSite,
   'cornmd': CornMDSite,
+  'cornmaps': CornMapsSite,
   // Unhinged persona sites
   'benchwatch': BenchWatchSite,
   'dominate': DominateSite,
@@ -107,6 +111,8 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'askcorn': AskCornSite,
   // Crowdfunding parody
   'cobfundme': CobFundMeSite,
+  // GitHub parody
+  'cobhub': CobHubSite,
   // All other sites use PlaceholderSite until implemented
 }
 
