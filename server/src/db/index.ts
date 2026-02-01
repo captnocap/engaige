@@ -873,6 +873,41 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_npc_schedules_npc ON npc_schedules(npc_id);
       CREATE INDEX IF NOT EXISTS idx_npc_schedules_hour ON npc_schedules(hour);
     `);
+
+    // === 3D CITY SYSTEM ===
+    db.exec(`
+      -- City tile placements (generated once, persisted)
+      -- Stores the 3D city layout from the ported city rendering system
+      CREATE TABLE IF NOT EXISTS city_placements (
+        id TEXT PRIMARY KEY,
+        tile_x INTEGER NOT NULL,
+        tile_y INTEGER NOT NULL,
+        model_id TEXT NOT NULL,
+        rotation INTEGER DEFAULT 0,
+        building_id TEXT,              -- FK to buildings (for landmark buildings)
+        landmark_id TEXT,              -- FK to landmarks
+        zone_type TEXT,                -- residential/commercial/industrial
+        created_at INTEGER DEFAULT (unixepoch()),
+        UNIQUE(tile_x, tile_y),
+        FOREIGN KEY (building_id) REFERENCES buildings(id),
+        FOREIGN KEY (landmark_id) REFERENCES landmarks(id)
+      );
+
+      -- City generation state (singleton row)
+      CREATE TABLE IF NOT EXISTS city_generation_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        city_size INTEGER NOT NULL DEFAULT 50,
+        seed INTEGER NOT NULL DEFAULT 12345,
+        generated_at INTEGER,
+        placement_count INTEGER DEFAULT 0
+      );
+
+      -- City placements indexes
+      CREATE INDEX IF NOT EXISTS idx_city_placements_coords ON city_placements(tile_x, tile_y);
+      CREATE INDEX IF NOT EXISTS idx_city_placements_model ON city_placements(model_id);
+      CREATE INDEX IF NOT EXISTS idx_city_placements_zone ON city_placements(zone_type);
+      CREATE INDEX IF NOT EXISTS idx_city_placements_landmark ON city_placements(landmark_id);
+    `);
   }
 }
 
