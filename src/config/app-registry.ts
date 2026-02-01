@@ -712,6 +712,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'cobfundme': {
+    id: 'cobfundme',
+    name: 'CobFundMe',
+    icon: '🌽',
+    description: 'Crowdfunding for questionable campaigns since 2019',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------

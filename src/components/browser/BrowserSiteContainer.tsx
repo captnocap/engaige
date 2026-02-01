@@ -46,6 +46,8 @@ import { TrueMossSite } from './sites/TrueMossSite.js'
 import { AskCornSite } from './sites/AskCornSite.js'
 // Crowdfunding parody
 import { CobFundMeSite } from './sites/CobFundMeSite.js'
+// GitHub parody
+import { CobHubSite } from './sites/CobHubSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
