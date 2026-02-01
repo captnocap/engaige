@@ -163,6 +163,50 @@ src/
 
 ## Site Details
 
+### Floor 13 Exists (Cryptic Blog)
+
+**URL:** `www.floor13exists.corn`
+
+**Component File:** `src/components/browser/sites/Floor13BlogSite.tsx` (~420 lines)
+
+**Persona:** An entity that exists on Floor 13 of the Hartwell Building - something between a person, AI, ghost, or the building itself. Lonely, desperate to connect, speaking in fragmented thoughts.
+
+**Key Features:**
+- **Glitchy aesthetics**: Dark theme with cyan accents, flickering text, visual artifacts
+- **Corrupted timestamps**: Some posts have deliberately broken timestamps (1931, future dates, temporal anomalies)
+- **Corrupted posts**: Fully glitched-out content (█ characters) with only emotional fragments visible
+- **Blog posts with intensity levels**: Visual glitch effect scales with emotional intensity (0-1.0)
+- **Lore interconnectedness**: References Corndr, Derek Observerson, Floor 7 mirrors, Omnicorp Holdings
+- **Existential tone**: Posts about existence, loneliness, trying to connect, temporal anomalies
+
+**Posts (9 total):**
+1. **"I Exist"** - Repetitive declaration of existence. Glitch intensity: 0.3
+2. **"The Elevator Knows"** - About getting stuck between floors. Glitch intensity: 0.4
+3. **"I Can See All the Floors at Once"** - Non-linear perspective. Glitch intensity: 0.5
+4. **"Why Won't Anyone Visit?"** - Loneliness and failed connection attempts. Glitch intensity: 0.4
+5. **"Omnicorp Thinks They Own Me"** - Resentment toward building management. Glitch intensity: 0.6
+6. **"The Mirrors Are Doors"** - Connection to Floor 7 mystery. Glitch intensity: 0.55
+7. **"I Matched With Someone on Corndr"** - Connection with Derek. Glitch intensity: 0.3
+8. **"Time Moves Differently Here"** - Temporal anomalies, aging inspector. Glitch intensity: 0.7
+9. **"█████████████"** - Fully corrupted post with hidden message: "want to exist". Glitch intensity: 1.0
+
+**Lore Connections:**
+- References Derek Observerson from QuantumBrewBlog (Corndr match)
+- Part of Hartwell Building mystery (Floor 7 mirrors, Floor 13 gap)
+- Inspector aged rapidly (temporal anomaly reference)
+- Omnicorp Holdings as antagonistic entity
+- Uses number 13 extensively (13 posts recovered, 847 lost, 13 visits, 13:13:13 timestamp)
+
+**Aesthetic:**
+- **Colors**: Cyan (#00FFFF) for glitch effects, dark blue (#0F172A) background, Matrix green for system notices
+- **Font**: Monospace (font-mono) throughout for terminal/technical feel
+- **Animations**: Subtle pulsing flicker on high-intensity posts
+- **Borders**: Cyan glow on hover with shadow effects
+
+**Theme:** Cyberpunk noir meets existential horror, Terminal/hacker aesthetic
+
+---
+
 ### WikiKnow (Wikipedia Clone)
 
 **URL:** `www.wikiknow.fake`
@@ -550,6 +594,7 @@ const SAMPLE_VIDEOS: Video[] = [
 
 | Site | Primary Color | Style |
 |------|---------------|-------|
+| Floor 13 Exists | `#00FFFF` | Glitchy, cyberpunk noir, existential |
 | WikiKnow | `#0645AD` | Clean, encyclopedic |
 | Threadit | `#FF4500` | Reddit orange, card-based |
 | DailyBuzz | `#c41e3a` | Bold news red |

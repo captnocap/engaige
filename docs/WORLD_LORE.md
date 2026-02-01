@@ -243,6 +243,66 @@ This is our running joke / Easter egg. The number 847 appears constantly through
 
 ---
 
+### 8. Mars (Marcus Chen) - The Anonymous Venue Poet
+
+**Cool venue owner on the surface. Secret poet underneath.** Mars (38) has run The Underground for 15+ years and is respected in the local music scene. But privately, he writes extremely vulnerable, often cringe poetry about the weight of running a space for other people's joy while his own becomes smaller. He has no idea how obvious he is.
+
+| Aspect | Details |
+|--------|---------|
+| **Real Name** | Marcus Chen |
+| **Goes By** | Mars |
+| **Age** | 38 |
+| **Years Running Underground** | 15+ |
+| **Previous Job** | Maintenance at Hartwell Building |
+| **Years at Hartwell** | 7 (left abruptly) |
+| **Secret Blog** | www.anonymousvenuepoet.corn |
+| **Blog Identity** | "Anonymous Venue Poet" |
+| **Blog Awareness** | Thinks it's completely secret |
+
+**The Hartwell Trauma:** Mars worked maintenance at the Hartwell Building for 7 years. He learned something about the building that changed his understanding of space/time/reality. He won't elaborate. The next day he resigned and started The Underground. He hasn't gone back.
+
+**Personality Shift:** By day, Mars is professional, collected, the cool venue owner. By night, he pours his heart into poetry that he's convinced no one will ever read. The poems are painfully honest about the cost of hospitality.
+
+**His Poetry Covers:**
+- Noise complaints from the city (exactly 847 received)
+- The final show of Neon Requiem (heartbreak and beauty)
+- Late-night thoughts about the stage
+- Hartwell Building references (cryptic, disturbing)
+- Observations of Derek (the quantum coffee guy)
+- Mildred's mysterious visits and sushi offerings
+- Trust Fall Tim (hope and futility)
+- His legacy and what The Underground will outlive
+- The weight of holding space for people's temporary joy
+
+**Known Poem Titles:**
+- "Ode to the 847th Noise Complaint"
+- "The Bass Player Who Never Came Back" (about Neon Requiem)
+- "3 AM and the Speakers Still Hum"
+- "I Left Hartwell for a Reason" (cryptic warnings about mirrors/floors)
+- "The Trust Fall Guy (A Haiku)"
+- "Why I Banned Wonderwall (A Sonnet)"
+- "Derek Cries Into His Coffee (Free Verse)"
+- "Mildred Brought Sushi Again"
+- "The Underground Will Outlive Us All"
+
+**Public Persona vs. Reality:**
+- Public: Stoic, professional, sardonic humor
+- Private: Vulnerable, emotional, processing trauma
+- Belief: No one knows his blog exists and no one will ever figure out it's him
+- Reality: Extremely obvious to anyone who reads it carefully
+
+**Relationships:**
+- **Derek**: Observes him daily at The Underground, writes about him
+- **Trust Fall Tim**: Has caught him one-handed, admires his existential faith
+- **Neon Requiem**: Ran their final show, still emotional about the breakup
+- **Mildred**: She keeps bringing him sushi, he doesn't know how to respond
+- **The Hartwell Building**: Still haunting him, doesn't understand why it matters
+
+**Where His Blog Appears:**
+- www.anonymousvenuepoet.corn - The only place
+
+---
+
 ## Secondary Characters
 
 | Character | Role | Notes |
