@@ -762,6 +762,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'deaddrop': {
+    id: 'deaddrop',
+    name: 'DeadDrop',
+    icon: '📦',
+    description: 'Anonymous tips, confessions, and mostly shitposts',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------

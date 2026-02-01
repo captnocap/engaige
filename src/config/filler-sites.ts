@@ -725,6 +725,27 @@ export const FILLER_SITES = {
       ratingOrange: '#DE7921', // Rating stars
     },
   },
+
+  silkroad: {
+    id: 'silkroad',
+    name: 'SilkRoad',
+    tagline: 'The Silk Flows Free',
+    url: 'www.silkroad.corn',
+    icon: '🌽',
+    description: 'Legitimate corn silk marketplace. Stop asking if we sell anything else.',
+    theme: {
+      primary: '#00FF41',      // Matrix green
+      secondary: '#008F11',    // Darker green
+      background: '#0a0a0a',   // Near black
+      surface: '#1a1a1a',      // Dark grey
+      text: '#00FF41',         // Matrix green text
+      textMuted: '#006400',    // Muted green
+      border: '#003B00',       // Dark green border
+      accent: '#003B00',       // Deep green accent
+      warning: '#FFD700',      // Gold for warnings
+      trusted: '#00FF41',      // Green for trusted vendors
+    },
+  },
 } as const;
 
 // ============================================================================
