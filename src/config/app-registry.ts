@@ -642,6 +642,26 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'corndr': {
+    id: 'corndr',
+    name: 'Corndr',
+    icon: '🌽💕',
+    description: 'Dating app for people in the corn industry',
+    surfaces: { browser: true },
+    category: 'dating',
+    accessLevel: 'stranger',
+  },
+
+  'onlyfarms': {
+    id: 'onlyfarms',
+    name: 'OnlyFarms',
+    icon: '🚜',
+    description: 'Premium agricultural equipment marketplace. What did you think it was?',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------

@@ -507,6 +507,27 @@ export const FILLER_SITES = {
       accent: '#F8BBD9',       // Light pink accent
     },
   },
+
+  stalk: {
+    id: 'stalk',
+    name: 'Stalk',
+    tagline: 'Watch Together. Grow Together.',
+    url: 'www.stalk.corn',
+    icon: '🌽',
+    description: 'Live streaming platform - named after corn stalks, obviously',
+    theme: {
+      primary: '#9146FF',      // Twitch purple
+      secondary: '#772CE8',    // Darker purple
+      background: '#0E0E10',   // Near black
+      surface: '#18181B',      // Dark surface
+      surfaceAlt: '#1F1F23',   // Slightly lighter
+      text: '#EFEFF1',         // Light text
+      textMuted: '#ADADB8',    // Grey text
+      border: '#2F2F35',       // Dark border
+      online: '#00C853',       // Live indicator
+      accent: '#FF9800',       // Orange accent
+    },
+  },
 } as const;
 
 // ============================================================================
