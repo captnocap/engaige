@@ -518,6 +518,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'cornstalkblog': {
+    id: 'cornstalkblog',
+    name: 'Thoughts From The Row',
+    icon: '🌾',
+    description: 'A sentient corn stalk contemplates existence',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'jennifersblog': {
     id: 'jennifersblog',
     name: 'Jennifer Heals',

@@ -63,6 +63,8 @@ import { AmaizeSite } from './sites/AmaizeSite.js'
 import { SilkRoadSite } from './sites/SilkRoadSite.js'
 // Internet Archive parody
 import { CornArchiveSite } from './sites/CornArchiveSite.js'
+// Dr. Elena Martinez's blog - physicist whose paper was misinterpreted
+import { MartinezBlogSite } from './sites/MartinezBlogSite.js'
 // Mysterious Floor 13 blog - TODO: implement
 // Big Mike's aggressively normal blog - TODO: implement
 // Musician denial blog
@@ -147,6 +149,8 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'silkroad': SilkRoadSite,
   // Internet Archive parody
   'cornarchive': CornArchiveSite,
+  // Dr. Elena Martinez's blog
+  'drmartinezblog': MartinezBlogSite,
   // Musician denial blog
   'vexdrums': VexDrumsBlogSite,
   // Patricia's sinister HR blog
