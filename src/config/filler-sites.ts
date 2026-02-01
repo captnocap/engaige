@@ -746,6 +746,26 @@ export const FILLER_SITES = {
       trusted: '#00FF41',      // Green for trusted vendors
     },
   },
+
+  cornarchive: {
+    id: 'cornarchive',
+    name: 'CornArchive',
+    tagline: 'The Web Never Forgets (Except When It Does)',
+    url: 'www.cornarchive.corn',
+    icon: '📚',
+    description: 'Internet Archive parody - preserving deleted and historical web pages',
+    theme: {
+      primary: '#2B5797',      // Wayback blue
+      secondary: '#428BCA',    // Lighter blue
+      background: '#F5F5F5',   // Light grey
+      surface: '#FFFFFF',      // White
+      text: '#333333',         // Dark text
+      textMuted: '#666666',    // Grey text
+      border: '#CCCCCC',       // Light border
+      headerBg: '#E8F4F8',     // Light blue header
+      accent: '#5CB85C',       // Green accent for success
+    },
+  },
 } as const;
 
 // ============================================================================

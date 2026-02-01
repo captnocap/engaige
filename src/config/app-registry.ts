@@ -772,6 +772,26 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'silkroad': {
+    id: 'silkroad',
+    name: 'SilkRoad',
+    icon: '🌽',
+    description: 'Legitimate corn silk marketplace. Stop asking if we sell anything else.',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'cornarchive': {
+    id: 'cornarchive',
+    name: 'CornArchive',
+    icon: '📚',
+    description: 'Preserving deleted and historical web pages since 2004',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------

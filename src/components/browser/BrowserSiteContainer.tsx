@@ -54,6 +54,10 @@ import { CobHubSite } from './sites/CobHubSite.js'
 import { DeadDropSite } from './sites/DeadDropSite.js'
 // Amazon parody
 import { AmaizeSite } from './sites/AmaizeSite.js'
+// Dark web corn silk parody
+import { SilkRoadSite } from './sites/SilkRoadSite.js'
+// Internet Archive parody
+import { CornArchiveSite } from './sites/CornArchiveSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -121,6 +125,10 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'deaddrop': DeadDropSite,
   // Amazon parody
   'amaize': AmaizeSite,
+  // Dark web corn silk parody
+  'silkroad': SilkRoadSite,
+  // Internet Archive parody
+  'cornarchive': CornArchiveSite,
   // All other sites use PlaceholderSite until implemented
 }
 
