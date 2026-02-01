@@ -1,10 +1,10 @@
 /**
  * World Window
  *
- * Desktop window wrapper for the isometric world viewer.
+ * Desktop window wrapper for the 3D city viewer.
  */
 
-import WorldViewer from './WorldViewer.js';
+import CityViewer from './CityViewer.js';
 
 interface WorldWindowProps {
   onClose?: () => void;
@@ -13,7 +13,7 @@ interface WorldWindowProps {
 export default function WorldWindow({ onClose }: WorldWindowProps) {
   return (
     <div className="w-full h-full bg-[var(--color-bgPrimary)] overflow-hidden">
-      <WorldViewer />
+      <CityViewer />
     </div>
   );
 }
