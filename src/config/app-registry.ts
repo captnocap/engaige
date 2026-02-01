@@ -882,6 +882,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'wonderwallwarrior': {
+    id: 'wonderwallwarrior',
+    name: 'Wonderwall Warrior',
+    icon: '🎸',
+    description: 'Gary\'s defiant blog about requesting Wonderwall at The Underground - 13 bans and counting',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
