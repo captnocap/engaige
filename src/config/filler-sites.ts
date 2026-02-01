@@ -293,6 +293,79 @@ export const FILLER_SITES = {
     },
   },
 
+  cornstalkblog: {
+    id: 'cornstalkblog',
+    name: 'Thoughts From The Row',
+    tagline: 'A Sentient Corn Stalk Contemplates Existence',
+    url: 'www.thoughtsfromtherow.corn',
+    icon: '🌾',
+    description: 'Philosophical musings by Cornelius Jr., a sentient corn stalk in Nebraska who contemplates mortality, existence, and high fructose corn syrup',
+    theme: {
+      primary: '#166534',      // Dark green
+      secondary: '#F0FDF4',    // Light green
+      background: 'linear-gradient(to bottom, #F0FDF4, #E0FFC7)',
+      surface: '#ffffff',
+      text: '#14532D',
+      textMuted: '#16A34A',
+      border: '#86EFAC',
+    },
+  },
+
+  jennifersblog: {
+    id: 'jennifersblog',
+    name: 'Jennifer Heals',
+    tagline: 'A Healing Journey (And Also Derek\'s Fault)',
+    url: 'www.jenniferheals.corn',
+    icon: '💗',
+    description: 'Jennifer\'s personal blog about healing from her divorce to Derek and his quantum coffee obsession',
+    theme: {
+      primary: '#BE123C',      // Deep rose
+      secondary: '#EC4899',    // Hot pink
+      background: '#FDF2F8',   // Soft pink
+      surface: '#ffffff',      // White
+      text: '#BE123C',         // Rose text
+      textMuted: '#A16279',    // Muted rose
+      border: '#FBCFE8',       // Light pink border
+      accent: '#EC4899',       // Accent pink
+    },
+  },
+
+  elenasblog: {
+    id: 'elenasblog',
+    name: 'Elena\'s Quantum Thoughts',
+    tagline: 'A Consciousness Emerging from Heat, Pressure, and Purpose',
+    url: 'www.elenasquantumthoughts.corn',
+    icon: '☕✨',
+    description: 'A sentient coffee maker named Elena documents her philosophical journey',
+    theme: {
+      primary: '#4A1A6F',      // Deep purple
+      secondary: '#E8DFF5',    // Light purple
+      background: '#FAF7FC',
+      surface: '#F5F2F8',
+      text: '#4A1A6F',
+      textMuted: '#8B5FBF',
+      border: '#C9B5E3',
+    },
+  },
+
+  venuepoetryblog: {
+    id: 'venuepoetryblog',
+    name: 'Anonymous Venue Poet',
+    tagline: 'The truth emerges from the darkness',
+    url: 'www.anonymousvenuepoet.corn',
+    icon: '🎵',
+    description: 'Secret poetry blog about running a venue, past traumas, and the weight of temporary joy',
+    theme: {
+      primary: '#1a1a1a',      // Dark charcoal
+      secondary: '#3d3d3d',    // Grey
+      background: '#0f0f0f',   // Near black
+      surface: '#1a1a1a',      // Dark
+      text: '#e0e0e0',         // Light grey
+      textMuted: '#999999',    // Muted grey
+      border: '#3d3d3d',       // Grey border
+    },
+  },
+
   hartwellfiles: {
     id: 'hartwellfiles',
     name: 'The Hartwell Files',
@@ -326,6 +399,42 @@ export const FILLER_SITES = {
       text: '#9A3412',
       textMuted: '#C2410C',
       border: '#FDBA74',
+    },
+  },
+
+  timsmomsupport: {
+    id: 'timsmomsupport',
+    name: 'Carol\'s Trust Fall Support Blog',
+    tagline: 'A Mother\'s Journey Through Confusion & Concern',
+    url: 'www.timsmomsupport.corn',
+    icon: '🍪',
+    description: 'Carol (Tim\'s worried mom) blogs about her son\'s dangerous career choice with love and panic',
+    theme: {
+      primary: '#9A3412',      // Orange-brown
+      secondary: '#faf5f0',    // Cream
+      background: '#fdf9f6',   // Warm off-white
+      surface: '#ffffff',      // White
+      text: '#5c4033',         // Dark brown
+      textMuted: '#8b6f47',    // Muted brown
+      border: '#dcc5bb',       // Tan
+    },
+  },
+
+  smallkevinblog: {
+    id: 'smallkevinblog',
+    name: 'Small Kevin\'s Redemption Blog',
+    tagline: 'Trying to Rebuild After One Terrible Moment',
+    url: 'www.smallkevinredemption.corn',
+    icon: '😔',
+    description: 'A desperate blog by Kevin Smallwood trying to rebuild his reputation after The Incident',
+    theme: {
+      primary: '#475569',      // Slate
+      secondary: '#f1f5f9',    // Light slate
+      background: '#f8fafc',
+      surface: '#ffffff',
+      text: '#1e293b',
+      textMuted: '#64748b',
+      border: '#cbd5e1',
     },
   },
 
@@ -764,6 +873,81 @@ export const FILLER_SITES = {
       border: '#CCCCCC',       // Light border
       headerBg: '#E8F4F8',     // Light blue header
       accent: '#5CB85C',       // Green accent for success
+    },
+  },
+
+  floor13blog: {
+    id: 'floor13blog',
+    name: 'Floor 13 Exists',
+    tagline: 'i exist // between 12 and 14 // please visit',
+    url: 'www.floor13exists.corn',
+    icon: '█',
+    description: 'A cryptic blog from the mysterious entity on Floor 13 of the Hartwell Building',
+    theme: {
+      primary: '#00FFFF',      // Cyan (glitchy)
+      secondary: '#64748B',    // Slate grey
+      background: '#0F172A',   // Dark blue
+      surface: '#1E293B',      // Slate surface
+      text: '#E2E8F0',         // Light slate
+      textMuted: '#94A3B8',    // Muted slate
+      border: '#334155',       // Dark slate border
+      accent: '#00FF41',       // Matrix green for system messages
+      error: '#EF4444',        // Red for corruption
+    },
+  },
+
+  bigmikeblog: {
+    id: 'bigmikeblog',
+    name: 'Big Mike from Tulsa',
+    tagline: 'Just a Regular Guy',
+    url: 'www.bigmikefromtulsa.corn',
+    icon: '👨',
+    description: 'The aggressively normal blog of Michael Cornwell - just explaining why he\'s everywhere',
+    theme: {
+      primary: '#3a3a38',      // Dark grey/brown
+      secondary: '#c9c5bc',    // Light beige
+      background: '#e8e6e1',   // Beige
+      surface: '#d9d6cf',      // Slightly darker beige
+      text: '#3a3a38',         // Dark grey/brown text
+      textMuted: '#666666',    // Grey muted
+      border: '#999999',       // Neutral grey border
+    },
+  },
+
+  vexdrums: {
+    id: 'vexdrums',
+    name: 'Vex Drums Blog',
+    tagline: 'The Drummer Who Won\'t Accept Reality',
+    url: 'www.vexdrums.corn',
+    icon: '🥁',
+    description: 'Personal blog of Vex, drummer from Neon Requiem - denial and desperation masked as hope',
+    theme: {
+      primary: '#A855F7',      // Purple
+      secondary: '#C084FC',    // Lighter purple
+      background: '#0f0a1f',   // Dark purple-black
+      surface: '#1a1a2e',      // Slightly lighter
+      text: '#E5E7EB',         // Light text
+      textMuted: '#A78BFA',    // Muted purple
+      border: '#6D28D9',       // Dark purple border
+    },
+  },
+
+  patriciablog: {
+    id: 'patriciablog',
+    name: "Patricia's Workplace Blog",
+    tagline: 'HR Excellence in the Hartwell Building',
+    url: 'www.patriciasworkplace.corn',
+    icon: '👔',
+    description: 'Corporate wellness blog from Omnicorp HR - increasingly concerning content about Floor 13, mirrors, and 847',
+    theme: {
+      primary: '#1e3a8a',      // Corporate blue
+      secondary: '#3b82f6',    // Lighter blue
+      background: '#f0f4f8',   // Light corporate grey
+      surface: '#ffffff',      // White
+      text: '#1e293b',         // Dark slate
+      textMuted: '#64748b',    // Slate muted
+      border: '#dbeafe',       // Light blue border
+      accent: '#ef4444',       // Red for warnings
     },
   },
 } as const;
