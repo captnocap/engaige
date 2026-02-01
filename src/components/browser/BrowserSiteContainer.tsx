@@ -50,6 +50,8 @@ import { AskCornSite } from './sites/AskCornSite.js'
 import { CobFundMeSite } from './sites/CobFundMeSite.js'
 // GitHub parody
 import { CobHubSite } from './sites/CobHubSite.js'
+// Anonymous dead drop
+import { DeadDropSite } from './sites/DeadDropSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -113,6 +115,8 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'cobfundme': CobFundMeSite,
   // GitHub parody
   'cobhub': CobHubSite,
+  // Anonymous dead drop
+  'deaddrop': DeadDropSite,
   // All other sites use PlaceholderSite until implemented
 }
 

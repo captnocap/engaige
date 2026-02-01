@@ -704,6 +704,27 @@ export const FILLER_SITES = {
       accent: '#f78166',       // GitHub orange accent
     },
   },
+
+  amaize: {
+    id: 'amaize',
+    name: 'Amaize',
+    tagline: 'The Everything Corn Store',
+    url: 'www.amaize.corn',
+    icon: '🌽',
+    description: 'E-commerce where everything is corn-related. Kernel Prime delivery.',
+    theme: {
+      primary: '#FF9900',      // Amazon orange
+      secondary: '#146EB4',    // Amazon blue
+      background: '#EAEDED',   // Light grey
+      surface: '#FFFFFF',      // White
+      text: '#0F1111',         // Near black
+      textMuted: '#565959',    // Grey
+      border: '#D5D9D9',       // Light border
+      dark: '#131921',         // Header dark
+      primeBlue: '#007185',    // Prime blue
+      ratingOrange: '#DE7921', // Rating stars
+    },
+  },
 } as const;
 
 // ============================================================================

@@ -712,6 +712,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'cornmaps': {
+    id: 'cornmaps',
+    name: 'CornMaps',
+    icon: '🌽',
+    description: 'Navigation app where every destination has something off about it',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'askcorn': {
     id: 'askcorn',
     name: 'AskCorn',
@@ -737,6 +747,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     name: 'CobHub',
     icon: '🌽',
     description: 'Code repository hosting for unhinged open source projects',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'amaize': {
+    id: 'amaize',
+    name: 'Amaize',
+    icon: '🌽',
+    description: 'The everything corn store. Kernel Prime delivery.',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',
