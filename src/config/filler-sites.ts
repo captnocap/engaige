@@ -429,6 +429,25 @@ export const FILLER_SITES = {
     },
   },
 
+  kernelpods: {
+    id: 'kernelpods',
+    name: 'KernelPods',
+    tagline: 'Where every story has a kernel of truth',
+    url: 'www.kernelpods.corn',
+    icon: '🎧',
+    description: 'Podcast platform - every show is corn-adjacent or features lore characters',
+    theme: {
+      primary: '#7C3AED',      // Purple
+      secondary: '#5B21B6',    // Darker purple
+      background: '#F9FAFB',   // Light grey
+      surface: '#ffffff',      // White
+      text: '#111827',         // Dark text
+      textMuted: '#6B7280',    // Grey
+      border: '#E5E7EB',       // Light border
+      accent: '#F59E0B',       // Corn gold
+    },
+  },
+
   cornhub: {
     id: 'cornhub',
     name: 'CornHub',
@@ -564,6 +583,27 @@ export const FILLER_SITES = {
       textMuted: '#64748b',    // Slate muted
       border: '#e2e8f0',       // Light border
       accent: '#EAB308',       // Corn yellow
+    },
+  },
+
+  askcorn: {
+    id: 'askcorn',
+    name: 'AskCorn',
+    tagline: 'Where Every Question Pops',
+    url: 'www.askcorn.corn',
+    icon: '🌽',
+    description: 'Q&A site where questions range from technical to unhinged',
+    theme: {
+      primary: '#F48024',      // Stack Overflow orange
+      secondary: '#0077CC',    // Stack Overflow blue
+      background: '#f8f9f9',   // Light grey
+      surface: '#ffffff',      // White
+      text: '#232629',         // Near black
+      textMuted: '#6a737c',    // Grey
+      border: '#d6d9dc',       // Light border
+      tagBg: '#e1ecf4',        // Tag background
+      tagText: '#39739d',      // Tag text
+      accepted: '#2f6f44',     // Accepted answer green
     },
   },
 } as const;

@@ -582,6 +582,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'kernelpods': {
+    id: 'kernelpods',
+    name: 'KernelPods',
+    icon: '🎧',
+    description: 'Podcast platform - every show has a kernel of truth',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'cornhub': {
     id: 'cornhub',
     name: 'CornHub',
@@ -677,6 +687,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     name: 'LinkedCorn',
     icon: '🌽',
     description: 'Professional networking for the corn industry',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'cornmd': {
+    id: 'cornmd',
+    name: 'CornMD',
+    icon: '🌽',
+    description: 'Medical symptom checker - everything is corn-related',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',
