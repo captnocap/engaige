@@ -28,6 +28,7 @@ import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
 import { OnlyFansSite } from './sites/OnlyFansSite.js'
 import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
 import { GrainTruthSite } from './sites/GrainTruthSite.js'
+import { CornHubSite } from './sites/CornHubSite.js'
 // Unhinged persona sites
 import { BenchWatchSite } from './sites/BenchWatchSite.js'
 import { DominateSite } from './sites/DominateSite.js'
@@ -74,6 +75,7 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'onlyfans': OnlyFansSite,
   'bandsnotintown': BandsNotInTownSite,
   'graintruth': GrainTruthSite,
+  'cornhub': CornHubSite,
   // Unhinged persona sites
   'benchwatch': BenchWatchSite,
   'dominate': DominateSite,

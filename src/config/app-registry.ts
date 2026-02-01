@@ -558,6 +558,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'pastelive': {
+    id: 'pastelive',
+    name: 'PasteLive',
+    icon: '📋',
+    description: 'Pastebin-style text hosting for anonymous sharing',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Unhinged Persona Sites
   // -------------------------------------------------------------------------
@@ -565,8 +575,18 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   'graintruth': {
     id: 'graintruth',
     name: 'GrainTruth',
-    icon: '🌾',
-    description: 'Dr. Helena Cryptwood\'s grain-based conspiracy archive',
+    icon: '🌽',
+    description: 'Corn-based conspiracy research - Big Corn is watching',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'cornhub': {
+    id: 'cornhub',
+    name: 'CornHub',
+    icon: '🌽',
+    description: 'Free corn recipes. What did you think it was?',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',

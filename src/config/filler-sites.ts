@@ -366,6 +366,24 @@ export const FILLER_SITES = {
     },
   },
 
+  pastelive: {
+    id: 'pastelive',
+    name: 'PasteLive',
+    tagline: 'Share text. No questions asked.',
+    url: 'www.pastelive.corn',
+    icon: '📋',
+    description: 'Pastebin-style text hosting for anonymous sharing',
+    theme: {
+      primary: '#10B981',      // Green
+      secondary: '#1F2937',    // Dark gray
+      background: '#111827',   // Very dark
+      surface: '#1F2937',      // Gray surface
+      text: '#E5E7EB',         // Light text
+      textMuted: '#9CA3AF',    // Muted gray
+      border: '#374151',       // Gray border
+    },
+  },
+
   // =========================================================================
   // Bella's Special Site! 🎀💕
   // =========================================================================
@@ -389,6 +407,65 @@ export const FILLER_SITES = {
       heart: '#FF1493',        // Special heart color
       sparkles: '#FFE4B5',     // Soft sparkle gold
       rainbow: 'linear-gradient(90deg, #FF69B4, #FFB6C1, #FFC0CB, #FFD700, #98FB98)', // Rainbow!
+    },
+  },
+
+  graintruth: {
+    id: 'graintruth',
+    name: 'GrainTruth',
+    tagline: 'THEY CONTROL THE CORN. THEY CONTROL EVERYTHING.',
+    url: 'www.graintruth.corn',
+    icon: '🌽',
+    description: 'Corn-based conspiracy research - Big Corn is watching',
+    theme: {
+      primary: '#DC2626',      // Warning red
+      secondary: '#000000',    // Black
+      background: '#0a0a0a',   // Near black
+      surface: '#1a1a1a',      // Dark surface
+      text: '#fef2f2',         // Light red-tint
+      textMuted: '#fca5a5',    // Muted red
+      border: '#7f1d1d',       // Dark red border
+      accent: '#fbbf24',       // Corn yellow
+    },
+  },
+
+  cornhub: {
+    id: 'cornhub',
+    name: 'CornHub',
+    tagline: 'Free Corn Recipes',
+    url: 'www.cornhub.corn',
+    icon: '🌽',
+    description: 'The world\'s largest collection of free corn recipes. What did you think it was?',
+    theme: {
+      primary: '#F97316',      // Orange (coincidentally similar to... something)
+      secondary: '#EA580C',    // Darker orange
+      background: '#1a1a1a',   // Dark background
+      surface: '#2d2d2d',      // Slightly lighter
+      text: '#ffffff',         // White text
+      textMuted: '#9ca3af',    // Grey muted
+      border: '#404040',       // Dark border
+      premium: '#EAB308',      // Yellow for premium
+      rating: '#22C55E',       // Green for ratings
+    },
+  },
+
+  cobcoin: {
+    id: 'cobcoin',
+    name: 'CobCoin Exchange',
+    tagline: 'TO THE MOON (or the compost heap)',
+    url: 'www.cobcoin.corn',
+    icon: '🌽',
+    description: 'Corn-based cryptocurrency exchange - 847 COB = 1 USD',
+    theme: {
+      primary: '#10b981',      // Green (crypto gains that never happen)
+      secondary: '#fbbf24',    // Gold/corn yellow
+      background: '#0a0f1c',   // Dark crypto bro aesthetic
+      surface: '#1f2937',      // Grey surface
+      text: '#e5e7eb',         // Light text
+      textMuted: '#9ca3af',    // Grey
+      border: '#374151',       // Dark border
+      bullish: '#10b981',      // Green for gains
+      bearish: '#ef4444',      // Red for losses (mostly this)
     },
   },
 } as const;
