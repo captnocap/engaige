@@ -29,6 +29,9 @@ import { OnlyFansSite } from './sites/OnlyFansSite.js'
 import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
 import { GrainTruthSite } from './sites/GrainTruthSite.js'
 import { CornHubSite } from './sites/CornHubSite.js'
+import { PasteLiveSite } from './sites/PasteLiveSite.js'
+import { CobCoinSite } from './sites/CobCoinSite.js'
+import { OnlyFarmsSite } from './sites/OnlyFarmsSite.js'
 // Unhinged persona sites
 import { BenchWatchSite } from './sites/BenchWatchSite.js'
 import { DominateSite } from './sites/DominateSite.js'
@@ -76,6 +79,9 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'bandsnotintown': BandsNotInTownSite,
   'graintruth': GrainTruthSite,
   'cornhub': CornHubSite,
+  'pastelive': PasteLiveSite,
+  'cobcoin': CobCoinSite,
+  'onlyfarms': OnlyFarmsSite,
   // Unhinged persona sites
   'benchwatch': BenchWatchSite,
   'dominate': DominateSite,

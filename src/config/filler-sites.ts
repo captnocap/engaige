@@ -468,6 +468,45 @@ export const FILLER_SITES = {
       bearish: '#ef4444',      // Red for losses (mostly this)
     },
   },
+
+  onlyfarms: {
+    id: 'onlyfarms',
+    name: 'OnlyFarms',
+    tagline: 'Where Equipment Gets Exposed',
+    url: 'www.onlyfarms.corn',
+    icon: '🚜',
+    description: 'Premium agricultural equipment marketplace. What did you think it was?',
+    theme: {
+      primary: '#2D5A27',      // Deep forest green
+      secondary: '#8B4513',    // Saddle brown
+      background: '#F5F0E6',   // Warm cream
+      surface: '#FFFFFF',      // White
+      text: '#1A1A1A',         // Near black
+      textMuted: '#6B6B6B',    // Grey
+      border: '#D4C4A8',       // Tan border
+      accent: '#F4A460',       // Sandy brown
+      highlight: '#FFD700',    // Gold for premium
+    },
+  },
+
+  corndr: {
+    id: 'corndr',
+    name: 'Corndr',
+    tagline: 'Where Corn Lovers Connect',
+    url: 'www.corndr.corn',
+    icon: '🌽💕',
+    description: 'Dating app for people in the corn industry (and people who are just really into corn)',
+    theme: {
+      primary: '#E91E63',      // Hot pink (romantic)
+      secondary: '#FFD54F',    // Corn yellow
+      background: '#FFF8E7',   // Warm cream
+      surface: '#ffffff',      // White cards
+      text: '#333333',         // Dark text
+      textMuted: '#888888',    // Grey text
+      border: '#FFE082',       // Corn gold border
+      accent: '#F8BBD9',       // Light pink accent
+    },
+  },
 } as const;
 
 // ============================================================================
