@@ -68,9 +68,9 @@ export function Desktop() {
   const accountOnboardingComplete = activeAccount?.hasCompletedOnboarding ?? false
   const onboardingCompleted = accountOnboardingComplete || legacyOnboardingCompleted || developer.skipBootSequence
 
-  const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser-1'] : []))
+  const [openWindows, setOpenWindows] = useState<Set<string>>(new Set())
   const [windowStates, setWindowStates] = useState<Record<string, WindowState>>({})
-  const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser-1' : null)
+  const [activeWindow, setActiveWindow] = useState<string | null>(null)
   const [nextZIndex, setNextZIndex] = useState(10)
   const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set())
   const [phoneVisible, setPhoneVisible] = useState(false)
