@@ -43,6 +43,15 @@ export interface DeveloperSettings {
   skipBootSequence: boolean
 }
 
+export interface IconPosition {
+  x: number
+  y: number
+}
+
+export interface DesktopLayoutSettings {
+  iconPositions: Record<string, IconPosition>
+}
+
 export type ContentRating = 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none'
 
 export interface ContentRatingSettings {
@@ -58,6 +67,7 @@ export interface SettingsState {
   accessibility: AccessibilitySettings
   developer: DeveloperSettings
   contentRating: ContentRatingSettings
+  desktopLayout: DesktopLayoutSettings
 
   // Actions
   setWallpaper: (wallpaper: Partial<WallpaperSettings>) => void
@@ -67,6 +77,9 @@ export interface SettingsState {
   setAccessibility: (accessibility: Partial<AccessibilitySettings>) => void
   setDeveloper: (developer: Partial<DeveloperSettings>) => void
   setContentRating: (contentRating: Partial<ContentRatingSettings>) => void
+  setDesktopLayout: (layout: Partial<DesktopLayoutSettings>) => void
+  setIconPosition: (iconId: string, position: IconPosition) => void
+  setIconPositions: (positions: Record<string, IconPosition>) => void
   resetAll: () => void
 }
 
@@ -117,6 +130,10 @@ const defaultContentRating: ContentRatingSettings = {
   showNoneWarningAcknowledged: false,
 }
 
+const defaultDesktopLayout: DesktopLayoutSettings = {
+  iconPositions: {},
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
@@ -127,6 +144,7 @@ export const useSettingsStore = create<SettingsState>()(
       accessibility: defaultAccessibility,
       developer: defaultDeveloper,
       contentRating: defaultContentRating,
+      desktopLayout: defaultDesktopLayout,
 
       setWallpaper: (wallpaper) => {
         set((state) => ({ wallpaper: { ...state.wallpaper, ...wallpaper } }))
@@ -163,6 +181,34 @@ export const useSettingsStore = create<SettingsState>()(
         // Note: The actual backend sync happens via WebSocket in the UI component
       },
 
+      setDesktopLayout: (layout) => {
+        set((state) => ({ desktopLayout: { ...state.desktopLayout, ...layout } }))
+      },
+
+      setIconPosition: (iconId, position) => {
+        set((state) => ({
+          desktopLayout: {
+            ...state.desktopLayout,
+            iconPositions: {
+              ...state.desktopLayout.iconPositions,
+              [iconId]: position,
+            },
+          },
+        }))
+      },
+
+      setIconPositions: (positions) => {
+        set((state) => ({
+          desktopLayout: {
+            ...state.desktopLayout,
+            iconPositions: {
+              ...state.desktopLayout.iconPositions,
+              ...positions,
+            },
+          },
+        }))
+      },
+
       resetAll: () => {
         set({
           wallpaper: defaultWallpaper,
@@ -172,6 +218,7 @@ export const useSettingsStore = create<SettingsState>()(
           accessibility: defaultAccessibility,
           developer: defaultDeveloper,
           contentRating: defaultContentRating,
+          desktopLayout: defaultDesktopLayout,
         })
         applyWallpaperSettings(defaultWallpaper)
         applyAudioSettings(defaultAudio)
@@ -189,6 +236,7 @@ export const useSettingsStore = create<SettingsState>()(
         accessibility: state.accessibility,
         developer: state.developer,
         contentRating: state.contentRating,
+        desktopLayout: state.desktopLayout,
       }),
       onRehydrateStorage: () => (state, error) => {
         if (error) {

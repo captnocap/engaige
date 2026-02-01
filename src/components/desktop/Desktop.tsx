@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, type ReactNode } from 'react'
+import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { Window, type WindowState } from './Window'
 import { Taskbar, type TaskbarWindow } from './Taskbar'
 import { DesktopIcon } from './DesktopIcon'
@@ -6,7 +6,7 @@ import { Onboarding, type OnboardingData } from '../onboarding/Onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
 import { useAccountStore } from '../../stores/accountStore'
 import { useThemeStore } from '../../stores/themeStore'
-import { useSettingsStore } from '../../stores/settingsStore.js'
+import { useSettingsStore, type IconPosition } from '../../stores/settingsStore.js'
 import { useAwarenessStore } from '../../stores/awarenessStore.js'
 import { useSocialStore } from '../../stores/socialStore.js'
 import { FilesWindow } from './FilesWindow'
@@ -33,40 +33,66 @@ interface DesktopIconConfig {
   icon: ReactNode
   label: string
   opensWindow?: string
-  allowMultiple?: boolean // Allow opening multiple instances
+  allowMultiple?: boolean
   action?: () => void
+}
+
+// Selection box state for rubber-band selection
+interface SelectionBox {
+  startX: number
+  startY: number
+  currentX: number
+  currentY: number
+}
+
+// Default icon positions (column layout like original)
+const ICON_SIZE = 80 // Width of icon
+const ICON_GAP = 8 // Gap between icons
+const ICON_PADDING = 16 // Padding from edge
+
+function getDefaultIconPosition(index: number): IconPosition {
+  return {
+    x: ICON_PADDING,
+    y: ICON_PADDING + index * (ICON_SIZE + ICON_GAP),
+  }
 }
 
 export function Desktop() {
   const { completed: legacyOnboardingCompleted, setCompleted } = useOnboardingStore()
   const { activeAccountId, accounts, markOnboardingComplete } = useAccountStore()
   const { currentTheme } = useThemeStore()
-  const { wallpaper, developer } = useSettingsStore()
+  const { wallpaper, developer, desktopLayout, setIconPositions } = useSettingsStore()
 
   // Check if current account has completed onboarding
   const activeAccount = accounts.find((a) => a.id === activeAccountId)
   const accountOnboardingComplete = activeAccount?.hasCompletedOnboarding ?? false
-  // Also fall back to legacy onboarding for backwards compatibility or dev mode
   const onboardingCompleted = accountOnboardingComplete || legacyOnboardingCompleted || developer.skipBootSequence
 
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set(onboardingCompleted ? ['browser-1'] : []))
   const [windowStates, setWindowStates] = useState<Record<string, WindowState>>({})
   const [activeWindow, setActiveWindow] = useState<string | null>(onboardingCompleted ? 'browser-1' : null)
   const [nextZIndex, setNextZIndex] = useState(10)
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
+  const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set())
   const [phoneVisible, setPhoneVisible] = useState(false)
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
 
+  // Drag state for moving icons
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef<{ x: number; y: number; iconPositions: Record<string, IconPosition> } | null>(null)
+
+  // Selection box state for rubber-band selection
+  const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
+  const desktopRef = useRef<HTMLDivElement>(null)
+
+  // Track which icon initiated the drag (for selection during drag)
+  const dragInitiatorRef = useRef<string | null>(null)
+
   const handleOnboardingComplete = useCallback((data: OnboardingData) => {
     console.log('Onboarding data:', data)
-    // TODO: Send to backend API when integrated
-    // Mark account as onboarded
     if (activeAccountId) {
       markOnboardingComplete(activeAccountId)
     }
-    // Also set legacy store for backwards compatibility
     setCompleted(activeAccountId || 'mock-player-id')
-    // Open browser after onboarding
     setOpenWindows(new Set(['browser-1']))
     setActiveWindow('browser-1')
     setWindowInstanceCounter(2)
@@ -156,6 +182,11 @@ export function Desktop() {
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
   ]
 
+  // Get icon position from store or use default
+  const getIconPosition = useCallback((iconId: string, index: number): IconPosition => {
+    return desktopLayout.iconPositions[iconId] ?? getDefaultIconPosition(index)
+  }, [desktopLayout.iconPositions])
+
   const openWindow = useCallback((windowId: string) => {
     setOpenWindows(prev => new Set([...prev, windowId]))
     setActiveWindow(windowId)
@@ -203,12 +234,10 @@ export function Desktop() {
   const handleIconDoubleClick = useCallback((icon: DesktopIconConfig) => {
     if (icon.opensWindow) {
       if (icon.allowMultiple) {
-        // Create a new instance with a unique ID
         const newId = `${icon.opensWindow}-${windowInstanceCounter}`
         setWindowInstanceCounter(prev => prev + 1)
         openWindow(newId)
       } else {
-        // Single instance - open or focus existing
         openWindow(icon.opensWindow)
       }
     } else if (icon.action) {
@@ -216,7 +245,194 @@ export function Desktop() {
     }
   }, [openWindow, windowInstanceCounter])
 
-  const handleDesktopClick = useCallback(() => setSelectedIcon(null), [])
+  // Handle icon click with multi-select support
+  const handleIconClick = useCallback((iconId: string, e: React.MouseEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      // Ctrl+Click: Toggle selection
+      setSelectedIcons(prev => {
+        const next = new Set(prev)
+        if (next.has(iconId)) {
+          next.delete(iconId)
+        } else {
+          next.add(iconId)
+        }
+        return next
+      })
+    } else if (e.shiftKey && selectedIcons.size > 0) {
+      // Shift+Click: Range select (based on visual order)
+      const iconIds = desktopIcons.map(i => i.id)
+      const lastSelected = Array.from(selectedIcons).pop()!
+      const lastIndex = iconIds.indexOf(lastSelected)
+      const clickedIndex = iconIds.indexOf(iconId)
+
+      const start = Math.min(lastIndex, clickedIndex)
+      const end = Math.max(lastIndex, clickedIndex)
+
+      setSelectedIcons(prev => {
+        const next = new Set(prev)
+        for (let i = start; i <= end; i++) {
+          next.add(iconIds[i])
+        }
+        return next
+      })
+    } else {
+      // Regular click: Select only this icon
+      setSelectedIcons(new Set([iconId]))
+    }
+  }, [selectedIcons, desktopIcons])
+
+  // Handle drag start on an icon
+  const handleIconDragStart = useCallback((iconId: string, e: React.MouseEvent) => {
+    // Store which icon initiated the drag
+    dragInitiatorRef.current = iconId
+
+    // Get current positions for all icons
+    const currentPositions: Record<string, IconPosition> = {}
+    desktopIcons.forEach((icon, index) => {
+      currentPositions[icon.id] = getIconPosition(icon.id, index)
+    })
+
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      iconPositions: currentPositions,
+    }
+  }, [desktopIcons, getIconPosition])
+
+  // Handle desktop mouse down for rubber-band selection
+  const handleDesktopMouseDown = useCallback((e: React.MouseEvent) => {
+    // Only start selection if clicking on empty desktop area
+    if (e.target === desktopRef.current || (e.target as HTMLElement).dataset.desktopArea === 'true') {
+      // Clear selection if not holding Ctrl
+      if (!e.ctrlKey && !e.metaKey) {
+        setSelectedIcons(new Set())
+      }
+
+      // Start selection box
+      setSelectionBox({
+        startX: e.clientX,
+        startY: e.clientY,
+        currentX: e.clientX,
+        currentY: e.clientY,
+      })
+    }
+  }, [])
+
+  // Handle mouse move for both icon dragging and selection box
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Handle icon dragging
+      if (dragStartRef.current && dragInitiatorRef.current) {
+        const dx = e.clientX - dragStartRef.current.x
+        const dy = e.clientY - dragStartRef.current.y
+
+        // Start actual dragging after threshold
+        if (!isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+          setIsDragging(true)
+
+          // If the drag initiator wasn't selected, select only it
+          if (!selectedIcons.has(dragInitiatorRef.current)) {
+            setSelectedIcons(new Set([dragInitiatorRef.current]))
+          }
+        }
+
+        if (isDragging) {
+          // Update positions of all selected icons
+          const iconsToMove = selectedIcons.size > 0 && selectedIcons.has(dragInitiatorRef.current)
+            ? selectedIcons
+            : new Set([dragInitiatorRef.current])
+
+          const newPositions: Record<string, IconPosition> = {}
+          iconsToMove.forEach(iconId => {
+            const originalPos = dragStartRef.current!.iconPositions[iconId]
+            if (originalPos) {
+              newPositions[iconId] = {
+                x: Math.max(0, originalPos.x + dx),
+                y: Math.max(0, originalPos.y + dy),
+              }
+            }
+          })
+
+          setIconPositions(newPositions)
+        }
+      }
+
+      // Handle selection box
+      if (selectionBox) {
+        setSelectionBox(prev => prev ? {
+          ...prev,
+          currentX: e.clientX,
+          currentY: e.clientY,
+        } : null)
+      }
+    }
+
+    const handleMouseUp = () => {
+      // End icon dragging
+      if (isDragging) {
+        setIsDragging(false)
+      }
+      dragStartRef.current = null
+      dragInitiatorRef.current = null
+
+      // End selection box and select icons within it
+      if (selectionBox) {
+        const rect = {
+          left: Math.min(selectionBox.startX, selectionBox.currentX),
+          right: Math.max(selectionBox.startX, selectionBox.currentX),
+          top: Math.min(selectionBox.startY, selectionBox.currentY),
+          bottom: Math.max(selectionBox.startY, selectionBox.currentY),
+        }
+
+        // Find icons within the selection box
+        const iconsInBox: string[] = []
+        desktopIcons.forEach((icon, index) => {
+          const pos = getIconPosition(icon.id, index)
+          const iconRect = {
+            left: pos.x,
+            right: pos.x + ICON_SIZE,
+            top: pos.y,
+            bottom: pos.y + ICON_SIZE,
+          }
+
+          // Check if icon overlaps with selection box
+          if (!(iconRect.right < rect.left ||
+                iconRect.left > rect.right ||
+                iconRect.bottom < rect.top ||
+                iconRect.top > rect.bottom)) {
+            iconsInBox.push(icon.id)
+          }
+        })
+
+        if (iconsInBox.length > 0) {
+          setSelectedIcons(prev => {
+            const next = new Set(prev)
+            iconsInBox.forEach(id => next.add(id))
+            return next
+          })
+        }
+
+        setSelectionBox(null)
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isDragging, selectionBox, selectedIcons, desktopIcons, getIconPosition, setIconPositions])
+
+  const handleDesktopClick = useCallback((e: React.MouseEvent) => {
+    // Only clear selection if clicking on empty desktop (not on icon)
+    if (e.target === desktopRef.current || (e.target as HTMLElement).dataset.desktopArea === 'true') {
+      if (!e.ctrlKey && !e.metaKey) {
+        setSelectedIcons(new Set())
+      }
+    }
+  }, [])
 
   const handleTaskbarWindowClick = useCallback((windowId: string) => {
     const state = windowStates[windowId]
@@ -225,12 +441,10 @@ export function Desktop() {
   }, [windowStates, activeWindow, focusWindow, minimizeWindow])
 
   const taskbarWindows: TaskbarWindow[] = Array.from(openWindows).map(id => {
-    // Extract base window type from ID (e.g., "browser-1" -> "browser")
     const baseType = id.replace(/-\d+$/, '')
     const config = windows.find(w => w.id === baseType)
     const state = windowStates[id]
 
-    // For multi-instance windows, show instance number in title
     const instanceMatch = id.match(/-(\d+)$/)
     const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
     const title = instanceNum && instanceNum > 1 ? `${config?.title ?? baseType} (${instanceNum})` : (config?.title ?? baseType)
@@ -255,6 +469,14 @@ export function Desktop() {
       }
     : { background: currentTheme.colors.gradient }
 
+  // Calculate selection box rectangle
+  const selectionRect = selectionBox ? {
+    left: Math.min(selectionBox.startX, selectionBox.currentX),
+    top: Math.min(selectionBox.startY, selectionBox.currentY),
+    width: Math.abs(selectionBox.currentX - selectionBox.startX),
+    height: Math.abs(selectionBox.currentY - selectionBox.startY),
+  } : null
+
   // Show onboarding if not completed
   if (!onboardingCompleted) {
     return (
@@ -271,37 +493,58 @@ export function Desktop() {
 
   return (
     <div
+      ref={desktopRef}
       className="fixed inset-0 flex flex-col overflow-hidden select-none"
       style={backgroundStyle}
       onClick={handleDesktopClick}
+      onMouseDown={handleDesktopMouseDown}
     >
-      <div className="flex-1 relative">
-        <div className="absolute top-4 left-4 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
-          {desktopIcons.map(icon => (
+      <div className="flex-1 relative" data-desktop-area="true">
+        {/* Desktop Icons with free positioning */}
+        {desktopIcons.map((icon, index) => {
+          const pos = getIconPosition(icon.id, index)
+          return (
             <DesktopIcon
               key={icon.id}
               icon={icon.icon}
               label={icon.label}
-              isSelected={selectedIcon === icon.id}
-              onClick={() => setSelectedIcon(icon.id)}
+              isSelected={selectedIcons.has(icon.id)}
+              isDragging={isDragging && selectedIcons.has(icon.id)}
+              onClick={(e) => handleIconClick(icon.id, e)}
               onDoubleClick={() => handleIconDoubleClick(icon)}
+              onDragStart={(e) => handleIconDragStart(icon.id, e)}
+              style={{
+                position: 'absolute',
+                left: pos.x,
+                top: pos.y,
+              }}
             />
-          ))}
-        </div>
+          )
+        })}
+
+        {/* Selection Box */}
+        {selectionRect && selectionRect.width > 5 && selectionRect.height > 5 && (
+          <div
+            className="absolute border border-[#00ff88] bg-[#00ff88]/10 pointer-events-none"
+            style={{
+              left: selectionRect.left,
+              top: selectionRect.top,
+              width: selectionRect.width,
+              height: selectionRect.height,
+            }}
+          />
+        )}
 
         {Array.from(openWindows).map(windowId => {
-          // Extract base window type from ID (e.g., "browser-1" -> "browser")
           const baseType = windowId.replace(/-\d+$/, '')
           const config = windows.find(w => w.id === baseType)
           if (!config) return null
           const state = windowStates[windowId]
 
-          // For multi-instance windows, show instance number in title
           const instanceMatch = windowId.match(/-(\d+)$/)
           const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
           const title = instanceNum && instanceNum > 1 ? `${config.title} (${instanceNum})` : config.title
 
-          // Offset position slightly for new instances to avoid exact overlap
           const positionOffset = instanceNum ? (instanceNum - 1) * 30 : 0
           const adjustedDefaultState = {
             ...config.defaultState,
