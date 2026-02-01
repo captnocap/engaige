@@ -42,6 +42,10 @@ import { BenchWatchSite } from './sites/BenchWatchSite.js'
 import { DominateSite } from './sites/DominateSite.js'
 import { StationSushiSite } from './sites/StationSushiSite.js'
 import { TrueMossSite } from './sites/TrueMossSite.js'
+// Q&A site
+import { AskCornSite } from './sites/AskCornSite.js'
+// Crowdfunding parody
+import { CobFundMeSite } from './sites/CobFundMeSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -97,6 +101,10 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'dominate': DominateSite,
   'stationsushi': StationSushiSite,
   'truemoss': TrueMossSite,
+  // Q&A site
+  'askcorn': AskCornSite,
+  // Crowdfunding parody
+  'cobfundme': CobFundMeSite,
   // All other sites use PlaceholderSite until implemented
 }
 

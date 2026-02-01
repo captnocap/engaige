@@ -702,6 +702,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'askcorn': {
+    id: 'askcorn',
+    name: 'AskCorn',
+    icon: '🌽',
+    description: 'Q&A site where questions range from technical to unhinged',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------

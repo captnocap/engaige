@@ -606,6 +606,44 @@ export const FILLER_SITES = {
       accepted: '#2f6f44',     // Accepted answer green
     },
   },
+
+  cobfundme: {
+    id: 'cobfundme',
+    name: 'CobFundMe',
+    tagline: 'Fund What Matters (To Someone)',
+    url: 'www.cobfundme.corn',
+    icon: '🌽',
+    description: 'Crowdfunding for questionable campaigns since 2019',
+    theme: {
+      primary: '#16A34A',      // Money green
+      secondary: '#22C55E',    // Lighter green
+      background: '#F9FAFB',   // Light grey bg
+      surface: '#ffffff',      // White surface
+      text: '#111827',         // Dark text
+      textMuted: '#6B7280',    // Grey muted
+      border: '#E5E7EB',       // Light border
+      accent: '#FDE68A',       // Gold/corn accent
+    },
+  },
+
+  cobhub: {
+    id: 'cobhub',
+    name: 'CobHub',
+    tagline: 'Where every commit is a kernel of truth',
+    url: 'www.cobhub.corn',
+    icon: '🌽',
+    description: 'Code repository hosting for unhinged open source projects',
+    theme: {
+      primary: '#58a6ff',      // GitHub blue
+      secondary: '#238636',    // GitHub green
+      background: '#0d1117',   // GitHub dark background
+      surface: '#161b22',      // GitHub dark surface
+      text: '#c9d1d9',         // GitHub light text
+      textMuted: '#8b949e',    // GitHub muted text
+      border: '#30363d',       // GitHub border
+      accent: '#f78166',       // GitHub orange accent
+    },
+  },
 } as const;
 
 // ============================================================================
