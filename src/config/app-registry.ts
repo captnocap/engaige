@@ -632,6 +632,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'cobcoin': {
+    id: 'cobcoin',
+    name: 'CobCoin Exchange',
+    icon: '🌽',
+    description: 'Corn-based cryptocurrency exchange - 847 COB = 1 USD',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
