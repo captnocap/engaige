@@ -204,10 +204,11 @@ export class CityAssetManager {
     const finalScale = scale / 30;
     mesh.scale.set(finalScale, finalScale, finalScale);
 
-    // Offset position so building is centered on its footprint
-    // Origin is at corner, so offset by half the extra size
-    mesh.position.x = (width - 1) * 0.5;
-    mesh.position.z = (depth - 1) * 0.5;
+    // Offset position so model fills the tile from corner to corner
+    // Models are centered at origin, so we need +0.5 offset to align with tile grid
+    // Plus additional offset for multi-tile buildings
+    mesh.position.x = 0.5 + (width - 1) * 0.5;
+    mesh.position.z = 0.5 + (depth - 1) * 0.5;
 
     this.models[name] = mesh;
 
