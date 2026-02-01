@@ -95,6 +95,7 @@ Eleven filler content sites provide browsable, lore-rich content that makes the 
 
 | Site | Type | Description |
 |------|------|-------------|
+| **Floor 13 Exists** | Cryptic blog | Glitchy posts from the mysterious entity on Floor 13 of Hartwell Building |
 | **WikiKnow** | Wikipedia clone | Encyclopedic articles about absurd topics played completely straight |
 | **Threadit** | Reddit clone | Forum threads with AITA posts, relationship drama, nested comments |
 | **DailyBuzz** | News site | Satirical news articles mixing serious and absurd headlines |

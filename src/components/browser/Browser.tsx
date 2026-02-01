@@ -35,6 +35,7 @@ const SITE_URLS: Record<string, string> = {
   'popuphell': 'www.free-prizes-click-here.corn',
   'millionpixels': 'www.millionpixels.corn',
   'quantumbrewblog': 'www.quantumbrewblog.corn',
+  'cornstalkblog': 'www.thoughtsfromtherow.corn',
   'hartwellfiles': 'www.hartwellfiles.corn',
   'trustfalltim': 'www.trustfalltim.corn',
   'onlyfans': 'www.onlyfans.corn',
@@ -46,6 +47,8 @@ const SITE_URLS: Record<string, string> = {
   'corndr': 'www.corndr.corn',
   'deaddrop': 'www.deaddrop.corn',
   'cornarchive': 'www.cornarchive.corn',
+  'drmartinezblog': 'www.drmartinezclarifies.corn',
+  'bigmikeblog': 'www.bigmikefromtulsa.corn',
 }
 
 // Reverse lookup - URL to app ID

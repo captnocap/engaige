@@ -23,8 +23,13 @@ import { WealthWisdomSite } from './sites/WealthWisdomSite.js'
 import { PopupHellSite } from './sites/PopupHellSite.js'
 import { MillionPixelsSite } from './sites/MillionPixelsSite.js'
 import { QuantumBrewBlogSite } from './sites/QuantumBrewBlogSite.js'
+import { CornStalkBlogSite } from './sites/CornStalkBlogSite.js'
+import { JennifersBlogSite } from './sites/JennifersBlogSite.js'
+import { ElenasBlogSite } from './sites/ElenasBlogSite.js'
+import { VenuePoetBlogSite } from './sites/VenuePoetBlogSite.js'
 import { HartwellFilesSite } from './sites/HartwellFilesSite.js'
 import { TrustFallTimSite } from './sites/TrustFallTimSite.js'
+import { TimsMomBlogSite } from './sites/TimsMomBlogSite.js'
 import { OnlyFansSite } from './sites/OnlyFansSite.js'
 import { BandsNotInTownSite } from './sites/BandsNotInTownSite.js'
 import { GrainTruthSite } from './sites/GrainTruthSite.js'
@@ -58,6 +63,14 @@ import { AmaizeSite } from './sites/AmaizeSite.js'
 import { SilkRoadSite } from './sites/SilkRoadSite.js'
 // Internet Archive parody
 import { CornArchiveSite } from './sites/CornArchiveSite.js'
+// Mysterious Floor 13 blog - TODO: implement
+// Big Mike's aggressively normal blog - TODO: implement
+// Musician denial blog
+import { VexDrumsBlogSite } from './sites/VexDrumsBlogSite.js'
+// Patricia's sinister corporate HR blog
+import { PatriciaBlogSite } from './sites/PatriciaBlogSite.js'
+// Gary's defiant Wonderwall blog
+import { WonderwallWarriorSite } from './sites/WonderwallWarriorSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -94,8 +107,13 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'popuphell': PopupHellSite,
   'millionpixels': MillionPixelsSite,
   'quantumbrewblog': QuantumBrewBlogSite,
+  'cornstalkblog': CornStalkBlogSite,
+  'jennifersblog': JennifersBlogSite,
+  'elenasblog': ElenasBlogSite,
+  'venuepoetryblog': VenuePoetBlogSite,
   'hartwellfiles': HartwellFilesSite,
   'trustfalltim': TrustFallTimSite,
+  'timsmomsupport': TimsMomBlogSite,
   'onlyfans': OnlyFansSite,
   'bandsnotintown': BandsNotInTownSite,
   'graintruth': GrainTruthSite,
@@ -129,6 +147,12 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'silkroad': SilkRoadSite,
   // Internet Archive parody
   'cornarchive': CornArchiveSite,
+  // Musician denial blog
+  'vexdrums': VexDrumsBlogSite,
+  // Patricia's sinister HR blog
+  'patriciablog': PatriciaBlogSite,
+  // Gary's Wonderwall defiance blog
+  'wonderwallwarrior': WonderwallWarriorSite,
   // All other sites use PlaceholderSite until implemented
 }
 

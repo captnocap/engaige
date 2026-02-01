@@ -518,6 +518,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'jennifersblog': {
+    id: 'jennifersblog',
+    name: 'Jennifer Heals',
+    icon: '💗',
+    description: 'A healing journey after divorce',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'hartwellfiles': {
     id: 'hartwellfiles',
     name: 'Hartwell Files',
@@ -528,11 +538,41 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'venuepoetryblog': {
+    id: 'venuepoetryblog',
+    name: 'Anonymous Venue Poet',
+    icon: '🎵',
+    description: 'Secret poetry about running a venue',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   'trustfalltim': {
     id: 'trustfalltim',
     name: 'TrustFallTim.corn',
     icon: '🙆‍♂️',
     description: 'The official unofficial fan archive',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'timsmomsupport': {
+    id: 'timsmomsupport',
+    name: 'Carol\'s Blog',
+    icon: '🍪',
+    description: 'Tim\'s worried mom blogs about his trust fall career',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'smallkevinblog': {
+    id: 'smallkevinblog',
+    name: 'SmallKevinRedemption',
+    icon: '😔',
+    description: 'Small Kevin\'s redemption blog after The Incident',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',
@@ -787,6 +827,46 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     name: 'CornArchive',
     icon: '📚',
     description: 'Preserving deleted and historical web pages since 2004',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'drmartinezblog': {
+    id: 'drmartinezblog',
+    name: 'Dr. Elena Martinez',
+    icon: '🔬',
+    description: 'Academic blog by physicist Dr. Elena Martinez - her quantum paper was misinterpreted into quantum coffee',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'bigmikeblog': {
+    id: 'bigmikeblog',
+    name: 'Big Mike from Tulsa',
+    icon: '👨',
+    description: 'The aggressively normal blog of Michael Cornwell - just explaining why he\'s everywhere',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'vexdrums': {
+    id: 'vexdrums',
+    name: 'Vex Drums Blog',
+    icon: '🥁',
+    description: 'Personal blog of Vex, drummer from Neon Requiem - a man in denial about his band\'s breakup',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
+  'patriciablog': {
+    id: 'patriciablog',
+    name: "Patricia's Workplace Blog",
+    icon: '👔',
+    description: 'Corporate HR wellness blog from Omnicorp Holdings - increasingly concerning posts about Floor 13, mirrors, and 847',
     surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',
