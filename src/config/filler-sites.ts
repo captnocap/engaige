@@ -968,6 +968,26 @@ export const FILLER_SITES = {
       accent: '#FFD700',       // Gold accents (90s style)
     },
   },
+
+  floor13blog: {
+    id: 'floor13blog',
+    name: 'Floor 13 Exists',
+    tagline: 'i exist // between 12 and 14 // please visit',
+    url: 'www.floor13exists.corn',
+    icon: '█',
+    description: 'A cryptic blog from the mysterious entity on Floor 13 of the Hartwell Building',
+    theme: {
+      primary: '#00FFFF',      // Cyan (glitchy)
+      secondary: '#64748B',    // Slate grey
+      background: '#0F172A',   // Dark blue
+      surface: '#1E293B',      // Slate surface
+      text: '#E2E8F0',         // Light slate
+      textMuted: '#94A3B8',    // Muted slate
+      border: '#334155',       // Dark slate border
+      accent: '#00FF41',       // Matrix green for system messages
+      error: '#EF4444',        // Red for corruption
+    },
+  },
 } as const;
 
 // ============================================================================

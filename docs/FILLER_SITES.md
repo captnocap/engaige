@@ -91,10 +91,11 @@ If anything feels broken or empty, it's not done.
 
 ## Overview
 
-Eleven filler content sites provide browsable, lore-rich content that makes the game world feel alive:
+Twelve filler content sites provide browsable, lore-rich content that makes the game world feel alive:
 
 | Site | Type | Description |
 |------|------|-------------|
+| **Wonderwall Warrior** | Personal blog | Gary's defiant crusade to get Oasis played at The Underground (13 bans deep) |
 | **Floor 13 Exists** | Cryptic blog | Glitchy posts from the mysterious entity on Floor 13 of Hartwell Building |
 | **WikiKnow** | Wikipedia clone | Encyclopedic articles about absurd topics played completely straight |
 | **Threadit** | Reddit clone | Forum threads with AITA posts, relationship drama, nested comments |
@@ -539,17 +540,58 @@ src/
 
 ---
 
+### Wonderwall Warrior (Personal Blog)
+
+**URL:** `www.wonderwallwarrior.corn`
+
+**Component File:** `src/components/browser/sites/WonderwallWarriorSite.tsx` (~450 lines)
+
+**Persona:** Gary (41) - The most persistent patron of The Underground. Banned 13 times for requesting Wonderwall, but convinced he's a freedom fighter standing against Mars' tyrannical gatekeeping. Self-righteous, defiant, and completely oblivious to why his behavior might be annoying.
+
+**Key Features:**
+- **9 interconnected blog posts** about his crusade to get Wonderwall played
+- **90s Britpop aesthetic**: British flag colors (red `#C8102E`, blue `#002868`, gold `#FFD700`)
+- **Ban tracker sidebar**: Shows progression from Ban #1 to Ban #13 (current)
+- **Coalition members**: International supporters who've reached out
+- **Lore integration**: References The Underground, Mars, DeadDrop thread coverage, 847 requests
+- **Defiant tone**: Completely convinced he's right, Mars is wrong
+
+**Blog Posts (9 total):**
+1. **"Why Wonderwall Is Actually a Masterpiece"** - Manifesto about Oasis genius
+2. **"Mars Is Wrong About Music"** - The feud and venue hypocrisy
+3. **"Ban #7: The Fake Mustache Incident"** - Failed disguise attempt
+4. **"I Will NEVER Stop Requesting It"** - Declaration of intent
+5. **"The Underground Pretends to Be Open-Minded"** - Gatekeeping hypocrisy
+6. **"I Have a Legal Right to Request Songs"** - "Consulted forums" legal reasoning
+7. **"Other Wonderwall Fans Are Reaching Out"** - Community awakening
+8. **"DeadDrop Called Me a Hero"** - Internet validation from anonymous forum
+9. **"Tonight's the Night (Ban #13)"** - Planning another attempt
+
+**Lore Connections:**
+- Mars = The Underground venue owner (recurring villain)
+- DeadDrop = Anonymous forum where his thread went viral (2,000+ likes)
+- 847 = Total documented Wonderwall requests
+- The Underground = Local venue fighting his crusade
+- Oasis/Noel Gallagher = Musical reference points
+
+**Key Quote:** "After all, you're my Wonderwall" - His slogan, taken from the song
+
+**Theme:** British red and blue with gold accents, 90s Britpop aesthetic
+
+---
+
 ## Shared Lore & Cross-References
 
 All sites reference the same fictional universe:
 
 **The Velvet Algorithms** - Band that appears in news, Reddit, Wikipedia, YouTube, ForChan, marketplace
 **Quantum Coffee** - Topic across all platforms (science, drama, business, conspiracy)
-**The Underground** - Venue mentioned in multiple contexts
+**The Underground** - Venue mentioned in multiple contexts, Mars' domain, Gary's nemesis
+**Gary the Wonderwall Warrior** - Patron with personal blog documenting his 13-ban crusade
 **Trust Fall Tim** - Character with YouTube channel, Threadit fame, training services
 **Hartwell Building** - Mystery referenced in news, paranormal discussions, real estate
 **Neon Requiem** - Rival band, members selling drum kit
-**Mars** - Underground venue owner, appears in multiple threads
+**Mars** - Underground venue owner, appears in multiple threads (antagonist of Gary's blog)
 
 ---
 
@@ -558,17 +600,18 @@ All sites reference the same fictional universe:
 1. Open the Browser window (NetScape)
 2. Click on any site from the homepage
 3. Or type the URL directly:
-   - `www.wikiknow.fake`
-   - `www.threadit.fake`
-   - `www.dailybuzz.fake`
-   - `www.vidtube.fake`
-   - `www.forchan.fake`
-   - `www.vitalityrx.fake`
-   - `www.nestfinder.fake`
-   - `www.bargainbay.fake`
-   - `www.oddsoracle.fake`
-   - `www.strangerzone.fake`
-   - `www.wealthwisdom.fake`
+   - `www.wonderwallwarrior.corn`
+   - `www.wikiknow.corn`
+   - `www.threadit.corn`
+   - `www.dailybuzz.corn`
+   - `www.vidtube.corn`
+   - `www.forchan.corn`
+   - `www.vitalityrx.corn`
+   - `www.nestfinder.corn`
+   - `www.bargainbay.corn`
+   - `www.oddsoracle.corn`
+   - `www.strangerzone.corn`
+   - `www.wealthwisdom.corn`
 
 ---
 
@@ -594,6 +637,7 @@ const SAMPLE_VIDEOS: Video[] = [
 
 | Site | Primary Color | Style |
 |------|---------------|-------|
+| Wonderwall Warrior | `#C8102E` | British red/blue, 90s Britpop, defiant |
 | Floor 13 Exists | `#00FFFF` | Glitchy, cyberpunk noir, existential |
 | WikiKnow | `#0645AD` | Clean, encyclopedic |
 | Threadit | `#FF4500` | Reddit orange, card-based |

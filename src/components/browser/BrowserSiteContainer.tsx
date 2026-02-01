@@ -65,14 +65,16 @@ import { SilkRoadSite } from './sites/SilkRoadSite.js'
 import { CornArchiveSite } from './sites/CornArchiveSite.js'
 // Dr. Elena Martinez's blog - physicist whose paper was misinterpreted
 import { MartinezBlogSite } from './sites/MartinezBlogSite.js'
-// Mysterious Floor 13 blog - TODO: implement
-// Big Mike's aggressively normal blog - TODO: implement
+// Big Mike's aggressively normal blog
+import { BigMikeBlogSite } from './sites/BigMikeBlogSite.js'
 // Musician denial blog
 import { VexDrumsBlogSite } from './sites/VexDrumsBlogSite.js'
 // Patricia's sinister corporate HR blog
 import { PatriciaBlogSite } from './sites/PatriciaBlogSite.js'
 // Gary's defiant Wonderwall blog
 import { WonderwallWarriorSite } from './sites/WonderwallWarriorSite.js'
+// Mysterious Floor 13 entity blog
+import { Floor13BlogSite } from './sites/Floor13BlogSite.js'
 
 interface BrowserSiteContainerProps {
   siteId: string
@@ -151,12 +153,16 @@ const SITE_COMPONENTS: Record<string, React.ComponentType<SiteProps>> = {
   'cornarchive': CornArchiveSite,
   // Dr. Elena Martinez's blog
   'drmartinezblog': MartinezBlogSite,
+  // Big Mike's aggressively normal blog
+  'bigmikeblog': BigMikeBlogSite,
   // Musician denial blog
   'vexdrums': VexDrumsBlogSite,
   // Patricia's sinister HR blog
   'patriciablog': PatriciaBlogSite,
   // Gary's Wonderwall defiance blog
   'wonderwallwarrior': WonderwallWarriorSite,
+  // Mysterious Floor 13 entity blog
+  'floor13blog': Floor13BlogSite,
   // All other sites use PlaceholderSite until implemented
 }
 

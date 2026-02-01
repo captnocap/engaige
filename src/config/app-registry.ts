@@ -892,6 +892,16 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     accessLevel: 'stranger',
   },
 
+  'floor13blog': {
+    id: 'floor13blog',
+    name: 'Floor 13 Exists',
+    icon: '█',
+    description: 'A cryptic blog from the mysterious entity on Floor 13 of the Hartwell Building',
+    surfaces: { browser: true },
+    category: 'browser',
+    accessLevel: 'stranger',
+  },
+
   // -------------------------------------------------------------------------
   // Entertainment
   // -------------------------------------------------------------------------
