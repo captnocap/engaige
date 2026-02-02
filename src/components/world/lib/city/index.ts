@@ -36,5 +36,16 @@ export {
   getLandmarksByDistrict,
   searchLandmarks,
   getLandmarkAtPosition,
+  getPlayerHousingOptions,
+  getPointsOfInterest,
   type LandmarkConfig,
 } from './landmarks.js';
+
+// Camera
+export { CityCamera } from './CityCamera.js';
+
+// Generation
+export { generateCity, type BuildingPlacement as GeneratedPlacement } from './CityGenerator.js';
+
+// Layouts
+export { loadLayout, layoutToPlacements, getAvailableLayouts, type CityLayout } from './layouts/index.js';

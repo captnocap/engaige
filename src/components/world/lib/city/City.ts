@@ -116,9 +116,15 @@ export class City extends THREE.Group {
         building.depth = depth;
         building.originX = p.x;
         building.originY = p.y;
-        building.rotation = p.rotation ?? 0;
-        building.landmarkId = p.landmarkId;
-        building.fillerSiteUrl = p.fillerSiteUrl;
+        building.rotationIndex = p.rotation ?? 0;
+
+        // Set landmark info (also updates userData for raycasting)
+        if (p.landmarkId) {
+          building.setLandmarkInfo(p.landmarkId, p.fillerSiteUrl);
+        } else if (p.fillerSiteUrl) {
+          building.fillerSiteUrl = p.fillerSiteUrl;
+          building.userData.fillerSiteUrl = p.fillerSiteUrl;
+        }
 
         // Place building on all tiles in footprint
         for (let dx = 0; dx < width; dx++) {

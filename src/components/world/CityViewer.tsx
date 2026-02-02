@@ -12,131 +12,29 @@ import { useWSStore } from '../../stores/wsStore.js';
 import WorldControls from './WorldControls.js';
 import {
   createScene,
-  createOrbitalCamera,
   createRaycaster,
   highlightObject,
   type SceneContext,
-  type CameraController,
   type RaycasterController,
 } from './lib/index.js';
 import {
   City,
+  CityCamera,
   createCityAssetManager,
-  getCityAssetManager,
+  generateCity,
   LANDMARKS,
-  type BuildingPlacement,
+  getPointsOfInterest,
+  getPlayerHousingOptions,
   type LandmarkConfig,
 } from './lib/city/index.js';
+import { loadLayout, layoutToPlacements, getAvailableLayouts } from './lib/city/layouts/index.js';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-const CITY_SIZE = 50; // 50x50 tile grid
+const CITY_SIZE = 16; // 16x16 tile grid - focused map for ~30 NPCs
 
-// ============================================================================
-// City Generator (simple procedural generation)
-// ============================================================================
-
-/**
- * Generate a simple procedural city layout
- */
-function generateCityPlacements(size: number): BuildingPlacement[] {
-  const placements: BuildingPlacement[] = [];
-  const random = mulberry32(12345); // Seeded random for consistency
-
-  // First, place landmarks at their fixed positions
-  for (const landmark of LANDMARKS) {
-    placements.push({
-      x: landmark.position.x,
-      y: landmark.position.y,
-      type: landmark.model,
-      rotation: landmark.rotation ?? 0,
-      landmarkId: landmark.id,
-      fillerSiteUrl: landmark.fillerSiteUrl,
-    });
-  }
-
-  // Create a simple road network (main roads in a grid pattern)
-  const mainRoadSpacing = 10;
-
-  // Horizontal main roads
-  for (let y = mainRoadSpacing; y < size; y += mainRoadSpacing) {
-    for (let x = 0; x < size; x++) {
-      // Skip if landmark at this position
-      if (LANDMARKS.some((l) => l.position.x === x && l.position.y === y)) continue;
-
-      const isIntersection = x % mainRoadSpacing === 0;
-      if (isIntersection) {
-        placements.push({ x, y, type: 'road-four-way', rotation: 0 });
-      } else {
-        placements.push({ x, y, type: 'road-straight', rotation: 1 });
-      }
-    }
-  }
-
-  // Vertical main roads
-  for (let x = mainRoadSpacing; x < size; x += mainRoadSpacing) {
-    for (let y = 0; y < size; y++) {
-      // Skip if landmark or already placed
-      if (LANDMARKS.some((l) => l.position.x === x && l.position.y === y)) continue;
-      if (y % mainRoadSpacing === 0) continue; // Already placed as intersection
-
-      placements.push({ x, y, type: 'road-straight', rotation: 0 });
-    }
-  }
-
-  // Fill zones with random buildings
-  const zoneBuildings = [
-    'residential-A1', 'residential-B1', 'residential-C1',
-    'residential-A2', 'residential-B2', 'residential-C2',
-    'residential-D1', 'residential-E1', 'residential-F1',
-    'commercial-A1', 'commercial-B1', 'commercial-C1',
-    'commercial-D1', 'commercial-E1', 'commercial-F1',
-    'industrial-A1', 'industrial-B1', 'industrial-C1',
-  ];
-
-  const placedSet = new Set<string>();
-
-  // Mark all placed positions
-  for (const p of placements) {
-    placedSet.add(`${p.x},${p.y}`);
-  }
-
-  // Fill remaining spaces
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
-      if (placedSet.has(`${x},${y}`)) continue;
-
-      // Leave some empty as parks/grass
-      if (random() < 0.3) continue;
-
-      const buildingType = zoneBuildings[Math.floor(random() * zoneBuildings.length)];
-      const rotation = Math.floor(random() * 4);
-
-      placements.push({
-        x,
-        y,
-        type: buildingType,
-        rotation,
-      });
-    }
-  }
-
-  return placements;
-}
-
-/**
- * Seeded random number generator
- */
-function mulberry32(seed: number): () => number {
-  return function () {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 // ============================================================================
 // Component
@@ -145,7 +43,7 @@ function mulberry32(seed: number): () => number {
 export default function CityViewer() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneContextRef = useRef<SceneContext | null>(null);
-  const cameraControllerRef = useRef<CameraController | null>(null);
+  const cameraControllerRef = useRef<CityCamera | null>(null);
   const raycasterRef = useRef<RaycasterController | null>(null);
   const cityRef = useRef<City | null>(null);
 
@@ -223,23 +121,18 @@ export default function CityViewer() {
     });
     sceneContextRef.current = sceneContext;
 
-    // Create orbital camera
-    const cameraController = createOrbitalCamera(
-      containerRef.current,
-      sceneContext.camera,
-      {
-        initialRadius: 40,
-        initialAzimuth: 45,
-        initialElevation: 50,
-        minRadius: 15,
-        maxRadius: 150,
-      }
-    );
-    cameraControllerRef.current = cameraController;
+    // Create city camera with WASD panning and free rotation
+    const cityCamera = new CityCamera(containerRef.current, CITY_SIZE);
+    cameraControllerRef.current = cityCamera;
 
-    // Create raycaster
+    // Swap scene's camera to use orthographic city camera
+    sceneContext.setCamera(cityCamera.camera, () => {
+      cityCamera.resize(containerRef.current!);
+    });
+
+    // Create raycaster using city camera
     const raycaster = createRaycaster(
-      sceneContext.camera,
+      cityCamera.camera,
       sceneContext.scene,
       sceneContext.getCanvas()
     );
@@ -279,7 +172,7 @@ export default function CityViewer() {
     return () => {
       console.log('[CityViewer] Cleaning up scene...');
       raycaster.dispose();
-      cameraController.dispose();
+      cityCamera.dispose();
       sceneContext.dispose();
       sceneContextRef.current = null;
       cameraControllerRef.current = null;
@@ -295,45 +188,77 @@ export default function CityViewer() {
     if (!assetsLoaded || !sceneContextRef.current) return;
 
     const { scene } = sceneContextRef.current;
+    let cancelled = false;
 
-    console.log('[CityViewer] Creating city...');
-    setLoadingState({ phase: 'Generating city...', percent: 0 });
+    const initCity = async () => {
+      console.log('[CityViewer] Creating city...');
+      setLoadingState({ phase: 'Loading layout...', percent: 0 });
 
-    // Create city
-    const newCity = new City(CITY_SIZE, 'Corn City');
-    cityRef.current = newCity;
-    scene.add(newCity);
+      // Create city
+      const newCity = new City(CITY_SIZE, 'Corn City');
+      if (cancelled) return;
 
-    // Generate placements
-    const placements = generateCityPlacements(CITY_SIZE);
-    console.log('[CityViewer] Generated', placements.length, 'placements');
+      cityRef.current = newCity;
+      scene.add(newCity);
 
-    // Load buildings
-    newCity
-      .loadBuildings(placements, (percent, phase) => {
-        setLoadingState({ phase, percent });
-      })
-      .then(() => {
-        console.log('[CityViewer] City loaded');
-        setCityLoaded(true);
-        setLoadingState(null);
+      // Try to load a pre-made layout first
+      let placements;
+      const availableLayouts = await getAvailableLayouts();
 
-        // Start vehicle spawning
-        newCity.vehicleGraph.startSpawning();
+      if (availableLayouts.length > 0) {
+        // Load the first available layout
+        const layoutName = availableLayouts[0];
+        console.log('[CityViewer] Loading layout:', layoutName);
+        const layout = await loadLayout(layoutName);
+
+        if (layout) {
+          placements = layoutToPlacements(layout);
+          console.log('[CityViewer] Loaded', placements.length, 'placements from layout');
+        }
+      }
+
+      // Fall back to procedural generation if no layout available
+      if (!placements) {
+        console.log('[CityViewer] No layout found, generating procedurally...');
+        setLoadingState({ phase: 'Generating city...', percent: 0 });
+        placements = generateCity(CITY_SIZE, 12345);
+        console.log('[CityViewer] Generated', placements.length, 'placements (organic layout)');
+      }
+
+      if (cancelled) return;
+
+      // Load buildings
+      await newCity.loadBuildings(placements, (percent, phase) => {
+        if (!cancelled) {
+          setLoadingState({ phase, percent });
+        }
       });
 
-    // Set up animation loop for vehicles
-    sceneContextRef.current.setOnRender(() => {
-      newCity.draw();
-    });
+      if (cancelled) return;
 
-    // Center camera on city
-    if (cameraControllerRef.current) {
-      const center = new THREE.Vector3(CITY_SIZE / 2, 0, CITY_SIZE / 2);
-      cameraControllerRef.current.setTarget(center);
-    }
+      console.log('[CityViewer] City loaded');
+      setCityLoaded(true);
+      setLoadingState(null);
+
+      // Start vehicle spawning
+      newCity.vehicleGraph.startSpawning();
+
+      // Set up animation loop for vehicles
+      sceneContextRef.current?.setOnRender(() => {
+        newCity.draw();
+      });
+
+      // Center camera on city
+      if (cameraControllerRef.current) {
+        const center = new THREE.Vector3(CITY_SIZE / 2, 0, CITY_SIZE / 2);
+        cameraControllerRef.current.setTarget(center);
+      }
+    };
+
+    initCity();
 
     return () => {
+      cancelled = true;
       if (cityRef.current) {
         cityRef.current.vehicleGraph.stopSpawning();
         cityRef.current.dispose();
@@ -399,6 +324,10 @@ export default function CityViewer() {
           </h1>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
+              <span className="text-white/70">Grid:</span>
+              <span className="font-bold text-yellow-400">{CITY_SIZE}x{CITY_SIZE}</span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-white/70">Buildings:</span>
               <span className="font-bold text-yellow-400">
                 {cityRef.current?.getAllBuildings().length ?? 0}
@@ -417,12 +346,17 @@ export default function CityViewer() {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/70">Landmarks:</span>
-              <span className="font-bold text-yellow-400">{LANDMARKS.length}</span>
+              <span className="text-white/70">Locations:</span>
+              <span className="font-bold text-yellow-400">{getPointsOfInterest().length}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-white/70">Housing:</span>
+              <span className="font-bold text-yellow-400">{getPlayerHousingOptions().length}</span>
             </div>
           </div>
           <div className="mt-3 pt-2 border-t border-white/10 text-xs text-white/50">
-            <p>Left Drag: Rotate</p>
+            <p>WASD/Arrows: Pan</p>
+            <p>Right Drag: Rotate</p>
             <p>Scroll: Zoom</p>
             <p>Click: Inspect</p>
           </div>
@@ -490,10 +424,10 @@ export default function CityViewer() {
         </div>
       )}
 
-      {/* Landmark Quick Access */}
+      {/* Landmark Quick Access - Points of Interest only */}
       {cityLoaded && (
         <div className="absolute bottom-4 left-4 right-4 flex gap-2 flex-wrap">
-          {LANDMARKS.slice(0, 6).map((landmark) => (
+          {getPointsOfInterest().map((landmark) => (
             <button
               key={landmark.id}
               onClick={() => {

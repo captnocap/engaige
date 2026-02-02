@@ -2,181 +2,202 @@
  * Landmarks Configuration
  *
  * Maps engaige lore locations to city models and positions.
- * These landmarks are placed at predefined positions when the city is generated.
+ * Designed for a 16x16 grid - compact, walkable city.
+ *
+ * Layout concept:
+ * - Main Street runs East-West through center (y=8)
+ * - Cross Street runs North-South through center (x=8)
+ * - Landmarks clustered around the intersection
+ * - Residential options in corners for player housing
  */
 
 export interface LandmarkConfig {
   id: string;
   name: string;
   description: string;
-  // Building model to use
   model: string;
-  // Fixed position in the city grid
   position: { x: number; y: number };
-  // Rotation (0-3 for 90-degree increments)
   rotation?: number;
-  // Link to filler site if applicable
   fillerSiteUrl?: string;
-  // District this belongs to
   district: 'downtown' | 'nightlife' | 'arts' | 'industrial' | 'residential';
-  // Keywords for searching/referencing
   keywords: string[];
-  // Icon emoji for UI
   icon?: string;
+  // For player housing selection
+  isPlayerHousing?: boolean;
 }
 
 /**
- * Predefined landmarks that connect to engaige lore
+ * Predefined landmarks for 16x16 grid
+ *
+ * Grid visualization (roads marked with ═ and ║):
+ *
+ *    0 1 2 3 4 5 6 7 8 9 ...15
+ *  0 . . . . . . . . ║ . . . .
+ *  1 . R . . . . . . ║ . . R .   R = Residential (player housing options)
+ *  2 . . . . T T . . ║ . . . .   T = Train Station
+ *  3 . . . . T T . . ║ . . . .
+ *  4 . . . . . . . . ║ . . . .
+ *  5 . . . . . P . . ║ . Q . .   P = Police, Q = Quantum Coffee
+ *  6 . . . F . . . . ║ . . . .   F = Fire Station
+ *  7 . . . . . . . H H . . . .   H = Hartwell Building
+ *  8 ═══════════════════════════  <- Main Street
+ *  9 . . . . . . . H H . . . .
+ * 10 . . . . . . . . ║ . . . .
+ * 11 . . . . . . . . ║ . U U .   U = Underground
+ * 12 . R . . . . . . ║ . U U .
+ * 13 . . . . . B . . ║ . . . .   B = Chapter House Books
+ * 14 . . . . . . . . ║ . . R .
+ * 15 . . . . . . . . ║ . . . .
  */
 export const LANDMARKS: LandmarkConfig[] = [
+  // === DOWNTOWN CORE ===
   {
     id: 'hartwell-building',
     name: 'The Hartwell Building',
     description:
-      'A mysterious 1923 office tower. The 13th floor is "missing" and Floor 7 is said to have mirrors that show things that aren\'t there. Omnicorp Holdings maintains offices inside.',
-    model: 'residential-C3', // building-office-tall
-    position: { x: 25, y: 25 },
+      'A mysterious 1923 office tower. The 13th floor is "missing" and Floor 7 is said to have mirrors that show things that aren\'t there.',
+    model: 'commercial-C2',
+    position: { x: 7, y: 7 },
     rotation: 0,
     fillerSiteUrl: '/browser/www.hartwellfiles.corn',
     district: 'downtown',
-    keywords: ['hartwell', 'office', 'mysterious', 'omnicorp', '13th floor', 'floor 7', 'mirrors'],
+    keywords: ['hartwell', 'office', 'mysterious', 'omnicorp', '13th floor'],
     icon: '🏢',
-  },
-  {
-    id: 'the-underground',
-    name: 'The Underground',
-    description:
-      "Mars's legendary music venue. Relocated from its original location near the Hartwell Building. Hosts bands like Velvet Algorithms and Trust Fall Tim's shows.",
-    model: 'commercial-B2', // building-casino (works as nightclub)
-    position: { x: 30, y: 40 },
-    rotation: 1,
-    fillerSiteUrl: '/browser/www.bandsnotintown.corn',
-    district: 'nightlife',
-    keywords: ['underground', 'music', 'venue', 'mars', 'velvet algorithms', 'trust fall tim', 'nightclub'],
-    icon: '🎸',
   },
   {
     id: 'quantum-coffee',
     name: 'Quantum Coffee Co.',
     description:
-      'Purveyor of pseudoscience brewing methods. $47/cup. Derek is obsessed. Features in the Martinez Study on caffeine-induced quantum states.',
-    model: 'commercial-A1', // building-cafe
-    position: { x: 35, y: 30 },
-    rotation: 2,
+      'Purveyor of pseudoscience brewing methods. $47/cup. Derek is obsessed.',
+    model: 'commercial-A1',
+    position: { x: 10, y: 5 },
+    rotation: 3,
     fillerSiteUrl: '/browser/www.quantumbrewblog.corn',
-    district: 'arts',
-    keywords: ['quantum', 'coffee', 'cafe', 'derek', 'martinez', 'expensive', 'pseudoscience'],
+    district: 'downtown',
+    keywords: ['quantum', 'coffee', 'cafe', 'derek', 'expensive'],
     icon: '☕',
-  },
-  {
-    id: 'chapter-house-books',
-    name: 'Chapter House Books',
-    description:
-      'Independent bookstore in the arts district. Hosts readings and literary events. Known for its extensive occult and local history sections.',
-    model: 'commercial-E2', // building-mall
-    position: { x: 40, y: 35 },
-    rotation: 0,
-    district: 'arts',
-    keywords: ['books', 'bookstore', 'chapter house', 'reading', 'literary', 'occult'],
-    icon: '📚',
-  },
-  {
-    id: 'vitalityrx',
-    name: 'VitalityRx Pharmacy',
-    description:
-      'Local pharmacy with 24-hour service. Suspiciously well-stocked on unusual supplements and "wellness enhancers."',
-    model: 'hospital', // building-hospital
-    position: { x: 20, y: 20 },
-    rotation: 0,
-    fillerSiteUrl: '/browser/www.vitalityrx.corn',
-    district: 'downtown',
-    keywords: ['pharmacy', 'vitalityrx', 'medicine', 'supplements', 'health'],
-    icon: '💊',
-  },
-  {
-    id: 'nestfinder-office',
-    name: 'NestFinder Real Estate',
-    description:
-      'Local real estate office. Handles apartment rentals and home sales in the city. Suspiciously pushy about certain "available" units in the Hartwell Building.',
-    model: 'commercial-A3', // building-office
-    position: { x: 22, y: 28 },
-    rotation: 1,
-    fillerSiteUrl: '/browser/www.nestfinder.corn',
-    district: 'downtown',
-    keywords: ['real estate', 'nestfinder', 'apartments', 'rentals', 'housing'],
-    icon: '🏠',
-  },
-  {
-    id: 'corn-city-stadium',
-    name: 'Corn City Stadium',
-    description:
-      'Home of the Corn City Kernels. Hosts concerts during off-season. Site of the famous "847 Incident" during the 2023 playoffs.',
-    model: 'stadium',
-    position: { x: 45, y: 20 },
-    rotation: 0,
-    district: 'downtown',
-    keywords: ['stadium', 'sports', 'kernels', 'baseball', 'concert', '847'],
-    icon: '🏟️',
-  },
-  {
-    id: 'fire-station-7',
-    name: 'Fire Station #7',
-    description:
-      'The busiest fire station in the city. Crew has an unusual number of calls to the Hartwell Building. Chief Martinez refuses to discuss the pattern.',
-    model: 'fire-station',
-    position: { x: 15, y: 30 },
-    rotation: 0,
-    district: 'downtown',
-    keywords: ['fire', 'station', 'emergency', 'martinez', 'hartwell'],
-    icon: '🚒',
   },
   {
     id: 'police-precinct-13',
     name: 'Police Precinct #13',
     description:
-      'Main police station for the downtown district. Detective small Kevin works the night shift. The number 13 is purely coincidental.',
+      'Main police station. Detective Small Kevin works the night shift.',
     model: 'police-station',
-    position: { x: 18, y: 35 },
+    position: { x: 5, y: 5 },
     rotation: 0,
     district: 'downtown',
-    keywords: ['police', 'precinct', 'station', 'kevin', 'detective'],
+    keywords: ['police', 'precinct', 'kevin', 'detective'],
     icon: '🚔',
   },
   {
-    id: 'cornhub-datacenter',
-    name: 'CornHub Data Center',
+    id: 'fire-station-7',
+    name: 'Fire Station #7',
     description:
-      'Massive data center on the outskirts. Powers most of the city\'s digital infrastructure. The hum of servers can be heard from blocks away.',
-    model: 'commercial-C2', // data-center
-    position: { x: 48, y: 45 },
-    rotation: 0,
-    district: 'industrial',
-    keywords: ['datacenter', 'data', 'servers', 'cornhub', 'internet', 'infrastructure'],
-    icon: '🖥️',
+      'Busiest fire station in the city. Unusual number of calls to Hartwell.',
+    model: 'fire-station',
+    position: { x: 3, y: 6 },
+    rotation: 1,
+    district: 'downtown',
+    keywords: ['fire', 'station', 'emergency'],
+    icon: '🚒',
   },
+
+  // === NIGHTLIFE ===
+  {
+    id: 'the-underground',
+    name: 'The Underground',
+    description:
+      "Mars's legendary music venue. Hosts Velvet Algorithms and Trust Fall Tim's shows.",
+    model: 'commercial-B2',
+    position: { x: 10, y: 11 },
+    rotation: 3,
+    fillerSiteUrl: '/browser/www.bandsnotintown.corn',
+    district: 'nightlife',
+    keywords: ['underground', 'music', 'venue', 'mars', 'nightclub'],
+    icon: '🎸',
+  },
+
+  // === ARTS DISTRICT ===
+  {
+    id: 'chapter-house-books',
+    name: 'Chapter House Books',
+    description:
+      'Independent bookstore. Known for its occult and local history sections.',
+    model: 'commercial-E1',
+    position: { x: 5, y: 13 },
+    rotation: 0,
+    district: 'arts',
+    keywords: ['books', 'bookstore', 'reading', 'occult'],
+    icon: '📚',
+  },
+
+  // === TRANSIT ===
   {
     id: 'train-station-central',
     name: 'Central Station',
     description:
-      'Main train station connecting the city to the outside world. Beautiful art deco architecture. Platform 847 is mysteriously never in service.',
+      'Main train station. Platform 847 is mysteriously never in service.',
     model: 'train-station',
-    position: { x: 28, y: 15 },
+    position: { x: 4, y: 2 },
     rotation: 0,
     district: 'downtown',
-    keywords: ['train', 'station', 'central', 'platform', '847', 'transportation'],
+    keywords: ['train', 'station', 'platform', '847'],
     icon: '🚂',
   },
+
+  // === PLAYER HOUSING OPTIONS ===
+  // These are residential buildings the player can choose during onboarding
   {
-    id: 'school-ps-847',
-    name: 'Public School 847',
+    id: 'oak-street-apartments',
+    name: '847 Oak Street',
     description:
-      'Local elementary school. Excellent test scores. The number 847 is just a coincidence. Really.',
-    model: 'school',
-    position: { x: 38, y: 42 },
+      'A cozy apartment building near downtown. Walking distance to everything.',
+    model: 'residential-A2',
+    position: { x: 1, y: 1 },
     rotation: 0,
     district: 'residential',
-    keywords: ['school', 'education', 'elementary', '847', 'children'],
-    icon: '🏫',
+    keywords: ['apartment', 'housing', 'oak street'],
+    icon: '🏠',
+    isPlayerHousing: true,
+  },
+  {
+    id: 'maple-heights',
+    name: 'Maple Heights',
+    description:
+      'Modern apartments with a view of the city. Popular with young professionals.',
+    model: 'residential-B2',
+    position: { x: 12, y: 1 },
+    rotation: 2,
+    district: 'residential',
+    keywords: ['apartment', 'housing', 'maple', 'modern'],
+    icon: '🏠',
+    isPlayerHousing: true,
+  },
+  {
+    id: 'riverside-condos',
+    name: 'Riverside Condos',
+    description:
+      'Quiet neighborhood on the south side. Close to Chapter House Books.',
+    model: 'residential-C2',
+    position: { x: 1, y: 12 },
+    rotation: 1,
+    district: 'residential',
+    keywords: ['condo', 'housing', 'riverside', 'quiet'],
+    icon: '🏠',
+    isPlayerHousing: true,
+  },
+  {
+    id: 'nightowl-lofts',
+    name: 'Night Owl Lofts',
+    description:
+      'Converted warehouse near The Underground. For those who keep late hours.',
+    model: 'residential-D2',
+    position: { x: 13, y: 14 },
+    rotation: 2,
+    district: 'nightlife',
+    keywords: ['loft', 'housing', 'nightlife', 'warehouse'],
+    icon: '🏠',
+    isPlayerHousing: true,
   },
 ];
 
@@ -185,6 +206,20 @@ export const LANDMARKS: LandmarkConfig[] = [
  */
 export function getAllLandmarks(): LandmarkConfig[] {
   return LANDMARKS;
+}
+
+/**
+ * Get player housing options
+ */
+export function getPlayerHousingOptions(): LandmarkConfig[] {
+  return LANDMARKS.filter((l) => l.isPlayerHousing);
+}
+
+/**
+ * Get non-housing landmarks (actual points of interest)
+ */
+export function getPointsOfInterest(): LandmarkConfig[] {
+  return LANDMARKS.filter((l) => !l.isPlayerHousing);
 }
 
 /**

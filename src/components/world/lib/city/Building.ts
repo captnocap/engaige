@@ -24,7 +24,8 @@ export class Building extends SimObject {
   hideTerrain = false;
 
   // Rotation in 90-degree increments (0-3)
-  rotation = 0;
+  // Named rotationIndex to avoid conflict with THREE.Object3D.rotation (Euler)
+  rotationIndex = 0;
 
   // Optional link to landmark/lore
   landmarkId?: string;
@@ -39,6 +40,27 @@ export class Building extends SimObject {
     // Store coordinates for reference (not positioning)
     this.originX = x;
     this.originY = y;
+
+    // Set up userData for raycaster detection
+    this.userData = {
+      type: 'building',
+      id: `building-${x}-${y}`,
+      building: this,
+      modelType,
+      x,
+      y,
+    };
+  }
+
+  /**
+   * Set landmark info and update userData
+   */
+  setLandmarkInfo(landmarkId: string, fillerSiteUrl?: string): void {
+    this.landmarkId = landmarkId;
+    this.fillerSiteUrl = fillerSiteUrl;
+    // Update userData to include landmark info
+    this.userData.landmarkId = landmarkId;
+    this.userData.fillerSiteUrl = fillerSiteUrl;
   }
 
   refreshView(): void {
@@ -50,7 +72,14 @@ export class Building extends SimObject {
 
     const mesh = assetManager.getModel(this.modelType, this);
     // Apply rotation
-    mesh.rotation.y = (this.rotation * Math.PI) / 2;
+    mesh.rotation.y = (this.rotationIndex * Math.PI) / 2;
+
+    // Propagate userData to mesh and all children so raycaster can find it
+    mesh.userData = { ...this.userData };
+    mesh.traverse((child) => {
+      child.userData = { ...this.userData };
+    });
+
     this.setMesh(mesh);
   }
 
