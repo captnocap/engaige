@@ -200,15 +200,14 @@ export class CityAssetManager {
 
     mesh.rotation.set(0, THREE.MathUtils.degToRad(rotation), 0);
 
-    // Uniform scaling - don't distort models
+    // Uniform scaling - models are ~30 units raw, scale to fit 1 tile unit
     const finalScale = scale / 30;
     mesh.scale.set(finalScale, finalScale, finalScale);
 
-    // Offset position so model fills the tile from corner to corner
-    // Models are centered at origin, so we need +0.5 offset to align with tile grid
-    // Plus additional offset for multi-tile buildings
-    mesh.position.x = 0.5 + (width - 1) * 0.5;
-    mesh.position.z = 0.5 + (depth - 1) * 0.5;
+    // Offset position so building is centered on its footprint
+    // Origin is at corner, so offset by half the extra size for multi-tile buildings
+    mesh.position.x = (width - 1) * 0.5;
+    mesh.position.z = (depth - 1) * 0.5;
 
     this.models[name] = mesh;
 
