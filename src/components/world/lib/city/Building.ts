@@ -31,9 +31,14 @@ export class Building extends SimObject {
   fillerSiteUrl?: string;
 
   constructor(x: number, y: number, modelType: string) {
-    super(x, y);
+    // DON'T pass x,y to super - Building is a child of Tile which handles positioning
+    // Passing x,y would double the position (Three.js child positions are additive)
+    super();
     this.modelType = modelType;
     this.name = `Building-${modelType}-${x}-${y}`;
+    // Store coordinates for reference (not positioning)
+    this.originX = x;
+    this.originY = y;
   }
 
   refreshView(): void {
