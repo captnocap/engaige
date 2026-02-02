@@ -81,7 +81,9 @@ interface AutocompleteItem {
  * This is called lazily to ensure manifests are registered first.
  */
 function getSearchableContent(): SearchIndexEntry[] {
-  return getAllSearchEntries()
+  const entries = getAllSearchEntries()
+  console.log('[Goober] getSearchableContent:', entries.length, 'entries')
+  return entries
 }
 
 /**
@@ -89,35 +91,57 @@ function getSearchableContent(): SearchIndexEntry[] {
  * Searches through all registered site manifests.
  */
 function clientSearch(query: string): SearchResult[] {
-  if (!query.trim()) return []
+  console.log('[Goober] clientSearch called with query:', query)
+  if (!query.trim()) {
+    console.log('[Goober] Empty query, returning empty results')
+    return []
+  }
 
   const entries = getSearchableContent()
+  console.log('[Goober] Searching through', entries.length, 'entries for:', query)
+
+  if (entries.length === 0) {
+    console.error('[Goober] WARNING: No entries in search index! Manifests may not be registered.')
+    return []
+  }
+
+  // Log first few entries to verify content
+  console.log('[Goober] First 3 entries:', entries.slice(0, 3))
+
   const terms = query.toLowerCase().split(/\s+/)
+  console.log('[Goober] Search terms:', terms)
 
   // Score and filter results
-  const scored = entries
-    .map(entry => {
-      const titleLower = entry.title.toLowerCase()
-      const snippetLower = entry.snippet.toLowerCase()
-      const keywordsLower = entry.keywords.join(' ').toLowerCase()
-      const fullText = `${titleLower} ${snippetLower} ${keywordsLower}`
+  const allScored = entries.map(entry => {
+    const titleLower = entry.title.toLowerCase()
+    const snippetLower = entry.snippet.toLowerCase()
+    const keywordsLower = entry.keywords.join(' ').toLowerCase()
 
-      // Calculate match score
-      let score = 0
-      for (const term of terms) {
-        // Title matches are worth more
-        if (titleLower.includes(term)) score += 10
-        // Snippet matches
-        if (snippetLower.includes(term)) score += 5
-        // Keyword matches
-        if (keywordsLower.includes(term)) score += 3
-      }
+    // Calculate match score
+    let score = 0
+    for (const term of terms) {
+      // Title matches are worth more
+      if (titleLower.includes(term)) score += 10
+      // Snippet matches
+      if (snippetLower.includes(term)) score += 5
+      // Keyword matches
+      if (keywordsLower.includes(term)) score += 3
+    }
 
-      // Apply SEO score as a multiplier
-      score = score * (entry.seoScore / 50)
+    // Apply SEO score as a multiplier
+    score = score * (entry.seoScore / 50)
 
-      return { entry, score }
-    })
+    return { entry, score }
+  })
+
+  // Log scoring details for debugging
+  const matchingEntries = allScored.filter(({ score }) => score > 0)
+  console.log('[Goober] Matching entries before filter:', matchingEntries.length)
+  if (matchingEntries.length > 0) {
+    console.log('[Goober] Top matches:', matchingEntries.slice(0, 5).map(m => ({ title: m.entry.title, score: m.score })))
+  }
+
+  const scored = allScored
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 15)
@@ -302,7 +326,13 @@ function SearchBox({
               }}
               onMouseEnter={() => setSelectedIndex(i)}
               onClick={() => {
-                onSelectSuggestion?.(item)
+                console.log('[Goober SearchBox] Suggestion clicked:', item)
+                console.log('[Goober SearchBox] onSelectSuggestion is:', typeof onSelectSuggestion)
+                if (onSelectSuggestion) {
+                  onSelectSuggestion(item)
+                } else {
+                  console.error('[Goober SearchBox] onSelectSuggestion is not defined!')
+                }
                 setShowSuggestions(false)
               }}
             >
@@ -445,34 +475,35 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
 
   // Parse path to determine view
   const parsedPath = useMemo(() => {
+    console.log('[Goober] Parsing path:', path)
     if (!path || path === '/') {
+      console.log('[Goober] Path is home')
       return { view: 'home' as const, query: '' }
     }
     if (path.startsWith('/search')) {
       // Parse query from path: /search?q=...
       const match = path.match(/[?&]q=([^&]+)/)
       const q = match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : ''
+      console.log('[Goober] Path is search, query:', q)
       return { view: 'results' as const, query: q }
     }
+    console.log('[Goober] Unknown path, defaulting to home')
     return { view: 'home' as const, query: '' }
   }, [path])
 
-  // Sync query state with URL
+  // Sync query state with URL (only when URL changes, not when query changes)
   useEffect(() => {
-    if (parsedPath.query && parsedPath.query !== query) {
+    console.log('[Goober] Query sync effect - parsedPath.query:', parsedPath.query)
+    if (parsedPath.query) {
+      console.log('[Goober] Syncing query from URL:', parsedPath.query)
       setQuery(parsedPath.query)
     }
   }, [parsedPath.query])
 
-  // Execute search when on results page
-  useEffect(() => {
-    if (parsedPath.view === 'results' && parsedPath.query) {
-      executeSearch(parsedPath.query)
-    }
-  }, [parsedPath.view, parsedPath.query])
-
   const executeSearch = useCallback(async (searchQuery: string) => {
+    console.log('[Goober] executeSearch called with:', searchQuery)
     if (!searchQuery.trim()) {
+      console.log('[Goober] Empty query, clearing results')
       setResults([])
       return
     }
@@ -483,8 +514,9 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
     try {
       // Use client-side search from site manifests
       // In production, this could also use WebSocket to call search:query for dynamic content
-      const results = clientSearch(searchQuery)
-      setResults(results)
+      const searchResults = clientSearch(searchQuery)
+      console.log('[Goober] Search returned', searchResults.length, 'results:', searchResults)
+      setResults(searchResults)
       setSearchTime(Date.now() - startTime)
     } catch (error) {
       console.error('[Goober] Search error:', error)
@@ -494,21 +526,44 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
     }
   }, [])
 
+  // Execute search when on results page
+  useEffect(() => {
+    console.log('[Goober] Search effect - view:', parsedPath.view, 'query:', parsedPath.query)
+    if (parsedPath.view === 'results' && parsedPath.query) {
+      console.log('[Goober] On results page with query, executing search')
+      executeSearch(parsedPath.query)
+    }
+  }, [parsedPath.view, parsedPath.query, executeSearch])
+
   const handleSearch = useCallback(() => {
-    if (!query.trim()) return
+    console.log('[Goober] handleSearch called with query:', query)
+    if (!query.trim()) {
+      console.log('[Goober] Empty query, not searching')
+      return
+    }
     const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+')
-    onPathChange(`/search?q=${encodedQuery}`)
+    const newPath = `/search?q=${encodedQuery}`
+    console.log('[Goober] Navigating to path:', newPath)
+    onPathChange(newPath)
   }, [query, onPathChange])
 
   const handleNavigateToResult = useCallback((url: string) => {
+    console.log('[Goober] handleNavigateToResult called with url:', url)
+    console.log('[Goober] onNavigateToUrl is:', typeof onNavigateToUrl, onNavigateToUrl ? 'defined' : 'undefined')
     if (onNavigateToUrl) {
       onNavigateToUrl(url)
+    } else {
+      console.error('[Goober] onNavigateToUrl is not defined!')
     }
   }, [onNavigateToUrl])
 
   const handleSelectSuggestion = useCallback((item: AutocompleteItem) => {
+    console.log('[Goober] handleSelectSuggestion called with item:', item)
+    console.log('[Goober] onNavigateToUrl is:', typeof onNavigateToUrl, onNavigateToUrl ? 'defined' : 'undefined')
     if (onNavigateToUrl) {
       onNavigateToUrl(item.url)
+    } else {
+      console.error('[Goober] onNavigateToUrl is not defined!')
     }
   }, [onNavigateToUrl])
 
@@ -525,15 +580,18 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
   useEffect(() => {
     if (query.length >= 2) {
       const entries = getSearchableContent()
-      const suggestions = entries
-        .filter(entry => entry.title.toLowerCase().includes(query.toLowerCase()))
+      console.log('[Goober] Autocomplete - searching', entries.length, 'entries for:', query)
+      const matching = entries.filter(entry => entry.title.toLowerCase().includes(query.toLowerCase()))
+      console.log('[Goober] Autocomplete - found', matching.length, 'matches')
+      const newSuggestions = matching
         .slice(0, 5)
         .map(entry => ({
           title: entry.title,
           url: entry.url,
           contentType: entry.category,
         }))
-      setSuggestions(suggestions)
+      console.log('[Goober] Autocomplete - showing', newSuggestions.length, 'suggestions:', newSuggestions)
+      setSuggestions(newSuggestions)
     } else {
       setSuggestions([])
     }

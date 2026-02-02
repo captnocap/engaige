@@ -82,6 +82,7 @@ type LegacySiteProps = {
   path: string | null
   onNavigate: (appId: string) => void
   onPathChange: (path: string | null) => void
+  onNavigateToUrl?: (url: string) => void
 }
 
 type LegacyComponent = React.ComponentType<LegacySiteProps>
@@ -93,6 +94,7 @@ function adaptLegacyComponent(Component: LegacyComponent): React.ComponentType<S
       path: props.path,
       onNavigate: props.onNavigate,
       onPathChange: props.onPathChange,
+      onNavigateToUrl: props.onNavigateToUrl,
     })
   }
 }

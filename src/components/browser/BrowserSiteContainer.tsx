@@ -91,4 +91,5 @@ export interface SiteProps {
   path: string | null
   onNavigate: (appId: string) => void
   onPathChange: (path: string | null) => void
+  onNavigateToUrl?: (url: string) => void
 }
