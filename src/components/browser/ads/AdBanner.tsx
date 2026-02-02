@@ -84,7 +84,7 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
     return null
   }
 
-  // Banner style - full width horizontal
+  // Banner style - flexible layout that works in narrow or wide containers
   if (ad.style === 'banner') {
     return (
       <button
@@ -100,26 +100,26 @@ export function AdBanner({ ad, onNavigate, size = 'medium', className = '' }: Ad
           ...sketchyAnimation,
         }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-start gap-2">
           {renderIcon('text-2xl', 'w-8 h-8')}
-          <div className="flex-1 min-w-0">
-            <p className="font-bold truncate">{ad.headline}</p>
+          <div className="flex-1">
+            <p className="font-bold text-sm leading-tight">{ad.headline}</p>
             {ad.subtext && (
-              <p className="text-sm opacity-80 truncate">{ad.subtext}</p>
+              <p className="text-xs opacity-80 mt-0.5">{ad.subtext}</p>
             )}
           </div>
-          {ad.cta && (
-            <span
-              className="shrink-0 px-3 py-1 rounded-full text-sm font-medium"
-              style={{
-                background: ad.accentColor || 'rgba(255,255,255,0.2)',
-                color: ad.textColor,
-              }}
-            >
-              {ad.cta}
-            </span>
-          )}
         </div>
+        {ad.cta && (
+          <div
+            className="mt-2 py-1.5 rounded-full text-xs font-medium text-center"
+            style={{
+              background: ad.accentColor || 'rgba(255,255,255,0.2)',
+              color: ad.textColor,
+            }}
+          >
+            {ad.cta}
+          </div>
+        )}
         <AdLabel isSketchy={ad.isSketchy} />
       </button>
     )

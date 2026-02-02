@@ -6,9 +6,14 @@
  *
  * Video content is configured in src/config/vidtube-content.ts
  * Add thumbnails to public/images/vidtube/
+ *
+ * URL Routing:
+ * - Homepage: path = null or '/'
+ * - Video view: path = '/watch/{video-id}'
+ * - Channel view: path = '/channel/{channel-id}' (future)
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
@@ -26,15 +31,68 @@ import {
 const site = FILLER_SITES.video
 
 // ============================================================================
+// URL Routing Helpers
+// ============================================================================
+
+/**
+ * Parse the current path to determine the view and extract IDs.
+ * Returns the view type and any relevant ID.
+ */
+function parseRoute(path: string | null): { view: 'home' | 'watch' | 'channel'; id: string | null } {
+  if (!path || path === '/') {
+    return { view: 'home', id: null }
+  }
+
+  // Match /watch/{video-id}
+  const watchMatch = path.match(/^\/watch\/(.+)$/)
+  if (watchMatch) {
+    return { view: 'watch', id: watchMatch[1] }
+  }
+
+  // Match /channel/{channel-id}
+  const channelMatch = path.match(/^\/channel\/(.+)$/)
+  if (channelMatch) {
+    return { view: 'channel', id: channelMatch[1] }
+  }
+
+  return { view: 'home', id: null }
+}
+
+/**
+ * Find a video by its ID from the video list.
+ */
+function findVideoById(id: string | null): Video | null {
+  if (!id) return null
+  return VIDTUBE_VIDEOS.find(v => v.id === id) || null
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
-export function VidTubeSite({ siteId, onNavigate }: SiteProps) {
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Parse the current route to determine what view to show
+  const route = useMemo(() => parseRoute(path), [path])
+
+  // Find the selected video based on the route
+  const selectedVideo = useMemo(() => findVideoById(route.id), [route.id])
+
+  // Local UI state (not URL-based)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [isLiked, setIsLiked] = useState(false)
   const [isDisliked, setIsDisliked] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
+
+  // Navigate to a video's watch page
+  const navigateToVideo = (video: Video) => {
+    onPathChange(`/watch/${video.id}`)
+  }
+
+  // Navigate back to the homepage
+  const navigateToHome = () => {
+    onPathChange(null)
+    setSelectedCategory('All')
+  }
 
   const filteredVideos = selectedCategory === 'All'
     ? VIDTUBE_VIDEOS
@@ -50,10 +108,7 @@ export function VidTubeSite({ siteId, onNavigate }: SiteProps) {
         <div className="flex items-center gap-4">
           {/* Logo */}
           <button
-            onClick={() => {
-              setSelectedVideo(null)
-              setSelectedCategory('All')
-            }}
+            onClick={navigateToHome}
             className="flex items-center gap-1 hover:opacity-80"
           >
             <span className="text-2xl">{site.icon}</span>
@@ -108,9 +163,9 @@ export function VidTubeSite({ siteId, onNavigate }: SiteProps) {
       {selectedVideo ? (
         <VideoPlayer
           video={selectedVideo}
-          onBack={() => setSelectedVideo(null)}
+          onBack={navigateToHome}
           allVideos={VIDTUBE_VIDEOS}
-          onSelectVideo={setSelectedVideo}
+          onSelectVideo={navigateToVideo}
           isLiked={isLiked}
           setIsLiked={setIsLiked}
           isDisliked={isDisliked}
@@ -151,7 +206,7 @@ export function VidTubeSite({ siteId, onNavigate }: SiteProps) {
                 <VideoCard
                   key={video.id}
                   video={video}
-                  onClick={() => setSelectedVideo(video)}
+                  onClick={() => navigateToVideo(video)}
                 />
               ))}
             </div>
@@ -257,6 +312,7 @@ interface VideoPlayerProps {
   video: Video
   onBack: () => void
   allVideos: Video[]
+  /** Navigate to another video via URL routing */
   onSelectVideo: (video: Video) => void
   isLiked: boolean
   setIsLiked: (v: boolean) => void

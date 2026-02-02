@@ -379,8 +379,29 @@ const NEIGHBORHOODS = [
 // Components
 // ============================================================================
 
-export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
-  const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
+/**
+ * Helper function to parse the current path and extract listing ID
+ * Returns the listing object if viewing a detail page, null for homepage
+ */
+function getListingFromPath(path: string | null): Listing | null {
+  if (!path || path === '/') {
+    return null
+  }
+
+  // Match /listing/{id} pattern
+  const listingMatch = path.match(/^\/listing\/(.+)$/)
+  if (listingMatch) {
+    const listingId = listingMatch[1]
+    return SAMPLE_LISTINGS.find((l) => l.id === listingId) || null
+  }
+
+  return null
+}
+
+export function NestFinderSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Derive selected listing from URL path instead of local state
+  const selectedListing = getListingFromPath(path)
+
   const [filters, setFilters] = useState({
     neighborhood: 'All Neighborhoods',
     minPrice: 0,
@@ -390,6 +411,20 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
     listingType: 'rent' as 'rent' | 'sale' | 'all',
   })
   const [savedListings, setSavedListings] = useState<string[]>([])
+
+  /**
+   * Navigate to a listing detail page via URL
+   */
+  const navigateToListing = (listing: Listing) => {
+    onPathChange(`/listing/${listing.id}`)
+  }
+
+  /**
+   * Navigate back to homepage
+   */
+  const navigateToHome = () => {
+    onPathChange(null)
+  }
 
   const filteredListings = SAMPLE_LISTINGS.filter((listing) => {
     if (filters.neighborhood !== 'All Neighborhoods' && listing.neighborhood !== filters.neighborhood) {
@@ -422,7 +457,7 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => setSelectedListing(null)}
+            onClick={navigateToHome}
             className="flex items-center gap-2 hover:opacity-80"
           >
             <span className="text-2xl">{site.icon}</span>
@@ -464,7 +499,7 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
       {selectedListing ? (
         <ListingDetail
           listing={selectedListing}
-          onBack={() => setSelectedListing(null)}
+          onBack={navigateToHome}
           isSaved={savedListings.includes(selectedListing.id)}
           onToggleSave={() => toggleSaved(selectedListing.id)}
         />
@@ -576,7 +611,7 @@ export function NestFinderSite({ siteId, onNavigate }: SiteProps) {
                   <ListingCard
                     key={listing.id}
                     listing={listing}
-                    onClick={() => setSelectedListing(listing)}
+                    onClick={() => navigateToListing(listing)}
                     isSaved={savedListings.includes(listing.id)}
                     onToggleSave={() => toggleSaved(listing.id)}
                   />

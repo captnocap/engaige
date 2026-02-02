@@ -68,6 +68,13 @@ export function Window({
   // Get OS theme config
   const windowChrome = useOSThemeStore(s => s.windowChrome)
 
+  // Sync isMinimized state from parent (for taskbar restore)
+  useEffect(() => {
+    if (initialState?.isMinimized !== undefined && initialState.isMinimized !== state.isMinimized) {
+      setState(prev => ({ ...prev, isMinimized: initialState.isMinimized! }))
+    }
+  }, [initialState?.isMinimized])
+
   // Update maximized window dimensions when viewport resizes (e.g., fullscreen toggle)
   useEffect(() => {
     if (!state.isMaximized) return

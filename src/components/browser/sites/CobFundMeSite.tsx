@@ -8,13 +8,69 @@
  * Integrates with existing world lore: Derek's quantum coffee obsession,
  * Trust Fall Tim's medical bills, The Underground venue, Floor 13 conspiracy,
  * Mildred's gas station sushi tour, and more.
+ *
+ * URL Routing:
+ * - Homepage: path = null or '/'
+ * - Campaign detail: path = '/campaign/{campaign-id}'
+ * - Category filter: path = '/category/{category-name}'
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 
 const site = FILLER_SITES.cobfundme
+
+// ============================================================================
+// URL Routing Helpers
+// ============================================================================
+
+/**
+ * Route type representing the current view state.
+ * - home: Main homepage with all campaigns
+ * - campaign: Single campaign detail view
+ * - category: Filtered view by category
+ */
+interface RouteState {
+  view: 'home' | 'campaign' | 'category'
+  id: string | null
+}
+
+/**
+ * Parse the current path to determine the view and extract IDs.
+ *
+ * Supported routes:
+ * - / or null -> homepage
+ * - /campaign/{campaign-id} -> campaign detail
+ * - /category/{category-name} -> filtered category view
+ */
+function parseRoute(path: string | null): RouteState {
+  if (!path || path === '/') {
+    return { view: 'home', id: null }
+  }
+
+  // Match /campaign/{campaign-id}
+  const campaignMatch = path.match(/^\/campaign\/(.+)$/)
+  if (campaignMatch) {
+    return { view: 'campaign', id: campaignMatch[1] }
+  }
+
+  // Match /category/{category-name}
+  const categoryMatch = path.match(/^\/category\/(.+)$/)
+  if (categoryMatch) {
+    return { view: 'category', id: categoryMatch[1] }
+  }
+
+  return { view: 'home', id: null }
+}
+
+/**
+ * Find a campaign by its ID from the campaign list.
+ */
+function findCampaignById(id: string | null, campaigns: Campaign[]): Campaign | null {
+  if (!id) return null
+  return campaigns.find(c => c.id === id) || null
+}
 
 // ============================================================================
 // Types
@@ -911,10 +967,46 @@ function CampaignDetail({
 // Main Site Component
 // ============================================================================
 
-export function CobFundMeSite({ siteId }: SiteProps) {
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+export function CobFundMeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Parse the current route to determine what view to show
+  const route = useMemo(() => parseRoute(path), [path])
+
+  // Find the selected campaign based on the route
+  const selectedCampaign = useMemo(() => findCampaignById(route.id, CAMPAIGNS), [route.id])
+
+  // Determine selected category from route or default to 'all'
+  const selectedCategory = route.view === 'category' && route.id ? route.id : 'all'
+
+  // Local UI state for search (not URL-based)
   const [searchQuery, setSearchQuery] = useState('')
+
+  /**
+   * Navigate to a campaign's detail page.
+   * Updates the URL to /campaign/{campaign-id}
+   */
+  const navigateToCampaign = (campaign: Campaign) => {
+    onPathChange(`/campaign/${campaign.id}`)
+  }
+
+  /**
+   * Navigate back to the homepage.
+   * Clears the path to show all campaigns.
+   */
+  const navigateToHome = () => {
+    onPathChange(null)
+  }
+
+  /**
+   * Navigate to a category filter view.
+   * Updates the URL to /category/{category-name} or null for 'all'.
+   */
+  const navigateToCategory = (category: string) => {
+    if (category === 'all') {
+      onPathChange(null)
+    } else {
+      onPathChange(`/category/${category}`)
+    }
+  }
 
   // Filter campaigns based on category and search
   const filteredCampaigns = CAMPAIGNS.filter((campaign) => {
@@ -929,10 +1021,11 @@ export function CobFundMeSite({ siteId }: SiteProps) {
   // Featured campaigns for hero section
   const featuredCampaigns = CAMPAIGNS.filter((c) => c.featured)
 
-  if (selectedCampaign) {
+  // Render campaign detail view if a campaign is selected via URL
+  if (route.view === 'campaign' && selectedCampaign) {
     return (
       <div className="min-h-full bg-gray-50 py-6 px-4">
-        <CampaignDetail campaign={selectedCampaign} onBack={() => setSelectedCampaign(null)} />
+        <CampaignDetail campaign={selectedCampaign} onBack={navigateToHome} />
       </div>
     )
   }
@@ -943,14 +1036,14 @@ export function CobFundMeSite({ siteId }: SiteProps) {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
+            {/* Logo - clickable to return to homepage */}
+            <button onClick={navigateToHome} className="flex items-center gap-2 hover:opacity-80">
               <span className="text-3xl">{site?.icon || '🌽'}</span>
-              <div>
+              <div className="text-left">
                 <h1 className="text-xl font-bold text-green-700">{site?.name || 'CobFundMe'}</h1>
                 <p className="text-xs text-gray-500">{site?.tagline || 'Fund What Matters (To Someone)'}</p>
               </div>
-            </div>
+            </button>
 
             {/* Search */}
             <div className="flex-1 max-w-md mx-8">
@@ -983,7 +1076,7 @@ export function CobFundMeSite({ siteId }: SiteProps) {
               {featuredCampaigns.map((campaign) => (
                 <button
                   key={campaign.id}
-                  onClick={() => setSelectedCampaign(campaign)}
+                  onClick={() => navigateToCampaign(campaign)}
                   className="bg-white/10 backdrop-blur rounded-lg p-4 text-left hover:bg-white/20 transition-colors"
                 >
                   <div className="flex gap-4">
@@ -1017,7 +1110,7 @@ export function CobFundMeSite({ siteId }: SiteProps) {
             {['all', 'Medical', 'Emergency', 'Memorial', 'Dreams', 'Suspicious'].map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => navigateToCategory(category)}
                 className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
                   selectedCategory === category
                     ? 'bg-green-600 text-white'
@@ -1053,7 +1146,7 @@ export function CobFundMeSite({ siteId }: SiteProps) {
               <CampaignCard
                 key={campaign.id}
                 campaign={campaign}
-                onClick={() => setSelectedCampaign(campaign)}
+                onClick={() => navigateToCampaign(campaign)}
               />
             ))}
           </div>

@@ -668,6 +668,7 @@ const HOT_NETWORK_QUESTIONS = [
 export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'questions' | 'tags' | 'users'>('questions')
   const [userVotes, setUserVotes] = useState<Record<string, number>>({})
 
@@ -678,23 +679,36 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
   useEffect(() => {
     isUpdatingFromPath.current = true
 
-    if (!path) {
+    if (!path || path === '/') {
+      // Homepage - clear all selections
       setSelectedQuestion(null)
       setSelectedUser(null)
-    } else if (path.startsWith('/q/')) {
-      const questionId = path.slice(3)
+      setSelectedTag(null)
+    } else if (path.startsWith('/question/')) {
+      // Question detail view: /question/question-id
+      const questionId = path.slice('/question/'.length)
       const question = SAMPLE_QUESTIONS.find(q => q.id === questionId)
       if (question) {
         setSelectedQuestion(question)
         setSelectedUser(null)
+        setSelectedTag(null)
       }
-    } else if (path.startsWith('/u/')) {
-      const username = path.slice(3)
+    } else if (path.startsWith('/user/')) {
+      // User profile view: /user/username
+      const username = path.slice('/user/'.length)
       const user = SAMPLE_USERS[username]
       if (user) {
         setSelectedUser(user)
         setSelectedQuestion(null)
+        setSelectedTag(null)
       }
+    } else if (path.startsWith('/tag/')) {
+      // Tag filter view: /tag/tagname
+      const tagName = path.slice('/tag/'.length)
+      setSelectedTag(tagName)
+      setSelectedQuestion(null)
+      setSelectedUser(null)
+      setActiveTab('questions')
     }
 
     setTimeout(() => {
@@ -709,7 +723,8 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     if (fullQuestion) {
       setSelectedQuestion(fullQuestion)
       setSelectedUser(null)
-      onPathChange('/q/' + question.id)
+      setSelectedTag(null)
+      onPathChange('/question/' + question.id)
     }
   }
 
@@ -718,13 +733,23 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     if (user) {
       setSelectedUser(user)
       setSelectedQuestion(null)
-      onPathChange('/u/' + username)
+      setSelectedTag(null)
+      onPathChange('/user/' + username)
     }
+  }
+
+  const handleSelectTag = (tagName: string) => {
+    setSelectedTag(tagName)
+    setSelectedQuestion(null)
+    setSelectedUser(null)
+    setActiveTab('questions')
+    onPathChange('/tag/' + tagName)
   }
 
   const handleBackToHome = () => {
     setSelectedQuestion(null)
     setSelectedUser(null)
+    setSelectedTag(null)
     onPathChange(null)
   }
 
@@ -746,6 +771,11 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
       answers: [],
     } as Question)),
   ]
+
+  // Filter questions by selected tag if applicable
+  const filteredQuestions = selectedTag
+    ? allQuestionsForList.filter(q => q.tags.includes(selectedTag))
+    : allQuestionsForList
 
   return (
     <div className="min-h-full" style={{ background: SITE_THEME.background }}>
@@ -853,6 +883,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
                 userVotes={userVotes}
                 onVote={handleVote}
                 onSelectUser={handleSelectUser}
+                onSelectTag={handleSelectTag}
               />
             ) : selectedUser ? (
               <UserProfile
@@ -860,16 +891,26 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
                 onBack={handleBackToHome}
                 onSelectQuestion={handleSelectQuestion}
               />
+            ) : selectedTag ? (
+              <TagFilterView
+                tagName={selectedTag}
+                questions={filteredQuestions}
+                onBack={handleBackToHome}
+                onSelectQuestion={handleSelectQuestion}
+                userVotes={userVotes}
+                onVote={handleVote}
+              />
             ) : activeTab === 'tags' ? (
-              <TagsList tags={POPULAR_TAGS} />
+              <TagsList tags={POPULAR_TAGS} onSelectTag={handleSelectTag} />
             ) : activeTab === 'users' ? (
               <UsersList users={Object.values(SAMPLE_USERS)} onSelectUser={handleSelectUser} />
             ) : (
               <QuestionsList
-                questions={allQuestionsForList}
+                questions={filteredQuestions}
                 onSelectQuestion={handleSelectQuestion}
                 userVotes={userVotes}
                 onVote={handleVote}
+                onSelectTag={handleSelectTag}
               />
             )}
           </main>
@@ -921,7 +962,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
               </h3>
               <div className="flex flex-wrap gap-2">
                 {POPULAR_TAGS.slice(0, 6).map((tag) => (
-                  <TagBadge key={tag.name} name={tag.name} count={tag.count} />
+                  <TagBadge key={tag.name} name={tag.name} count={tag.count} onClick={() => handleSelectTag(tag.name)} />
                 ))}
               </div>
             </StyledCard>
@@ -976,12 +1017,31 @@ interface TagBadgeProps {
   name: string
   count?: number
   size?: 'sm' | 'md'
+  onClick?: () => void
 }
 
-function TagBadge({ name, count, size = 'sm' }: TagBadgeProps) {
+function TagBadge({ name, count, size = 'sm', onClick }: TagBadgeProps) {
+  const baseClasses = `inline-flex items-center gap-1 rounded ${size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2 py-1 text-sm'}`
+  const clickableClasses = onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={`${baseClasses} ${clickableClasses}`}
+        style={{ background: SITE_THEME.tagBg, color: SITE_THEME.tagText }}
+      >
+        {name}
+        {count !== undefined && (
+          <span style={{ color: SITE_THEME.textMuted }}>x{count.toLocaleString()}</span>
+        )}
+      </button>
+    )
+  }
+
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded ${size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2 py-1 text-sm'}`}
+      className={baseClasses}
       style={{ background: SITE_THEME.tagBg, color: SITE_THEME.tagText }}
     >
       {name}
@@ -1001,9 +1061,10 @@ interface QuestionsListProps {
   onSelectQuestion: (question: Question) => void
   userVotes: Record<string, number>
   onVote: (id: string, direction: 1 | -1) => void
+  onSelectTag?: (tagName: string) => void
 }
 
-function QuestionsList({ questions, onSelectQuestion, userVotes, onVote }: QuestionsListProps) {
+function QuestionsList({ questions, onSelectQuestion, userVotes, onVote, onSelectTag }: QuestionsListProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -1047,6 +1108,7 @@ function QuestionsList({ questions, onSelectQuestion, userVotes, onVote }: Quest
             onClick={() => onSelectQuestion(question)}
             userVote={userVotes[question.id] || 0}
             onVote={(dir) => onVote(question.id, dir)}
+            onSelectTag={onSelectTag}
           />
         ))}
       </div>
@@ -1063,9 +1125,10 @@ interface QuestionRowProps {
   onClick: () => void
   userVote: number
   onVote: (direction: 1 | -1) => void
+  onSelectTag?: (tagName: string) => void
 }
 
-function QuestionRow({ question, onClick, userVote, onVote }: QuestionRowProps) {
+function QuestionRow({ question, onClick, userVote, onVote, onSelectTag }: QuestionRowProps) {
   const displayVotes = question.votes + userVote
 
   return (
@@ -1123,7 +1186,7 @@ function QuestionRow({ question, onClick, userVote, onVote }: QuestionRowProps) 
 
         <div className="flex flex-wrap gap-1 mb-2">
           {question.tags.map((tag) => (
-            <TagBadge key={tag} name={tag} />
+            <TagBadge key={tag} name={tag} onClick={onSelectTag ? () => onSelectTag(tag) : undefined} />
           ))}
         </div>
 
@@ -1154,9 +1217,10 @@ interface QuestionDetailProps {
   userVotes: Record<string, number>
   onVote: (id: string, direction: 1 | -1) => void
   onSelectUser: (username: string) => void
+  onSelectTag: (tagName: string) => void
 }
 
-function QuestionDetail({ question, onBack, userVotes, onVote, onSelectUser }: QuestionDetailProps) {
+function QuestionDetail({ question, onBack, userVotes, onVote, onSelectUser, onSelectTag }: QuestionDetailProps) {
   const displayVotes = question.votes + (userVotes[question.id] || 0)
 
   return (
@@ -1253,7 +1317,7 @@ function QuestionDetail({ question, onBack, userVotes, onVote, onSelectUser }: Q
           {/* Tags */}
           <div className="flex flex-wrap gap-1 mb-4">
             {question.tags.map((tag) => (
-              <TagBadge key={tag} name={tag} />
+              <TagBadge key={tag} name={tag} onClick={() => onSelectTag(tag)} />
             ))}
           </div>
 
@@ -1464,9 +1528,10 @@ function AnswerCard({ answer, userVote, onVote, onSelectUser }: AnswerCardProps)
 
 interface TagsListProps {
   tags: Tag[]
+  onSelectTag: (tagName: string) => void
 }
 
-function TagsList({ tags }: TagsListProps) {
+function TagsList({ tags, onSelectTag }: TagsListProps) {
   return (
     <div>
       <h1 className="text-2xl mb-4" style={{ color: SITE_THEME.text }}>Tags</h1>
@@ -1476,21 +1541,82 @@ function TagsList({ tags }: TagsListProps) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {tags.map((tag) => (
-          <StyledCard
+          <button
             key={tag.name}
-            bgColor={SITE_THEME.surface}
-            borderColor={SITE_THEME.border}
-            padding="md"
-            borderRadius="sm"
-            shadow="none"
+            onClick={() => onSelectTag(tag.name)}
+            className="text-left p-4 rounded hover:shadow-md transition-shadow"
+            style={{ background: SITE_THEME.surface, border: `1px solid ${SITE_THEME.border}` }}
           >
             <TagBadge name={tag.name} size="md" />
             <p className="text-sm mt-2" style={{ color: SITE_THEME.textMuted }}>
               {tag.count.toLocaleString()} questions
             </p>
-          </StyledCard>
+          </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// Tag Filter View Component
+// ============================================================================
+
+interface TagFilterViewProps {
+  tagName: string
+  questions: Question[]
+  onBack: () => void
+  onSelectQuestion: (question: Question) => void
+  userVotes: Record<string, number>
+  onVote: (id: string, direction: 1 | -1) => void
+}
+
+function TagFilterView({ tagName, questions, onBack, onSelectQuestion, userVotes, onVote }: TagFilterViewProps) {
+  // Find tag info from POPULAR_TAGS if available
+  const tagInfo = POPULAR_TAGS.find(t => t.name === tagName)
+
+  return (
+    <div>
+      <Button
+        onClick={onBack}
+        variant="link"
+        size="sm"
+        textColor={SITE_THEME.secondary}
+        className="mb-4"
+      >
+        ← Back to all questions
+      </Button>
+
+      <div className="flex items-center gap-3 mb-4 pb-4" style={{ borderBottom: `1px solid ${SITE_THEME.border}` }}>
+        <TagBadge name={tagName} size="md" />
+        <div>
+          <h1 className="text-xl" style={{ color: SITE_THEME.text }}>
+            Questions tagged [{tagName}]
+          </h1>
+          <p className="text-sm" style={{ color: SITE_THEME.textMuted }}>
+            {questions.length} question{questions.length !== 1 ? 's' : ''}
+            {tagInfo && ` (${tagInfo.count.toLocaleString()} total)`}
+          </p>
+        </div>
+      </div>
+
+      {questions.length > 0 ? (
+        <div className="divide-y" style={{ borderColor: SITE_THEME.border }}>
+          {questions.map((question) => (
+            <QuestionRow
+              key={question.id}
+              question={question}
+              onClick={() => onSelectQuestion(question)}
+              userVote={userVotes[question.id] || 0}
+              onVote={(dir) => onVote(question.id, dir)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8" style={{ color: SITE_THEME.textMuted }}>
+          No questions found with this tag.
+        </div>
+      )}
     </div>
   )
 }

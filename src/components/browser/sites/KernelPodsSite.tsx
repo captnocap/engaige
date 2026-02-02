@@ -9,7 +9,7 @@
  * and mysterious anonymous hosts investigating the Hartwell Building.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
 
@@ -1007,6 +1007,68 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path || path === '/') {
+      // Homepage
+      setSelectedPodcast(null)
+      setSelectedEpisode(null)
+    } else if (path.startsWith('/show/')) {
+      // Show or episode path: /show/podcast-id or /show/podcast-id/episode/episode-id
+      const pathParts = path.slice(6).split('/episode/')
+      const podcastId = pathParts[0]
+      const episodeId = pathParts[1] || null
+
+      const podcast = PODCASTS.find((p) => p.id === podcastId)
+      if (podcast) {
+        setSelectedPodcast(podcast)
+        if (episodeId) {
+          const episode = podcast.episodes.find((e) => e.id === episodeId)
+          setSelectedEpisode(episode || null)
+        } else {
+          setSelectedEpisode(null)
+        }
+      } else {
+        // Podcast not found, go to homepage
+        setSelectedPodcast(null)
+        setSelectedEpisode(null)
+      }
+    } else if (path.startsWith('/episode/')) {
+      // Direct episode path: /episode/episode-id (search all podcasts for the episode)
+      const episodeId = path.slice(9)
+      let foundPodcast: Podcast | null = null
+      let foundEpisode: Episode | null = null
+
+      for (const podcast of PODCASTS) {
+        const episode = podcast.episodes.find((e) => e.id === episodeId)
+        if (episode) {
+          foundPodcast = podcast
+          foundEpisode = episode
+          break
+        }
+      }
+
+      if (foundPodcast && foundEpisode) {
+        setSelectedPodcast(foundPodcast)
+        setSelectedEpisode(foundEpisode)
+      } else {
+        // Episode not found, go to homepage
+        setSelectedPodcast(null)
+        setSelectedEpisode(null)
+      }
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
+
   // Filter podcasts by category
   const filteredPodcasts = activeCategory
     ? PODCASTS.filter((p) => p.category === activeCategory)
@@ -1014,17 +1076,20 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
 
   // Handle navigation
   const handleSelectPodcast = (podcast: Podcast) => {
+    if (isUpdatingFromPath.current) return
     setSelectedPodcast(podcast)
     setSelectedEpisode(null)
     onPathChange?.(`/show/${podcast.id}`)
   }
 
   const handleSelectEpisode = (episode: Episode) => {
+    if (isUpdatingFromPath.current) return
     setSelectedEpisode(episode)
     onPathChange?.(`/show/${selectedPodcast?.id}/episode/${episode.id}`)
   }
 
   const handleBack = () => {
+    if (isUpdatingFromPath.current) return
     if (selectedEpisode) {
       setSelectedEpisode(null)
       onPathChange?.(`/show/${selectedPodcast?.id}`)
@@ -1049,7 +1114,11 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
             </div>
             <nav className="hidden md:flex gap-4 text-sm">
               <button
-                onClick={() => { setSelectedPodcast(null); setSelectedEpisode(null); }}
+                onClick={() => {
+                  setSelectedPodcast(null)
+                  setSelectedEpisode(null)
+                  onPathChange?.(null)
+                }}
                 className="text-purple-200 hover:text-white"
               >
                 Browse

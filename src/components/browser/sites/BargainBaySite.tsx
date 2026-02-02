@@ -5,13 +5,49 @@
  * Features questionable listings, desperate sellers, and typical marketplace chaos.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.marketplace
+
+// ============================================================================
+// URL Helpers
+// ============================================================================
+
+/**
+ * Creates a URL-safe slug from a listing title.
+ * Example: "Quantum Coffee Maker Q-3000 - BARELY USED" -> "quantum-coffee-maker-q-3000-barely-used"
+ */
+function createSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim()
+}
+
+/**
+ * Creates a URL-safe category slug.
+ * Example: "Musical Instruments" -> "musical-instruments"
+ */
+function createCategorySlug(category: string): string {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .trim()
+}
+
+/**
+ * Finds a category name from its slug.
+ */
+function findCategoryFromSlug(slug: string, categories: string[]): string | null {
+  return categories.find(cat => createCategorySlug(cat) === slug) || null
+}
 
 // ============================================================================
 // Types
@@ -410,10 +446,82 @@ If this wasn't you but you also appreciate quantum coffee and existential dread,
 // Components
 // ============================================================================
 
-export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
+export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path) {
+      // Home page
+      setSelectedListing(null)
+      setSelectedCategory('All Categories')
+    } else if (path.startsWith('/listing/')) {
+      // Listing detail path: /listing/listing-slug
+      const slug = path.slice(9) // Remove '/listing/'
+      const listing = SAMPLE_LISTINGS.find(l =>
+        l.id === slug || createSlug(l.title) === slug
+      )
+      if (listing) {
+        setSelectedListing(listing)
+      }
+    } else if (path.startsWith('/category/')) {
+      // Category path: /category/category-slug
+      const slug = path.slice(10) // Remove '/category/'
+      const category = findCategoryFromSlug(slug, CATEGORIES)
+      if (category && category !== 'All Categories') {
+        setSelectedListing(null)
+        setSelectedCategory(category)
+      } else {
+        // Invalid category, go to home
+        setSelectedListing(null)
+        setSelectedCategory('All Categories')
+      }
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
+
+  // Navigation handlers that update both state and path
+  const handleSelectListing = (listing: Listing) => {
+    setSelectedListing(listing)
+    onPathChange('/listing/' + createSlug(listing.title))
+  }
+
+  const handleSelectCategory = (category: string) => {
+    setSelectedCategory(category)
+    setSelectedListing(null)
+    if (category === 'All Categories') {
+      onPathChange(null)
+    } else {
+      onPathChange('/category/' + createCategorySlug(category))
+    }
+  }
+
+  const handleBackToListings = () => {
+    setSelectedListing(null)
+    // Go back to category if one is selected, otherwise go to home
+    if (selectedCategory && selectedCategory !== 'All Categories') {
+      onPathChange('/category/' + createCategorySlug(selectedCategory))
+    } else {
+      onPathChange(null)
+    }
+  }
+
+  const handleGoHome = () => {
+    setSelectedListing(null)
+    setSelectedCategory('All Categories')
+    onPathChange(null)
+  }
 
   const filteredListings = SAMPLE_LISTINGS.filter((listing) => {
     if (selectedCategory !== 'All Categories' && listing.category !== selectedCategory) {
@@ -434,7 +542,7 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
       >
         <div className="max-w-6xl mx-auto flex items-center gap-4">
           <Button
-            onClick={() => setSelectedListing(null)}
+            onClick={handleGoHome}
             variant="ghost"
             textColor="white"
             className="flex items-center gap-2"
@@ -477,7 +585,7 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
       {selectedListing ? (
         <ListingDetail
           listing={selectedListing}
-          onBack={() => setSelectedListing(null)}
+          onBack={handleBackToListings}
         />
       ) : (
         <div className="max-w-6xl mx-auto px-4 py-6">
@@ -494,7 +602,7 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
                 {CATEGORIES.map((cat) => (
                   <Button
                     key={cat}
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => handleSelectCategory(cat)}
                     variant={selectedCategory === cat ? 'primary' : 'ghost'}
                     size="sm"
                     backgroundColor={selectedCategory === cat ? site.theme.primary : 'transparent'}
@@ -544,7 +652,7 @@ export function BargainBaySite({ siteId, onNavigate }: SiteProps) {
                   <ListingCard
                     key={listing.id}
                     listing={listing}
-                    onClick={() => setSelectedListing(listing)}
+                    onClick={() => handleSelectListing(listing)}
                   />
                 ))}
               </div>

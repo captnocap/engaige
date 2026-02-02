@@ -4,9 +4,15 @@
  * Amazon parody where everything is corn-related or sold by lore characters.
  * Features "Kernel Prime" membership, product listings, reviews, and seller profiles.
  * Orange/dark theme reminiscent of a certain e-commerce giant.
+ *
+ * URL Routing:
+ * - Homepage: path = null or '/'
+ * - Product view: path = '/product/{product-id}'
+ * - Seller view: path = '/seller/{seller-id}'
+ * - Category view: path = '/category/{category-slug}'
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
 
@@ -406,6 +412,64 @@ function getProductById(id: string): Product | undefined {
 
 function getSellerByName(name: string): Seller | undefined {
   return SELLERS.find(s => s.name === name)
+}
+
+function getSellerById(id: string): Seller | undefined {
+  return SELLERS.find(s => s.id === id)
+}
+
+// ============================================================================
+// URL Routing Helpers
+// ============================================================================
+
+/**
+ * Slugify a category name for URL use.
+ * Converts "Kitchen Appliances" to "kitchen-appliances"
+ */
+function slugifyCategory(category: string): string {
+  return category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')
+}
+
+/**
+ * Find a category by its slug.
+ * Converts "kitchen-appliances" back to "Kitchen Appliances"
+ */
+function findCategoryBySlug(slug: string): string | null {
+  const normalized = slug.toLowerCase()
+  return CATEGORIES.find(cat => slugifyCategory(cat) === normalized) || null
+}
+
+/**
+ * Parse the current path to determine the view and extract IDs.
+ * Returns the view type and any relevant ID.
+ */
+function parseRoute(path: string | null): {
+  view: 'home' | 'product' | 'seller' | 'category'
+  id: string | null
+} {
+  if (!path || path === '/') {
+    return { view: 'home', id: null }
+  }
+
+  // Match /product/{product-id}
+  const productMatch = path.match(/^\/product\/(.+)$/)
+  if (productMatch) {
+    return { view: 'product', id: productMatch[1] }
+  }
+
+  // Match /seller/{seller-id}
+  const sellerMatch = path.match(/^\/seller\/(.+)$/)
+  if (sellerMatch) {
+    return { view: 'seller', id: sellerMatch[1] }
+  }
+
+  // Match /category/{category-slug}
+  const categoryMatch = path.match(/^\/category\/(.+)$/)
+  if (categoryMatch) {
+    return { view: 'category', id: categoryMatch[1] }
+  }
+
+  return { view: 'home', id: null }
 }
 
 // ============================================================================
@@ -913,10 +977,30 @@ const CATEGORIES = [
   'Collectibles',
 ]
 
-export function AmaizeSite({ siteId }: SiteProps) {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState('All')
+export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Parse the current route to determine what view to show
+  const route = useMemo(() => parseRoute(path), [path])
+
+  // Find the selected product/seller based on the route
+  const selectedProduct = useMemo(() => {
+    if (route.view !== 'product' || !route.id) return null
+    return getProductById(route.id) || null
+  }, [route.view, route.id])
+
+  const selectedSeller = useMemo(() => {
+    if (route.view !== 'seller' || !route.id) return null
+    return getSellerById(route.id) || null
+  }, [route.view, route.id])
+
+  // Category from URL or default to 'All'
+  const selectedCategory = useMemo(() => {
+    if (route.view === 'category' && route.id) {
+      return findCategoryBySlug(route.id) || 'All'
+    }
+    return 'All'
+  }, [route.view, route.id])
+
+  // Local UI state (not URL-based)
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredProducts = PRODUCTS.filter(p => {
@@ -925,19 +1009,28 @@ export function AmaizeSite({ siteId }: SiteProps) {
     return true
   })
 
+  // Navigate to a product page
   const handleProductClick = (product: Product) => {
-    setSelectedProduct(product)
-    setSelectedSeller(null)
+    onPathChange(`/product/${product.id}`)
   }
 
+  // Navigate to a seller page
   const handleSellerClick = (seller: Seller) => {
-    setSelectedSeller(seller)
-    setSelectedProduct(null)
+    onPathChange(`/seller/${seller.id}`)
   }
 
+  // Navigate back to the homepage
   const handleBack = () => {
-    setSelectedProduct(null)
-    setSelectedSeller(null)
+    onPathChange(null)
+  }
+
+  // Navigate to a category page
+  const handleCategoryClick = (category: string) => {
+    if (category === 'All') {
+      onPathChange(null)
+    } else {
+      onPathChange(`/category/${slugifyCategory(category)}`)
+    }
   }
 
   return (
@@ -1107,7 +1200,7 @@ export function AmaizeSite({ siteId }: SiteProps) {
                     {CATEGORIES.map(cat => (
                       <button
                         key={cat}
-                        onClick={() => setSelectedCategory(cat)}
+                        onClick={() => handleCategoryClick(cat)}
                         className={`block w-full text-left text-sm py-1 px-2 rounded ${selectedCategory === cat ? 'font-bold' : ''}`}
                         style={{
                           color: selectedCategory === cat ? THEME.primary : THEME.text,

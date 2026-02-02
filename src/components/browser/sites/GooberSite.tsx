@@ -11,6 +11,8 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { getAllSearchEntries } from '../../../router/site-registry.js'
+import type { SearchIndexEntry } from '../../../router/types.js'
 
 // ============================================================================
 // Theme
@@ -71,41 +73,70 @@ interface AutocompleteItem {
 }
 
 // ============================================================================
-// Mock Search (until WebSocket is connected)
+// Client-Side Search (using site manifests)
 // ============================================================================
 
-// Static content for client-side search fallback
-const MOCK_CONTENT = [
-  { id: 'q1', url: 'www.dailybuzz.corn/article/quantum-cafe-opens', title: 'New Quantum Cafe Opens Downtown, Charges $47 Per Cup', snippet: 'Qubit Coffee opens in Hartwell Building with quantum brewing technology...', contentType: 'article', siteDomain: 'dailybuzz.corn' },
-  { id: 'q2', url: 'www.wikiknow.corn/wiki/Quantum_Coffee_Brewing', title: 'Quantum Coffee Brewing - WikiKnow', snippet: 'Controversial preparation method claiming to use quantum mechanics...', contentType: 'article', siteDomain: 'wikiknow.corn' },
-  { id: 'q3', url: 'www.wikiknow.corn/wiki/Hartwell_Building', title: 'Hartwell Building - WikiKnow', snippet: 'Historic downtown building notable for its "missing" 13th floor mystery...', contentType: 'article', siteDomain: 'wikiknow.corn' },
-  { id: 'q4', url: 'www.wikiknow.corn/wiki/Trust_Fall_Tim', title: 'Trust Fall Tim - WikiKnow', snippet: 'Performance artist known for daily public trust falls since 2018...', contentType: 'article', siteDomain: 'wikiknow.corn' },
-  { id: 'q5', url: 'www.dailybuzz.corn/article/trust-fall-record', title: 'Local Man Breaks Trust Fall Record with 2,847 Consecutive Falls', snippet: 'Trust Fall Tim achieves 78.5% catch rate over eight-year experiment...', contentType: 'article', siteDomain: 'dailybuzz.corn' },
-  { id: 'q6', url: 'www.wikiknow.corn/wiki/The_Underground_(venue)', title: 'The Underground (venue) - WikiKnow', snippet: 'Experimental music venue known for hosting avant-garde performances...', contentType: 'article', siteDomain: 'wikiknow.corn' },
-  { id: 'q7', url: 'www.dailybuzz.corn/article/local-band-cancels-show', title: 'Local Band Cancels Show Due to "Ongoing Existential Crisis"', snippet: 'The Velvet Algorithms cite "fundamental questioning of musical purpose"...', contentType: 'article', siteDomain: 'dailybuzz.corn' },
-  { id: 'q8', url: 'www.vidtube.corn/watch/hartwell_floor_13', title: 'We Snuck Into the Hartwell Building\'s Missing Floor 13', snippet: 'Urban exploration of the mysterious missing floor...', contentType: 'video', siteDomain: 'vidtube.corn' },
-  { id: 'q9', url: 'www.threadit.corn/t/floor_13_theory', title: '[THEORY] The Hartwell Building Floor 13 is a dimensional pocket', snippet: 'Conspiracy theory about the true nature of the missing floor...', contentType: 'thread', siteDomain: 'threadit.corn' },
-  { id: 'q10', url: 'www.cobfundme.corn/campaign/quantum-coffee-research', title: 'Fund Derek\'s Quantum Coffee Research', snippet: 'Crowdfunding campaign to fund independent quantum coffee research...', contentType: 'campaign', siteDomain: 'cobfundme.corn' },
-]
+/**
+ * Get searchable content from site manifests.
+ * This is called lazily to ensure manifests are registered first.
+ */
+function getSearchableContent(): SearchIndexEntry[] {
+  return getAllSearchEntries()
+}
 
-function mockSearch(query: string): SearchResult[] {
+/**
+ * Client-side search function.
+ * Searches through all registered site manifests.
+ */
+function clientSearch(query: string): SearchResult[] {
   if (!query.trim()) return []
+
+  const entries = getSearchableContent()
   const terms = query.toLowerCase().split(/\s+/)
-  return MOCK_CONTENT
-    .filter(item => {
-      const text = `${item.title} ${item.snippet}`.toLowerCase()
-      return terms.some(term => text.includes(term))
+
+  // Score and filter results
+  const scored = entries
+    .map(entry => {
+      const titleLower = entry.title.toLowerCase()
+      const snippetLower = entry.snippet.toLowerCase()
+      const keywordsLower = entry.keywords.join(' ').toLowerCase()
+      const fullText = `${titleLower} ${snippetLower} ${keywordsLower}`
+
+      // Calculate match score
+      let score = 0
+      for (const term of terms) {
+        // Title matches are worth more
+        if (titleLower.includes(term)) score += 10
+        // Snippet matches
+        if (snippetLower.includes(term)) score += 5
+        // Keyword matches
+        if (keywordsLower.includes(term)) score += 3
+      }
+
+      // Apply SEO score as a multiplier
+      score = score * (entry.seoScore / 50)
+
+      return { entry, score }
     })
-    .map((item, i) => ({
-      ...item,
-      author: null,
-      tags: null,
-      metadata: null,
-      source: 'static',
-      createdAt: null,
-      rank: i,
-    }))
-    .slice(0, 10)
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 15)
+
+  // Convert to SearchResult format
+  return scored.map(({ entry, score }, i) => ({
+    id: entry.url,
+    url: entry.url,
+    siteDomain: entry.domain,
+    contentType: entry.category,
+    title: entry.title,
+    snippet: entry.snippet,
+    author: entry.author || null,
+    tags: entry.keywords.join(', ') || null,
+    metadata: null,
+    source: 'manifest',
+    createdAt: entry.indexedAt || null,
+    rank: score,
+  }))
 }
 
 // ============================================================================
@@ -450,10 +481,10 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
     const startTime = Date.now()
 
     try {
-      // For now, use mock search (WebSocket not connected in browser context)
-      // In production, this would use the WebSocket to call search:query
-      const mockResults = mockSearch(searchQuery)
-      setResults(mockResults)
+      // Use client-side search from site manifests
+      // In production, this could also use WebSocket to call search:query for dynamic content
+      const results = clientSearch(searchQuery)
+      setResults(results)
       setSearchTime(Date.now() - startTime)
     } catch (error) {
       console.error('[Goober] Search error:', error)
@@ -482,25 +513,27 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
   }, [onNavigateToUrl])
 
   const handleFeelingCorny = useCallback(() => {
-    // Navigate to a random result from mock content
-    const random = MOCK_CONTENT[Math.floor(Math.random() * MOCK_CONTENT.length)]
+    // Navigate to a random result from site manifests
+    const entries = getSearchableContent()
+    const random = entries[Math.floor(Math.random() * entries.length)]
     if (random && onNavigateToUrl) {
       onNavigateToUrl(random.url)
     }
   }, [onNavigateToUrl])
 
-  // Generate autocomplete suggestions
+  // Generate autocomplete suggestions from site manifests
   useEffect(() => {
     if (query.length >= 2) {
-      const mockSuggestions = MOCK_CONTENT
-        .filter(item => item.title.toLowerCase().includes(query.toLowerCase()))
+      const entries = getSearchableContent()
+      const suggestions = entries
+        .filter(entry => entry.title.toLowerCase().includes(query.toLowerCase()))
         .slice(0, 5)
-        .map(item => ({
-          title: item.title,
-          url: item.url,
-          contentType: item.contentType,
+        .map(entry => ({
+          title: entry.title,
+          url: entry.url,
+          contentType: entry.category,
         }))
-      setSuggestions(mockSuggestions)
+      setSuggestions(suggestions)
     } else {
       setSuggestions([])
     }

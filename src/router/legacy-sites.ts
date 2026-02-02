@@ -12,8 +12,9 @@
  */
 
 import React from 'react'
-import { registerSite, createSimpleSite } from './site-registry.js'
+import { registerSite, createSimpleSite, registerManifest } from './site-registry.js'
 import type { SiteComponentProps } from './types.js'
+import { ALL_SITE_MANIFESTS } from '../data/site-manifests.js'
 
 // Import all site components
 import { PlaceholderSite } from '../components/browser/sites/PlaceholderSite.js'
@@ -752,9 +753,18 @@ export function registerLegacySites(): void {
     seoScore: 35,
   }))
 
+  // =========================================================================
+  // Register Site Manifests (for Goober search indexing)
+  // =========================================================================
+
+  for (const manifest of ALL_SITE_MANIFESTS) {
+    registerManifest(manifest)
+  }
+
   console.log(`[CornStack] Registered ${getAllSites().length} legacy sites`)
+  console.log(`[CornStack] Registered ${ALL_SITE_MANIFESTS.length} site manifests for search indexing`)
 }
 
 // Re-export for convenience
-import { getAllSites } from './site-registry.js'
-export { getAllSites }
+import { getAllSites, getAllSearchEntries, getManifestStats } from './site-registry.js'
+export { getAllSites, getAllSearchEntries, getManifestStats }

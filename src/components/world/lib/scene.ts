@@ -9,7 +9,10 @@ import * as THREE from 'three';
 
 export interface SceneContext {
   scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
+  /** The default perspective camera (use for orbital camera) */
+  perspectiveCamera: THREE.PerspectiveCamera;
+  /** The active camera used for rendering (may be orthographic) */
+  camera: THREE.Camera;
   renderer: THREE.WebGLRenderer;
   start: () => void;
   stop: () => void;
@@ -17,6 +20,7 @@ export interface SceneContext {
   getCanvas: () => HTMLCanvasElement;
   dispose: () => void;
   setOnRender: (callback: ((delta: number, elapsed: number) => void) | null) => void;
+  setCamera: (camera: THREE.Camera, onResize?: () => void) => void;
 }
 
 export interface SceneOptions {
@@ -44,11 +48,14 @@ export function createScene(
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(opts.backgroundColor!);
 
-  // Camera
+  // Camera (default perspective, can be replaced with setCamera)
   const aspect = container.clientWidth / container.clientHeight;
-  const camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
-  camera.position.set(10, 10, 10);
-  camera.lookAt(0, 0, 0);
+  const perspectiveCamera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+  perspectiveCamera.position.set(10, 10, 10);
+  perspectiveCamera.lookAt(new THREE.Vector3(0, 0, 0));
+
+  // Active camera for rendering (defaults to perspective, can be swapped)
+  let camera: THREE.Camera = perspectiveCamera;
 
   // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: opts.antialias });
@@ -117,15 +124,27 @@ export function createScene(
 
   // Resize handling
   let resizeObserver: ResizeObserver | null = null;
+  let resizeCallback: (() => void) | null = null;
 
   function resize() {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    // Always update perspective camera (for WorldViewer compatibility)
+    perspectiveCamera.aspect = width / height;
+    perspectiveCamera.updateProjectionMatrix();
+
+    // Handle orthographic camera via external callback
+    if (camera instanceof THREE.OrthographicCamera && resizeCallback) {
+      resizeCallback();
+    }
 
     renderer.setSize(width, height);
+  }
+
+  function setCamera(newCamera: THREE.Camera, onResize?: () => void) {
+    camera = newCamera;
+    resizeCallback = onResize || null;
   }
 
   // Set up resize observer
@@ -170,7 +189,8 @@ export function createScene(
 
   return {
     scene,
-    camera,
+    perspectiveCamera,
+    get camera() { return camera; },
     renderer,
     start,
     stop,
@@ -178,6 +198,7 @@ export function createScene(
     getCanvas,
     dispose,
     setOnRender,
+    setCamera,
   };
 }
 

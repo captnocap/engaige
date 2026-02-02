@@ -165,7 +165,7 @@ export default function WorldViewer() {
     // Create orbital camera
     const cameraController = createOrbitalCamera(
       containerRef.current,
-      sceneContext.camera,
+      sceneContext.perspectiveCamera,
       {
         initialRadius: 50,
         initialAzimuth: 45,

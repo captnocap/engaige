@@ -1049,14 +1049,72 @@ function ReviewerProfile({ reviewer, onBack }: { reviewer: Reviewer; onBack: () 
 }
 
 // ============================================================================
+// URL Routing Helpers
+// ============================================================================
+
+/**
+ * Parses the path prop to determine current view state.
+ * Routes:
+ *   - null, '', '/' -> Homepage (business listing)
+ *   - /business/{slug} -> Business detail page
+ *   - /reviewer/{id} -> Reviewer profile page
+ */
+function parseRoute(path: string | null): {
+  view: 'home' | 'business' | 'reviewer'
+  id: string | null
+} {
+  if (!path || path === '' || path === '/') {
+    return { view: 'home', id: null }
+  }
+
+  // Match /business/{slug}
+  const businessMatch = path.match(/^\/business\/([^/]+)$/)
+  if (businessMatch) {
+    return { view: 'business', id: businessMatch[1] }
+  }
+
+  // Match /reviewer/{id}
+  const reviewerMatch = path.match(/^\/reviewer\/([^/]+)$/)
+  if (reviewerMatch) {
+    return { view: 'reviewer', id: reviewerMatch[1] }
+  }
+
+  // Default to home for unrecognized paths
+  return { view: 'home', id: null }
+}
+
+// ============================================================================
 // Main Site Component
 // ============================================================================
 
-export function HuskReviewsSite({ siteId }: SiteProps) {
-  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null)
-  const [selectedReviewer, setSelectedReviewer] = useState<Reviewer | null>(null)
+export function HuskReviewsSite({ siteId, path, onPathChange }: SiteProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
+
+  // Parse the current route from the path prop
+  const route = parseRoute(path)
+
+  // Look up the selected business or reviewer based on route
+  const selectedBusiness = route.view === 'business' && route.id
+    ? BUSINESSES.find(b => b.id === route.id) || null
+    : null
+
+  const selectedReviewer = route.view === 'reviewer' && route.id
+    ? REVIEWERS[route.id] || null
+    : null
+
+  // Navigation handlers that update the URL
+  const navigateToBusiness = (business: Business) => {
+    onPathChange(`/business/${business.id}`)
+  }
+
+  const navigateToReviewer = (reviewer: Reviewer) => {
+    onPathChange(`/reviewer/${reviewer.id}`)
+  }
+
+  const navigateToHome = () => {
+    onPathChange(null)
+  }
 
   const filteredBusinesses = BUSINESSES.filter(business => {
     const matchesSearch = searchQuery === '' ||
@@ -1074,7 +1132,7 @@ export function HuskReviewsSite({ siteId }: SiteProps) {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => { setSelectedBusiness(null); setSelectedReviewer(null) }}
+              onClick={navigateToHome}
               className="flex items-center gap-2"
             >
               <span className="text-3xl">🌽</span>
@@ -1130,12 +1188,12 @@ export function HuskReviewsSite({ siteId }: SiteProps) {
         {selectedReviewer ? (
           <ReviewerProfile
             reviewer={selectedReviewer}
-            onBack={() => setSelectedReviewer(null)}
+            onBack={navigateToHome}
           />
         ) : selectedBusiness ? (
           <BusinessDetail
             business={selectedBusiness}
-            onBack={() => setSelectedBusiness(null)}
+            onBack={navigateToHome}
           />
         ) : (
           <div className="flex gap-6">
@@ -1154,7 +1212,7 @@ export function HuskReviewsSite({ siteId }: SiteProps) {
                 <BusinessCard
                   key={business.id}
                   business={business}
-                  onClick={() => setSelectedBusiness(business)}
+                  onClick={() => navigateToBusiness(business)}
                 />
               ))}
 
@@ -1215,7 +1273,7 @@ export function HuskReviewsSite({ siteId }: SiteProps) {
                     .map(reviewer => (
                       <button
                         key={reviewer.id}
-                        onClick={() => setSelectedReviewer(reviewer)}
+                        onClick={() => navigateToReviewer(reviewer)}
                         className="flex items-center gap-2 w-full text-left hover:bg-gray-50 p-1 rounded"
                       >
                         <span className="text-xl">{reviewer.avatar}</span>

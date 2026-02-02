@@ -16,7 +16,7 @@
  * - gas-station-sushi-rater by mildred-eats (written in COBOL)
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 
@@ -998,9 +998,20 @@ function RepoCard({ repo, onSelect }: { repo: Repository; onSelect: () => void }
 
 /**
  * Repository detail view
+ *
+ * @param repo - The repository to display
+ * @param onBack - Callback to navigate back to explore page
+ * @param onUserClick - Callback when user clicks on a username
+ * @param activeTab - The currently active tab (readme or issues)
+ * @param onTabChange - Callback when user changes tabs
  */
-function RepoDetail({ repo, onBack, onUserClick }: { repo: Repository; onBack: () => void; onUserClick: (username: string) => void }) {
-  const [activeTab, setActiveTab] = useState<'readme' | 'issues'>('readme')
+function RepoDetail({ repo, onBack, onUserClick, activeTab, onTabChange }: {
+  repo: Repository
+  onBack: () => void
+  onUserClick: (username: string) => void
+  activeTab: 'readme' | 'issues'
+  onTabChange: (tab: 'readme' | 'issues') => void
+}) {
 
   return (
     <div>
@@ -1059,7 +1070,7 @@ function RepoDetail({ repo, onBack, onUserClick }: { repo: Repository; onBack: (
       {/* Tabs */}
       <div className="flex gap-4 border-b mb-4" style={{ borderColor: '#30363d' }}>
         <button
-          onClick={() => setActiveTab('readme')}
+          onClick={() => onTabChange('readme')}
           className="px-3 py-2 text-sm font-medium border-b-2 -mb-px"
           style={{
             borderColor: activeTab === 'readme' ? '#f78166' : 'transparent',
@@ -1069,7 +1080,7 @@ function RepoDetail({ repo, onBack, onUserClick }: { repo: Repository; onBack: (
           README
         </button>
         <button
-          onClick={() => setActiveTab('issues')}
+          onClick={() => onTabChange('issues')}
           className="px-3 py-2 text-sm font-medium border-b-2 -mb-px"
           style={{
             borderColor: activeTab === 'issues' ? '#f78166' : 'transparent',
@@ -1246,29 +1257,129 @@ function ExplorePage({ onRepoSelect, onUserSelect }: {
 // Main Component
 // ============================================================================
 
-export function CobHubSite({ siteId }: SiteProps) {
+export function CobHubSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [view, setView] = useState<'explore' | 'repo' | 'user'>('explore')
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
+  const [activeRepoTab, setActiveRepoTab] = useState<'readme' | 'issues'>('readme')
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  /**
+   * Parse path and update state when path changes (from browser back/forward)
+   *
+   * URL structure:
+   * - null or '/' - explore/homepage
+   * - '/{owner}/{repo}' - repository view (README tab)
+   * - '/{owner}/{repo}/issues' - repository issues tab
+   * - '/{username}' - user profile view (single segment, matches USER_PROFILES keys)
+   */
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path || path === '/') {
+      // Homepage/explore
+      setView('explore')
+      setSelectedRepo(null)
+      setSelectedUser(null)
+      setActiveRepoTab('readme')
+    } else {
+      const segments = path.split('/').filter(Boolean)
+
+      if (segments.length === 1) {
+        // Single segment - could be a user profile
+        const username = segments[0]
+        const user = USER_PROFILES[username]
+        if (user) {
+          setSelectedUser(user)
+          setSelectedRepo(null)
+          setView('user')
+        } else {
+          // Unknown path, go to explore
+          setView('explore')
+          setSelectedRepo(null)
+          setSelectedUser(null)
+        }
+      } else if (segments.length >= 2) {
+        // Two or more segments - repository path: /{owner}/{repo} or /{owner}/{repo}/issues
+        const [owner, repoName, ...rest] = segments
+        const repo = REPOSITORIES.find(r => r.owner === owner && r.name === repoName)
+
+        if (repo) {
+          setSelectedRepo(repo)
+          setSelectedUser(null)
+          setView('repo')
+
+          // Check for /issues tab
+          if (rest[0] === 'issues') {
+            setActiveRepoTab('issues')
+          } else {
+            setActiveRepoTab('readme')
+          }
+        } else {
+          // Repository not found, go to explore
+          setView('explore')
+          setSelectedRepo(null)
+          setSelectedUser(null)
+        }
+      }
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
+
+  /**
+   * Navigate to a repository
+   */
   const handleRepoSelect = (repo: Repository) => {
     setSelectedRepo(repo)
+    setSelectedUser(null)
+    setActiveRepoTab('readme')
     setView('repo')
+    onPathChange(`/${repo.owner}/${repo.name}`)
   }
 
+  /**
+   * Navigate to a user profile
+   */
   const handleUserSelect = (username: string) => {
     const user = USER_PROFILES[username]
     if (user) {
       setSelectedUser(user)
+      setSelectedRepo(null)
       setView('user')
+      onPathChange(`/${username}`)
     }
   }
 
+  /**
+   * Navigate back to explore page
+   */
   const handleBack = () => {
     setView('explore')
     setSelectedRepo(null)
     setSelectedUser(null)
+    setActiveRepoTab('readme')
+    onPathChange(null)
+  }
+
+  /**
+   * Handle tab change in repository view
+   */
+  const handleRepoTabChange = (tab: 'readme' | 'issues') => {
+    setActiveRepoTab(tab)
+    if (selectedRepo) {
+      if (tab === 'issues') {
+        onPathChange(`/${selectedRepo.owner}/${selectedRepo.name}/issues`)
+      } else {
+        onPathChange(`/${selectedRepo.owner}/${selectedRepo.name}`)
+      }
+    }
   }
 
   return (
@@ -1322,6 +1433,8 @@ export function CobHubSite({ siteId }: SiteProps) {
             repo={selectedRepo}
             onBack={handleBack}
             onUserClick={handleUserSelect}
+            activeTab={activeRepoTab}
+            onTabChange={handleRepoTabChange}
           />
         )}
         {view === 'user' && selectedUser && (

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building Face Identifier</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 300px;
+      padding: 20px;
+      background: #16213e;
+      overflow-y: auto;
+      border-right: 1px solid #333;
+    }
+    #viewer {
+      flex: 1;
+      position: relative;
+    }
+    canvas { display: block; }
+    h1 { font-size: 18px; margin-bottom: 20px; color: #0f9; }
+    h2 { font-size: 14px; margin: 20px 0 10px; color: #888; text-transform: uppercase; }
+
+    .file-drop {
+      border: 2px dashed #444;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .file-drop:hover, .file-drop.dragover {
+      border-color: #0f9;
+    }
+    .file-drop input { display: none; }
+
+    .model-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+    .model-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+      font-size: 12px;
+      transition: background 0.1s;
+    }
+    .model-item:hover { background: #1f3460; }
+    .model-item.active { background: #0f9; color: #000; }
+
+    .controls {
+      margin-top: 20px;
+    }
+    .control-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .control-row label {
+      width: 80px;
+      font-size: 12px;
+      color: #888;
+    }
+    .control-row input[type="range"] {
+      flex: 1;
+    }
+    .control-row span {
+      width: 40px;
+      text-align: right;
+      font-size: 12px;
+    }
+
+    #face-legend {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0d1929;
+      border-radius: 8px;
+    }
+    .face-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .face-marker {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    .face-a { background: #ff4444; }
+    .face-b { background: #44ff44; color: #000; }
+    .face-c { background: #4444ff; }
+    .face-d { background: #ffff44; color: #000; }
+
+    #current-model {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0d1929;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    #current-model strong {
+      color: #0f9;
+      font-size: 14px;
+    }
+
+    #compass {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 100px;
+      height: 100px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 50%;
+      border: 2px solid #444;
+    }
+
+    .filter-input {
+      width: 100%;
+      padding: 8px 12px;
+      background: #0d1929;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #fff;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .filter-input:focus {
+      outline: none;
+      border-color: #0f9;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h1>Building Face Identifier</h1>
+
+    <div class="file-drop" id="file-drop">
+      <p>Drop GLB file here or click to browse</p>
+      <input type="file" id="file-input" accept=".glb,.gltf">
+    </div>
+
+    <h2>Or select from models:</h2>
+    <input type="text" class="filter-input" id="filter" placeholder="Filter models...">
+    <div class="model-list" id="model-list"></div>
+
+    <div id="face-legend">
+      <div class="face-item"><div class="face-marker face-a">A</div> +Z (South in game)</div>
+      <div class="face-item"><div class="face-marker face-b">B</div> +X (East in game)</div>
+      <div class="face-item"><div class="face-marker face-c">C</div> -Z (North in game)</div>
+      <div class="face-item"><div class="face-marker face-d">D</div> -X (West in game)</div>
+    </div>
+
+    <div class="controls">
+      <h2>Camera Controls</h2>
+      <p style="font-size: 11px; color: #666; margin-bottom: 10px;">
+        Left drag: Rotate | Scroll: Zoom
+      </p>
+      <div class="control-row">
+        <label>Rotation</label>
+        <input type="range" id="rotation-slider" min="0" max="3" step="1" value="0">
+        <span id="rotation-value">0</span>
+      </div>
+    </div>
+
+    <div id="current-model">
+      <strong>No model loaded</strong>
+      <p style="margin-top: 8px; color: #666;">Select a model from the list or drop a file</p>
+    </div>
+  </div>
+
+  <div id="viewer"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    // Scene setup
+    const viewer = document.getElementById('viewer');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a2e);
+
+    const camera = new THREE.PerspectiveCamera(50, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
+    camera.position.set(3, 3, 3);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    viewer.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    // Better lighting setup for viewing textured models
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(5, 10, 5);
+    scene.add(directionalLight);
+
+    // Add fill light from opposite side
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-5, 5, -5);
+    scene.add(fillLight);
+
+    // Add hemisphere light for natural sky/ground lighting
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x362a1e, 0.6);
+    scene.add(hemiLight);
+
+    // Grid helper - VERY visible to show tile boundaries
+    // Main grid: 10x10 tiles, each tile is 1 unit
+    const gridHelper = new THREE.GridHelper(10, 10, 0x00ffff, 0x00ffff);
+    gridHelper.material.opacity = 0.8;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
+
+    // Add a bright center tile marker (1x1 tile where model sits)
+    const tileBorderGeometry = new THREE.BufferGeometry();
+    const tileVertices = new Float32Array([
+      -0.5, 0.01, -0.5,
+      0.5, 0.01, -0.5,
+      0.5, 0.01, -0.5,
+      0.5, 0.01, 0.5,
+      0.5, 0.01, 0.5,
+      -0.5, 0.01, 0.5,
+      -0.5, 0.01, 0.5,
+      -0.5, 0.01, -0.5,
+    ]);
+    tileBorderGeometry.setAttribute('position', new THREE.BufferAttribute(tileVertices, 3));
+    const tileBorderMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 3 });
+    const tileBorder = new THREE.LineSegments(tileBorderGeometry, tileBorderMaterial);
+    scene.add(tileBorder);
+
+    // Add a filled center tile (semi-transparent)
+    const tileFillGeometry = new THREE.PlaneGeometry(1, 1);
+    const tileFillMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff00ff,
+      transparent: true,
+      opacity: 0.15,
+      side: THREE.DoubleSide
+    });
+    const tileFill = new THREE.Mesh(tileFillGeometry, tileFillMaterial);
+    tileFill.rotation.x = -Math.PI / 2;
+    tileFill.position.y = 0.005;
+    scene.add(tileFill);
+
+    // Add corner markers for the center tile
+    const cornerGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+    const cornerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const corners = [
+      [-0.5, 0.02, -0.5],
+      [0.5, 0.02, -0.5],
+      [0.5, 0.02, 0.5],
+      [-0.5, 0.02, 0.5],
+    ];
+    corners.forEach(pos => {
+      const corner = new THREE.Mesh(cornerGeometry, cornerMaterial);
+      corner.position.set(...pos);
+      scene.add(corner);
+    });
+
+    // Add tile size labels
+    function createTextSprite(text, position, color = '#ffffff') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.font = 'bold 32px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 64, 32);
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(material);
+      sprite.position.set(...position);
+      sprite.scale.set(0.5, 0.25, 1);
+      return sprite;
+    }
+
+    // Label the center tile
+    scene.add(createTextSprite('1 TILE', [0, 0.02, 0.7], '#ff00ff'));
+
+    // Add measurement lines at 1-unit intervals
+    for (let i = -5; i <= 5; i++) {
+      if (i === 0) continue; // Skip center
+      const label = createTextSprite(`${Math.abs(i)}`, [i, 0.02, -5.3], '#00ffff');
+      scene.add(label);
+      const label2 = createTextSprite(`${Math.abs(i)}`, [-5.3, 0.02, i], '#00ffff');
+      scene.add(label2);
+    }
+
+    // Axes helper
+    const axesHelper = new THREE.AxesHelper(2);
+    scene.add(axesHelper);
+
+    // Face markers group
+    let faceMarkers = new THREE.Group();
+    scene.add(faceMarkers);
+
+    // Current model
+    let currentModel = null;
+    let currentRotation = 0;
+
+    // Create face marker sprite
+    function createFaceMarker(label, color, position) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+
+      // Circle background
+      ctx.beginPath();
+      ctx.arc(32, 32, 28, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Text
+      ctx.fillStyle = color === '#ffff44' || color === '#44ff44' ? '#000' : '#fff';
+      ctx.font = 'bold 36px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, 32, 34);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(material);
+      sprite.position.copy(position);
+      sprite.scale.set(0.5, 0.5, 0.5);
+
+      return sprite;
+    }
+
+    // Update face markers based on model bounds
+    function updateFaceMarkers(model) {
+      // Clear existing markers
+      while (faceMarkers.children.length > 0) {
+        faceMarkers.remove(faceMarkers.children[0]);
+      }
+
+      if (!model) return;
+
+      // Get bounding box
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+
+      const offset = 0.3; // Distance from model edge
+
+      // A: +Z (front/south)
+      faceMarkers.add(createFaceMarker('A', '#ff4444',
+        new THREE.Vector3(center.x, center.y, box.max.z + offset)));
+
+      // B: +X (right/east)
+      faceMarkers.add(createFaceMarker('B', '#44ff44',
+        new THREE.Vector3(box.max.x + offset, center.y, center.z)));
+
+      // C: -Z (back/north)
+      faceMarkers.add(createFaceMarker('C', '#4444ff',
+        new THREE.Vector3(center.x, center.y, box.min.z - offset)));
+
+      // D: -X (left/west)
+      faceMarkers.add(createFaceMarker('D', '#ffff44',
+        new THREE.Vector3(box.min.x - offset, center.y, center.z)));
+
+      // Add ground plane markers too
+      const planeGeometry = new THREE.PlaneGeometry(0.3, 0.1);
+
+      const materials = {
+        a: new THREE.MeshBasicMaterial({ color: 0xff4444, side: THREE.DoubleSide }),
+        b: new THREE.MeshBasicMaterial({ color: 0x44ff44, side: THREE.DoubleSide }),
+        c: new THREE.MeshBasicMaterial({ color: 0x4444ff, side: THREE.DoubleSide }),
+        d: new THREE.MeshBasicMaterial({ color: 0xffff44, side: THREE.DoubleSide }),
+      };
+
+      // Ground markers pointing outward
+      const groundY = 0.01;
+
+      // A marker on ground
+      const groundA = new THREE.Mesh(planeGeometry, materials.a);
+      groundA.rotation.x = -Math.PI / 2;
+      groundA.position.set(center.x, groundY, box.max.z + 0.2);
+      faceMarkers.add(groundA);
+
+      // B marker on ground
+      const groundB = new THREE.Mesh(planeGeometry, materials.b);
+      groundB.rotation.x = -Math.PI / 2;
+      groundB.rotation.z = Math.PI / 2;
+      groundB.position.set(box.max.x + 0.2, groundY, center.z);
+      faceMarkers.add(groundB);
+
+      // C marker on ground
+      const groundC = new THREE.Mesh(planeGeometry, materials.c);
+      groundC.rotation.x = -Math.PI / 2;
+      groundC.position.set(center.x, groundY, box.min.z - 0.2);
+      faceMarkers.add(groundC);
+
+      // D marker on ground
+      const groundD = new THREE.Mesh(planeGeometry, materials.d);
+      groundD.rotation.x = -Math.PI / 2;
+      groundD.rotation.z = Math.PI / 2;
+      groundD.position.set(box.min.x - 0.2, groundY, center.z);
+      faceMarkers.add(groundD);
+    }
+
+    // Load shared texture atlas (used by city models)
+    const textureLoader = new THREE.TextureLoader();
+    let baseTexture = null;
+    let specularTexture = null;
+
+    // Load textures
+    baseTexture = textureLoader.load('/textures/city/base.png', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.flipY = false;
+    });
+    specularTexture = textureLoader.load('/textures/city/specular.png', (tex) => {
+      tex.flipY = false;
+    });
+
+    // Load model
+    const loader = new GLTFLoader();
+
+    function loadModel(url, name) {
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel = null;
+      }
+
+      loader.load(url, (gltf) => {
+        currentModel = gltf.scene;
+
+        // Apply shared texture atlas to all meshes (like CityAssetManager does)
+        currentModel.traverse((child) => {
+          if (child.isMesh && baseTexture) {
+            // Clone material and apply textures
+            child.material = new THREE.MeshLambertMaterial({
+              map: baseTexture,
+              specularMap: specularTexture,
+            });
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        // Center and scale model
+        const box = new THREE.Box3().setFromObject(currentModel);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        // Move to origin
+        currentModel.position.sub(center);
+        currentModel.position.y += size.y / 2;
+
+        // Apply current rotation
+        currentModel.rotation.y = (currentRotation * Math.PI) / 2;
+
+        scene.add(currentModel);
+        updateFaceMarkers(currentModel);
+
+        // Update camera to fit model
+        const maxDim = Math.max(size.x, size.y, size.z);
+        camera.position.set(maxDim * 1.5, maxDim * 1.5, maxDim * 1.5);
+        controls.target.set(0, size.y / 2, 0);
+        controls.update();
+
+        // Calculate tile size (how many 1x1 tiles this model covers)
+        const tilesX = Math.ceil(size.x);
+        const tilesZ = Math.ceil(size.z);
+        const fitsInOneTile = size.x <= 1.0 && size.z <= 1.0;
+
+        // Update info
+        document.getElementById('current-model').innerHTML = `
+          <strong>${name || 'Custom Model'}</strong>
+          <p style="margin-top: 8px; color: #888;">
+            Raw Size: ${size.x.toFixed(3)} x ${size.y.toFixed(3)} x ${size.z.toFixed(3)}
+          </p>
+          <p style="color: ${fitsInOneTile ? '#0f9' : '#f44'}; font-weight: bold;">
+            Tile Footprint: ${tilesX} x ${tilesZ} tiles
+            ${fitsInOneTile ? '✓' : '⚠️ OVERSIZED'}
+          </p>
+          <p style="color: #888;">Rotation: ${currentRotation} (${currentRotation * 90}°)</p>
+        `;
+      }, undefined, (error) => {
+        console.error('Error loading model:', error);
+        document.getElementById('current-model').innerHTML = `
+          <strong style="color: #f44;">Error loading model</strong>
+          <p style="margin-top: 8px; color: #666;">${error.message}</p>
+        `;
+      });
+    }
+
+    // Populate model list from public/models/city (actual filenames)
+    const modelTypes = [
+      // Buildings - Houses
+      'building-house-block-big',
+      'building-house-block',
+      'building-house-block-old',
+      'building-house-family-large',
+      'building-house-family-small',
+      'building-house-modern-big',
+      'building-house-modern',
+      // Buildings - Apartments
+      'building-block-4floor-back',
+      'building-block-4floor-corner',
+      'building-block-4floor-front',
+      'building-block-4floor-short',
+      'building-block-5floor-corner',
+      'building-block-5floor-front',
+      'building-block-5floor',
+      'building-block-5floor-short',
+      'building-cabin-big',
+      'building-cabin-small',
+      // Buildings - Commercial
+      'building-cafe',
+      'building-burger-joint',
+      'building-restaurant',
+      'building-cinema',
+      'building-casino',
+      'building-hotel',
+      'building-mall',
+      'building-bank',
+      'building-carwash',
+      'building-market-china',
+      // Buildings - Office/Industrial
+      'building-office',
+      'building-office-balcony',
+      'building-office-pyramid',
+      'building-office-tall',
+      'building-warehouse',
+      'building-warehouse-large',
+      'building-firestation',
+      'building-hospital',
+      'data-center',
+      // Buildings - Special
+      'building-antique-china',
+      'building-apartment-china',
+      // Roads
+      'road-straight',
+      'road-end',
+      'road-corner',
+      'road-three-way',
+      'road-four-way',
+      // Vehicles
+      'car-baywatch',
+      'car-hippie-van',
+      'car-taxi',
+      'car-police',
+      'truck-flat',
+      'truck-logging',
+      'bus-yellow',
+    ];
+
+    const modelList = document.getElementById('model-list');
+    const filterInput = document.getElementById('filter');
+
+    function renderModelList(filter = '') {
+      modelList.innerHTML = '';
+      const filtered = modelTypes.filter(m => m.toLowerCase().includes(filter.toLowerCase()));
+
+      for (const modelName of filtered) {
+        const item = document.createElement('div');
+        item.className = 'model-item';
+        item.textContent = modelName;
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.model-item').forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          // Try to load from local models/city folder
+          loadModel(`/models/city/${modelName}.glb`, modelName);
+        });
+        modelList.appendChild(item);
+      }
+    }
+
+    renderModelList();
+
+    filterInput.addEventListener('input', (e) => {
+      renderModelList(e.target.value);
+    });
+
+    // File drop handling
+    const fileDrop = document.getElementById('file-drop');
+    const fileInput = document.getElementById('file-input');
+
+    fileDrop.addEventListener('click', () => fileInput.click());
+    fileDrop.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileDrop.classList.add('dragover');
+    });
+    fileDrop.addEventListener('dragleave', () => {
+      fileDrop.classList.remove('dragover');
+    });
+    fileDrop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileDrop.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      const url = URL.createObjectURL(file);
+      loadModel(url, file.name);
+    }
+
+    // Rotation slider
+    const rotationSlider = document.getElementById('rotation-slider');
+    const rotationValue = document.getElementById('rotation-value');
+
+    rotationSlider.addEventListener('input', (e) => {
+      currentRotation = parseInt(e.target.value);
+      rotationValue.textContent = currentRotation;
+
+      if (currentModel) {
+        currentModel.rotation.y = (currentRotation * Math.PI) / 2;
+        updateFaceMarkers(currentModel);
+      }
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handling
+    window.addEventListener('resize', () => {
+      camera.aspect = viewer.clientWidth / viewer.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    });
+
+    // Instructions
+    console.log('Building Face Identifier loaded');
+    console.log('Face A (+Z) = South, Face B (+X) = East, Face C (-Z) = North, Face D (-X) = West');
+  </script>
+</body>
+</html>

@@ -13,7 +13,7 @@
  * - "This page has been removed at the request of..." notices
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 
@@ -864,7 +864,7 @@ const COLLECTIONS = [
 // Main Component
 // ============================================================================
 
-export function CornArchiveSite({ siteId, onNavigate }: SiteProps) {
+export function CornArchiveSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPage, setSelectedPage] = useState<ArchivedPage | null>(null)
   const [selectedSnapshot, setSelectedSnapshot] = useState<number>(0)
@@ -872,6 +872,37 @@ export function CornArchiveSite({ siteId, onNavigate }: SiteProps) {
 
   // Running ticker count (animated illusion)
   const [tickerCount] = useState(847847847)
+
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  // Parse path and update state when path changes (from browser back/forward)
+  // Path format: /web/{year}/{pageId} (e.g., /web/2023/derek-wedding)
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path || path === '/') {
+      // Homepage/search view
+      setSelectedPage(null)
+      setSelectedSnapshot(0)
+    } else if (path.startsWith('/web/')) {
+      // Archived page path: /web/{year}/{pageId}
+      const pathParts = path.slice(5).split('/')
+      if (pathParts.length >= 2) {
+        const pageId = pathParts[1]
+        const page = ARCHIVED_PAGES.find(p => p.id === pageId)
+        if (page) {
+          setSelectedPage(page)
+          setSelectedSnapshot(0)
+        }
+      }
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
 
   const filteredPages = ARCHIVED_PAGES.filter(page => {
     const matchesSearch = searchQuery === '' ||
@@ -893,14 +924,22 @@ export function CornArchiveSite({ siteId, onNavigate }: SiteProps) {
     e.preventDefault()
   }
 
+  // Navigation handler to select an archived page
+  // Updates both state and path for URL-based routing
   const handlePageSelect = (page: ArchivedPage) => {
     setSelectedPage(page)
     setSelectedSnapshot(0)
+    // Build path with year extracted from firstArchived date
+    const yearMatch = page.firstArchived.match(/\d{4}/)
+    const year = yearMatch ? yearMatch[0] : '2024'
+    onPathChange(`/web/${year}/${page.id}`)
   }
 
+  // Navigation handler to return to the search/homepage view
   const handleBack = () => {
     setSelectedPage(null)
     setSelectedSnapshot(0)
+    onPathChange(null)
   }
 
   return (

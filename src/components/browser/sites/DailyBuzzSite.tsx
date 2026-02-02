@@ -3,14 +3,35 @@
  *
  * News site for the engAIge browser.
  * Features satirical headlines and breaking news about the game world.
+ *
+ * URL Routing:
+ * - Main feed: path = null or '/'
+ * - Article view: path = '/article/{article-slug}'
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget, InlineAd } from '../ads/index.js'
 
 const site = FILLER_SITES.news
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Converts an article headline to a URL-friendly slug.
+ * Example: "Local Band Cancels Show" -> "local-band-cancels-show"
+ */
+function createSlug(headline: string): string {
+  return headline
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Collapse multiple hyphens
+    .trim()
+}
 
 // ============================================================================
 // Types
@@ -268,6 +289,14 @@ I will not be repeating this experiment.
 
 const CATEGORIES = ['All', 'Local', 'Tech', 'Entertainment', 'Politics', 'Opinion']
 
+/**
+ * Creates a map from article slug to article object for efficient lookup.
+ */
+const ARTICLES_BY_SLUG: Record<string, NewsArticle> = SAMPLE_ARTICLES.reduce((acc, article) => {
+  acc[createSlug(article.headline)] = article
+  return acc
+}, {} as Record<string, NewsArticle>)
+
 const BREAKING_NEWS = [
   'BREAKING: Quantum cafe reports first case of "over-observed" coffee',
   'UPDATE: City council meme ban delayed indefinitely',
@@ -279,10 +308,39 @@ const BREAKING_NEWS = [
 // Components
 // ============================================================================
 
-export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
-  const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null)
+export function DailyBuzzSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [breakingIndex, setBreakingIndex] = useState(0)
+
+  // Derive the selected article from the path prop
+  // Path format: /article/{slug} or null/empty for main feed
+  const selectedArticle = useMemo<NewsArticle | null>(() => {
+    if (!path || path === '/') return null
+
+    // Match /article/{slug} pattern
+    const articleMatch = path.match(/^\/article\/(.+)$/)
+    if (articleMatch) {
+      const slug = articleMatch[1]
+      return ARTICLES_BY_SLUG[slug] || null
+    }
+
+    return null
+  }, [path])
+
+  /**
+   * Navigate to an article by updating the path
+   */
+  const handleSelectArticle = (article: NewsArticle) => {
+    const slug = createSlug(article.headline)
+    onPathChange(`/article/${slug}`)
+  }
+
+  /**
+   * Navigate back to the main feed
+   */
+  const handleBackToFeed = () => {
+    onPathChange(null)
+  }
 
   // Rotate breaking news
   useEffect(() => {
@@ -326,7 +384,7 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
             {/* Logo */}
             <button
               onClick={() => {
-                setSelectedArticle(null)
+                handleBackToFeed()
                 setSelectedCategory('All')
               }}
               className="hover:opacity-80"
@@ -368,7 +426,7 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
                 key={category}
                 onClick={() => {
                   setSelectedCategory(category)
-                  setSelectedArticle(null)
+                  handleBackToFeed()
                 }}
                 className="text-sm font-medium pb-2 transition-colors"
                 style={{
@@ -388,10 +446,10 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
         {selectedArticle ? (
           <ArticleView
             article={selectedArticle}
-            onBack={() => setSelectedArticle(null)}
+            onBack={handleBackToFeed}
             onSelectRelated={(title) => {
               const found = SAMPLE_ARTICLES.find(a => a.headline.includes(title))
-              if (found) setSelectedArticle(found)
+              if (found) handleSelectArticle(found)
             }}
           />
         ) : (
@@ -402,7 +460,7 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
               {selectedCategory === 'All' && (
                 <FeaturedCard
                   article={featuredArticle}
-                  onClick={() => setSelectedArticle(featuredArticle)}
+                  onClick={() => handleSelectArticle(featuredArticle)}
                 />
               )}
 
@@ -412,7 +470,7 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
                   <ArticleCard
                     key={article.id}
                     article={article}
-                    onClick={() => setSelectedArticle(article)}
+                    onClick={() => handleSelectArticle(article)}
                   />
                 ))}
               </div>
@@ -435,7 +493,7 @@ export function DailyBuzzSite({ siteId, onNavigate }: SiteProps) {
                   {SAMPLE_ARTICLES.slice(0, 5).map((article, i) => (
                     <button
                       key={article.id}
-                      onClick={() => setSelectedArticle(article)}
+                      onClick={() => handleSelectArticle(article)}
                       className="w-full flex gap-3 py-3 text-left border-b last:border-0 hover:bg-gray-50"
                       style={{ borderColor: site.theme.border }}
                     >
