@@ -113,16 +113,26 @@ function mockSearch(query: string): SearchResult[] {
 // ============================================================================
 
 function GooberLogo({ size = 'large' }: { size?: 'small' | 'large' }) {
-  const fontSize = size === 'large' ? 'text-6xl' : 'text-2xl'
+  const fontSize = size === 'large' ? '92px' : '24px'
+  const cornSize = size === 'large' ? '72px' : '20px'
   return (
-    <div className={`font-bold ${fontSize} select-none`} style={{ fontFamily: 'system-ui' }}>
+    <div
+      style={{
+        fontFamily: 'Product Sans, Arial, sans-serif',
+        fontWeight: 400,
+        fontSize,
+        userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       <span style={{ color: THEME.logoBlue }}>G</span>
       <span style={{ color: THEME.logoRed }}>o</span>
       <span style={{ color: THEME.logoYellow }}>o</span>
       <span style={{ color: THEME.logoBlue }}>b</span>
       <span style={{ color: THEME.logoGreen }}>e</span>
       <span style={{ color: THEME.logoRed }}>r</span>
-      <span className="ml-1">🌽</span>
+      <span style={{ marginLeft: size === 'large' ? '8px' : '4px', fontSize: cornSize }}>🌽</span>
     </div>
   )
 }
@@ -169,16 +179,26 @@ function SearchBox({
     }
   }
 
-  const height = size === 'large' ? 'h-12' : 'h-10'
-  const textSize = size === 'large' ? 'text-lg' : 'text-base'
+  const height = size === 'large' ? '46px' : '40px'
+  const fontSize = size === 'large' ? '16px' : '14px'
 
   return (
-    <div className="relative w-full max-w-xl">
+    <div style={{ position: 'relative', width: '100%', maxWidth: '584px' }}>
       <div
-        className={`flex items-center ${height} px-4 rounded-full border hover:shadow-md focus-within:shadow-md transition-shadow`}
-        style={{ borderColor: THEME.border, background: THEME.background }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          height,
+          padding: '0 16px',
+          borderRadius: '24px',
+          border: `1px solid ${THEME.border}`,
+          background: THEME.background,
+          boxShadow: '0 1px 6px rgba(32,33,36,.28)',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 1px 6px rgba(32,33,36,.28), 0 2px 4px rgba(32,33,36,.1)'}
+        onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 1px 6px rgba(32,33,36,.28)'}
       >
-        <span className="text-gray-400 mr-3">🔍</span>
+        <span style={{ color: '#9aa0a6', marginRight: '12px', fontSize: '20px' }}>🔍</span>
         <input
           ref={inputRef}
           type="text"
@@ -192,14 +212,27 @@ function SearchBox({
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           onKeyDown={handleKeyDown}
           autoFocus={autoFocus}
-          className={`flex-1 outline-none bg-transparent ${textSize}`}
-          style={{ color: THEME.text }}
+          style={{
+            flex: 1,
+            outline: 'none',
+            border: 'none',
+            background: 'transparent',
+            fontSize,
+            color: THEME.text,
+          }}
           placeholder="Search the corn internet..."
         />
         {value && (
           <button
             onClick={() => onChange('')}
-            className="text-gray-400 hover:text-gray-600 mx-2"
+            style={{
+              color: '#70757a',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0 8px',
+              fontSize: '14px',
+            }}
           >
             ✕
           </button>
@@ -208,30 +241,53 @@ function SearchBox({
 
       {showSuggestions && suggestions.length > 0 && (
         <div
-          className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-lg border overflow-hidden z-10"
-          style={{ background: THEME.background, borderColor: THEME.border }}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: '4px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: `1px solid ${THEME.border}`,
+            overflow: 'hidden',
+            zIndex: 10,
+            background: THEME.background,
+          }}
         >
           {suggestions.map((item, i) => (
             <button
               key={item.url}
-              className={`w-full px-4 py-2 text-left flex items-center gap-3 ${
-                i === selectedIndex ? 'bg-gray-100' : ''
-              }`}
-              style={{ background: i === selectedIndex ? THEME.hoverBg : undefined }}
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                background: i === selectedIndex ? THEME.hoverBg : THEME.background,
+              }}
               onMouseEnter={() => setSelectedIndex(i)}
               onClick={() => {
                 onSelectSuggestion?.(item)
                 setShowSuggestions(false)
               }}
             >
-              <span className="text-gray-400">🔍</span>
-              <div className="flex-1 min-w-0">
-                <div className="truncate" style={{ color: THEME.text }}>{item.title}</div>
-                <div className="text-xs truncate" style={{ color: THEME.textMuted }}>{item.url}</div>
+              <span style={{ color: '#9aa0a6' }}>🔍</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: THEME.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                <div style={{ fontSize: '12px', color: THEME.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.url}</div>
               </div>
               <span
-                className="text-xs px-2 py-0.5 rounded"
-                style={{ background: THEME.surface, color: THEME.textMuted }}
+                style={{
+                  fontSize: '11px',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  background: THEME.surface,
+                  color: THEME.textMuted,
+                }}
               >
                 {item.contentType}
               </span>
@@ -285,33 +341,60 @@ function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
   }
 
   return (
-    <div className="py-4">
+    <div style={{ padding: '12px 0', borderBottom: `1px solid ${THEME.border}` }}>
       {/* URL breadcrumb */}
-      <div className="flex items-center gap-2 text-sm mb-1">
-        <span>{contentTypeIcons[result.contentType] || '📄'}</span>
-        <span style={{ color: THEME.urlGreen }}>{result.url}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '4px' }}>
+        <span
+          style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: THEME.surface,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '14px',
+          }}
+        >
+          {contentTypeIcons[result.contentType] || '📄'}
+        </span>
+        <div>
+          <div style={{ fontSize: '12px', color: THEME.text }}>{result.siteDomain}</div>
+          <div style={{ fontSize: '12px', color: THEME.urlGreen }}>{result.url}</div>
+        </div>
       </div>
 
       {/* Title */}
       <button
         onClick={() => onNavigate(result.url)}
-        className="text-xl hover:underline text-left"
-        style={{ color: THEME.linkBlue }}
+        style={{
+          display: 'block',
+          fontSize: '20px',
+          color: THEME.linkBlue,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          textAlign: 'left',
+          padding: 0,
+          marginTop: '4px',
+          lineHeight: 1.3,
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
       >
         {result.title}
       </button>
 
       {/* Snippet */}
-      <p className="text-sm mt-1 leading-relaxed" style={{ color: THEME.text }}>
+      <p style={{ fontSize: '14px', marginTop: '4px', lineHeight: 1.58, color: THEME.text }}>
         {renderSnippet()}
       </p>
 
       {/* Metadata */}
       {(result.author || result.contentType) && (
-        <div className="flex items-center gap-3 mt-2 text-xs" style={{ color: THEME.textMuted }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px', fontSize: '12px', color: THEME.textMuted }}>
           {result.author && <span>By {result.author}</span>}
-          <span className="capitalize">{result.contentType}</span>
-          <span>{result.siteDomain}</span>
+          <span style={{ textTransform: 'capitalize' }}>{result.contentType}</span>
         </div>
       )}
     </div>
@@ -431,10 +514,17 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
   if (parsedPath.view === 'home') {
     return (
       <div
-        className="min-h-full flex flex-col items-center justify-center"
-        style={{ background: THEME.background }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: THEME.background,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <div className="flex flex-col items-center gap-8 -mt-20">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem', marginTop: '-5rem' }}>
           {/* Logo */}
           <GooberLogo size="large" />
 
@@ -450,37 +540,55 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
           />
 
           {/* Buttons */}
-          <div className="flex gap-4">
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
             <button
               onClick={handleSearch}
-              className="px-4 py-2 rounded text-sm"
               style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                fontSize: '14px',
                 background: THEME.surface,
                 color: THEME.text,
                 border: `1px solid ${THEME.border}`,
+                cursor: 'pointer',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
+                e.currentTarget.style.borderColor = '#c6c6c6'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+                e.currentTarget.style.borderColor = THEME.border
+              }}
             >
               Goober Search
             </button>
             <button
               onClick={handleFeelingCorny}
-              className="px-4 py-2 rounded text-sm"
               style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                fontSize: '14px',
                 background: THEME.surface,
                 color: THEME.text,
                 border: `1px solid ${THEME.border}`,
+                cursor: 'pointer',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
+                e.currentTarget.style.borderColor = '#c6c6c6'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+                e.currentTarget.style.borderColor = THEME.border
+              }}
             >
               I'm Feeling Corny
             </button>
           </div>
 
           {/* Footer info */}
-          <div className="text-sm mt-12" style={{ color: THEME.textMuted }}>
+          <div style={{ fontSize: '14px', color: THEME.textMuted, marginTop: '3rem' }}>
             Searching the entire .corn internet
           </div>
         </div>
@@ -490,14 +598,23 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
 
   // Results view
   return (
-    <div className="min-h-full" style={{ background: THEME.background }}>
+    <div style={{ position: 'absolute', inset: 0, background: THEME.background, overflow: 'auto' }}>
       {/* Header */}
       <div
-        className="sticky top-0 z-10 border-b px-6 py-4"
-        style={{ background: THEME.background, borderColor: THEME.border }}
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          borderBottom: `1px solid ${THEME.border}`,
+          padding: '16px 24px',
+          background: THEME.background,
+        }}
       >
-        <div className="flex items-center gap-6">
-          <button onClick={() => onPathChange(null)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <button
+            onClick={() => onPathChange(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
             <GooberLogo size="small" />
           </button>
           <SearchBox
@@ -511,35 +628,35 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
       </div>
 
       {/* Results */}
-      <div className="max-w-3xl px-6 py-4">
+      <div style={{ maxWidth: '700px', padding: '16px 24px 16px 150px' }}>
         {/* Stats */}
         {!isLoading && results.length > 0 && (
-          <div className="text-sm mb-4" style={{ color: THEME.textMuted }}>
+          <div style={{ fontSize: '14px', color: THEME.textMuted, marginBottom: '16px' }}>
             About {results.length} results ({(searchTime / 1000).toFixed(2)} seconds)
           </div>
         )}
 
         {/* Loading */}
         {isLoading && (
-          <div className="py-8 text-center" style={{ color: THEME.textMuted }}>
+          <div style={{ padding: '32px 0', textAlign: 'center', color: THEME.textMuted }}>
             Searching...
           </div>
         )}
 
         {/* No results */}
         {!isLoading && results.length === 0 && query && (
-          <div className="py-8">
+          <div style={{ padding: '32px 0' }}>
             <p style={{ color: THEME.text }}>
               No results found for <strong>{query}</strong>
             </p>
-            <p className="mt-2" style={{ color: THEME.textMuted }}>
+            <p style={{ marginTop: '8px', color: THEME.textMuted }}>
               Try different keywords or check your spelling.
             </p>
           </div>
         )}
 
         {/* Results list */}
-        <div className="divide-y" style={{ borderColor: THEME.border }}>
+        <div>
           {results.map((result) => (
             <SearchResultCard
               key={result.id}
@@ -552,10 +669,14 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
 
       {/* Footer */}
       <div
-        className="border-t py-4 px-6 mt-8"
-        style={{ borderColor: THEME.border, background: THEME.surface }}
+        style={{
+          borderTop: `1px solid ${THEME.border}`,
+          padding: '16px 24px',
+          marginTop: '32px',
+          background: THEME.surface,
+        }}
       >
-        <div className="flex justify-center gap-8 text-sm" style={{ color: THEME.textMuted }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', fontSize: '14px', color: THEME.textMuted }}>
           <span>Cornfield, KS</span>
           <span>•</span>
           <span>Privacy</span>
