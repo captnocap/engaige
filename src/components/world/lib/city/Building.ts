@@ -20,7 +20,8 @@ export class Building extends SimObject {
   originY = 0;
 
   // Whether terrain should be hidden under this building
-  hideTerrain = true;
+  // Default false - only roads set this to true (road GLBs include their own ground)
+  hideTerrain = false;
 
   // Rotation in 90-degree increments (0-3)
   rotation = 0;
@@ -37,14 +38,15 @@ export class Building extends SimObject {
 
   refreshView(): void {
     const assetManager = getCityAssetManager();
-    if (!assetManager) return;
+    if (!assetManager) {
+      console.warn('[Building] Asset manager not ready');
+      return;
+    }
 
     const mesh = assetManager.getModel(this.modelType, this);
-    if (mesh) {
-      // Apply rotation
-      mesh.rotation.y = (this.rotation * Math.PI) / 2;
-      this.setMesh(mesh);
-    }
+    // Apply rotation
+    mesh.rotation.y = (this.rotation * Math.PI) / 2;
+    this.setMesh(mesh);
   }
 
   toHTML(): string {
@@ -64,8 +66,27 @@ export class Building extends SimObject {
 }
 
 /**
+ * Check if a model type is a road/terrain that includes its own ground
+ */
+function isRoadOrTerrain(modelType: string): boolean {
+  return (
+    modelType.includes('road') ||
+    modelType.includes('mainroad') ||
+    modelType.includes('sidewalk') ||
+    modelType.startsWith('tile-')
+  );
+}
+
+/**
  * Create a building from a model type
  */
 export function createBuilding(x: number, y: number, modelType: string): Building {
-  return new Building(x, y, modelType);
+  const building = new Building(x, y, modelType);
+
+  // Roads and terrain tiles include their own ground, so hide the grass terrain
+  if (isRoadOrTerrain(modelType)) {
+    building.hideTerrain = true;
+  }
+
+  return building;
 }

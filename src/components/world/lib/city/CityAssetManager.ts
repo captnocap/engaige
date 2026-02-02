@@ -83,11 +83,11 @@ export class CityAssetManager {
   /**
    * Get a cloned model instance for a SimObject
    */
-  getModel(name: string, simObject: SimObject, transparent = false): THREE.Object3D | null {
+  getModel(name: string, simObject: SimObject, transparent = false): THREE.Object3D {
     const model = this.models[name];
     if (!model) {
       console.warn(`[CityAssetManager] Model ${name} not found`);
-      return null;
+      return new THREE.Object3D(); // Return empty object like original
     }
 
     const mesh = model.clone();

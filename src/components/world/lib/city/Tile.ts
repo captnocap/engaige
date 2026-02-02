@@ -62,17 +62,19 @@ export class Tile extends SimObject {
     }
 
     const assetManager = getCityAssetManager();
-    if (!assetManager) return;
+    if (!assetManager) {
+      console.warn('[Tile] Asset manager not ready');
+      return;
+    }
 
-    // Hide terrain if building covers this tile
+    // Hide terrain if building covers this tile (roads include their own ground)
     if (this.building?.hideTerrain) {
       this.setMesh(null);
     } else {
+      // Always render terrain (grass by default)
       const mesh = assetManager.getModel(this.terrain, this);
-      if (mesh) {
-        mesh.name = this.terrain;
-        this.setMesh(mesh);
-      }
+      mesh.name = this.terrain;
+      this.setMesh(mesh);
     }
   }
 
