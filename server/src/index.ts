@@ -31,6 +31,7 @@ import { initializeSocialAutopilot, startSocialAutopilot } from './agents/social
 import { initializeConversationInitiator, startConversationInitiator } from './agents/conversation-initiator.js';
 import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
 import { initializeChessAutopilot, startChessAutopilot, initializeChessProfilesForExistingNPCs } from './agents/chess-autopilot.js';
+import { searchService, indexDynamicContent } from './services/search.js';
 
 const PORT = 4269;
 
@@ -93,6 +94,52 @@ eventBus.on(EventTypes.NPC_DELIBERATION_COMPLETED, async (event) => {
     total_time_ms: event.payload.total_time_ms,
     thought_count: event.payload.thought_count,
     conversation_id: event.conversation_id,
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Search Index Event Listeners (index dynamic NPC content)
+// ─────────────────────────────────────────────────────────────────
+
+// Initialize search index (loads static content on startup)
+searchService.initialize().then(() => {
+  console.log('[Server] Search index initialized');
+}).catch((err) => {
+  console.error('[Server] Failed to initialize search index:', err);
+});
+
+// Index social posts when created
+eventBus.on(EventTypes.SOCIAL_POST_CREATED, async (event) => {
+  const { getNPCById } = await import('./services/npc.js');
+  const npc = event.npc_id ? getNPCById(event.npc_id) : null;
+
+  await indexDynamicContent({
+    id: `post_${event.payload.post_id}`,
+    url: `www.${event.payload.platform}.corn/post/${event.payload.post_id}`,
+    siteDomain: `${event.payload.platform}.corn`,
+    contentType: 'post',
+    title: event.payload.content.slice(0, 100),
+    body: event.payload.content,
+    snippet: event.payload.content.slice(0, 200),
+    author: npc?.display_name,
+    tags: event.payload.hashtags || [],
+    createdAt: event.timestamp,
+  });
+});
+
+// Index news articles when ingested
+eventBus.on(EventTypes.NEWS_ARTICLE_INGESTED, async (event) => {
+  await indexDynamicContent({
+    id: `article_${event.payload.article_id}`,
+    url: `www.dailybuzz.corn/article/${event.payload.slug}`,
+    siteDomain: 'dailybuzz.corn',
+    contentType: 'article',
+    title: event.payload.headline,
+    body: event.payload.content,
+    snippet: event.payload.summary,
+    author: event.payload.author,
+    tags: event.payload.tags || [],
+    createdAt: event.timestamp,
   });
 });
 
