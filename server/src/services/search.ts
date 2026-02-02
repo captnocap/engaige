@@ -62,8 +62,13 @@ export interface AutocompleteResponse {
 // Static Content (Core Lore)
 // ============================================================================
 
-// This is a subset of the frontend static content, focused on core lore items.
-// In production, this would be loaded from a shared JSON file or the frontend build.
+// TODO: This should be loaded from the site manifests (src/data/site-manifests.ts)
+// For now, this is a server-side copy of the core lore content.
+// The frontend uses the manifest system for client-side search.
+// When WebSocket search is enabled, this FTS5 index will be the source of truth.
+//
+// Future: Create a shared JSON file that both frontend and backend can consume,
+// or have the server load manifests from the frontend build output.
 const STATIC_CONTENT: IndexableContent[] = [
   // DailyBuzz Articles
   {
