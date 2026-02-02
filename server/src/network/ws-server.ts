@@ -398,6 +398,19 @@ async function routeMessage(
       handleGuardrailsGetConfig(ws, message);
       break;
 
+    // Search routes
+    case 'search:query':
+      await handleSearchQuery(ws, message);
+      break;
+
+    case 'search:autocomplete':
+      await handleSearchAutocomplete(ws, message);
+      break;
+
+    case 'search:getStats':
+      await handleSearchGetStats(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -1641,6 +1654,91 @@ export function broadcastNPCMoved(data: {
         session_id: session.id,
       });
     }
+  }
+}
+
+// ============================================================================
+// Search Handlers
+// ============================================================================
+
+/**
+ * Handle search:query - Execute a search query
+ */
+async function handleSearchQuery(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { searchService } = await import('../services/search.js');
+    const payload = (message.payload || {}) as {
+      query: string;
+      domain?: string;
+      contentType?: string;
+      limit?: number;
+      offset?: number;
+    };
+
+    if (!payload.query || typeof payload.query !== 'string') {
+      send(ws, createResponse(message.id, false, null, 'Missing or invalid query'));
+      return;
+    }
+
+    const result = await searchService.search({
+      query: payload.query,
+      domain: payload.domain,
+      contentType: payload.contentType,
+      limit: payload.limit,
+      offset: payload.offset,
+    });
+
+    send(ws, createResponse(message.id, true, result));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSearchQuery',
+    });
+    send(ws, createError('Search failed', 'SEARCH_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle search:autocomplete - Get autocomplete suggestions
+ */
+async function handleSearchAutocomplete(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { searchService } = await import('../services/search.js');
+    const payload = (message.payload || {}) as {
+      prefix: string;
+      limit?: number;
+    };
+
+    if (!payload.prefix || typeof payload.prefix !== 'string') {
+      send(ws, createResponse(message.id, true, { prefix: '', suggestions: [] }));
+      return;
+    }
+
+    const result = await searchService.autocomplete(payload.prefix, payload.limit);
+    send(ws, createResponse(message.id, true, result));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSearchAutocomplete',
+    });
+    send(ws, createResponse(message.id, true, { prefix: '', suggestions: [] }));
+  }
+}
+
+/**
+ * Handle search:getStats - Get search index statistics
+ */
+async function handleSearchGetStats(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { searchService } = await import('../services/search.js');
+    const stats = await searchService.getStats();
+    send(ws, createResponse(message.id, true, stats));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSearchGetStats',
+    });
+    send(ws, createError('Failed to get search stats', 'STATS_ERROR', message.id));
   }
 }
 

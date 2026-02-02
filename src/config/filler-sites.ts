@@ -876,6 +876,26 @@ export const FILLER_SITES = {
     },
   },
 
+  goober: {
+    id: 'goober',
+    name: 'Goober',
+    tagline: 'The Corn Internet Search Engine',
+    url: 'www.goober.corn',
+    icon: '🔍',
+    description: 'Search the entire .corn internet. Find anything. Trust nothing.',
+    theme: {
+      primary: '#4285F4',      // Google blue
+      secondary: '#34A853',    // Google green
+      background: '#ffffff',   // White
+      surface: '#ffffff',      // White
+      text: '#202124',         // Google text
+      textMuted: '#5f6368',    // Google muted
+      border: '#dfe1e5',       // Google border
+      red: '#EA4335',          // Google red
+      yellow: '#FBBC05',       // Google yellow
+    },
+  },
+
   drmartinezblog: {
     id: 'drmartinezblog',
     name: 'Dr. Elena Martinez',

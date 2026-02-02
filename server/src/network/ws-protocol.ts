@@ -296,6 +296,28 @@ export interface GuardrailsGetConfigMessage extends WSMessage {
   type: 'guardrails:getConfig';
 }
 
+// Search
+export interface SearchQueryMessage extends WSMessage<{
+  query: string;
+  domain?: string;
+  contentType?: string;
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'search:query';
+}
+
+export interface SearchAutocompleteMessage extends WSMessage<{
+  prefix: string;
+  limit?: number;
+}> {
+  type: 'search:autocomplete';
+}
+
+export interface SearchGetStatsMessage extends WSMessage {
+  type: 'search:getStats';
+}
+
 // Union of all client messages
 export type ClientMessage =
   | BudgetGetStatusMessage
@@ -337,7 +359,10 @@ export type ClientMessage =
   | WorldSetTimeMultiplierMessage
   | GuardrailsGetRatingMessage
   | GuardrailsSetRatingMessage
-  | GuardrailsGetConfigMessage;
+  | GuardrailsGetConfigMessage
+  | SearchQueryMessage
+  | SearchAutocompleteMessage
+  | SearchGetStatsMessage;
 
 // ============================================================================
 // Server -> Client Messages
