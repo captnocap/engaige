@@ -75,6 +75,7 @@ import { Floor13BlogSite } from '../components/browser/sites/Floor13BlogSite.js'
 import { SmallKevinBlogSite } from '../components/browser/sites/SmallKevinBlogSite.js'
 import { GooberSite } from '../components/browser/sites/GooberSite.js'
 import { CornGPTSite } from '../components/browser/sites/CornGPTSite.js'
+import { StalksSite } from '../components/browser/sites/StalksSite.js'
 
 // Type adapter: convert old SiteProps to new SiteComponentProps
 // The old components use a simpler interface, this creates a compatible wrapper
@@ -158,6 +159,17 @@ export function registerLegacySites(): void {
     component: adaptLegacyComponent(CornGPTSite),
     keywords: ['ai', 'chat', 'gpt', 'assistant', 'closeai', 'search'],
     seoScore: 92,
+  }))
+
+  registerSite(createSimpleSite({
+    id: 'stalks',
+    domain: 'stalks.corn',
+    name: 'Stalks',
+    icon: '📈',
+    description: 'Prediction market for .corn internet drama',
+    component: StalksSite,  // Uses full SiteComponentProps
+    keywords: ['predictions', 'betting', 'markets', 'stocks', 'drama', 'gambling'],
+    seoScore: 75,
   }))
 
   // =========================================================================

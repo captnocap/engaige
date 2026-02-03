@@ -366,6 +366,24 @@ export const CORNGPT_MANIFEST: SiteManifest = {
   ],
 }
 
+export const STALKS_MANIFEST: SiteManifest = {
+  domain: 'stalks.corn',
+  homepage: {
+    title: 'Stalks - Prediction Market for .corn Drama',
+    description: 'Bet Kernels on the outcomes of local controversies, celebrity drama, and whether Floor 13 actually exists. Your worthless currency, your wild predictions.',
+    keywords: ['predictions', 'betting', 'markets', 'stocks', 'gambling', 'drama', 'polymarket'],
+  },
+  seoScore: 75,
+  pages: [
+    { path: '/market/trust-fall-tim-3000', title: 'Will Trust Fall Tim reach 3,000 falls?', description: 'Currently at 2,847 falls with 78.5% catch rate. Bet on whether Tim hits the milestone.', type: 'entertainment', tags: ['trust-fall-tim', 'prediction', 'betting'] },
+    { path: '/market/floor-13-confirmed', title: 'Will Floor 13 be confirmed to exist?', description: 'The Hartwell Building mystery. Building management says no, the elevator says maybe.', type: 'entertainment', tags: ['hartwell', 'floor-13', 'conspiracy', 'betting'] },
+    { path: '/market/derek-jennifer-reconciliation', title: 'Will Derek and Jennifer reconcile?', description: 'Jennifer left Derek over quantum coffee. Current odds: 8% YES. Derek remains optimistic.', type: 'entertainment', tags: ['derek', 'jennifer', 'relationship', 'betting'] },
+    { path: '/market/gary-underground-unban', title: 'Will Gary get unbanned from The Underground?', description: 'Gary requested Wonderwall ONE TIME. Mars has maintained the ban for 3+ years. Current odds: 3% YES.', type: 'entertainment', tags: ['gary', 'wonderwall', 'underground', 'betting'] },
+    { path: '/market/velvet-algorithms-hiatus-end', title: 'Will The Velvet Algorithms end their hiatus?', description: 'The electronic duo has been on meditation hiatus. Will they return to music?', type: 'entertainment', tags: ['velvet-algorithms', 'music', 'betting'] },
+    { path: '/market/neon-requiem-reunion', title: 'Will Neon Requiem play a reunion show?', description: 'The post-punk legends broke up. Vex still sets up for practice. Will they reunite?', type: 'entertainment', tags: ['neon-requiem', 'reunion', 'music', 'betting'] },
+  ],
+}
+
 export const CORNMAPS_MANIFEST: SiteManifest = {
   domain: 'cornmaps.corn',
   homepage: {
@@ -517,6 +535,7 @@ export const ALL_SITE_MANIFESTS: SiteManifest[] = [
   // Specialized
   GOOBER_MANIFEST,
   CORNGPT_MANIFEST,
+  STALKS_MANIFEST,
   CORNMAPS_MANIFEST,
   CORNMD_MANIFEST,
   LINKEDCORN_MANIFEST,
