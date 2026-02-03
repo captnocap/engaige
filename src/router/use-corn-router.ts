@@ -212,6 +212,7 @@ export function useCornRouter() {
 
   /**
    * Navigate within current site (path change)
+   * Note: path may include query string (e.g., '/search?q=test')
    */
   const navigateToPath = useCallback((path: string, tabId?: string) => {
     const targetTabId = tabId || activeTabId
@@ -219,7 +220,17 @@ export function useCornRouter() {
 
     if (!tab?.site) return
 
-    const newUrl = buildURL(tab.site.domain, path, tab.query)
+    // Parse query from path if present, otherwise don't include old query
+    let pathOnly = path
+    let queryParams: URLSearchParams | undefined
+
+    const queryIndex = path.indexOf('?')
+    if (queryIndex !== -1) {
+      pathOnly = path.slice(0, queryIndex)
+      queryParams = new URLSearchParams(path.slice(queryIndex + 1))
+    }
+
+    const newUrl = buildURL(tab.site.domain, pathOnly, queryParams)
     navigateTo(newUrl, { tabId: targetTabId })
   }, [activeTabId, tabs, navigateTo])
 
