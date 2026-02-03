@@ -144,7 +144,7 @@ export function registerLegacySites(): void {
     name: 'Goober',
     icon: '🔍',
     description: 'The corn internet search engine',
-    component: adaptLegacyComponent(GooberSite),
+    component: GooberSite,  // Uses full SiteComponentProps (needs query param)
     keywords: ['search', 'google', 'find', 'engine'],
     seoScore: 95,
   }))

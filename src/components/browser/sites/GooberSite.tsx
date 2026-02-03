@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import type { SiteProps } from '../BrowserSiteContainer.js'
+import type { SiteComponentProps } from '../../../router/types.js'
 import { getAllSearchEntries } from '../../../router/site-registry.js'
 import type { SearchIndexEntry } from '../../../router/types.js'
 
@@ -466,37 +466,37 @@ function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
 // Main Component
 // ============================================================================
 
-export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateToUrl }: SiteProps) {
-  const [query, setQuery] = useState('')
+export function GooberSite({ siteId, path, params, query, onNavigate, onPathChange, onNavigateToUrl }: SiteComponentProps) {
+  const [searchInput, setSearchInput] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [searchTime, setSearchTime] = useState(0)
   const [suggestions, setSuggestions] = useState<AutocompleteItem[]>([])
 
   // Parse path to determine view
+  // Note: query params are now separate from path (via SiteComponentProps.query)
   const parsedPath = useMemo(() => {
-    console.log('[Goober] Parsing path:', path)
+    console.log('[Goober] Parsing path:', path, 'query:', query?.toString())
     if (!path || path === '/') {
       console.log('[Goober] Path is home')
       return { view: 'home' as const, query: '' }
     }
     if (path.startsWith('/search')) {
-      // Parse query from path: /search?q=...
-      const match = path.match(/[?&]q=([^&]+)/)
-      const q = match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : ''
-      console.log('[Goober] Path is search, query:', q)
+      // Get query from URLSearchParams (separated by router)
+      const q = query?.get('q') || ''
+      console.log('[Goober] Path is search, query from URLSearchParams:', q)
       return { view: 'results' as const, query: q }
     }
     console.log('[Goober] Unknown path, defaulting to home')
     return { view: 'home' as const, query: '' }
-  }, [path])
+  }, [path, query])
 
-  // Sync query state with URL (only when URL changes, not when query changes)
+  // Sync searchInput state with URL (only when URL changes, not when searchInput changes)
   useEffect(() => {
     console.log('[Goober] Query sync effect - parsedPath.query:', parsedPath.query)
     if (parsedPath.query) {
-      console.log('[Goober] Syncing query from URL:', parsedPath.query)
-      setQuery(parsedPath.query)
+      console.log('[Goober] Syncing searchInput from URL:', parsedPath.query)
+      setSearchInput(parsedPath.query)
     }
   }, [parsedPath.query])
 
@@ -536,16 +536,16 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
   }, [parsedPath.view, parsedPath.query, executeSearch])
 
   const handleSearch = useCallback(() => {
-    console.log('[Goober] handleSearch called with query:', query)
-    if (!query.trim()) {
-      console.log('[Goober] Empty query, not searching')
+    console.log('[Goober] handleSearch called with searchInput:', searchInput)
+    if (!searchInput.trim()) {
+      console.log('[Goober] Empty searchInput, not searching')
       return
     }
-    const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+')
+    const encodedQuery = encodeURIComponent(searchInput).replace(/%20/g, '+')
     const newPath = `/search?q=${encodedQuery}`
     console.log('[Goober] Navigating to path:', newPath)
     onPathChange(newPath)
-  }, [query, onPathChange])
+  }, [searchInput, onPathChange])
 
   const handleNavigateToResult = useCallback((url: string) => {
     console.log('[Goober] handleNavigateToResult called with url:', url)
@@ -578,10 +578,10 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
 
   // Generate autocomplete suggestions from site manifests
   useEffect(() => {
-    if (query.length >= 2) {
+    if (searchInput.length >= 2) {
       const entries = getSearchableContent()
-      console.log('[Goober] Autocomplete - searching', entries.length, 'entries for:', query)
-      const matching = entries.filter(entry => entry.title.toLowerCase().includes(query.toLowerCase()))
+      console.log('[Goober] Autocomplete - searching', entries.length, 'entries for:', searchInput)
+      const matching = entries.filter(entry => entry.title.toLowerCase().includes(searchInput.toLowerCase()))
       console.log('[Goober] Autocomplete - found', matching.length, 'matches')
       const newSuggestions = matching
         .slice(0, 5)
@@ -595,7 +595,7 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
     } else {
       setSuggestions([])
     }
-  }, [query])
+  }, [searchInput])
 
   // -------------------------------------------------------------------------
   // Render
@@ -621,8 +621,8 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
 
           {/* Search Box */}
           <SearchBox
-            value={query}
-            onChange={setQuery}
+            value={searchInput}
+            onChange={setSearchInput}
             onSubmit={handleSearch}
             autoFocus
             size="large"
@@ -709,8 +709,8 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
             <GooberLogo size="small" />
           </button>
           <SearchBox
-            value={query}
-            onChange={setQuery}
+            value={searchInput}
+            onChange={setSearchInput}
             onSubmit={handleSearch}
             suggestions={suggestions}
             onSelectSuggestion={handleSelectSuggestion}
@@ -735,10 +735,10 @@ export function GooberSite({ siteId, path, onNavigate, onPathChange, onNavigateT
         )}
 
         {/* No results */}
-        {!isLoading && results.length === 0 && query && (
+        {!isLoading && results.length === 0 && searchInput && (
           <div style={{ padding: '32px 0' }}>
             <p style={{ color: THEME.text }}>
-              No results found for <strong>{query}</strong>
+              No results found for <strong>{searchInput}</strong>
             </p>
             <p style={{ marginTop: '8px', color: THEME.textMuted }}>
               Try different keywords or check your spelling.
