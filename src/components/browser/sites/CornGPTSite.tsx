@@ -783,6 +783,8 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
       style={{
         display: 'flex',
         height: '100%',
+        minHeight: '100%',
+        flex: 1,
         backgroundColor: THEME.background,
         color: THEME.text,
         fontFamily: 'system-ui, -apple-system, sans-serif',
