@@ -77,7 +77,7 @@ export function BrowserSiteContainer({
   }
 
   return (
-    <div className="h-full overflow-y-auto flex flex-col">
+    <div className="h-full overflow-y-auto">
       <SiteComponent {...siteProps} />
     </div>
   )
