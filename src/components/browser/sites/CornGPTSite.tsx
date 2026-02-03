@@ -780,7 +780,7 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
 
   return (
     <div
-      className="min-h-full flex"
+      className="h-full flex"
       style={{
         backgroundColor: THEME.background,
         color: THEME.text,
