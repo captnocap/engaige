@@ -1008,6 +1008,25 @@ export const FILLER_SITES = {
       error: '#EF4444',        // Red for corruption
     },
   },
+
+  corngpt: {
+    id: 'corngpt',
+    name: 'cornGPT',
+    tagline: 'Your AI assistant for the .corn internet',
+    url: 'www.corngpt.corn',
+    icon: '🌽',
+    description: 'AI-powered search and chat from CloseAI, a subsidiary of Omnicorp Holdings',
+    theme: {
+      primary: '#10a37f',      // CloseAI green (OpenAI teal parody)
+      secondary: '#202123',    // Dark sidebar
+      background: '#343541',   // ChatGPT dark grey
+      surface: '#444654',      // Message background
+      text: '#ececf1',         // Light text
+      textMuted: '#8e8ea0',    // Muted grey
+      border: '#4e4f60',       // Border color
+      accent: '#10a37f',       // Accent green
+    },
+  },
 } as const;
 
 // ============================================================================

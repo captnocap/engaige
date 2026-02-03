@@ -195,6 +195,10 @@ async function routeMessage(
       await handleAIGeneratePost(ws, message);
       break;
 
+    case 'ai:directChat':
+      await handleAIDirectChat(ws, message);
+      break;
+
     // Logs routes
     case 'logs:getEvents':
       await handleLogsGetEvents(ws, message);
@@ -602,6 +606,36 @@ async function handleAIGeneratePost(ws: ServerWebSocket<ClientSession>, message:
       postId: `post_${Date.now()}`,
     },
   });
+}
+
+async function handleAIDirectChat(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const { message: userMessage, conversationId, history } = message.payload as any;
+
+  if (!userMessage) {
+    send(ws, createResponse(message.id, false, null, 'Missing message'));
+    return;
+  }
+
+  try {
+    const { generateDirectChatResponse } = await import('../services/direct-chat.js');
+
+    const result = await generateDirectChatResponse({
+      message: userMessage,
+      conversationId,
+      history,
+    });
+
+    send(ws, {
+      type: 'ai:directChatResponse',
+      id: message.id,
+      payload: result,
+    });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error('[WS] Direct chat error:', err.message);
+
+    send(ws, createResponse(message.id, false, null, err.message));
+  }
 }
 
 // ============================================================================

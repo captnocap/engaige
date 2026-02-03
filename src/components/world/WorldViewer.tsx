@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import { useWorldStore } from '../../stores/worldStore.js';
 import { useWSStore } from '../../stores/wsStore.js';
 import WorldControls from './WorldControls.js';
-import AsciiOverlay from './AsciiOverlay.js';
 import {
   createScene,
   createOrbitalCamera,
@@ -537,12 +536,6 @@ export default function WorldViewer() {
           </div>
         </div>
       )}
-
-      {/* ASCII Overlay */}
-      <AsciiOverlay
-        enabled={asciiMode}
-        canvasRef={{ current: sceneContextRef.current?.getCanvas() || null }}
-      />
 
       {/* World Controls - only show when data loaded */}
       {city && (

@@ -74,6 +74,7 @@ import { WonderwallWarriorSite } from '../components/browser/sites/WonderwallWar
 import { Floor13BlogSite } from '../components/browser/sites/Floor13BlogSite.js'
 import { SmallKevinBlogSite } from '../components/browser/sites/SmallKevinBlogSite.js'
 import { GooberSite } from '../components/browser/sites/GooberSite.js'
+import { CornGPTSite } from '../components/browser/sites/CornGPTSite.js'
 
 // Type adapter: convert old SiteProps to new SiteComponentProps
 // The old components use a simpler interface, this creates a compatible wrapper
@@ -146,6 +147,17 @@ export function registerLegacySites(): void {
     component: adaptLegacyComponent(GooberSite),
     keywords: ['search', 'google', 'find', 'engine'],
     seoScore: 95,
+  }))
+
+  registerSite(createSimpleSite({
+    id: 'corngpt',
+    domain: 'corngpt.corn',
+    name: 'cornGPT',
+    icon: '🌽',
+    description: 'AI-powered search and chat from CloseAI',
+    component: adaptLegacyComponent(CornGPTSite),
+    keywords: ['ai', 'chat', 'gpt', 'assistant', 'closeai', 'search'],
+    seoScore: 92,
   }))
 
   // =========================================================================

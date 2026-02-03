@@ -71,6 +71,15 @@ export interface AIGeneratePostMessage extends WSMessage<{
   type: 'ai:generatePost';
 }
 
+// Direct Chat (cornGPT)
+export interface AIDirectChatMessage extends WSMessage<{
+  message: string;
+  conversationId?: string;
+  history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+}> {
+  type: 'ai:directChat';
+}
+
 // Proxy Configuration
 export interface ProxyGetConfigMessage extends WSMessage {
   type: 'proxy:getConfig';
@@ -326,6 +335,7 @@ export type ClientMessage =
   | BudgetGetLogsMessage
   | AISendMessageMessage
   | AIGeneratePostMessage
+  | AIDirectChatMessage
   | ProxyGetConfigMessage
   | ProxySetConfigMessage
   | PingMessage
@@ -410,6 +420,21 @@ export interface AIPostCreatedEvent extends WSMessage<{
   postId: string;
 }> {
   type: 'ai:postCreated';
+}
+
+export interface AIDirectChatResponseEvent extends WSMessage<{
+  message: string;
+  sources: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+    domain: string;
+  }>;
+  conversationId: string;
+  tokensUsed?: number;
+  costCents?: number;
+}> {
+  type: 'ai:directChatResponse';
 }
 
 // System Events
@@ -621,6 +646,7 @@ export type ServerMessage =
   | AITypingEvent
   | AIResponseEvent
   | AIPostCreatedEvent
+  | AIDirectChatResponseEvent
   | PongMessage
   | ErrorEvent
   | ConnectedEvent
