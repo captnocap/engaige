@@ -9,7 +9,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { getAppsForSurface, type AppDefinition } from '../../config/app-registry.js'
 import { BrowserSiteContainer } from './BrowserSiteContainer.js'
 import { useBrowserStore } from '../../stores/browserStore.js'
-import { useCornRouter, getAllSites, getUrlForSite } from '../../router/index.js'
+import { useCornRouter, getAllSites, getUrlForSite, ABOUT_BLANK } from '../../router/index.js'
 import type { CornSite, AutocompleteSuggestion } from '../../router/index.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
@@ -78,7 +78,8 @@ export function Browser({ onClose }: BrowserProps) {
   // -------------------------------------------------------------------------
 
   useEffect(() => {
-    setUrlInput(activeTab.url)
+    // Show empty URL bar for about:blank (home page)
+    setUrlInput(activeTab.url === ABOUT_BLANK ? '' : activeTab.url)
     setShowAutocomplete(false)
   }, [activeTab.url, activeTab.id])
 

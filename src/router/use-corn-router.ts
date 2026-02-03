@@ -239,7 +239,7 @@ export function useCornRouter() {
   // -------------------------------------------------------------------------
 
   const canGoBack = useMemo(() => {
-    return activeTab.historyIndex > 0 || activeTab.site !== null
+    return activeTab.historyIndex > 0
   }, [activeTab])
 
   const canGoForward = useMemo(() => {
@@ -253,28 +253,30 @@ export function useCornRouter() {
       // Go to previous history entry
       const newIndex = tab.historyIndex - 1
       const entry = tab.history[newIndex]
-      const site = getSiteByDomain(entry.domain)
 
-      updateTab(tab.id, {
-        url: entry.url,
-        site,
-        path: entry.path,
-        params: entry.params,
-        query: new URLSearchParams(),
-        title: entry.title,
-        historyIndex: newIndex,
-      })
-    } else if (tab.site) {
-      // Go to home (new tab page)
-      updateTab(tab.id, {
-        url: '',
-        site: null,
-        path: '/',
-        params: {},
-        query: new URLSearchParams(),
-        title: 'New Tab',
-        historyIndex: -1,
-      })
+      // Handle about:blank (home page) entries
+      if (entry.url === ABOUT_BLANK) {
+        updateTab(tab.id, {
+          url: ABOUT_BLANK,
+          site: null,
+          path: '/',
+          params: {},
+          query: new URLSearchParams(),
+          title: 'New Tab',
+          historyIndex: newIndex,
+        })
+      } else {
+        const site = getSiteByDomain(entry.domain)
+        updateTab(tab.id, {
+          url: entry.url,
+          site,
+          path: entry.path,
+          params: entry.params,
+          query: new URLSearchParams(),
+          title: entry.title,
+          historyIndex: newIndex,
+        })
+      }
     }
   }, [activeTab, updateTab])
 
@@ -284,31 +286,60 @@ export function useCornRouter() {
     if (tab.historyIndex < tab.history.length - 1) {
       const newIndex = tab.historyIndex + 1
       const entry = tab.history[newIndex]
-      const site = getSiteByDomain(entry.domain)
 
-      updateTab(tab.id, {
-        url: entry.url,
-        site,
-        path: entry.path,
-        params: entry.params,
-        query: new URLSearchParams(),
-        title: entry.title,
-        historyIndex: newIndex,
-      })
+      // Handle about:blank (home page) entries
+      if (entry.url === ABOUT_BLANK) {
+        updateTab(tab.id, {
+          url: ABOUT_BLANK,
+          site: null,
+          path: '/',
+          params: {},
+          query: new URLSearchParams(),
+          title: 'New Tab',
+          historyIndex: newIndex,
+        })
+      } else {
+        const site = getSiteByDomain(entry.domain)
+        updateTab(tab.id, {
+          url: entry.url,
+          site,
+          path: entry.path,
+          params: entry.params,
+          query: new URLSearchParams(),
+          title: entry.title,
+          historyIndex: newIndex,
+        })
+      }
     }
   }, [activeTab, updateTab])
 
   const goHome = useCallback(() => {
+    const tab = activeTab
+
+    // Create home history entry
+    const homeEntry: HistoryEntry = {
+      url: ABOUT_BLANK,
+      domain: '',
+      path: '/',
+      params: {},
+      title: 'New Tab',
+      timestamp: Date.now(),
+    }
+
+    // Truncate forward history and add home entry
+    const newHistory = [...tab.history.slice(0, tab.historyIndex + 1), homeEntry]
+
     updateTab(activeTabId, {
-      url: '',
+      url: ABOUT_BLANK,
       site: null,
       path: '/',
       params: {},
       query: new URLSearchParams(),
       title: 'New Tab',
-      // Don't modify history - just viewing home
+      history: newHistory,
+      historyIndex: newHistory.length - 1,
     })
-  }, [activeTabId, updateTab])
+  }, [activeTab, activeTabId, updateTab])
 
   const refresh = useCallback(() => {
     if (activeTab.url) {
@@ -368,18 +399,29 @@ export function useCornRouter() {
 
 let tabCounter = 0
 
+/** Special URL for the new tab / home page */
+export const ABOUT_BLANK = 'about:blank'
+
 function createNewTab(): BrowserTab {
   tabCounter++
+  const homeEntry: HistoryEntry = {
+    url: ABOUT_BLANK,
+    domain: '',
+    path: '/',
+    params: {},
+    title: 'New Tab',
+    timestamp: Date.now(),
+  }
   return {
     id: `tab-${Date.now()}-${tabCounter}`,
-    url: '',
+    url: ABOUT_BLANK,
     site: null,
     path: '/',
     params: {},
     query: new URLSearchParams(),
     title: 'New Tab',
-    history: [],
-    historyIndex: -1,
+    history: [homeEntry],
+    historyIndex: 0,
   }
 }
 

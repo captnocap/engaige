@@ -71,5 +71,5 @@ export {
 export { registerLegacySites } from './legacy-sites.js'
 
 // React hook
-export { useCornRouter } from './use-corn-router.js'
+export { useCornRouter, ABOUT_BLANK } from './use-corn-router.js'
 export type { BrowserTab, RouterState, AutocompleteSuggestion } from './use-corn-router.js'
