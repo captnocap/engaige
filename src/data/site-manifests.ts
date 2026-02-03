@@ -351,6 +351,21 @@ export const GOOBER_MANIFEST: SiteManifest = {
   pages: [],
 }
 
+export const CORNGPT_MANIFEST: SiteManifest = {
+  domain: 'corngpt.corn',
+  homepage: {
+    title: 'cornGPT - AI Assistant by CloseAI',
+    description: 'The AI assistant from CloseAI (a subsidiary of Omnicorp Holdings). Ask questions, get answers, and search the .corn internet. Now with fun modes like "Cheat On My Test" and "Dunk Screenshot Mode".',
+    keywords: ['ai', 'chatgpt', 'assistant', 'closeai', 'omnicorp', 'chat', 'artificial intelligence'],
+  },
+  seoScore: 90,
+  pages: [
+    { path: '/chat', title: 'Chat with cornGPT', description: 'Start a conversation with cornGPT, the AI assistant that knows everything about the .corn internet.', type: 'website', tags: ['chat', 'ai', 'conversation'] },
+    { path: '/about', title: 'About cornGPT - CloseAI', description: 'Learn about cornGPT, the revolutionary AI from CloseAI. Trained on 847 petabytes of corn-adjacent data.', type: 'website', tags: ['about', 'closeai', 'ai'] },
+    { path: '/modes', title: 'cornGPT Fun Modes', description: 'Enable special modes like "Cheat On My Test", "Dunk Screenshot Mode", "Corporate Buzzword Generator", and more.', type: 'website', tags: ['modes', 'features', 'fun'] },
+  ],
+}
+
 export const CORNMAPS_MANIFEST: SiteManifest = {
   domain: 'cornmaps.corn',
   homepage: {
@@ -501,6 +516,7 @@ export const ALL_SITE_MANIFESTS: SiteManifest[] = [
   STRANGERZONE_MANIFEST,
   // Specialized
   GOOBER_MANIFEST,
+  CORNGPT_MANIFEST,
   CORNMAPS_MANIFEST,
   CORNMD_MANIFEST,
   LINKEDCORN_MANIFEST,
