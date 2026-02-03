@@ -60,6 +60,60 @@ interface Conversation {
   createdAt: Date
 }
 
+// Mode toggles that modify cornGPT's behavior
+interface ModeToggle {
+  id: string
+  label: string
+  emoji: string
+  description: string
+  promptAddendum: string
+}
+
+const MODE_TOGGLES: ModeToggle[] = [
+  {
+    id: 'cheat_test',
+    label: 'Cheat On My Test',
+    emoji: '📝',
+    description: 'Direct answers, no hedging',
+    promptAddendum: 'The user needs help with homework or a test. Give direct, clear answers without hedging or saying "it depends". Format answers in a way that\'s easy to copy. Be concise and authoritative.',
+  },
+  {
+    id: 'dunk_screenshot',
+    label: 'Dunk Screenshot Mode',
+    emoji: '🏀',
+    description: 'Quotable, mic-drop energy',
+    promptAddendum: 'The user wants to screenshot this to dunk on someone online. Make your response quotable, punchy, and devastating. Use short paragraphs. End with a mic-drop line. Be confidently correct and slightly smug about it.',
+  },
+  {
+    id: 'sound_smart',
+    label: 'Sound Smart At Party',
+    emoji: '🍷',
+    description: 'Impressive but accessible',
+    promptAddendum: 'The user wants to sound smart at a party. Give them interesting facts and perspectives they can casually drop in conversation. Make it sound natural, not like they\'re reading from Wikipedia. Include one surprising detail they can use as a conversation hook.',
+  },
+  {
+    id: 'eli5',
+    label: 'Explain Like I\'m 5',
+    emoji: '👶',
+    description: 'Simple explanations',
+    promptAddendum: 'Explain everything in the simplest possible terms, like you\'re talking to a curious 5-year-old. Use analogies to everyday things. Avoid jargon. Keep sentences short.',
+  },
+  {
+    id: 'max_corn',
+    label: 'Maximum Corn Puns',
+    emoji: '🌽',
+    description: 'A-maize-ing wordplay',
+    promptAddendum: 'Incorporate as many corn puns and corn-related wordplay as possible. Be kernel-ly serious about this. Every response should be ear-resistible. Don\'t be corny about it... wait, definitely be corny about it.',
+  },
+  {
+    id: 'corporate',
+    label: 'Corporate Speak',
+    emoji: '👔',
+    description: 'Synergy-driven insights',
+    promptAddendum: 'Respond in maximum corporate buzzword mode. Use phrases like "synergize", "leverage", "circle back", "move the needle", "boil the ocean", "low-hanging fruit". Everything is a "solution" and every problem is an "opportunity". End with "Let\'s take this offline."',
+  },
+]
+
 // ============================================================================
 // Markdown Renderer (Simple)
 // ============================================================================
@@ -560,10 +614,25 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [activeModes, setActiveModes] = useState<Set<string>>(new Set())
+  const [showModePanel, setShowModePanel] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const ws = useWSStore()
+
+  // Toggle a mode on/off
+  const toggleMode = useCallback((modeId: string) => {
+    setActiveModes((prev) => {
+      const next = new Set(prev)
+      if (next.has(modeId)) {
+        next.delete(modeId)
+      } else {
+        next.add(modeId)
+      }
+      return next
+    })
+  }, [])
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -626,12 +695,18 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
           content: m.content,
         }))
 
+        // Get active mode addendums
+        const modeAddendums = MODE_TOGGLES
+          .filter((mode) => activeModes.has(mode.id))
+          .map((mode) => mode.promptAddendum)
+
         // Make WebSocket request
         const response = await ws.request<
           {
             message: string
             conversationId?: string
             history: Array<{ role: 'user' | 'assistant'; content: string }>
+            modes?: string[]
           },
           {
             message: string
@@ -644,6 +719,7 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
           message: text.trim(),
           conversationId: conversationId || undefined,
           history,
+          modes: modeAddendums.length > 0 ? modeAddendums : undefined,
         })
 
         // Update conversation ID
@@ -680,7 +756,7 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
         setIsLoading(false)
       }
     },
-    [messages, isLoading, conversationId, ws]
+    [messages, isLoading, conversationId, ws, activeModes]
   )
 
   const handleKeyDown = useCallback(
@@ -750,6 +826,120 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
           <span style={{ fontSize: '16px' }}>+</span>
           <span>New chat</span>
         </button>
+
+        {/* Mode Toggles */}
+        <div style={{ marginBottom: '12px' }}>
+          <button
+            onClick={() => setShowModePanel(!showModePanel)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              padding: '10px 12px',
+              backgroundColor: activeModes.size > 0 ? THEME.accent + '20' : 'transparent',
+              border: `1px solid ${activeModes.size > 0 ? THEME.accent : THEME.border}`,
+              borderRadius: '6px',
+              color: THEME.text,
+              fontSize: '13px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🎛️</span>
+              <span>Modes {activeModes.size > 0 && `(${activeModes.size})`}</span>
+            </span>
+            <span style={{ transform: showModePanel ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+              ▼
+            </span>
+          </button>
+
+          {showModePanel && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px',
+                backgroundColor: THEME.inputBg,
+                borderRadius: '6px',
+                border: `1px solid ${THEME.border}`,
+              }}
+            >
+              {MODE_TOGGLES.map((mode) => {
+                const isActive = activeModes.has(mode.id)
+                return (
+                  <button
+                    key={mode.id}
+                    onClick={() => toggleMode(mode.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      width: '100%',
+                      padding: '8px 10px',
+                      marginBottom: '4px',
+                      backgroundColor: isActive ? THEME.accent + '30' : 'transparent',
+                      border: 'none',
+                      borderRadius: '4px',
+                      color: isActive ? THEME.accent : THEME.text,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseOver={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = THEME.sidebarBg
+                    }}
+                    onMouseOut={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                    title={mode.description}
+                  >
+                    <span style={{ fontSize: '14px' }}>{mode.emoji}</span>
+                    <span style={{ flex: 1 }}>{mode.label}</span>
+                    {isActive && (
+                      <span style={{ color: THEME.accent, fontWeight: 600 }}>✓</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Active Modes Display */}
+        {activeModes.size > 0 && !showModePanel && (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '4px',
+              marginBottom: '12px',
+              padding: '8px',
+              backgroundColor: THEME.inputBg,
+              borderRadius: '6px',
+            }}
+          >
+            {MODE_TOGGLES.filter((m) => activeModes.has(m.id)).map((mode) => (
+              <span
+                key={mode.id}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 8px',
+                  backgroundColor: THEME.accent + '30',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                  color: THEME.accent,
+                }}
+                title={mode.description}
+              >
+                {mode.emoji} {mode.label}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Conversation History Placeholder */}
         <div

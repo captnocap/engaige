@@ -609,7 +609,7 @@ async function handleAIGeneratePost(ws: ServerWebSocket<ClientSession>, message:
 }
 
 async function handleAIDirectChat(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
-  const { message: userMessage, conversationId, history } = message.payload as any;
+  const { message: userMessage, conversationId, history, modes } = message.payload as any;
 
   if (!userMessage) {
     send(ws, createResponse(message.id, false, null, 'Missing message'));
@@ -623,6 +623,7 @@ async function handleAIDirectChat(ws: ServerWebSocket<ClientSession>, message: W
       message: userMessage,
       conversationId,
       history,
+      modes,
     });
 
     send(ws, {

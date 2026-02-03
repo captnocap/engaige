@@ -76,6 +76,7 @@ export interface AIDirectChatMessage extends WSMessage<{
   message: string;
   conversationId?: string;
   history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  modes?: string[];  // Mode prompt addendums
 }> {
   type: 'ai:directChat';
 }

@@ -35,6 +35,7 @@ export interface DirectChatRequest {
   message: string;
   history?: DirectChatMessage[];
   conversationId?: string;
+  modes?: string[];  // Mode prompt addendums from the frontend
 }
 
 export interface DirectChatSource {
@@ -164,9 +165,18 @@ export async function generateDirectChatResponse(
   const conversationId = request.conversationId || generateId();
   const sources: DirectChatSource[] = [];
 
+  // Build system prompt with any active modes
+  let systemPrompt = CORNGPT_SYSTEM_PROMPT;
+  if (request.modes && request.modes.length > 0) {
+    systemPrompt += '\n\n## Active Modes\nThe user has enabled the following special modes. Adjust your responses accordingly:\n\n';
+    for (const modePrompt of request.modes) {
+      systemPrompt += `- ${modePrompt}\n`;
+    }
+  }
+
   // Build messages array
   const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-    { role: 'system', content: CORNGPT_SYSTEM_PROMPT },
+    { role: 'system', content: systemPrompt },
   ];
 
   // Add history
