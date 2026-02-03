@@ -780,8 +780,13 @@ export function CornGPTSite({ siteId, path, onNavigate, onPathChange, onNavigate
 
   return (
     <div
-      className="h-full flex"
       style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
         backgroundColor: THEME.background,
         color: THEME.text,
         fontFamily: 'system-ui, -apple-system, sans-serif',
