@@ -491,6 +491,55 @@ async function routeMessage(
       await handleAwarenessTriggerCheck(ws, message);
       break;
 
+    // NPC Relationship routes
+    case 'npcRelationship:getAll':
+      await handleNPCRelationshipGetAll(ws, message);
+      break;
+
+    case 'npcRelationship:get':
+      await handleNPCRelationshipGet(ws, message);
+      break;
+
+    case 'npcRelationship:getBetween':
+      await handleNPCRelationshipGetBetween(ws, message);
+      break;
+
+    case 'npcRelationship:getFor':
+      await handleNPCRelationshipGetFor(ws, message);
+      break;
+
+    case 'npcRelationship:getAffairs':
+      await handleNPCRelationshipGetAffairs(ws, message);
+      break;
+
+    case 'npcRelationship:start':
+      await handleNPCRelationshipStart(ws, message);
+      break;
+
+    case 'npcRelationship:end':
+      await handleNPCRelationshipEnd(ws, message);
+      break;
+
+    case 'npcRelationship:startAffair':
+      await handleNPCRelationshipStartAffair(ws, message);
+      break;
+
+    case 'npcRelationship:discoverAffair':
+      await handleNPCRelationshipDiscoverAffair(ws, message);
+      break;
+
+    case 'npcRelationship:exposeAffair':
+      await handleNPCRelationshipExposeAffair(ws, message);
+      break;
+
+    case 'npcRelationship:getPartner':
+      await handleNPCRelationshipGetPartner(ws, message);
+      break;
+
+    case 'npcRelationship:getPublicStatus':
+      await handleNPCRelationshipGetPublicStatus(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -2138,6 +2187,217 @@ export function broadcastSocialEvent(type: string, payload: any): void {
         metadata: { event_type: type },
       });
     }
+  }
+}
+
+// ============================================================================
+// NPC Relationship Handlers
+// ============================================================================
+
+async function handleNPCRelationshipGetAll(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getActiveRelationships } = await import('../services/npc-relationships.js');
+    const relationships = getActiveRelationships();
+    send(ws, createResponse(message.id, true, { relationships }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetAll' });
+    send(ws, createError('Failed to get relationships', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGet(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getRelationship } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { id: string };
+
+    if (!payload?.id) {
+      send(ws, createResponse(message.id, false, null, 'Missing relationship id'));
+      return;
+    }
+
+    const relationship = getRelationship(payload.id);
+    send(ws, createResponse(message.id, true, relationship));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGet' });
+    send(ws, createError('Failed to get relationship', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGetBetween(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getRelationshipBetween } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npc1Id: string; npc2Id: string };
+
+    if (!payload?.npc1Id || !payload?.npc2Id) {
+      send(ws, createResponse(message.id, false, null, 'Missing npc1Id or npc2Id'));
+      return;
+    }
+
+    const relationship = getRelationshipBetween(payload.npc1Id, payload.npc2Id);
+    send(ws, createResponse(message.id, true, relationship));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetBetween' });
+    send(ws, createError('Failed to get relationship', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGetFor(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getRelationshipsFor } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npcId: string };
+
+    if (!payload?.npcId) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    const relationships = getRelationshipsFor(payload.npcId);
+    send(ws, createResponse(message.id, true, { relationships }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetFor' });
+    send(ws, createError('Failed to get relationships', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGetAffairs(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getAffairs } = await import('../services/npc-relationships.js');
+    const affairs = getAffairs();
+    send(ws, createResponse(message.id, true, { affairs }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetAffairs' });
+    send(ws, createError('Failed to get affairs', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipStart(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { startRelationship } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npc1Id: string; npc2Id: string; type?: string; isSecret?: boolean };
+
+    if (!payload?.npc1Id || !payload?.npc2Id) {
+      send(ws, createResponse(message.id, false, null, 'Missing npc1Id or npc2Id'));
+      return;
+    }
+
+    const relationship = await startRelationship(
+      payload.npc1Id,
+      payload.npc2Id,
+      (payload.type as any) || 'talking',
+      { isSecret: payload.isSecret }
+    );
+    send(ws, createResponse(message.id, true, relationship));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipStart' });
+    send(ws, createError('Failed to start relationship', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipEnd(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { endRelationship } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { id: string; reason: 'mutual' | 'dumped' | 'caught' | 'ghosted' | 'other' };
+
+    if (!payload?.id || !payload?.reason) {
+      send(ws, createResponse(message.id, false, null, 'Missing id or reason'));
+      return;
+    }
+
+    await endRelationship(payload.id, payload.reason);
+    send(ws, createResponse(message.id, true, { ended: true }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipEnd' });
+    send(ws, createError('Failed to end relationship', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipStartAffair(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { startAffair } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npc1Id: string; npc2Id: string };
+
+    if (!payload?.npc1Id || !payload?.npc2Id) {
+      send(ws, createResponse(message.id, false, null, 'Missing npc1Id or npc2Id'));
+      return;
+    }
+
+    const affair = await startAffair(payload.npc1Id, payload.npc2Id);
+    send(ws, createResponse(message.id, true, affair));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipStartAffair' });
+    send(ws, createError('Failed to start affair', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipDiscoverAffair(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { discoverAffair } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { relationshipId: string; discoveredBy: string };
+
+    if (!payload?.relationshipId || !payload?.discoveredBy) {
+      send(ws, createResponse(message.id, false, null, 'Missing relationshipId or discoveredBy'));
+      return;
+    }
+
+    const event = await discoverAffair(payload.relationshipId, payload.discoveredBy);
+    send(ws, createResponse(message.id, true, event));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipDiscoverAffair' });
+    send(ws, createError('Failed to discover affair', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipExposeAffair(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { exposeAffair } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { relationshipId: string };
+
+    if (!payload?.relationshipId) {
+      send(ws, createResponse(message.id, false, null, 'Missing relationshipId'));
+      return;
+    }
+
+    await exposeAffair(payload.relationshipId);
+    send(ws, createResponse(message.id, true, { exposed: true }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipExposeAffair' });
+    send(ws, createError('Failed to expose affair', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGetPartner(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getPartner } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npcId: string };
+
+    if (!payload?.npcId) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    const partner = getPartner(payload.npcId);
+    send(ws, createResponse(message.id, true, { partner }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetPartner' });
+    send(ws, createError('Failed to get partner', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handleNPCRelationshipGetPublicStatus(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getPublicStatus } = await import('../services/npc-relationships.js');
+    const payload = message.payload as { npcId: string };
+
+    if (!payload?.npcId) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    const status = getPublicStatus(payload.npcId);
+    send(ws, createResponse(message.id, true, { status }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handleNPCRelationshipGetPublicStatus' });
+    send(ws, createError('Failed to get public status', 'RELATIONSHIP_ERROR', message.id));
   }
 }
 

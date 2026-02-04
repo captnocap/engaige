@@ -120,6 +120,28 @@ export interface NPCShouldReactToPostsPayload {
   }>;
 }
 
+export interface NPCRelationshipStartedPayload {
+  relationship_id: string;
+  npc1_id: string;
+  npc2_id: string;
+  type: string;
+  is_secret: boolean;
+}
+
+export interface NPCRelationshipEndedPayload {
+  relationship_id: string;
+  npc1_id: string;
+  npc2_id: string;
+  reason: string;
+}
+
+export interface NPCAffairPayload {
+  relationship_id: string;
+  npc1_id: string;
+  npc2_id: string;
+  discovered_by?: string;
+}
+
 // === CONVERSATION EVENTS ===
 export interface MessagePayload {
   message_id: string;
@@ -561,6 +583,11 @@ export const EventTypes = {
   NPC_WENT_OFFLINE: 'npc:went_offline',
   NPC_SOCIAL_MEDIA_CHECKED: 'npc:social_media_checked',
   NPC_SHOULD_REACT_TO_POSTS: 'npc:should_react_to_posts',
+  NPC_RELATIONSHIP_STARTED: 'npc:relationship_started',
+  NPC_RELATIONSHIP_ENDED: 'npc:relationship_ended',
+  NPC_AFFAIR_STARTED: 'npc:affair_started',
+  NPC_AFFAIR_DISCOVERED: 'npc:affair_discovered',
+  NPC_AFFAIR_EXPOSED: 'npc:affair_exposed',
 
   // Conversation
   CONVERSATION_STARTED: 'conversation:started',

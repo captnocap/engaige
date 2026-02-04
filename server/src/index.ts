@@ -57,6 +57,11 @@ import { initializeAwarenessSchema, initializeDefaultHabits } from './services/a
 initializeAwarenessSchema();
 initializeDefaultHabits();
 
+// Initialize NPC relationships schema (NPC-NPC relationships and drama)
+import { initializeNPCRelationshipSchema, setupPreExistingDrama } from './services/npc-relationships.js';
+initializeNPCRelationshipSchema();
+setupPreExistingDrama();
+
 aiQueue.start();
 
 // ─────────────────────────────────────────────────────────────────
