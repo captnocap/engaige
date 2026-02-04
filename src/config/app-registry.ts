@@ -5,9 +5,16 @@
  * Defines where each app exists (surfaces), who can reach you there (access levels),
  * and how messages are styled.
  *
- * This ensures consistency when the same app appears on multiple surfaces
- * (e.g., MySpace Chat in browser AND phone).
+ * IMPORTANT: Browser sites get their metadata from site-manifests.ts (single source of truth).
+ * Browser entries are auto-generated via getBrowserApps() - don't duplicate them here!
+ *
+ * This file defines:
+ * - Phone apps (Messages, Spark, etc.)
+ * - Desktop apps (Settings, Files, etc.)
+ * - Apps that appear on MULTIPLE surfaces (MyFace appears on both phone AND browser)
  */
+
+import type { SiteManifest } from '../router/types.js'
 
 // ============================================================================
 // Types
@@ -85,10 +92,11 @@ export interface AppDefinition {
 }
 
 // ============================================================================
-// App Registry
+// Core Apps (Non-Browser)
+// These are apps with special behavior beyond just being browser sites.
 // ============================================================================
 
-export const APP_REGISTRY: Record<string, AppDefinition> = {
+const CORE_APPS: Record<string, AppDefinition> = {
   // -------------------------------------------------------------------------
   // Messaging Apps
   // -------------------------------------------------------------------------
@@ -215,18 +223,18 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   },
 
   // -------------------------------------------------------------------------
-  // Social Media Apps
+  // Social Apps (with phone presence)
   // -------------------------------------------------------------------------
 
   'myface': {
     id: 'myface',
     name: 'MyFace',
     icon: '👤',
-    iconImage: '/src/assets/icon-myface.png', // User uploaded
+    iconImage: '/src/assets/icon-myface.png',
     description: 'The OG social network - profiles, Top 8, bulletins',
     surfaces: { phone: true, browser: true },
     category: 'social',
-    accessLevel: 'stranger', // Public profiles
+    accessLevel: 'stranger',
   },
 
   'chirp': {
@@ -313,7 +321,7 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     description: 'System settings and configuration',
     surfaces: { phone: true, desktop: true },
     category: 'utility',
-    accessLevel: 'stranger', // N/A for utility
+    accessLevel: 'stranger',
   },
 
   'files': {
@@ -357,7 +365,7 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
   },
 
   // -------------------------------------------------------------------------
-  // Browser Sites (accessed through browser shell)
+  // Browser Shell
   // -------------------------------------------------------------------------
 
   'browser': {
@@ -366,538 +374,6 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
     icon: '🌐',
     description: 'Web browser - access all sites',
     surfaces: { desktop: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  // -------------------------------------------------------------------------
-  // Filler Content Sites (browser accessible)
-  // -------------------------------------------------------------------------
-
-  'wikiknow': {
-    id: 'wikiknow',
-    name: 'WikiKnow',
-    icon: '📖',
-    description: 'The free encyclopedia that anyone can edit',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'threadit': {
-    id: 'threadit',
-    name: 'Threadit',
-    icon: '🗣️',
-    description: 'The front page of the fake internet',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'dailybuzz': {
-    id: 'dailybuzz',
-    name: 'DailyBuzz',
-    icon: '📰',
-    description: 'All the news that fits',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'vidtube': {
-    id: 'vidtube',
-    name: 'VidTube',
-    icon: '▶️',
-    description: 'Share and watch videos from around the world',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'forchan': {
-    id: 'forchan',
-    name: 'ForChan',
-    icon: '🍀',
-    description: 'Anonymous imageboard',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'vitalityrx': {
-    id: 'vitalityrx',
-    name: 'VitalityRx',
-    icon: '💊',
-    description: 'Medications for the Modern Age',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'nestfinder': {
-    id: 'nestfinder',
-    name: 'NestFinder',
-    icon: '🏠',
-    description: 'Find your perfect place',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'bargainbay': {
-    id: 'bargainbay',
-    name: 'BargainBay',
-    icon: '🏷️',
-    description: 'Local classifieds and marketplace',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'oddsoracle': {
-    id: 'oddsoracle',
-    name: 'OddsOracle',
-    icon: '🎲',
-    description: 'Prediction markets for everything',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'strangerzone': {
-    id: 'strangerzone',
-    name: 'StrangerZone',
-    icon: '👤',
-    description: 'Talk to random strangers',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'wealthwisdom': {
-    id: 'wealthwisdom',
-    name: 'WealthWisdom',
-    icon: '💰',
-    description: 'Financial advice from experts',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  // -------------------------------------------------------------------------
-  // Easter Egg Sites (Unhinged Deep Lore)
-  // -------------------------------------------------------------------------
-
-  'popuphell': {
-    id: 'popuphell',
-    name: 'FREE PRIZES!!!',
-    icon: '🎉',
-    description: 'YOU ARE THE 1000000th VISITOR!!!',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'millionpixels': {
-    id: 'millionpixels',
-    name: 'MillionPixels',
-    icon: '🟦',
-    description: 'Own a piece of fake internet history',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'quantumbrewblog': {
-    id: 'quantumbrewblog',
-    name: 'QuantumBrewBlog',
-    icon: '☕',
-    description: 'Observing coffee so you don\'t have to',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cornstalkblog': {
-    id: 'cornstalkblog',
-    name: 'Thoughts From The Row',
-    icon: '🌾',
-    description: 'A sentient corn stalk contemplates existence',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'jennifersblog': {
-    id: 'jennifersblog',
-    name: 'Jennifer Heals',
-    icon: '💗',
-    description: 'A healing journey after divorce',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'hartwellfiles': {
-    id: 'hartwellfiles',
-    name: 'Hartwell Files',
-    icon: '🏚️',
-    description: 'The truth is in there',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'venuepoetryblog': {
-    id: 'venuepoetryblog',
-    name: 'Anonymous Venue Poet',
-    icon: '🎵',
-    description: 'Secret poetry about running a venue',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'trustfalltim': {
-    id: 'trustfalltim',
-    name: 'TrustFallTim.corn',
-    icon: '🙆‍♂️',
-    description: 'The official unofficial fan archive',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'timsmomsupport': {
-    id: 'timsmomsupport',
-    name: 'Carol\'s Blog',
-    icon: '🍪',
-    description: 'Tim\'s worried mom blogs about his trust fall career',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'smallkevinblog': {
-    id: 'smallkevinblog',
-    name: 'SmallKevinRedemption',
-    icon: '😔',
-    description: 'Small Kevin\'s redemption blog after The Incident',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'onlyfans': {
-    id: 'onlyfans',
-    name: 'OnlyFans',
-    icon: '🌀',
-    description: 'Premium fans for enthusiasts. Ceiling fans. Desk fans. What else?',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'bandsnotintown': {
-    id: 'bandsnotintown',
-    name: 'BandsNotInTown',
-    icon: '🎫',
-    description: 'Never see your favorite artists live',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'pastelive': {
-    id: 'pastelive',
-    name: 'PasteLive',
-    icon: '📋',
-    description: 'Pastebin-style text hosting for anonymous sharing',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  // -------------------------------------------------------------------------
-  // Unhinged Persona Sites
-  // -------------------------------------------------------------------------
-
-  'graintruth': {
-    id: 'graintruth',
-    name: 'GrainTruth',
-    icon: '🌽',
-    description: 'Corn-based conspiracy research - Big Corn is watching',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'huskreviews': {
-    id: 'huskreviews',
-    name: 'HuskReviews',
-    icon: '🌽',
-    description: 'Local business reviews from increasingly unhinged customers',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'kernelpods': {
-    id: 'kernelpods',
-    name: 'KernelPods',
-    icon: '🎧',
-    description: 'Podcast platform - every show has a kernel of truth',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cornhub': {
-    id: 'cornhub',
-    name: 'CornHub',
-    icon: '🌽',
-    description: 'Free corn recipes. What did you think it was?',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'benchwatch': {
-    id: 'benchwatch',
-    name: 'BenchWatch',
-    icon: '🪑',
-    description: 'Greg Mantooth\'s forensic bench analysis',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'dominate': {
-    id: 'dominate',
-    name: 'DOMINATE',
-    icon: '💪',
-    description: 'Chad Thundercoach\'s high-intensity success system',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'stationsushi': {
-    id: 'stationsushi',
-    name: 'Station Sushi Review',
-    icon: '🍣',
-    description: 'Mildred Gasketsworth\'s gas station sushi reviews',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'truemoss': {
-    id: 'truemoss',
-    name: 'TrueMoss',
-    icon: '🌿',
-    description: 'Agatha Mosswell\'s independent moss research',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cobcoin': {
-    id: 'cobcoin',
-    name: 'CobCoin Exchange',
-    icon: '🌽',
-    description: 'Corn-based cryptocurrency exchange - 847 COB = 1 USD',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'corndr': {
-    id: 'corndr',
-    name: 'Corndr',
-    icon: '🌽💕',
-    description: 'Dating app for people in the corn industry',
-    surfaces: { browser: true },
-    category: 'dating',
-    accessLevel: 'stranger',
-  },
-
-  'onlyfarms': {
-    id: 'onlyfarms',
-    name: 'OnlyFarms',
-    icon: '🚜',
-    description: 'Premium agricultural equipment marketplace. What did you think it was?',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'stalk': {
-    id: 'stalk',
-    name: 'Stalk',
-    icon: '🌽',
-    description: 'Live streaming platform - watch stalkers go live',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'linkedcorn': {
-    id: 'linkedcorn',
-    name: 'LinkedCorn',
-    icon: '🌽',
-    description: 'Professional networking for the corn industry',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cornmd': {
-    id: 'cornmd',
-    name: 'CornMD',
-    icon: '🌽',
-    description: 'Medical symptom checker - everything is corn-related',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cornmaps': {
-    id: 'cornmaps',
-    name: 'CornMaps',
-    icon: '🌽',
-    description: 'Navigation app where every destination has something off about it',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'askcorn': {
-    id: 'askcorn',
-    name: 'AskCorn',
-    icon: '🌽',
-    description: 'Q&A site where questions range from technical to unhinged',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cobfundme': {
-    id: 'cobfundme',
-    name: 'CobFundMe',
-    icon: '🌽',
-    description: 'Crowdfunding for questionable campaigns since 2019',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cobhub': {
-    id: 'cobhub',
-    name: 'CobHub',
-    icon: '🌽',
-    description: 'Code repository hosting for unhinged open source projects',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'amaize': {
-    id: 'amaize',
-    name: 'Amaize',
-    icon: '🌽',
-    description: 'The everything corn store. Kernel Prime delivery.',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'deaddrop': {
-    id: 'deaddrop',
-    name: 'DeadDrop',
-    icon: '📦',
-    description: 'Anonymous tips, confessions, and mostly shitposts',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'silkroad': {
-    id: 'silkroad',
-    name: 'SilkRoad',
-    icon: '🌽',
-    description: 'Legitimate corn silk marketplace. Stop asking if we sell anything else.',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'cornarchive': {
-    id: 'cornarchive',
-    name: 'CornArchive',
-    icon: '📚',
-    description: 'Preserving deleted and historical web pages since 2004',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'drmartinezblog': {
-    id: 'drmartinezblog',
-    name: 'Dr. Elena Martinez',
-    icon: '🔬',
-    description: 'Academic blog by physicist Dr. Elena Martinez - her quantum paper was misinterpreted into quantum coffee',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'bigmikeblog': {
-    id: 'bigmikeblog',
-    name: 'Big Mike from Tulsa',
-    icon: '👨',
-    description: 'The aggressively normal blog of Michael Cornwell - just explaining why he\'s everywhere',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'vexdrums': {
-    id: 'vexdrums',
-    name: 'Vex Drums Blog',
-    icon: '🥁',
-    description: 'Personal blog of Vex, drummer from Neon Requiem - a man in denial about his band\'s breakup',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'patriciablog': {
-    id: 'patriciablog',
-    name: "Patricia's Workplace Blog",
-    icon: '👔',
-    description: 'Corporate HR wellness blog from Omnicorp Holdings - increasingly concerning posts about Floor 13, mirrors, and 847',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'wonderwallwarrior': {
-    id: 'wonderwallwarrior',
-    name: 'Wonderwall Warrior',
-    icon: '🎸',
-    description: 'Gary\'s defiant blog about requesting Wonderwall at The Underground - 13 bans and counting',
-    surfaces: { browser: true },
-    category: 'browser',
-    accessLevel: 'stranger',
-  },
-
-  'floor13blog': {
-    id: 'floor13blog',
-    name: 'Floor 13 Exists',
-    icon: '█',
-    description: 'A cryptic blog from the mysterious entity on Floor 13 of the Hartwell Building',
-    surfaces: { browser: true },
     category: 'browser',
     accessLevel: 'stranger',
   },
@@ -928,34 +404,108 @@ export const APP_REGISTRY: Record<string, AppDefinition> = {
 };
 
 // ============================================================================
+// Browser App Generation
+// ============================================================================
+
+let browserAppsCache: Record<string, AppDefinition> | null = null;
+let fullRegistryCache: Record<string, AppDefinition> | null = null;
+
+/**
+ * Generate browser app entries from site manifests.
+ * This is called lazily when needed.
+ */
+function generateBrowserApps(manifests: SiteManifest[]): Record<string, AppDefinition> {
+  const apps: Record<string, AppDefinition> = {};
+
+  for (const manifest of manifests) {
+    // Skip if already in CORE_APPS (e.g., myface has special phone presence)
+    if (CORE_APPS[manifest.id]) {
+      continue;
+    }
+
+    apps[manifest.id] = {
+      id: manifest.id,
+      name: manifest.name,
+      icon: manifest.icon,
+      iconImage: manifest.iconImage,
+      description: manifest.homepage.description,
+      surfaces: { browser: true },
+      category: 'browser',
+      accessLevel: 'stranger',
+    };
+  }
+
+  return apps;
+}
+
+/**
+ * Initialize the registry with site manifests.
+ * Call this after site-manifests are loaded.
+ */
+export function initializeAppRegistry(manifests: SiteManifest[]): void {
+  browserAppsCache = generateBrowserApps(manifests);
+  fullRegistryCache = { ...CORE_APPS, ...browserAppsCache };
+}
+
+/**
+ * Get the full app registry (core + browser apps).
+ * Must call initializeAppRegistry first or provide manifests.
+ */
+export function getAppRegistry(manifests?: SiteManifest[]): Record<string, AppDefinition> {
+  if (fullRegistryCache) {
+    return fullRegistryCache;
+  }
+
+  if (manifests) {
+    initializeAppRegistry(manifests);
+    return fullRegistryCache!;
+  }
+
+  // Fallback: return just core apps
+  console.warn('[AppRegistry] Not initialized. Call initializeAppRegistry() first for full registry.');
+  return CORE_APPS;
+}
+
+// ============================================================================
+// Legacy Export (for backwards compatibility)
+// ============================================================================
+
+/**
+ * @deprecated Use getAppRegistry() instead for full registry.
+ * This only returns core apps without auto-generated browser entries.
+ */
+export const APP_REGISTRY = CORE_APPS;
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
 /**
  * Get all apps available on a specific surface
  */
-export function getAppsForSurface(surface: AppSurface): AppDefinition[] {
-  return Object.values(APP_REGISTRY).filter((app) => app.surfaces[surface]);
+export function getAppsForSurface(surface: AppSurface, manifests?: SiteManifest[]): AppDefinition[] {
+  const registry = getAppRegistry(manifests);
+  return Object.values(registry).filter((app) => app.surfaces[surface]);
 }
 
 /**
  * Get all messaging apps
  */
 export function getMessagingApps(): AppDefinition[] {
-  return Object.values(APP_REGISTRY).filter(
+  return Object.values(CORE_APPS).filter(
     (app) => app.category === 'messaging' || app.category === 'dating'
   );
 }
 
 /**
  * Get apps available for a given access level
- * (Returns apps where the required access level is <= the given level)
  */
-export function getAppsForAccessLevel(level: AccessLevel): AppDefinition[] {
+export function getAppsForAccessLevel(level: AccessLevel, manifests?: SiteManifest[]): AppDefinition[] {
+  const registry = getAppRegistry(manifests);
   const levelOrder: AccessLevel[] = ['stranger', 'acquaintance', 'friend', 'close_friend', 'partner'];
   const levelIndex = levelOrder.indexOf(level);
 
-  return Object.values(APP_REGISTRY).filter((app) => {
+  return Object.values(registry).filter((app) => {
     const appLevelIndex = levelOrder.indexOf(app.accessLevel);
     return appLevelIndex <= levelIndex;
   });
@@ -964,8 +514,9 @@ export function getAppsForAccessLevel(level: AccessLevel): AppDefinition[] {
 /**
  * Check if an NPC can contact player through a specific app based on relationship
  */
-export function canContactViaApp(appId: string, relationshipLevel: AccessLevel): boolean {
-  const app = APP_REGISTRY[appId];
+export function canContactViaApp(appId: string, relationshipLevel: AccessLevel, manifests?: SiteManifest[]): boolean {
+  const registry = getAppRegistry(manifests);
+  const app = registry[appId];
   if (!app) return false;
 
   const levelOrder: AccessLevel[] = ['stranger', 'acquaintance', 'friend', 'close_friend', 'partner'];
@@ -978,15 +529,17 @@ export function canContactViaApp(appId: string, relationshipLevel: AccessLevel):
 /**
  * Get the app definition by ID
  */
-export function getApp(appId: string): AppDefinition | undefined {
-  return APP_REGISTRY[appId];
+export function getApp(appId: string, manifests?: SiteManifest[]): AppDefinition | undefined {
+  const registry = getAppRegistry(manifests);
+  return registry[appId];
 }
 
 /**
  * Get all apps in a category
  */
-export function getAppsByCategory(category: AppCategory): AppDefinition[] {
-  return Object.values(APP_REGISTRY).filter((app) => app.category === category);
+export function getAppsByCategory(category: AppCategory, manifests?: SiteManifest[]): AppDefinition[] {
+  const registry = getAppRegistry(manifests);
+  return Object.values(registry).filter((app) => app.category === category);
 }
 
 export default APP_REGISTRY;

@@ -210,12 +210,20 @@ export interface IndexablePage {
  * Site manifest - declares all searchable content for a site.
  * Like a sitemap.xml but for the .corn internet.
  *
- * Each site component exports one of these, and the search
- * indexer consumes them all on startup.
+ * This is the SINGLE SOURCE OF TRUTH for site metadata.
+ * All other systems (site-registry, app-registry) derive from this.
  */
 export interface SiteManifest {
-  /** Site domain (e.g., 'myface.corn') */
+  /** Unique identifier (e.g., 'threadit') - derived from domain if not provided */
+  id: string
+  /** Site domain (e.g., 'threadit.corn') */
   domain: string
+  /** Display name (e.g., 'Threadit') */
+  name: string
+  /** Emoji icon */
+  icon: string
+  /** Optional high-res image path */
+  iconImage?: string
   /** Homepage info - what shows when you search for the site itself */
   homepage: {
     title: string

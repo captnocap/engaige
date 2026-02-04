@@ -1,20 +1,21 @@
 /**
  * Legacy Sites Registration
  *
- * Auto-registers all existing sites from the old system.
- * This provides backwards compatibility while we gradually migrate
- * sites to use proper routing.
+ * Maps site components to their manifests and registers them with the router.
  *
- * To migrate a site:
- * 1. Remove it from this file
- * 2. Create a proper site definition with routes in a new file
- * 3. Register it in site-definitions.ts
+ * The SINGLE SOURCE OF TRUTH for site metadata is in site-manifests.ts.
+ * This file only maps components - no duplicate metadata!
+ *
+ * To add a new site:
+ * 1. Add manifest in site-manifests.ts (with id, name, icon, etc.)
+ * 2. Create the site component
+ * 3. Add the component mapping below
  */
 
 import React from 'react'
 import { registerSite, createSimpleSite, registerManifest } from './site-registry.js'
-import type { SiteComponentProps } from './types.js'
-import { ALL_SITE_MANIFESTS } from '../data/site-manifests.js'
+import type { SiteComponentProps, SiteManifest } from './types.js'
+import { ALL_SITE_MANIFESTS, MANIFEST_BY_ID } from '../data/site-manifests.js'
 
 // Import all site components
 import { PlaceholderSite } from '../components/browser/sites/PlaceholderSite.js'
@@ -77,8 +78,10 @@ import { GooberSite } from '../components/browser/sites/GooberSite.js'
 import { CornGPTSite } from '../components/browser/sites/CornGPTSite.js'
 import { StalksSite } from '../components/browser/sites/StalksSite.js'
 
-// Type adapter: convert old SiteProps to new SiteComponentProps
-// The old components use a simpler interface, this creates a compatible wrapper
+// ============================================================================
+// Component Type Definitions
+// ============================================================================
+
 type LegacySiteProps = {
   siteId: string
   path: string | null
@@ -88,8 +91,12 @@ type LegacySiteProps = {
 }
 
 type LegacyComponent = React.ComponentType<LegacySiteProps>
+type ModernComponent = React.ComponentType<SiteComponentProps>
 
-function adaptLegacyComponent(Component: LegacyComponent): React.ComponentType<SiteComponentProps> {
+/**
+ * Adapt legacy component props to modern SiteComponentProps
+ */
+function adaptLegacyComponent(Component: LegacyComponent): ModernComponent {
   return function AdaptedComponent(props: SiteComponentProps) {
     return React.createElement(Component, {
       siteId: props.siteId,
@@ -101,693 +108,157 @@ function adaptLegacyComponent(Component: LegacyComponent): React.ComponentType<S
   }
 }
 
+// ============================================================================
+// Component Mapping
+// ============================================================================
+
 /**
- * Register all legacy sites
+ * Maps site IDs to their React components.
+ * Metadata comes from site-manifests.ts - this is ONLY for components.
+ */
+const SITE_COMPONENTS: Record<string, LegacyComponent | ModernComponent> = {
+  // Social Media
+  'myface': MyFaceSite,
+  'instasnap': InstaSnapSite,
+  'threadit': ThreaditSite,
+
+  // Content
+  'wikiknow': WikiKnowSite,
+  'dailybuzz': DailyBuzzSite,
+  'vidtube': VidTubeSite,
+  'forchan': ForChanSite,
+
+  // Commercial
+  'amaize': AmaizeSite,
+  'bargainbay': BargainBaySite,
+  'nestfinder': NestFinderSite,
+  'cobfundme': CobFundMeSite,
+  'vitalityrx': VitalityRxSite,
+  'oddsoracle': OddsOracleSite,
+  'wealthwisdom': WealthWisdomSite,
+
+  // Q&A
+  'askcorn': AskCornSite,
+  'huskreviews': HuskReviewsSite,
+
+  // Tech
+  'cobhub': CobHubSite,
+  'kernelpods': KernelPodsSite,
+  'pastelive': PasteLiveSite,
+
+  // Parody
+  'cornhub': CornHubSite,
+  'onlyfans': OnlyFansSite,
+  'onlyfarms': OnlyFarmsSite,
+  'strangerzone': StrangerZoneSite,
+  'graintruth': GrainTruthSite,
+  'bandsnotintown': BandsNotInTownSite,
+  'cobcoin': CobCoinSite,
+
+  // Specialized (these use full SiteComponentProps)
+  'goober': GooberSite,
+  'corngpt': CornGPTSite,
+  'stalks': StalksSite,
+  'cornmaps': CornMapsSite,
+  'cornmd': CornMDSite,
+  'linkedcorn': LinkedCornSite,
+  'stalk': StalkSite,
+  'corndr': CorndrSite,
+  'deaddrop': DeadDropSite,
+  'silkroad': SilkRoadSite,
+  'cornarchive': CornArchiveSite,
+
+  // Blogs
+  'quantumbrewblog': QuantumBrewBlogSite,
+  'trustfalltim': TrustFallTimSite,
+  'hartwellfiles': HartwellFilesSite,
+  'cornstalkblog': CornStalkBlogSite,
+  'jennifersblog': JennifersBlogSite,
+  'elenasblog': ElenasBlogSite,
+  'venuepoetryblog': VenuePoetBlogSite,
+  'timsmomsupport': TimsMomBlogSite,
+  'smallkevinblog': SmallKevinBlogSite,
+  'drmartinezblog': MartinezBlogSite,
+  'bigmikeblog': BigMikeBlogSite,
+  'vexdrums': VexDrumsBlogSite,
+  'patriciablog': PatriciaBlogSite,
+  'wonderwallwarrior': WonderwallWarriorSite,
+  'floor13blog': Floor13BlogSite,
+
+  // Unhinged Personas
+  'benchwatch': BenchWatchSite,
+  'dominate': DominateSite,
+  'stationsushi': StationSushiSite,
+  'truemoss': TrueMossSite,
+
+  // Easter Eggs
+  'popuphell': PopupHellSite,
+  'millionpixels': MillionPixelsSite,
+}
+
+/**
+ * Sites that use full SiteComponentProps (don't need adaptation)
+ */
+const MODERN_SITES = new Set(['goober', 'stalks'])
+
+// ============================================================================
+// Registration
+// ============================================================================
+
+/**
+ * Register a site from its manifest and component
+ */
+function registerSiteFromManifest(manifest: SiteManifest): void {
+  const component = SITE_COMPONENTS[manifest.id]
+
+  if (!component) {
+    console.warn(`[CornStack] No component found for site: ${manifest.id}`)
+    return
+  }
+
+  // Adapt legacy components, use modern components as-is
+  const adaptedComponent = MODERN_SITES.has(manifest.id)
+    ? (component as ModernComponent)
+    : adaptLegacyComponent(component as LegacyComponent)
+
+  registerSite(createSimpleSite({
+    id: manifest.id,
+    domain: manifest.domain,
+    name: manifest.name,
+    icon: manifest.icon,
+    iconImage: manifest.iconImage,
+    description: manifest.homepage.description,
+    component: adaptedComponent,
+    keywords: manifest.homepage.keywords,
+    seoScore: manifest.seoScore,
+    manifest: manifest, // Pass manifest for search indexing
+  }))
+}
+
+/**
+ * Register all sites from manifests
  *
- * Call this once at app startup to make all existing sites work
- * with the new router system.
+ * Call this once at app startup to register all sites with the router.
  */
 export function registerLegacySites(): void {
-  // =========================================================================
-  // Social Media Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'myface',
-    domain: 'myface.corn',
-    name: 'MyFace',
-    icon: '👤',
-    iconImage: '/src/assets/icon-myface.png',
-    description: 'The OG social network - profiles, Top 8, bulletins',
-    component: adaptLegacyComponent(MyFaceSite),
-    keywords: ['social', 'profile', 'friends', 'myspace'],
-    seoScore: 80,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'instasnap',
-    domain: 'instasnap.corn',
-    name: 'InstaSnap',
-    icon: '📸',
-    description: 'Photo sharing - grid profiles, stories, reels',
-    component: adaptLegacyComponent(InstaSnapSite),
-    keywords: ['photos', 'social', 'stories', 'instagram'],
-    seoScore: 80,
-  }))
-
-  // =========================================================================
-  // Search Engine
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'goober',
-    domain: 'goober.corn',
-    name: 'Goober',
-    icon: '🔍',
-    description: 'The corn internet search engine',
-    component: GooberSite,  // Uses full SiteComponentProps (needs query param)
-    keywords: ['search', 'google', 'find', 'engine'],
-    seoScore: 95,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'corngpt',
-    domain: 'corngpt.corn',
-    name: 'cornGPT',
-    icon: '🌽',
-    description: 'AI-powered search and chat from CloseAI',
-    component: adaptLegacyComponent(CornGPTSite),
-    keywords: ['ai', 'chat', 'gpt', 'assistant', 'closeai', 'search'],
-    seoScore: 92,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'stalks',
-    domain: 'stalks.corn',
-    name: 'Stalks',
-    icon: '📈',
-    description: 'Prediction market for .corn internet drama',
-    component: StalksSite,  // Uses full SiteComponentProps
-    keywords: ['predictions', 'betting', 'markets', 'stocks', 'drama', 'gambling'],
-    seoScore: 75,
-  }))
-
-  // =========================================================================
-  // Content Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'wikiknow',
-    domain: 'wikiknow.corn',
-    name: 'WikiKnow',
-    icon: '📖',
-    description: 'The free encyclopedia that anyone can edit',
-    component: adaptLegacyComponent(WikiKnowSite),
-    keywords: ['wiki', 'encyclopedia', 'reference', 'articles'],
-    seoScore: 90,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'threadit',
-    domain: 'threadit.corn',
-    name: 'Threadit',
-    icon: '🗣️',
-    description: 'The front page of the fake internet',
-    component: adaptLegacyComponent(ThreaditSite),
-    keywords: ['forum', 'discussion', 'community', 'reddit'],
-    seoScore: 85,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'dailybuzz',
-    domain: 'dailybuzz.corn',
-    name: 'DailyBuzz',
-    icon: '📰',
-    description: 'All the news that fits',
-    component: adaptLegacyComponent(DailyBuzzSite),
-    keywords: ['news', 'articles', 'journalism'],
-    seoScore: 75,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'vidtube',
-    domain: 'vidtube.corn',
-    name: 'VidTube',
-    icon: '▶️',
-    description: 'Share and watch videos from around the world',
-    component: adaptLegacyComponent(VidTubeSite),
-    keywords: ['video', 'streaming', 'youtube'],
-    seoScore: 85,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'forchan',
-    domain: 'forchan.corn',
-    name: 'ForChan',
-    icon: '🍀',
-    description: 'Anonymous imageboard',
-    component: adaptLegacyComponent(ForChanSite),
-    keywords: ['anonymous', 'imageboard', 'forum'],
-    seoScore: 40,
-  }))
-
-  // =========================================================================
-  // Commercial Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'vitalityrx',
-    domain: 'vitalityrx.corn',
-    name: 'VitalityRx',
-    icon: '💊',
-    description: 'Medications for the Modern Age',
-    component: adaptLegacyComponent(VitalityRxSite),
-    keywords: ['pharmacy', 'medicine', 'health'],
-    seoScore: 60,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'nestfinder',
-    domain: 'nestfinder.corn',
-    name: 'NestFinder',
-    icon: '🏠',
-    description: 'Find your perfect place',
-    component: adaptLegacyComponent(NestFinderSite),
-    keywords: ['real estate', 'homes', 'apartments', 'rental'],
-    seoScore: 70,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'bargainbay',
-    domain: 'bargainbay.corn',
-    name: 'BargainBay',
-    icon: '🏷️',
-    description: 'Local classifieds and marketplace',
-    component: adaptLegacyComponent(BargainBaySite),
-    keywords: ['classifieds', 'marketplace', 'buy', 'sell'],
-    seoScore: 65,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'oddsoracle',
-    domain: 'oddsoracle.corn',
-    name: 'OddsOracle',
-    icon: '🎲',
-    description: 'Prediction markets for everything',
-    component: adaptLegacyComponent(OddsOracleSite),
-    keywords: ['predictions', 'betting', 'markets'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'strangerzone',
-    domain: 'strangerzone.corn',
-    name: 'StrangerZone',
-    icon: '👤',
-    description: 'Talk to random strangers',
-    component: adaptLegacyComponent(StrangerZoneSite),
-    keywords: ['chat', 'anonymous', 'strangers'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'wealthwisdom',
-    domain: 'wealthwisdom.corn',
-    name: 'WealthWisdom',
-    icon: '💰',
-    description: 'Financial advice from experts',
-    component: adaptLegacyComponent(WealthWisdomSite),
-    keywords: ['finance', 'money', 'investing'],
-    seoScore: 60,
-  }))
-
-  // =========================================================================
-  // Easter Egg Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'popuphell',
-    domain: 'free-prizes-click-here.corn',
-    name: 'FREE PRIZES!!!',
-    icon: '🎉',
-    description: 'YOU ARE THE 1000000th VISITOR!!!',
-    component: adaptLegacyComponent(PopupHellSite),
-    keywords: ['popup', 'scam', 'prizes'],
-    seoScore: 10,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'millionpixels',
-    domain: 'millionpixels.corn',
-    name: 'MillionPixels',
-    icon: '🟦',
-    description: 'Own a piece of fake internet history',
-    component: adaptLegacyComponent(MillionPixelsSite),
-    keywords: ['pixels', 'advertising', 'history'],
-    seoScore: 35,
-  }))
-
-  // =========================================================================
-  // Blog Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'quantumbrewblog',
-    domain: 'quantumbrewblog.corn',
-    name: 'QuantumBrewBlog',
-    icon: '☕',
-    description: "Observing coffee so you don't have to",
-    component: adaptLegacyComponent(QuantumBrewBlogSite),
-    keywords: ['quantum', 'coffee', 'derek', 'blog'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cornstalkblog',
-    domain: 'thoughtsfromtherow.corn',
-    name: 'Thoughts From The Row',
-    icon: '🌾',
-    description: 'A sentient corn stalk contemplates existence',
-    component: adaptLegacyComponent(CornStalkBlogSite),
-    keywords: ['corn', 'philosophy', 'blog', 'existential'],
-    seoScore: 40,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'jennifersblog',
-    domain: 'jenniferheals.corn',
-    name: 'Jennifer Heals',
-    icon: '💗',
-    description: 'A healing journey after divorce',
-    component: adaptLegacyComponent(JennifersBlogSite),
-    keywords: ['healing', 'divorce', 'blog', 'wellness'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'elenasblog',
-    domain: 'elenasclarifies.corn',
-    name: 'Dr. Elena Martinez',
-    icon: '🔬',
-    description: 'Academic blog by physicist Dr. Elena Martinez',
-    component: adaptLegacyComponent(ElenasBlogSite),
-    keywords: ['physics', 'quantum', 'science', 'martinez'],
-    seoScore: 70,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'venuepoetryblog',
-    domain: 'anonymousvenuepoet.corn',
-    name: 'Anonymous Venue Poet',
-    icon: '🎵',
-    description: 'Secret poetry about running a venue',
-    component: adaptLegacyComponent(VenuePoetBlogSite),
-    keywords: ['poetry', 'venue', 'underground', 'mars'],
-    seoScore: 40,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'hartwellfiles',
-    domain: 'hartwellfiles.corn',
-    name: 'Hartwell Files',
-    icon: '🏚️',
-    description: 'The truth is in there',
-    component: adaptLegacyComponent(HartwellFilesSite),
-    keywords: ['hartwell', 'mystery', 'floor 13', 'building'],
-    seoScore: 50,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'trustfalltim',
-    domain: 'trustfalltim.corn',
-    name: 'TrustFallTim.corn',
-    icon: '🙆‍♂️',
-    description: 'The official unofficial fan archive',
-    component: adaptLegacyComponent(TrustFallTimSite),
-    keywords: ['trust fall', 'tim', 'fan site', '847'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'timsmomsupport',
-    domain: 'carolstimupdate.corn',
-    name: "Carol's Blog",
-    icon: '🍪',
-    description: "Tim's worried mom blogs about his trust fall career",
-    component: adaptLegacyComponent(TimsMomBlogSite),
-    keywords: ['carol', 'tim', 'mom', 'trust fall'],
-    seoScore: 35,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'smallkevinblog',
-    domain: 'smallkevinredemption.corn',
-    name: 'SmallKevinRedemption',
-    icon: '😔',
-    description: "Small Kevin's redemption blog after The Incident",
-    component: adaptLegacyComponent(SmallKevinBlogSite),
-    keywords: ['kevin', 'redemption', 'incident', 'trust fall'],
-    seoScore: 30,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'drmartinezblog',
-    domain: 'drmartinezclarifies.corn',
-    name: 'Dr. Elena Martinez',
-    icon: '🔬',
-    description: 'Physicist whose paper was misinterpreted into quantum coffee',
-    component: adaptLegacyComponent(MartinezBlogSite),
-    keywords: ['martinez', 'physics', 'quantum', 'coffee', 'misinterpreted'],
-    seoScore: 70,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'bigmikeblog',
-    domain: 'bigmikefromtulsa.corn',
-    name: 'Big Mike from Tulsa',
-    icon: '👨',
-    description: "The aggressively normal blog of Michael Cornwell",
-    component: adaptLegacyComponent(BigMikeBlogSite),
-    keywords: ['big mike', 'tulsa', 'normal', 'cornwell'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'vexdrums',
-    domain: 'vexdrumsblog.corn',
-    name: 'Vex Drums Blog',
-    icon: '🥁',
-    description: "Personal blog of Vex, drummer from Neon Requiem",
-    component: adaptLegacyComponent(VexDrumsBlogSite),
-    keywords: ['vex', 'drums', 'neon requiem', 'band', 'denial'],
-    seoScore: 50,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'patriciablog',
-    domain: 'patriciasworkplacewellness.corn',
-    name: "Patricia's Workplace Blog",
-    icon: '👔',
-    description: 'Corporate HR wellness blog from Omnicorp Holdings',
-    component: adaptLegacyComponent(PatriciaBlogSite),
-    keywords: ['patricia', 'hr', 'omnicorp', 'floor 13', 'wellness'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'wonderwallwarrior',
-    domain: 'wonderwallwarrior.corn',
-    name: 'Wonderwall Warrior',
-    icon: '🎸',
-    description: "Gary's defiant blog about requesting Wonderwall at The Underground",
-    component: adaptLegacyComponent(WonderwallWarriorSite),
-    keywords: ['wonderwall', 'gary', 'underground', 'banned'],
-    seoScore: 40,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'floor13blog',
-    domain: 'floor13exists.corn',
-    name: 'Floor 13 Exists',
-    icon: '█',
-    description: 'A cryptic blog from the mysterious entity on Floor 13',
-    component: adaptLegacyComponent(Floor13BlogSite),
-    keywords: ['floor 13', 'hartwell', 'entity', 'mystery'],
-    seoScore: 60,
-  }))
-
-  // =========================================================================
-  // Parody Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'onlyfans',
-    domain: 'onlyfans.corn',
-    name: 'OnlyFans',
-    icon: '🌀',
-    description: 'Premium fans for enthusiasts. Ceiling fans. Desk fans.',
-    component: adaptLegacyComponent(OnlyFansSite),
-    keywords: ['fans', 'ceiling', 'desk', 'premium'],
-    seoScore: 50,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'bandsnotintown',
-    domain: 'bandsnotintown.corn',
-    name: 'BandsNotInTown',
-    icon: '🎫',
-    description: 'Never see your favorite artists live',
-    component: adaptLegacyComponent(BandsNotInTownSite),
-    keywords: ['concerts', 'bands', 'music', 'cancelled'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'graintruth',
-    domain: 'graintruth.corn',
-    name: 'GrainTruth',
-    icon: '🌽',
-    description: 'Corn-based conspiracy research - Big Corn is watching',
-    component: adaptLegacyComponent(GrainTruthSite),
-    keywords: ['conspiracy', 'corn', 'big corn', 'truth'],
-    seoScore: 35,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'huskreviews',
-    domain: 'huskreviews.corn',
-    name: 'HuskReviews',
-    icon: '🌽',
-    description: 'Local business reviews from increasingly unhinged customers',
-    component: adaptLegacyComponent(HuskReviewsSite),
-    keywords: ['reviews', 'business', 'yelp', 'unhinged'],
-    seoScore: 60,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'kernelpods',
-    domain: 'kernelpods.corn',
-    name: 'KernelPods',
-    icon: '🎧',
-    description: 'Podcast platform - every show has a kernel of truth',
-    component: adaptLegacyComponent(KernelPodsSite),
-    keywords: ['podcast', 'audio', 'shows'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cornhub',
-    domain: 'cornhub.corn',
-    name: 'CornHub',
-    icon: '🌽',
-    description: 'Free corn recipes. What did you think it was?',
-    component: adaptLegacyComponent(CornHubSite),
-    keywords: ['recipes', 'corn', 'cooking', 'food'],
-    seoScore: 65,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'pastelive',
-    domain: 'pastelive.corn',
-    name: 'PasteLive',
-    icon: '📋',
-    description: 'Pastebin-style text hosting for anonymous sharing',
-    component: adaptLegacyComponent(PasteLiveSite),
-    keywords: ['paste', 'text', 'code', 'share'],
-    seoScore: 50,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cobcoin',
-    domain: 'cobcoin.corn',
-    name: 'CobCoin Exchange',
-    icon: '🌽',
-    description: 'Corn-based cryptocurrency exchange - 847 COB = 1 USD',
-    component: adaptLegacyComponent(CobCoinSite),
-    keywords: ['crypto', 'coin', 'exchange', '847'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'onlyfarms',
-    domain: 'onlyfarms.corn',
-    name: 'OnlyFarms',
-    icon: '🚜',
-    description: 'Premium agricultural equipment marketplace.',
-    component: adaptLegacyComponent(OnlyFarmsSite),
-    keywords: ['farming', 'equipment', 'tractors', 'agriculture'],
-    seoScore: 50,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'corndr',
-    domain: 'corndr.corn',
-    name: 'Corndr',
-    icon: '🌽💕',
-    description: 'Dating app for people in the corn industry',
-    component: adaptLegacyComponent(CorndrSite),
-    keywords: ['dating', 'corn', 'farmers', 'love'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'stalk',
-    domain: 'stalk.corn',
-    name: 'Stalk',
-    icon: '🌽',
-    description: 'Live streaming platform - watch stalkers go live',
-    component: adaptLegacyComponent(StalkSite),
-    keywords: ['streaming', 'live', 'twitch'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'linkedcorn',
-    domain: 'linkedcorn.corn',
-    name: 'LinkedCorn',
-    icon: '🌽',
-    description: 'Professional networking for the corn industry',
-    component: adaptLegacyComponent(LinkedCornSite),
-    keywords: ['professional', 'networking', 'jobs', 'linkedin'],
-    seoScore: 65,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cornmd',
-    domain: 'cornmd.corn',
-    name: 'CornMD',
-    icon: '🌽',
-    description: 'Medical symptom checker - everything is corn-related',
-    component: adaptLegacyComponent(CornMDSite),
-    keywords: ['medical', 'symptoms', 'health', 'doctor'],
-    seoScore: 60,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cornmaps',
-    domain: 'cornmaps.corn',
-    name: 'CornMaps',
-    icon: '🌽',
-    description: 'Navigation app where every destination has something off',
-    component: adaptLegacyComponent(CornMapsSite),
-    keywords: ['maps', 'navigation', 'directions', 'places'],
-    seoScore: 70,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'askcorn',
-    domain: 'askcorn.corn',
-    name: 'AskCorn',
-    icon: '🌽',
-    description: 'Q&A site where questions range from technical to unhinged',
-    component: adaptLegacyComponent(AskCornSite),
-    keywords: ['questions', 'answers', 'qa', 'stackoverflow'],
-    seoScore: 65,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cobfundme',
-    domain: 'cobfundme.corn',
-    name: 'CobFundMe',
-    icon: '🌽',
-    description: 'Crowdfunding for questionable campaigns since 2019',
-    component: adaptLegacyComponent(CobFundMeSite),
-    keywords: ['crowdfunding', 'fundraiser', 'gofundme'],
-    seoScore: 55,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cobhub',
-    domain: 'cobhub.corn',
-    name: 'CobHub',
-    icon: '🌽',
-    description: 'Code repository hosting for unhinged open source projects',
-    component: adaptLegacyComponent(CobHubSite),
-    keywords: ['code', 'git', 'repository', 'github'],
-    seoScore: 70,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'deaddrop',
-    domain: 'deaddrop.corn',
-    name: 'DeadDrop',
-    icon: '📦',
-    description: 'Anonymous tips, confessions, and mostly shitposts',
-    component: adaptLegacyComponent(DeadDropSite),
-    keywords: ['anonymous', 'tips', 'confessions', 'secrets'],
-    seoScore: 40,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'amaize',
-    domain: 'amaize.corn',
-    name: 'Amaize',
-    icon: '🌽',
-    description: 'The everything corn store. Kernel Prime delivery.',
-    component: adaptLegacyComponent(AmaizeSite),
-    keywords: ['shopping', 'amazon', 'delivery', 'store'],
-    seoScore: 80,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'silkroad',
-    domain: 'silkroad.corn',
-    name: 'SilkRoad',
-    icon: '🌽',
-    description: 'Legitimate corn silk marketplace. Stop asking.',
-    component: adaptLegacyComponent(SilkRoadSite),
-    keywords: ['silk', 'corn silk', 'marketplace', 'dark web'],
-    seoScore: 30,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'cornarchive',
-    domain: 'cornarchive.corn',
-    name: 'CornArchive',
-    icon: '📚',
-    description: 'Preserving deleted and historical web pages since 2004',
-    component: adaptLegacyComponent(CornArchiveSite),
-    keywords: ['archive', 'history', 'wayback', 'preservation'],
-    seoScore: 75,
-  }))
-
-  // =========================================================================
-  // Unhinged Persona Sites
-  // =========================================================================
-
-  registerSite(createSimpleSite({
-    id: 'benchwatch',
-    domain: 'benchwatch.corn',
-    name: 'BenchWatch',
-    icon: '🪑',
-    description: "Greg Mantooth's forensic bench analysis",
-    component: adaptLegacyComponent(BenchWatchSite),
-    keywords: ['bench', 'forensic', 'analysis', 'greg'],
-    seoScore: 35,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'dominate',
-    domain: 'dominate.corn',
-    name: 'DOMINATE',
-    icon: '💪',
-    description: "Chad Thundercoach's high-intensity success system",
-    component: adaptLegacyComponent(DominateSite),
-    keywords: ['success', 'motivation', 'coaching', 'chad'],
-    seoScore: 45,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'stationsushi',
-    domain: 'stationsushireview.corn',
-    name: 'Station Sushi Review',
-    icon: '🍣',
-    description: "Mildred Gasketsworth's gas station sushi reviews",
-    component: adaptLegacyComponent(StationSushiSite),
-    keywords: ['sushi', 'gas station', 'reviews', 'mildred'],
-    seoScore: 40,
-  }))
-
-  registerSite(createSimpleSite({
-    id: 'truemoss',
-    domain: 'truemoss.corn',
-    name: 'TrueMoss',
-    icon: '🌿',
-    description: "Agatha Mosswell's independent moss research",
-    component: adaptLegacyComponent(TrueMossSite),
-    keywords: ['moss', 'research', 'agatha', 'nature'],
-    seoScore: 35,
-  }))
-
-  // =========================================================================
-  // Register Site Manifests (for Goober search indexing)
-  // =========================================================================
-
+  let registered = 0
+  let skipped = 0
+
+  for (const manifest of ALL_SITE_MANIFESTS) {
+    if (SITE_COMPONENTS[manifest.id]) {
+      registerSiteFromManifest(manifest)
+      registered++
+    } else {
+      skipped++
+    }
+  }
+
+  // Also register manifests directly for search indexing
   for (const manifest of ALL_SITE_MANIFESTS) {
     registerManifest(manifest)
   }
 
-  console.log(`[CornStack] Registered ${getAllSites().length} legacy sites`)
+  console.log(`[CornStack] Registered ${registered} sites (${skipped} manifests without components)`)
   console.log(`[CornStack] Registered ${ALL_SITE_MANIFESTS.length} site manifests for search indexing`)
 }
 
