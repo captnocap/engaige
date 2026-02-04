@@ -52,6 +52,11 @@ errorLogger.initialize(gameDb);
 import { initializeSocialSchema } from './services/social.js';
 initializeSocialSchema();
 
+// Initialize awareness schema (NPC social media habits and tracking)
+import { initializeAwarenessSchema, initializeDefaultHabits } from './services/awareness.js';
+initializeAwarenessSchema();
+initializeDefaultHabits();
+
 aiQueue.start();
 
 // ─────────────────────────────────────────────────────────────────
@@ -202,11 +207,28 @@ startScheduler(30); // Process tasks every 30 seconds
 scheduleStoryGeneration({ intervalHours: 6, startDelayMinutes: 5 });
 
 // Start autonomous behaviors after a short delay (let system stabilize)
-setTimeout(() => {
+setTimeout(async () => {
   startSocialAutopilot({ initialBurst: true, postIntervalMinutes: 45 });
   startConversationInitiator({ checkIntervalMinutes: 60 });
   startChessAutopilot({ initialBurst: true, matchIntervalHours: 2 });
-  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess)');
+
+  // Start awareness checks (NPCs checking social media based on their habits)
+  const { simulateSocialMediaChecks } = await import('./services/awareness.js');
+  setInterval(async () => {
+    try {
+      const sessions = await simulateSocialMediaChecks();
+      if (sessions.length > 0) {
+        console.log(`[Awareness] ${sessions.length} NPCs checked social media`);
+      }
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'awareness',
+        operation: 'simulateSocialMediaChecks',
+      });
+    }
+  }, 60 * 1000); // Check every minute
+
+  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess, awareness)');
 }, 5000);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)

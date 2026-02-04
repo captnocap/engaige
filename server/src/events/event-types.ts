@@ -104,6 +104,22 @@ export interface NPCStatusPayload {
   is_online: boolean;
 }
 
+export interface NPCSocialMediaCheckedPayload {
+  npc_id: string;
+  platform: string;
+  posts_viewed: string[];
+  post_count: number;
+}
+
+export interface NPCShouldReactToPostsPayload {
+  npc_id: string;
+  posts: Array<{
+    id: string;
+    authorId: string;
+    content: string;
+  }>;
+}
+
 // === CONVERSATION EVENTS ===
 export interface MessagePayload {
   message_id: string;
@@ -543,6 +559,8 @@ export const EventTypes = {
   NPC_MOOD_CHANGED: 'npc:mood_changed',
   NPC_WENT_ONLINE: 'npc:went_online',
   NPC_WENT_OFFLINE: 'npc:went_offline',
+  NPC_SOCIAL_MEDIA_CHECKED: 'npc:social_media_checked',
+  NPC_SHOULD_REACT_TO_POSTS: 'npc:should_react_to_posts',
 
   // Conversation
   CONVERSATION_STARTED: 'conversation:started',

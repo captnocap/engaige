@@ -466,6 +466,31 @@ async function routeMessage(
       handleSocialUnsubscribe(ws, message);
       break;
 
+    // Awareness routes
+    case 'awareness:getHabits':
+      await handleAwarenessGetHabits(ws, message);
+      break;
+
+    case 'awareness:setHabits':
+      await handleAwarenessSetHabits(ws, message);
+      break;
+
+    case 'awareness:getAllHabits':
+      await handleAwarenessGetAllHabits(ws, message);
+      break;
+
+    case 'awareness:getLastChecked':
+      await handleAwarenessGetLastChecked(ws, message);
+      break;
+
+    case 'awareness:shouldCheckNow':
+      await handleAwarenessShouldCheckNow(ws, message);
+      break;
+
+    case 'awareness:triggerCheck':
+      await handleAwarenessTriggerCheck(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -2113,6 +2138,148 @@ export function broadcastSocialEvent(type: string, payload: any): void {
         metadata: { event_type: type },
       });
     }
+  }
+}
+
+// ============================================================================
+// Awareness Handlers
+// ============================================================================
+
+/**
+ * Handle awareness:getHabits - Get NPC social media habits
+ */
+async function handleAwarenessGetHabits(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getHabits } = await import('../services/awareness.js');
+    const payload = message.payload as { npcId: string };
+
+    if (!payload?.npcId) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    const habits = getHabits(payload.npcId);
+    send(ws, createResponse(message.id, true, habits));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessGetHabits',
+    });
+    send(ws, createError('Failed to get habits', 'AWARENESS_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle awareness:setHabits - Update NPC social media habits
+ */
+async function handleAwarenessSetHabits(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { setHabits, getHabits } = await import('../services/awareness.js');
+    const payload = message.payload as { npcId: string; habits: any };
+
+    if (!payload?.npcId) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    setHabits(payload.npcId, payload.habits || {});
+    const updated = getHabits(payload.npcId);
+    send(ws, createResponse(message.id, true, updated));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessSetHabits',
+    });
+    send(ws, createError('Failed to set habits', 'AWARENESS_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle awareness:getAllHabits - Get all NPC habits
+ */
+async function handleAwarenessGetAllHabits(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getAllHabits } = await import('../services/awareness.js');
+    const habits = getAllHabits();
+    send(ws, createResponse(message.id, true, { habits }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessGetAllHabits',
+    });
+    send(ws, createError('Failed to get all habits', 'AWARENESS_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle awareness:getLastChecked - Get when NPC last checked a platform
+ */
+async function handleAwarenessGetLastChecked(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getLastChecked } = await import('../services/awareness.js');
+    const payload = message.payload as { npcId: string; platform: string };
+
+    if (!payload?.npcId || !payload?.platform) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId or platform'));
+      return;
+    }
+
+    const timestamp = getLastChecked(payload.npcId, payload.platform);
+    send(ws, createResponse(message.id, true, { timestamp }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessGetLastChecked',
+    });
+    send(ws, createError('Failed to get last checked', 'AWARENESS_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle awareness:shouldCheckNow - Check if NPC should check a platform now
+ */
+async function handleAwarenessShouldCheckNow(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { shouldCheckNow } = await import('../services/awareness.js');
+    const payload = message.payload as { npcId: string; platform: string };
+
+    if (!payload?.npcId || !payload?.platform) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId or platform'));
+      return;
+    }
+
+    const shouldCheck = shouldCheckNow(payload.npcId, payload.platform);
+    send(ws, createResponse(message.id, true, { shouldCheck }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessShouldCheckNow',
+    });
+    send(ws, createError('Failed to check status', 'AWARENESS_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle awareness:triggerCheck - Manually trigger NPC to check a platform
+ */
+async function handleAwarenessTriggerCheck(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { npcChecksSocialMedia } = await import('../services/awareness.js');
+    const payload = message.payload as { npcId: string; platform: string };
+
+    if (!payload?.npcId || !payload?.platform) {
+      send(ws, createResponse(message.id, false, null, 'Missing npcId or platform'));
+      return;
+    }
+
+    const session = await npcChecksSocialMedia(payload.npcId, payload.platform);
+    send(ws, createResponse(message.id, true, session));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleAwarenessTriggerCheck',
+    });
+    send(ws, createError('Failed to trigger check', 'AWARENESS_ERROR', message.id));
   }
 }
 
