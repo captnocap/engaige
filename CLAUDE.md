@@ -102,6 +102,82 @@ const event = await eventBus.emit(
 
 ---
 
+## ⚠️ CRITICAL: Game Logic Runs Server-Side ONLY
+
+**If it emits a game event, it runs on the server. Period.**
+
+The frontend is a **dumb terminal**. It displays what the server tells it and forwards user actions to the server. There is ONE event bus, and it lives on the server. Any game logic running client-side that bypasses the server event bus is **technical debt** that breaks our architecture.
+
+### What Runs Where
+
+| Client-Side (Frontend) | Server-Side (Backend) |
+|------------------------|----------------------|
+| UI rendering & animations | ALL game simulation |
+| Typing indicators | NPC decisions & behavior |
+| Drag-and-drop interactions | Post creation, likes, comments |
+| Optimistic UI updates | Relationship changes |
+| Sound effects | Social media feed logic |
+| Local preferences (theme, etc.) | Awareness/visibility tracking |
+| WebSocket message display | Drama engine & events |
+| | Anything that should be logged |
+| | Anything that needs replay |
+| | Anything that persists to DB |
+
+### The Pattern
+
+```
+User clicks "Like" → Frontend sends WS message → Server processes →
+Server emits event via event bus → Server updates DB →
+Server pushes state to frontend → Frontend displays update
+```
+
+### Why This Matters
+
+- **One source of truth** - Server owns all game state
+- **Full event trace** - Every game action is logged and replayable
+- **Background simulation** - NPCs act even when browser is closed
+- **Debugging** - "What happened?" → Query the event log
+- **No sync issues** - No client/server state divergence
+
+### Anti-Patterns to NEVER Create
+
+```typescript
+// ❌ BAD - Frontend store running game logic
+// src/stores/awarenessStore.ts
+export const useAwarenessStore = create(() => ({
+  npcChecksSocialMedia: (npcId) => {
+    // This should be server-side!
+    dramaEngine.processPostReaction(npcId, post)
+  }
+}))
+
+// ❌ BAD - Frontend service making game decisions
+// src/services/dramaEngine.ts
+export function generateDramaPost(npcId, type) {
+  // This should be server-side with event bus!
+  const post = createPost(...)
+  return post
+}
+
+// ✅ GOOD - Frontend just displays and forwards
+// src/components/Feed.tsx
+function Feed() {
+  const posts = useServerState('posts') // Received via WebSocket
+  const likePost = (postId) => {
+    wsStore.send({ type: 'like_post', postId }) // Forward to server
+  }
+}
+```
+
+### If You Find Client-Side Game Logic
+
+1. **Don't extend it** - That makes the problem worse
+2. **Flag it** - Add a TODO comment noting it needs migration
+3. **Plan migration** - Create a task to move it server-side
+4. **Emit events** - New server-side code must use the event bus
+
+---
+
 ## ⚠️ CRITICAL: Error Logging - ALL Errors MUST Be Logged
 
 **The Error Logger (`server/src/services/error-logger.ts`) is the SINGLE POINT for ALL error handling.**
@@ -343,6 +419,41 @@ import { Select } from "../ui/Select.js";
 ```
 
 If you ever see a native `<select>` in the code, replace it immediately with the `<Select>` component.
+
+---
+
+## ⚠️ CRITICAL: Import Through Barrel Exports
+
+**ALWAYS import from barrel (index.ts) files** instead of directly from sub-files. This keeps our API surface clean and makes refactoring easier.
+
+### Barrel Export Locations
+
+| Module | Barrel Path | Exports |
+|--------|-------------|---------|
+| **Message UI** | `components/ui/Message` | MessageThread, TypingIndicator, TypingBubble, MESSAGE_CSS_VARS, types |
+| **Settings** | `components/settings` | SidebarNav, SettingsCard, RangeControl, all section components |
+| **Onboarding** | `components/onboarding` | Onboarding, OnboardingData |
+
+### Correct Usage
+
+```tsx
+// ✅ GOOD - Import from barrel
+import { MessageThread, TypingIndicator, type MessageStyleConfig } from '../../ui/Message'
+import { Onboarding } from '../onboarding'
+import { SidebarNav, DisplaySettings } from '../settings'
+
+// ❌ BAD - Direct sub-file imports
+import { MessageThread } from '../../ui/Message/MessageThread.js'
+import { Onboarding } from '../onboarding/Onboarding'
+import { SidebarNav } from '../settings/components/index.js'
+```
+
+### Why This Matters
+
+- **Clean API surface** - Consumers don't need to know internal file structure
+- **Easier refactoring** - Move files without breaking imports
+- **Explicit public API** - Only exported items are meant to be used
+- **Prevents dependency mess** - No spaghetti imports across the codebase
 
 ---
 

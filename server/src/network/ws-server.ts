@@ -35,6 +35,9 @@ export interface ClientSession {
 // Map of connected clients
 const clients = new Map<ServerWebSocket<ClientSession>, ClientSession>();
 
+// Track social subscriptions per client
+const socialSubscriptions = new Map<ServerWebSocket<ClientSession>, Set<string>>();
+
 // Generate unique session ID
 function generateSessionId(): string {
   return `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
@@ -80,6 +83,9 @@ export function handleClose(ws: ServerWebSocket<ClientSession>): void {
   if (session) {
     console.log(`[WS] Client disconnected: ${session.id}`);
     clients.delete(ws);
+
+    // Clean up social subscriptions
+    socialSubscriptions.delete(ws);
 
     // Emit WS disconnected event
     eventBus.fire(EventTypes.SYSTEM_WS_DISCONNECTED, {
@@ -413,6 +419,51 @@ async function routeMessage(
 
     case 'search:getStats':
       await handleSearchGetStats(ws, message);
+      break;
+
+    // Social routes
+    case 'social:getFeed':
+      await handleSocialGetFeed(ws, message);
+      break;
+
+    case 'social:getPost':
+      await handleSocialGetPost(ws, message);
+      break;
+
+    case 'social:createPost':
+      await handleSocialCreatePost(ws, message);
+      break;
+
+    case 'social:likePost':
+      await handleSocialLikePost(ws, message);
+      break;
+
+    case 'social:unlikePost':
+      await handleSocialUnlikePost(ws, message);
+      break;
+
+    case 'social:addComment':
+      await handleSocialAddComment(ws, message);
+      break;
+
+    case 'social:markSeen':
+      await handleSocialMarkSeen(ws, message);
+      break;
+
+    case 'social:getUnseen':
+      await handleSocialGetUnseen(ws, message);
+      break;
+
+    case 'social:getProfile':
+      await handleSocialGetProfile(ws, message);
+      break;
+
+    case 'social:subscribe':
+      handleSocialSubscribe(ws, message);
+      break;
+
+    case 'social:unsubscribe':
+      handleSocialUnsubscribe(ws, message);
       break;
 
     default:
@@ -1693,6 +1744,379 @@ export function broadcastNPCMoved(data: {
 }
 
 // ============================================================================
+// Social Handlers
+// ============================================================================
+
+/**
+ * Handle social:getFeed - Get posts for a platform
+ */
+async function handleSocialGetFeed(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getFeed } = await import('../services/social.js');
+    const payload = (message.payload || {}) as { platform?: string; limit?: number };
+
+    const posts = getFeed(payload.platform, payload.limit || 50);
+    send(ws, createResponse(message.id, true, { posts }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialGetFeed',
+    });
+    send(ws, createError('Failed to get feed', 'FEED_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:getPost - Get a single post with details
+ */
+async function handleSocialGetPost(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getPost } = await import('../services/social.js');
+    const payload = (message.payload || {}) as { postId: string };
+
+    if (!payload.postId) {
+      send(ws, createResponse(message.id, false, null, 'Missing postId'));
+      return;
+    }
+
+    const post = getPost(payload.postId);
+    if (!post) {
+      send(ws, createResponse(message.id, false, null, 'Post not found'));
+      return;
+    }
+
+    send(ws, createResponse(message.id, true, post));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialGetPost',
+    });
+    send(ws, createError('Failed to get post', 'POST_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:createPost - Create a new post
+ */
+async function handleSocialCreatePost(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { createPost } = await import('../services/social.js');
+    const payload = message.payload as {
+      authorId: string;
+      authorType: 'player' | 'npc';
+      platform: 'myface' | 'chirp' | 'instasnap';
+      content: string;
+      mediaUrls?: string[];
+      contentRating?: string;
+    };
+
+    if (!payload.authorId || !payload.platform || !payload.content) {
+      send(ws, createResponse(message.id, false, null, 'Missing required fields'));
+      return;
+    }
+
+    const post = await createPost(payload);
+
+    // Broadcast to subscribed clients
+    broadcastSocialEvent('social:postCreated', { post });
+
+    send(ws, createResponse(message.id, true, post));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialCreatePost',
+    });
+    send(ws, createError('Failed to create post', 'CREATE_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:likePost - Like a post
+ */
+async function handleSocialLikePost(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { likePost, getPost } = await import('../services/social.js');
+    const payload = message.payload as {
+      postId: string;
+      likerId: string;
+      likerType: 'player' | 'npc';
+    };
+
+    if (!payload.postId || !payload.likerId) {
+      send(ws, createResponse(message.id, false, null, 'Missing required fields'));
+      return;
+    }
+
+    const success = await likePost(payload.postId, payload.likerId, payload.likerType || 'player');
+
+    if (success) {
+      const post = getPost(payload.postId);
+      broadcastSocialEvent('social:postLiked', {
+        postId: payload.postId,
+        likerId: payload.likerId,
+        likerType: payload.likerType || 'player',
+        newLikesCount: post?.likesCount || 0,
+      });
+    }
+
+    send(ws, createResponse(message.id, true, { liked: success }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialLikePost',
+    });
+    send(ws, createError('Failed to like post', 'LIKE_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:unlikePost - Unlike a post
+ */
+async function handleSocialUnlikePost(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { unlikePost, getPost } = await import('../services/social.js');
+    const payload = message.payload as {
+      postId: string;
+      likerId: string;
+    };
+
+    if (!payload.postId || !payload.likerId) {
+      send(ws, createResponse(message.id, false, null, 'Missing required fields'));
+      return;
+    }
+
+    const success = unlikePost(payload.postId, payload.likerId);
+
+    if (success) {
+      const post = getPost(payload.postId);
+      broadcastSocialEvent('social:postUnliked', {
+        postId: payload.postId,
+        likerId: payload.likerId,
+        newLikesCount: post?.likesCount || 0,
+      });
+    }
+
+    send(ws, createResponse(message.id, true, { unliked: success }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialUnlikePost',
+    });
+    send(ws, createError('Failed to unlike post', 'UNLIKE_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:addComment - Add a comment to a post
+ */
+async function handleSocialAddComment(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { addComment } = await import('../services/social.js');
+    const payload = message.payload as {
+      postId: string;
+      authorId: string;
+      authorType: 'player' | 'npc';
+      content: string;
+      parentCommentId?: string;
+    };
+
+    if (!payload.postId || !payload.authorId || !payload.content) {
+      send(ws, createResponse(message.id, false, null, 'Missing required fields'));
+      return;
+    }
+
+    const comment = await addComment(payload);
+
+    broadcastSocialEvent('social:commentAdded', {
+      postId: payload.postId,
+      comment,
+    });
+
+    send(ws, createResponse(message.id, true, comment));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialAddComment',
+    });
+    send(ws, createError('Failed to add comment', 'COMMENT_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:markSeen - Mark a post as seen
+ */
+async function handleSocialMarkSeen(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { markPostAsSeen } = await import('../services/social.js');
+    const payload = message.payload as {
+      postId: string;
+      viewerId: string;
+      viewerType: 'player' | 'npc';
+      platform?: string;
+    };
+
+    if (!payload.postId || !payload.viewerId) {
+      send(ws, createResponse(message.id, false, null, 'Missing required fields'));
+      return;
+    }
+
+    const success = markPostAsSeen(
+      payload.postId,
+      payload.viewerId,
+      payload.viewerType || 'player',
+      payload.platform
+    );
+
+    send(ws, createResponse(message.id, true, { marked: success }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialMarkSeen',
+    });
+    send(ws, createError('Failed to mark post as seen', 'MARK_SEEN_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:getUnseen - Get unseen posts for a viewer
+ */
+async function handleSocialGetUnseen(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getUnseenPosts } = await import('../services/social.js');
+    const payload = (message.payload || {}) as {
+      viewerId: string;
+      platform?: string;
+      limit?: number;
+    };
+
+    if (!payload.viewerId) {
+      send(ws, createResponse(message.id, false, null, 'Missing viewerId'));
+      return;
+    }
+
+    const posts = getUnseenPosts(payload.viewerId, payload.platform, payload.limit || 50);
+    send(ws, createResponse(message.id, true, { posts }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialGetUnseen',
+    });
+    send(ws, createError('Failed to get unseen posts', 'UNSEEN_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:getProfile - Get a social profile
+ */
+async function handleSocialGetProfile(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  try {
+    const { getProfile, recordProfileView } = await import('../services/social.js');
+    const payload = (message.payload || {}) as {
+      profileId: string;
+      viewerId?: string;
+      viewerType?: 'player' | 'npc';
+      platform?: string;
+    };
+
+    if (!payload.profileId) {
+      send(ws, createResponse(message.id, false, null, 'Missing profileId'));
+      return;
+    }
+
+    const profile = getProfile(payload.profileId);
+    if (!profile) {
+      send(ws, createResponse(message.id, false, null, 'Profile not found'));
+      return;
+    }
+
+    // Record the view if viewer info provided
+    if (payload.viewerId && payload.platform) {
+      await recordProfileView(
+        payload.profileId,
+        payload.viewerId,
+        payload.viewerType || 'player',
+        payload.platform
+      );
+    }
+
+    send(ws, createResponse(message.id, true, profile));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSocialGetProfile',
+    });
+    send(ws, createError('Failed to get profile', 'PROFILE_ERROR', message.id));
+  }
+}
+
+/**
+ * Handle social:subscribe - Subscribe to social updates
+ */
+function handleSocialSubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const payload = (message.payload || {}) as { platforms?: string[] };
+
+  let subs = socialSubscriptions.get(ws);
+  if (!subs) {
+    subs = new Set();
+    socialSubscriptions.set(ws, subs);
+  }
+
+  // Subscribe to all platforms if none specified
+  const platforms = payload.platforms || ['myface', 'chirp', 'instasnap'];
+  platforms.forEach(p => subs!.add(p));
+
+  const session = clients.get(ws);
+  console.log(`[WS] Client ${session?.id} subscribed to social: ${platforms.join(', ')}`);
+
+  send(ws, createResponse(message.id, true, { subscribed: true, platforms }));
+}
+
+/**
+ * Handle social:unsubscribe - Unsubscribe from social updates
+ */
+function handleSocialUnsubscribe(ws: ServerWebSocket<ClientSession>, message: WSMessage): void {
+  const payload = (message.payload || {}) as { platforms?: string[] };
+
+  const subs = socialSubscriptions.get(ws);
+  if (subs) {
+    if (payload.platforms) {
+      payload.platforms.forEach(p => subs.delete(p));
+    } else {
+      socialSubscriptions.delete(ws);
+    }
+  }
+
+  const session = clients.get(ws);
+  console.log(`[WS] Client ${session?.id} unsubscribed from social`);
+
+  send(ws, createResponse(message.id, true, { subscribed: false }));
+}
+
+/**
+ * Broadcast a social event to subscribed clients
+ */
+export function broadcastSocialEvent(type: string, payload: any): void {
+  const data = serializeMessage({ type, payload });
+
+  for (const [ws, subs] of socialSubscriptions.entries()) {
+    // Check if client is subscribed to any platform
+    if (subs.size === 0) continue;
+
+    const session = clients.get(ws);
+    try {
+      ws.send(data);
+    } catch (err) {
+      errorLogger.log(err, {
+        source: 'ws-server',
+        operation: 'broadcastSocialEvent',
+        session_id: session?.id,
+        metadata: { event_type: type },
+      });
+    }
+  }
+}
+
+// ============================================================================
 // Search Handlers
 // ============================================================================
 
@@ -1835,5 +2259,6 @@ export default {
   broadcastDeliberationCompleted,
   broadcastWorldTimeUpdate,
   broadcastNPCMoved,
+  broadcastSocialEvent,
   getClientCount,
 };

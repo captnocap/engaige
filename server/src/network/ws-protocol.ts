@@ -306,6 +306,75 @@ export interface GuardrailsGetConfigMessage extends WSMessage {
   type: 'guardrails:getConfig';
 }
 
+// Social
+export interface SocialGetFeedMessage extends WSMessage<{
+  platform?: 'myface' | 'chirp' | 'instasnap';
+  limit?: number;
+}> {
+  type: 'social:getFeed';
+}
+
+export interface SocialGetPostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:getPost';
+}
+
+export interface SocialCreatePostMessage extends WSMessage<{
+  platform: 'myface' | 'chirp' | 'instasnap';
+  content: string;
+  mediaUrls?: string[];
+}> {
+  type: 'social:createPost';
+}
+
+export interface SocialLikePostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:likePost';
+}
+
+export interface SocialUnlikePostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:unlikePost';
+}
+
+export interface SocialAddCommentMessage extends WSMessage<{
+  postId: string;
+  content: string;
+  parentCommentId?: string;
+}> {
+  type: 'social:addComment';
+}
+
+export interface SocialMarkSeenMessage extends WSMessage<{
+  postIds: string[];
+}> {
+  type: 'social:markSeen';
+}
+
+export interface SocialGetUnseenMessage extends WSMessage<{
+  platform?: 'myface' | 'chirp' | 'instasnap';
+  limit?: number;
+}> {
+  type: 'social:getUnseen';
+}
+
+export interface SocialGetProfileMessage extends WSMessage<{
+  profileId: string;
+}> {
+  type: 'social:getProfile';
+}
+
+export interface SocialSubscribeMessage extends WSMessage {
+  type: 'social:subscribe';
+}
+
+export interface SocialUnsubscribeMessage extends WSMessage {
+  type: 'social:unsubscribe';
+}
+
 // Search
 export interface SearchQueryMessage extends WSMessage<{
   query: string;
@@ -371,6 +440,17 @@ export type ClientMessage =
   | GuardrailsGetRatingMessage
   | GuardrailsSetRatingMessage
   | GuardrailsGetConfigMessage
+  | SocialGetFeedMessage
+  | SocialGetPostMessage
+  | SocialCreatePostMessage
+  | SocialLikePostMessage
+  | SocialUnlikePostMessage
+  | SocialAddCommentMessage
+  | SocialMarkSeenMessage
+  | SocialGetUnseenMessage
+  | SocialGetProfileMessage
+  | SocialSubscribeMessage
+  | SocialUnsubscribeMessage
   | SearchQueryMessage
   | SearchAutocompleteMessage
   | SearchGetStatsMessage;
@@ -640,6 +720,55 @@ export interface GuardrailsRatingChangedEvent extends WSMessage<{
   type: 'guardrails:ratingChanged';
 }
 
+// Social Events (pushed to subscribed clients)
+export interface SocialPostCreatedEvent extends WSMessage<{
+  post: {
+    id: string;
+    authorId: string;
+    authorType: 'player' | 'npc';
+    platform: string;
+    content: string;
+    mediaUrls: string[];
+    likesCount: number;
+    commentsCount: number;
+    createdAt: number;
+  };
+}> {
+  type: 'social:postCreated';
+}
+
+export interface SocialPostLikedEvent extends WSMessage<{
+  postId: string;
+  likerId: string;
+  likerType: 'player' | 'npc';
+  newLikesCount: number;
+}> {
+  type: 'social:postLiked';
+}
+
+export interface SocialPostUnlikedEvent extends WSMessage<{
+  postId: string;
+  unlikerId: string;
+  newLikesCount: number;
+}> {
+  type: 'social:postUnliked';
+}
+
+export interface SocialCommentAddedEvent extends WSMessage<{
+  postId: string;
+  comment: {
+    id: string;
+    authorId: string;
+    authorType: 'player' | 'npc';
+    authorName: string;
+    content: string;
+    createdAt: number;
+  };
+  newCommentsCount: number;
+}> {
+  type: 'social:commentAdded';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -661,7 +790,11 @@ export type ServerMessage =
   | WorldNPCMovedEvent
   | WorldTimeUpdateEvent
   | WorldBackgroundNPCsEvent
-  | GuardrailsRatingChangedEvent;
+  | GuardrailsRatingChangedEvent
+  | SocialPostCreatedEvent
+  | SocialPostLikedEvent
+  | SocialPostUnlikedEvent
+  | SocialCommentAddedEvent;
 
 // ============================================================================
 // Helpers

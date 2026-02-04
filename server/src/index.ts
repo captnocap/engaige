@@ -14,6 +14,7 @@ import {
   broadcastThought,
   broadcastDeliberationStarted,
   broadcastDeliberationCompleted,
+  broadcastSocialEvent,
   type ClientSession,
 } from './network/ws-server.js';
 import { getDB } from './db/index.js';
@@ -46,6 +47,11 @@ console.log('[Server] Global database initialized');
 const gameDb = getDB('game');
 eventBus.initialize(gameDb);
 errorLogger.initialize(gameDb);
+
+// Initialize social schema (additional tables for likes/views tracking)
+import { initializeSocialSchema } from './services/social.js';
+initializeSocialSchema();
+
 aiQueue.start();
 
 // ─────────────────────────────────────────────────────────────────
@@ -125,6 +131,38 @@ eventBus.on(EventTypes.SOCIAL_POST_CREATED, async (event) => {
     tags: event.payload.hashtags || [],
     createdAt: event.timestamp,
   });
+
+  // Broadcast to subscribed WebSocket clients
+  const { getPost } = await import('./services/social.js');
+  const post = getPost(event.payload.post_id);
+  if (post) {
+    broadcastSocialEvent('social:postCreated', { post });
+  }
+});
+
+// Broadcast post likes to WebSocket subscribers
+eventBus.on(EventTypes.SOCIAL_POST_LIKED, async (event) => {
+  const { getPost } = await import('./services/social.js');
+  const post = getPost(event.payload.post_id);
+  broadcastSocialEvent('social:postLiked', {
+    postId: event.payload.post_id,
+    likerId: event.payload.actor_id,
+    likerType: event.payload.actor_type,
+    newLikesCount: post?.likesCount || 0,
+  });
+});
+
+// Broadcast comments to WebSocket subscribers
+eventBus.on(EventTypes.SOCIAL_POST_COMMENTED, async (event) => {
+  const { getComments } = await import('./services/social.js');
+  const comments = getComments(event.payload.post_id);
+  const newComment = comments[comments.length - 1]; // Most recent comment
+  if (newComment) {
+    broadcastSocialEvent('social:commentAdded', {
+      postId: event.payload.post_id,
+      comment: newComment,
+    });
+  }
 });
 
 // Index news articles when ingested
