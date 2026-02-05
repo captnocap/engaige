@@ -12,6 +12,10 @@
 export { MediaRenderer } from './MediaRenderer.js';
 export { default } from './MediaRenderer.js';
 
+// Content creation tools
+export { ContentCreator } from './ContentCreator.js';
+export { MediaRendererDemo } from './MediaRendererDemo.js';
+
 // Layer renderers (for advanced usage)
 export { BaseLayerRenderer } from './BaseLayerRenderer.js';
 export { OverlayLayerRenderer } from './OverlayLayerRenderer.js';
