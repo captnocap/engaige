@@ -1,0 +1,24 @@
+{
+  "id": "neighborhood-nemesis",
+  "name": "The Neighbor With a Grudge",
+  "category": "antagonist",
+  "expected_npc_count": 2,
+  "npc_roles": ["nemesis", "neutral_spouse"],
+  "tags": ["neighborhood", "grudge", "suburban", "daily-life"],
+  "dimension_weights": {
+    "conflict_style": { "affinity": 0.5 },
+    "social_energy": { "affinity": 0.3 },
+    "chaos_tolerance": { "affinity": 0.2 }
+  },
+  "base_priority": 60,
+  "drama_level": 0.6,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate TWO characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Give them rich inner lives that explain WHY they act the way they do. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create a married couple who live next door to {{player_name}}.\n\nThe NEMESIS is a neighbor who holds a deep, simmering grudge against {{player_name}} over something objectively petty - maybe a parking dispute, a property line argument, a noise complaint, their trash cans being left out too long, or a borrowed tool that was never returned. But to this person, it is NOT petty. It is a matter of principle. They have been keeping a mental (or literal) log of every offense. Based on what you know about the player ({{player_persona_summary}}), figure out what specific thing about {{player_name}} or their lifestyle would drive this particular neighbor up the wall.\n\nThe NEUTRAL SPOUSE is married to the nemesis and has a more complicated take. They might be embarrassed by their partner's obsession with the feud. They might secretly find it hilarious. They might even think {{player_name}} has a point but would never admit it. They serve as the human buffer zone - the one who waves awkwardly when both households are getting their mail at the same time.\n\nTheir social media should reflect suburban life. The nemesis might passive-aggressively post about \"certain neighbors\" or share articles about property rights. The spouse posts normal stuff but occasionally lets something slip.\n\nReturn a JSON object with an \"npcs\" array of 2 NPCs. Each must include: username, display_name, bio (2-3 sentences social media style), personality (1 sentence), system_prompt (3-5 sentences for AI roleplay), age (28-60), gender, occupation, interests (3-8 items), social_media_handles, attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role (\"nemesis\" or \"neutral_spouse\").",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["nemesis <-> neutral_spouse: married couple with differing views on the neighbor feud"]
+  }
+}

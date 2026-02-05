@@ -1,0 +1,27 @@
+{
+  "id": "disapproving-parent",
+  "name": "You're Not Good Enough For My Child",
+  "category": "chain",
+  "expected_npc_count": 1,
+  "npc_roles": ["disapproving_parent"],
+  "tags": ["family", "disapproval", "romance", "drama"],
+  "dimension_weights": {
+    "conflict_style": { "affinity": 0.5 },
+    "romance_attitude": { "affinity": 0.4 },
+    "trust_disposition": { "affinity": -0.3 }
+  },
+  "base_priority": 35,
+  "drama_level": 0.7,
+  "romance_level": 0.3,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 10,
+  "chain_from": "dating-app-match",
+  "chain_input_role": "genuine_match",
+  "chain_depth": 1,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 1 character based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create the parent of {{chain_input_npc}}. They've heard about {{player_name}} and... they're not impressed. Maybe they think {{player_name}} isn't ambitious enough, or too different, or just not what they envisioned for their child. They mean well but show it poorly. They should be sympathetic - a parent who loves their kid and is scared of them getting hurt. They've been through their own heartbreaks and project those fears forward. They stalk {{player_name}}'s social media. They make passive-aggressive comments. They \"accidentally\" bring up their child's successful ex. But underneath it all, they'd come around if {{player_name}} proved them wrong. They just need convincing. Player context: {{player_persona_summary}}",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["disapproving_parent_and_chain_input_npc"]
+  }
+}

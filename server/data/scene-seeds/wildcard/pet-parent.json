@@ -1,0 +1,24 @@
+{
+  "id": "pet-parent",
+  "name": "The Dog Park Tribunal",
+  "category": "wildcard",
+  "expected_npc_count": 2,
+  "npc_roles": ["judgmental_pet_parent", "dog_walker"],
+  "tags": ["pets", "neighborhood", "judgment", "comedy"],
+  "dimension_weights": {
+    "social_energy": { "affinity": 0.3 },
+    "conflict_style": { "affinity": 0.3 },
+    "humor_preference": { "affinity": 0.5 }
+  },
+  "base_priority": 45,
+  "drama_level": 0.3,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "A dog park regular who has STRONG opinions about {{player_name}}'s pet parenting skills. Whether or not {{player_name}} even has a pet is irrelevant - if they do, the pet parent judges how they handle their animal. If they don't, the pet parent judges them even harder for not having one. This person treats the dog park like a courtroom and themselves as both judge and jury. They know every dog by name and every owner by their sins. Their professional dog walker friend has been doing this job for years, has seen every kind of pet owner, every kind of dog, every kind of drama. They just want everyone to chill out and let the dogs play. They're the voice of reason in a world gone mad over premium kibble brands and off-leash etiquette. Player context: {{player_persona_summary}}",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["judgmental_pet_parent_and_dog_walker"]
+  }
+}

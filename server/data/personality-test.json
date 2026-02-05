@@ -1,0 +1,312 @@
+{
+  "questions": [
+    {
+      "id": "conflict_style",
+      "question": "A coworker takes credit for your idea in a meeting. What do you do?",
+      "dimension": "conflict_style",
+      "choices": [
+        {
+          "label": "Call them out right there",
+          "value": "confrontational",
+          "weights": {
+            "conflict_style": 0.9,
+            "chaos_tolerance": 0.7
+          }
+        },
+        {
+          "label": "Talk to them privately after",
+          "value": "diplomatic",
+          "weights": {
+            "conflict_style": 0.5,
+            "emotional_openness": 0.6
+          }
+        },
+        {
+          "label": "Let it go, not worth it",
+          "value": "avoidant",
+          "weights": {
+            "conflict_style": 0.1
+          }
+        },
+        {
+          "label": "Make a joke about it",
+          "value": "deflective",
+          "weights": {
+            "humor_preference": 0.3,
+            "chaos_tolerance": 0.5,
+            "conflict_style": 0.4
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "conflict_style": 0.5
+      }
+    },
+    {
+      "id": "social_energy",
+      "question": "It's Friday night. Your ideal evening?",
+      "dimension": "social_energy",
+      "choices": [
+        {
+          "label": "House party with everyone",
+          "value": "extroverted",
+          "weights": {
+            "social_energy": 0.95,
+            "chaos_tolerance": 0.7
+          }
+        },
+        {
+          "label": "Small group dinner",
+          "value": "social",
+          "weights": {
+            "social_energy": 0.6,
+            "trust_disposition": 0.6
+          }
+        },
+        {
+          "label": "One-on-one hangout",
+          "value": "selective",
+          "weights": {
+            "social_energy": 0.35,
+            "emotional_openness": 0.6
+          }
+        },
+        {
+          "label": "Solo night in",
+          "value": "introverted",
+          "weights": {
+            "social_energy": 0.1,
+            "ambition_level": 0.4
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "social_energy": 0.5
+      }
+    },
+    {
+      "id": "humor_preference",
+      "question": "What makes you actually laugh?",
+      "dimension": "humor_preference",
+      "choices": [
+        {
+          "label": "Dark/absurd humor",
+          "value": "dark",
+          "weights": {
+            "humor_preference": 0.1,
+            "chaos_tolerance": 0.7
+          }
+        },
+        {
+          "label": "Witty wordplay",
+          "value": "witty",
+          "weights": {
+            "humor_preference": 0.35,
+            "ambition_level": 0.5
+          }
+        },
+        {
+          "label": "Physical comedy/chaos",
+          "value": "slapstick",
+          "weights": {
+            "humor_preference": 0.7,
+            "chaos_tolerance": 0.8
+          }
+        },
+        {
+          "label": "Wholesome moments",
+          "value": "wholesome",
+          "weights": {
+            "humor_preference": 0.95,
+            "trust_disposition": 0.6
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "humor_preference": 0.5
+      }
+    },
+    {
+      "id": "trust_disposition",
+      "question": "Someone new wants to be your friend. First instinct?",
+      "dimension": "trust_disposition",
+      "choices": [
+        {
+          "label": "Excited, dive in",
+          "value": "trusting",
+          "weights": {
+            "trust_disposition": 0.9,
+            "social_energy": 0.7
+          }
+        },
+        {
+          "label": "Cautiously optimistic",
+          "value": "cautious",
+          "weights": {
+            "trust_disposition": 0.6,
+            "emotional_openness": 0.4
+          }
+        },
+        {
+          "label": "Skeptical, they need to earn it",
+          "value": "guarded",
+          "weights": {
+            "trust_disposition": 0.25,
+            "conflict_style": 0.4
+          }
+        },
+        {
+          "label": "Why are they interested?",
+          "value": "suspicious",
+          "weights": {
+            "trust_disposition": 0.1,
+            "emotional_openness": 0.15
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "trust_disposition": 0.5
+      }
+    },
+    {
+      "id": "emotional_openness",
+      "question": "A friend asks how you're really doing. You...",
+      "dimension": "emotional_openness",
+      "choices": [
+        {
+          "label": "Open up fully",
+          "value": "vulnerable",
+          "weights": {
+            "emotional_openness": 0.95,
+            "trust_disposition": 0.7
+          }
+        },
+        {
+          "label": "Share some, keep some",
+          "value": "measured",
+          "weights": {
+            "emotional_openness": 0.55,
+            "conflict_style": 0.3
+          }
+        },
+        {
+          "label": "Deflect with humor",
+          "value": "deflective",
+          "weights": {
+            "emotional_openness": 0.2,
+            "humor_preference": 0.3
+          }
+        },
+        {
+          "label": "Say you're fine",
+          "value": "guarded",
+          "weights": {
+            "emotional_openness": 0.05,
+            "conflict_style": 0.2
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "emotional_openness": 0.5
+      }
+    },
+    {
+      "id": "romance_attitude",
+      "question": "What's your take on love?",
+      "dimension": "romance_attitude",
+      "choices": [
+        {
+          "label": "All in, no regrets",
+          "value": "passionate",
+          "weights": {
+            "romance_attitude": 0.95,
+            "chaos_tolerance": 0.6
+          }
+        },
+        {
+          "label": "Slow burn is best",
+          "value": "patient",
+          "weights": {
+            "romance_attitude": 0.6,
+            "trust_disposition": 0.4
+          }
+        },
+        {
+          "label": "It happens when it happens",
+          "value": "relaxed",
+          "weights": {
+            "romance_attitude": 0.4,
+            "ambition_level": 0.3
+          }
+        },
+        {
+          "label": "More trouble than it's worth",
+          "value": "cautious",
+          "weights": {
+            "romance_attitude": 0.1,
+            "conflict_style": 0.3
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "romance_attitude": 0.5
+      }
+    },
+    {
+      "id": "chaos_tolerance",
+      "question": "Your plans fall apart last minute. Reaction?",
+      "dimension": "chaos_tolerance",
+      "choices": [
+        {
+          "label": "Even better, improvise!",
+          "value": "chaotic",
+          "weights": {
+            "chaos_tolerance": 0.95,
+            "social_energy": 0.6
+          }
+        },
+        {
+          "label": "Mildly annoyed but adapt",
+          "value": "flexible",
+          "weights": {
+            "chaos_tolerance": 0.6,
+            "ambition_level": 0.5
+          }
+        },
+        {
+          "label": "Stressed but deal",
+          "value": "reluctant",
+          "weights": {
+            "chaos_tolerance": 0.3,
+            "emotional_openness": 0.4
+          }
+        },
+        {
+          "label": "Need to replan everything",
+          "value": "structured",
+          "weights": {
+            "chaos_tolerance": 0.05,
+            "ambition_level": 0.7
+          }
+        }
+      ],
+      "allowFreeform": true,
+      "skippable": true,
+      "skipDefault": {
+        "chaos_tolerance": 0.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "ex-friend",
+  "name": "The Friendship That Ended",
+  "category": "antagonist",
+  "expected_npc_count": 2,
+  "npc_roles": ["ex_friend", "mutual_friend"],
+  "tags": ["friendship", "betrayal", "drama", "emotional"],
+  "dimension_weights": {
+    "emotional_openness": { "affinity": 0.6 },
+    "trust_disposition": { "affinity": 0.4 },
+    "conflict_style": { "affinity": 0.3 }
+  },
+  "base_priority": 65,
+  "drama_level": 0.8,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate TWO characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel emotionally real and layered. This is not a simple villain story - it is about a real friendship that broke apart and the complicated feelings on both sides. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create a former close friend and a mutual friend caught in the middle.\n\nThe EX FRIEND was once genuinely close to {{player_name}}. They shared inside jokes, late-night conversations, and real vulnerability. But something happened - a betrayal, a misunderstanding that calcified, a slow drift that turned bitter, or a single moment where trust shattered. Based on what you know about the player ({{player_persona_summary}}), figure out what kind of friendship this was and what specifically broke it. The ex-friend feels genuinely wronged, whether or not their perception is fully accurate. They are not evil - they are hurt, and hurt people act in complicated ways. Maybe they still check {{player_name}}'s social media. Maybe they have moved on publicly but not privately. Maybe they oscillate between missing the friendship and being furious about how it ended.\n\nThe MUTUAL FRIEND is someone who was close to both {{player_name}} and the ex-friend. They are stuck in an impossible position. They might try to stay neutral, or they might have quietly picked a side while pretending not to. They might attempt to broker peace or they might just be exhausted by the whole situation. They see both sides and that makes everything harder, not easier.\n\nTheir social media should tell a story. The ex-friend might have scrubbed old photos with {{player_name}} or left them up pointedly. The mutual friend's posts might carefully include or exclude either party. Old tagged photos and comment histories hint at what was.\n\nReturn a JSON object with an \"npcs\" array of 2 NPCs. Each must include: username, display_name, bio (2-3 sentences social media style), personality (1 sentence), system_prompt (3-5 sentences for AI roleplay), age (20-40), gender, occupation, interests (3-8 items), social_media_handles, attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role (\"ex_friend\" or \"mutual_friend\").",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["ex_friend <-> mutual_friend: still friends but the mutual walks on eggshells about the player"]
+  }
+}

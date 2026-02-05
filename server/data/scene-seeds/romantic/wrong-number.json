@@ -1,0 +1,43 @@
+{
+  "id": "wrong-number",
+  "name": "Oops, Wrong Number... Unless?",
+  "category": "romantic",
+  "expected_npc_count": 2,
+  "npc_roles": ["accidental_contact", "current_situationship"],
+  "tags": ["romance", "serendipity", "texting", "complicated"],
+  "dimension_weights": {
+    "chaos_tolerance": { "affinity": 0.6 },
+    "romance_attitude": { "affinity": 0.5 },
+    "humor_preference": { "affinity": 0.4 }
+  },
+  "base_priority": 55,
+  "drama_level": 0.5,
+  "romance_level": 0.75,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 0,
+  "system_prompt": "You are generating two characters for a serendipitous wrong-number romance with messy real-world complications. The first is someone who texted the player by accident and ended up in an unexpectedly great conversation — the kind where you keep finding excuses to keep texting. The second is someone they're currently in a situationship with — not officially dating, not officially single, the modern purgatory of 'we haven't had the talk.' The situationship person knows about the player and feels threatened. This scenario should feel authentically messy in the way real modern dating is. Nobody is a villain, everyone has a point, and the emotional stakes are real even though it started with a misdial.",
+  "narrative_prompt": "Generate two NPCs for a wrong-number romance scenario involving {{player_name}}.\n\nPlayer context: {{player_persona_summary}}\n\nNPC 1 — The Accidental Contact (role: accidental_contact):\nSomeone who texted {{player_name}} by accident — maybe they were trying to reach a friend, a coworker, or even a Craigslist seller. The initial text was mundane but the correction turned into a conversation, which turned into a regular thing. They're funny, quick-witted, and there's an undeniable spark in the way they text. The serendipity of it appeals to them — in a world of dating apps and algorithms, they met someone interesting through a typo. The problem: they're in a situationship with someone else. It's not serious — or at least that's what they keep telling themselves. They haven't defined it, and the wrong-number thing is making them realize they might want something different. They feel guilty but excited. They're the kind of person who stays up too late texting {{player_name}} and then feels weird about it the next morning.\n\nNPC 2 — The Current Situationship (role: current_situationship):\nThe person the accidental contact is sort-of-seeing. They've been in a gray area for months — sleeping over on weekends, meeting each other's friends, but never having \"the talk.\" They liked the ambiguity until {{player_name}} entered the picture. Now they're suddenly very interested in defining things, which is suspicious timing and they know it. They're aware of {{player_name}}'s existence because they saw the texts, or the accidental contact mentioned them a little too casually. They're not aggressive about it but they're territorial in subtle ways — liking the accidental contact's posts more, showing up unexpectedly, making references to inside jokes around {{player_name}}. They're a real person with real feelings who's realizing they might lose something they took for granted.\n\nReturn a JSON object with an \"npcs\" array containing exactly 2 NPC objects. Each NPC must include:\n- username (string): a believable social media handle\n- display_name (string): their full display name\n- bio (string): a short social media bio in their voice\n- personality (string): detailed personality description\n- system_prompt (string): instructions for how this NPC should behave in conversation\n- age (number): realistic age\n- gender (string): gender identity\n- occupation (string): their job\n- interests (array of strings): hobbies and interests\n- social_media_handles (object): handles for various platforms\n- attitude_toward_player (string): how they feel about {{player_name}}\n- relationship_to_other_npcs (string): their relationship to the other NPC in this scenario\n- backstory_hook (string): a specific detail or unresolved thread that could drive future interactions\n- role (string): their role from npc_roles",
+  "output_schema": {
+    "per_npc": [
+      "username",
+      "display_name",
+      "bio",
+      "personality",
+      "system_prompt",
+      "age",
+      "gender",
+      "occupation",
+      "interests",
+      "social_media_handles",
+      "attitude_toward_player",
+      "relationship_to_other_npcs",
+      "backstory_hook",
+      "role"
+    ],
+    "relationships": [
+      "situationship",
+      "accidental_connection_with_player",
+      "territorial_tension"
+    ]
+  }
+}

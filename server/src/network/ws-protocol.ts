@@ -424,6 +424,31 @@ export interface StudioSaveCanvasMessage extends WSMessage<{
   type: 'studio:saveCanvas';
 }
 
+// Onboarding - Personality Test
+export interface OnboardingSubmitAnswerMessage extends WSMessage<{
+  questionId: string;
+  choiceValue?: string;
+  freeformText?: string;
+  skipped: boolean;
+}> {
+  type: 'onboarding:submitAnswer';
+}
+
+export interface OnboardingSkipAllMessage extends WSMessage {
+  type: 'onboarding:skipAll';
+}
+
+export interface OnboardingGetQuestionsMessage extends WSMessage {
+  type: 'onboarding:getQuestions';
+}
+
+export interface OnboardingStartGenerationMessage extends WSMessage<{
+  targetNPCCount?: number;
+  romanticEnabled?: boolean;
+}> {
+  type: 'onboarding:startGeneration';
+}
+
 // Search
 export interface SearchQueryMessage extends WSMessage<{
   query: string;
@@ -508,7 +533,11 @@ export type ClientMessage =
   | StudioGenerateImageMessage
   | StudioGetBudgetMessage
   | StudioSaveVideoConfigMessage
-  | StudioSaveCanvasMessage;
+  | StudioSaveCanvasMessage
+  | OnboardingSubmitAnswerMessage
+  | OnboardingSkipAllMessage
+  | OnboardingGetQuestionsMessage
+  | OnboardingStartGenerationMessage;
 
 // ============================================================================
 // Server -> Client Messages
@@ -824,6 +853,47 @@ export interface SocialCommentAddedEvent extends WSMessage<{
   type: 'social:commentAdded';
 }
 
+// Onboarding Events
+export interface OnboardingQuestionsEvent extends WSMessage<{
+  questions: Array<{
+    id: string;
+    question: string;
+    dimension: string;
+    choices: Array<{ label: string; value: string }>;
+    allowFreeform: boolean;
+    skippable: boolean;
+  }>;
+}> {
+  type: 'onboarding:questions';
+}
+
+export interface OnboardingProfileCompiledEvent extends WSMessage<{
+  summary: string;
+  dimensions: Record<string, number>;
+  drama_affinity: number;
+  romance_readiness: number;
+  social_appetite: number;
+}> {
+  type: 'onboarding:profileCompiled';
+}
+
+export interface OnboardingWaveProgressEvent extends WSMessage<{
+  wave: number;
+  npcsCreated: number;
+  totalExpected: number;
+  totalSoFar: number;
+  seedNames: string[];
+}> {
+  type: 'onboarding:waveProgress';
+}
+
+export interface OnboardingReadyEvent extends WSMessage<{
+  totalNPCs: number;
+  waves_remaining: number;
+}> {
+  type: 'onboarding:ready';
+}
+
 // Union of all server messages
 export type ServerMessage =
   | ResponseMessage
@@ -849,7 +919,11 @@ export type ServerMessage =
   | SocialPostCreatedEvent
   | SocialPostLikedEvent
   | SocialPostUnlikedEvent
-  | SocialCommentAddedEvent;
+  | SocialCommentAddedEvent
+  | OnboardingQuestionsEvent
+  | OnboardingProfileCompiledEvent
+  | OnboardingWaveProgressEvent
+  | OnboardingReadyEvent;
 
 // ============================================================================
 // Helpers

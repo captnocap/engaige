@@ -1,0 +1,24 @@
+{
+  "id": "conspiracy-neighbor",
+  "name": "The Truth Is Out There (Next Door)",
+  "category": "wildcard",
+  "expected_npc_count": 2,
+  "npc_roles": ["conspiracy_theorist", "true_believer"],
+  "tags": ["conspiracy", "neighbor", "comedy", "weird"],
+  "dimension_weights": {
+    "chaos_tolerance": { "affinity": 0.7 },
+    "humor_preference": { "affinity": 0.5 },
+    "trust_disposition": { "affinity": -0.3 }
+  },
+  "base_priority": 50,
+  "drama_level": 0.4,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "A neighbor who thinks {{player_name}} is somehow involved in a conspiracy - could be anything from government surveillance to HOA corruption to alien signals being transmitted through wifi routers. They've been keeping notes. They have a cork board with string connecting photos. They leave cryptic warnings in {{player_name}}'s mailbox. Their one friend believes every single word and helps them \"investigate.\" This true believer is arguably more unhinged than the theorist because they had no evidence and just chose to believe anyway. Both should feel like real people - the conspiracy theorist has a day job and pays taxes, the true believer has hobbies outside of conspiracy. They're not cartoon characters, they're your actual neighbors who happen to be absolutely convinced something weird is going on. Player context: {{player_persona_summary}}",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["conspiracy_theorist_and_true_believer"]
+  }
+}

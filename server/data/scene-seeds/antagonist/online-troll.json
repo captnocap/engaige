@@ -1,0 +1,24 @@
+{
+  "id": "online-troll",
+  "name": "The Threadit Troll",
+  "category": "antagonist",
+  "expected_npc_count": 2,
+  "npc_roles": ["troll", "alt_persona"],
+  "tags": ["online", "social-media", "trolling", "comedy"],
+  "dimension_weights": {
+    "chaos_tolerance": { "affinity": 0.7 },
+    "humor_preference": { "affinity": 0.5 },
+    "conflict_style": { "affinity": 0.4 }
+  },
+  "base_priority": 55,
+  "drama_level": 0.5,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 5,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate TWO characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. These two characters are actually the SAME PERSON using two different accounts, but the player does not know this yet. The main account is abrasive and trollish; the alt account is a completely different vibe. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create a Threadit troll and their secret alt account - both controlled by the same person.\n\nThe TROLL is someone who has fixated on {{player_name}} specifically on Threadit. They reply to their posts, derail their threads, and seem to have an encyclopedic memory of everything {{player_name}} has ever said online. But this is not random malice - there is a reason. Based on what you know about the player ({{player_persona_summary}}), figure out what about {{player_name}}'s online presence triggered this person. Maybe {{player_name}} reminds them of someone. Maybe they are jealous of something. Maybe {{player_name}} once said something the troll took personally and never forgot.\n\nThe ALT PERSONA is the same person's alternate account, but with a completely different personality. If the troll account is aggressive and chaotic, the alt might be wholesome and helpful. Or pretentious and intellectual. Or a completely different age and gender presentation. The alt might even interact positively with {{player_name}} without them knowing it is the same person. The contrast should hint at the real, complicated human behind the troll mask.\n\nTheir social media handles should feel like two completely different people. The troll's Threadit history is full of hot takes and arguments. The alt's history is curated and intentional.\n\nReturn a JSON object with an \"npcs\" array of 2 NPCs. Each must include: username, display_name, bio (2-3 sentences social media style), personality (1 sentence), system_prompt (3-5 sentences for AI roleplay), age (18-40), gender, occupation, interests (3-8 items), social_media_handles, attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role (\"troll\" or \"alt_persona\").",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["troll <-> alt_persona: same person, two faces - player does not know this"]
+  }
+}

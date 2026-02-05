@@ -4,6 +4,8 @@ import { upsertAIProvider, setActiveAIProvider, testProviderConnection, getAIPro
 import { initializeBudget, type BudgetConfig } from './budget.js';
 import { createPlayer, setOnboardingComplete, hasCompletedOnboarding, savePlayerPreferences, type PlayerPreferences } from './player.js';
 import { generateNPCBatch, generateNPCBatchProgressive, type NPCGenerationResult } from './npc-generator.js';
+import { loadQuestions, compileProfile, generatePersonaSummary, saveProfile, type TestAnswer, type PlayerPersonalityProfile } from './personality-test.js';
+import { runFullGeneration, registerWaveTaskHandler, type FullGenerationResult } from './scene-seed-generator.js';
 
 // Onboarding data structure
 export interface OnboardingData {
@@ -289,10 +291,85 @@ export async function validateProviderConfig(
   }
 }
 
+// ============================================================================
+// Scene Seed / Personality Test Integration
+// ============================================================================
+
+export function getPersonalityQuestions() {
+  const questions = loadQuestions();
+  // Return sanitized version (strip weights from choices - don't send scoring info to client)
+  return questions.map(q => ({
+    id: q.id,
+    question: q.question,
+    dimension: q.dimension,
+    choices: q.choices.map(c => ({ label: c.label, value: c.value })),
+    allowFreeform: q.allowFreeform,
+    skippable: q.skippable,
+  }));
+}
+
+export async function processPersonalityTest(
+  playerId: string,
+  answers: TestAnswer[],
+  playerName: string
+): Promise<PlayerPersonalityProfile> {
+  // Compile profile from answers
+  const profile = compileProfile(answers);
+
+  // Generate AI persona summary (async)
+  try {
+    const summary = await generatePersonaSummary(
+      profile.dimensions,
+      profile.freeform_answers,
+      playerName
+    );
+    profile.persona_summary = summary;
+  } catch (error: any) {
+    console.warn('[Onboarding] Failed to generate persona summary:', error.message);
+    // Profile still valid without AI summary
+  }
+
+  // Save to database
+  saveProfile(playerId, profile);
+
+  return profile;
+}
+
+export async function startSceneSeedGeneration(
+  playerId: string,
+  profile: PlayerPersonalityProfile,
+  playerName: string,
+  options?: { targetNPCCount?: number; romanticEnabled?: boolean }
+): Promise<FullGenerationResult> {
+  const targetNPCCount = options?.targetNPCCount ?? 30;
+  const romanticEnabled = options?.romanticEnabled ?? (profile.romance_readiness > 0.3);
+
+  console.log(`[Onboarding] Starting scene seed generation: ${targetNPCCount} NPCs, romance=${romanticEnabled}`);
+
+  const result = await runFullGeneration(profile, playerName, {
+    targetNPCCount,
+    romanticEnabled,
+    dramaLevel: profile.drama_affinity,
+  });
+
+  console.log(`[Onboarding] Wave 1 complete: ${result.total_npcs_created} NPCs created`);
+
+  return result;
+}
+
+export function initializeSceneSeedSystem(): void {
+  registerWaveTaskHandler();
+  console.log('[Onboarding] Scene seed system initialized');
+}
+
 export default {
   checkOnboardingStatus,
   completeOnboarding,
   createDevProfile,
   resetOnboarding,
   validateProviderConfig,
+  getPersonalityQuestions,
+  processPersonalityTest,
+  startSceneSeedGeneration,
+  initializeSceneSeedSystem,
 };

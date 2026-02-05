@@ -1,0 +1,27 @@
+{
+  "id": "best-friend-of",
+  "name": "Their Best Friend Has Opinions",
+  "category": "chain",
+  "expected_npc_count": 1,
+  "npc_roles": ["best_friend"],
+  "tags": ["friendship", "opinions", "loyalty", "drama"],
+  "dimension_weights": {
+    "social_energy": { "affinity": 0.4 },
+    "trust_disposition": { "affinity": 0.3 },
+    "emotional_openness": { "affinity": 0.3 }
+  },
+  "base_priority": 40,
+  "drama_level": 0.4,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 8,
+  "chain_from": "coffee-shop-regular",
+  "chain_input_role": "barista_crush",
+  "chain_depth": 1,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 1 character based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "You know {{chain_input_npc}}'s best friend? The one they tell everything to? Create that person. They've heard ALL about {{player_name}} ({{player_persona_summary}}) from their friend, and they have thoughts. Maybe protective, maybe encouraging, maybe jealous of the attention. They should feel like a real person with their own life who happens to be deeply invested in their friend's situation with {{player_name}}. They have their own job, their own problems, their own social media presence - but right now a solid 40% of their mental bandwidth is dedicated to analyzing every interaction their best friend has had with {{player_name}} and forming strong opinions about what it all means.",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["best_friend_and_chain_input_npc"]
+  }
+}

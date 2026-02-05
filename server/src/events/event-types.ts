@@ -22,7 +22,8 @@ export type EventCategory =
   | 'ai'
   | 'media'
   | 'chess'
-  | 'guardrails';
+  | 'guardrails'
+  | 'onboarding';
 
 // ─────────────────────────────────────────────────────────────────
 // Base Event Structure
@@ -563,6 +564,33 @@ export interface GuardrailsViolationDetectedPayload {
   action_taken: 'blocked' | 'regenerated' | 'warning';
 }
 
+// === ONBOARDING EVENTS ===
+export interface OnboardingPersonalityTestCompletedPayload {
+  player_id: string;
+  dimensions: Record<string, number>;
+  drama_affinity: number;
+  romance_readiness: number;
+  social_appetite: number;
+  questions_answered: number;
+  questions_skipped: number;
+}
+
+export interface OnboardingNPCWavePayload {
+  wave_number: number;
+  seed_ids: string[];
+  npcs_created: number;
+  npcs_expected: number;
+  total_npcs_so_far: number;
+}
+
+export interface OnboardingCompletedPayload {
+  player_id: string;
+  total_npcs_created: number;
+  total_waves: number;
+  total_seeds_used: number;
+  generation_time_ms: number;
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Event Type Constants
 // ─────────────────────────────────────────────────────────────────
@@ -629,6 +657,7 @@ export const EventTypes = {
   SYSTEM_ERROR: 'system:error',
   SYSTEM_WS_CONNECTED: 'system:ws_connected',
   SYSTEM_WS_DISCONNECTED: 'system:ws_disconnected',
+  SYSTEM_BROADCAST_REQUESTED: 'system:broadcast_requested',
 
   // Scheduler
   SCHEDULER_TASK_SCHEDULED: 'scheduler:task_scheduled',
@@ -693,6 +722,12 @@ export const EventTypes = {
   // Guardrails
   GUARDRAILS_RATING_CHANGED: 'guardrails:rating_changed',
   GUARDRAILS_VIOLATION_DETECTED: 'guardrails:violation_detected',
+
+  // Onboarding - Scene Seed System
+  ONBOARDING_PERSONALITY_TEST_COMPLETED: 'onboarding:personality_test_completed',
+  ONBOARDING_NPC_WAVE_STARTED: 'onboarding:npc_wave_started',
+  ONBOARDING_NPC_WAVE_COMPLETED: 'onboarding:npc_wave_completed',
+  ONBOARDING_COMPLETED: 'onboarding:completed',
 } as const;
 
 export type EventTypeValue = (typeof EventTypes)[keyof typeof EventTypes];

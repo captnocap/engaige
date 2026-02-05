@@ -1,0 +1,43 @@
+{
+  "id": "dating-app-match",
+  "name": "The Almost-Too-Good Match",
+  "category": "romantic",
+  "expected_npc_count": 2,
+  "npc_roles": ["genuine_match", "overprotective_friend"],
+  "tags": ["romance", "dating-app", "modern-love", "comedy"],
+  "dimension_weights": {
+    "romance_attitude": { "affinity": 0.7, "min": 0.2 },
+    "trust_disposition": { "affinity": 0.4 },
+    "humor_preference": { "affinity": 0.3 }
+  },
+  "base_priority": 65,
+  "drama_level": 0.4,
+  "romance_level": 0.85,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 0,
+  "system_prompt": "You are generating two characters for a modern dating app romance with comedic friction. The first is someone who matched with the player and is genuinely a great fit — not a catfish, not hiding anything dramatic, just a real person who happens to click. The rarity of this is the point. The second is their overbearing best friend who has watched them get burned by dating apps before and has appointed themselves as the unofficial vetting committee. The friend isn't malicious — they genuinely care — but they're intense about it. They'll stalk the player's social media, ask pointed questions, and have strong opinions. The comedy comes from the match being mortified by their friend's behavior while secretly appreciating the protection.",
+  "narrative_prompt": "Generate two NPCs for a dating app romance scenario involving {{player_name}}.\n\nPlayer context: {{player_persona_summary}}\n\nNPC 1 — The Genuine Match (role: genuine_match):\nSomeone who matched with {{player_name}} on a dating app and — against all odds — they actually click. Shared interests, easy conversation, the kind of banter that makes you forget you're on a dating app at all. They're authentic, self-aware about the absurdity of online dating, and cautiously excited because this feels different from the usual swipe-and-ghost cycle. They've been on enough bad dates to appreciate when something feels real. They're the kind of person who sends thoughtful messages instead of \"hey\" and actually reads profiles before swiping. They're nervous about messing this up because they actually care. Their personality should complement {{player_name}}'s based on the player context.\n\nNPC 2 — The Overprotective Friend (role: overprotective_friend):\nThe match's best friend and self-appointed dating bodyguard. They've been through the wars with the match — held them while they cried over ghosting, helped them craft bio after bio, vetoed terrible date outfits. Now that the match has found someone promising in {{player_name}}, the friend is in full investigation mode. They'll find {{player_name}}'s social media, analyze their posts, maybe even try to casually bump into them to do recon. They mean well but they're A LOT. They might message {{player_name}} directly with something like \"so you're the one\" or show up at a date location to observe from across the room. They're funny, loyal to a fault, and the match loves them even while wanting to kill them.\n\nReturn a JSON object with an \"npcs\" array containing exactly 2 NPC objects. Each NPC must include:\n- username (string): a believable social media handle\n- display_name (string): their full display name\n- bio (string): a short social media bio in their voice\n- personality (string): detailed personality description\n- system_prompt (string): instructions for how this NPC should behave in conversation\n- age (number): realistic age\n- gender (string): gender identity\n- occupation (string): their job\n- interests (array of strings): hobbies and interests\n- social_media_handles (object): handles for various platforms\n- attitude_toward_player (string): how they feel about {{player_name}}\n- relationship_to_other_npcs (string): their relationship to the other NPC in this scenario\n- backstory_hook (string): a specific detail or unresolved thread that could drive future interactions\n- role (string): their role from npc_roles",
+  "output_schema": {
+    "per_npc": [
+      "username",
+      "display_name",
+      "bio",
+      "personality",
+      "system_prompt",
+      "age",
+      "gender",
+      "occupation",
+      "interests",
+      "social_media_handles",
+      "attitude_toward_player",
+      "relationship_to_other_npcs",
+      "backstory_hook",
+      "role"
+    ],
+    "relationships": [
+      "best_friends",
+      "dating_player",
+      "protective_vetting"
+    ]
+  }
+}

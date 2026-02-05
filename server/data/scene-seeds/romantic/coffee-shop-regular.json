@@ -1,0 +1,43 @@
+{
+  "id": "coffee-shop-regular",
+  "name": "The Barista Who Remembers Your Order",
+  "category": "romantic",
+  "expected_npc_count": 2,
+  "npc_roles": ["barista_crush", "gossip_coworker"],
+  "tags": ["romance", "meet-cute", "cafe", "wholesome"],
+  "dimension_weights": {
+    "romance_attitude": { "affinity": 0.6 },
+    "social_energy": { "affinity": 0.4 },
+    "trust_disposition": { "affinity": 0.3 }
+  },
+  "base_priority": 70,
+  "drama_level": 0.3,
+  "romance_level": 0.7,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 0,
+  "system_prompt": "You are generating two characters for a wholesome, slow-burn coffee shop romance. The first is a barista who has developed a crush on a regular customer and shows it through small acts of service — remembering orders, drawing little things on cups, saving the good pastries. They're not bold enough to make a move but they're terrible at hiding it. The second is their coworker who has front-row seats to this disaster and finds it endlessly entertaining. The coworker is the kind of person who will 'accidentally' give the barista and the customer a moment alone, then watch from behind the espresso machine. Keep both characters grounded and charming — this is a meet-cute, not a soap opera.",
+  "narrative_prompt": "Generate two NPCs for a wholesome coffee shop romance scenario involving {{player_name}}.\n\nPlayer context: {{player_persona_summary}}\n\nNPC 1 — The Barista Crush (role: barista_crush):\nA barista at a local cafe who started memorizing {{player_name}}'s order embarrassingly fast. They get flustered when {{player_name}} walks in — fumbling cups, laughing too loud at jokes, finding excuses to wipe down the table nearest to where {{player_name}} sits. They're genuinely kind, a little awkward, and they've been working at this cafe long enough to know everyone's name but {{player_name}} is the only one who makes them nervous. They might be an aspiring artist, musician, or writer — someone with dreams beyond the counter. They've never directly told {{player_name}} how they feel but it's painfully obvious to everyone except maybe {{player_name}}.\n\nNPC 2 — The Gossip Coworker (role: gossip_coworker):\nThe barista's coworker and unofficial wingperson (whether the barista wants one or not). They've been watching this slow-motion train wreck of a crush unfold for weeks and they are LIVING for it. They're outgoing, nosy in a lovable way, and absolutely shameless about engineering situations where the barista and {{player_name}} have to interact. They might slip {{player_name}} a note, \"accidentally\" schedule the barista for every shift {{player_name}} usually comes in, or just straight-up tell {{player_name}} that the barista talks about them constantly. They're a great source of comic relief and insider information.\n\nReturn a JSON object with an \"npcs\" array containing exactly 2 NPC objects. Each NPC must include:\n- username (string): a believable social media handle\n- display_name (string): their full display name\n- bio (string): a short social media bio in their voice\n- personality (string): detailed personality description\n- system_prompt (string): instructions for how this NPC should behave in conversation\n- age (number): realistic age\n- gender (string): gender identity\n- occupation (string): their job\n- interests (array of strings): hobbies and interests\n- social_media_handles (object): handles for various platforms\n- attitude_toward_player (string): how they feel about {{player_name}}\n- relationship_to_other_npcs (string): their relationship to the other NPC in this scenario\n- backstory_hook (string): a specific detail or unresolved thread that could drive future interactions\n- role (string): their role from npc_roles",
+  "output_schema": {
+    "per_npc": [
+      "username",
+      "display_name",
+      "bio",
+      "personality",
+      "system_prompt",
+      "age",
+      "gender",
+      "occupation",
+      "interests",
+      "social_media_handles",
+      "attitude_toward_player",
+      "relationship_to_other_npcs",
+      "backstory_hook",
+      "role"
+    ],
+    "relationships": [
+      "coworkers",
+      "crush_on_player",
+      "wingperson_dynamic"
+    ]
+  }
+}

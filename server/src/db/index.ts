@@ -494,6 +494,20 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         status TEXT DEFAULT 'pending',
         metadata TEXT
       );
+
+      -- NPC Seed Clusters (tracks which NPCs were generated together from scene seeds)
+      CREATE TABLE IF NOT EXISTS npc_seed_clusters (
+        id TEXT PRIMARY KEY,
+        seed_id TEXT NOT NULL,
+        npc_ids TEXT NOT NULL,
+        relationships TEXT NOT NULL,
+        player_dynamics TEXT NOT NULL,
+        wave_number INTEGER DEFAULT 1,
+        created_at INTEGER DEFAULT (unixepoch())
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_seed_clusters_seed ON npc_seed_clusters(seed_id);
+      CREATE INDEX IF NOT EXISTS idx_seed_clusters_wave ON npc_seed_clusters(wave_number);
     `);
 
     // Indexes

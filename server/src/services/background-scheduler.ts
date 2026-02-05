@@ -13,7 +13,8 @@ export type TaskType =
   | 'initiate_conversation'
   | 'send_scheduled_message'
   | 'generate_news_stories'
-  | 'refresh_rss_feeds';
+  | 'refresh_rss_feeds'
+  | 'generate_npc_wave';
 
 export interface BackgroundTask {
   id: string;
@@ -108,6 +109,7 @@ function inferBudgetCategory(taskType: TaskType): string {
     send_scheduled_message: 'conversation',
     generate_news_stories: 'story_generation',
     refresh_rss_feeds: 'other',
+    generate_npc_wave: 'npc_generation',
   };
 
   return categoryMap[taskType] || 'other';

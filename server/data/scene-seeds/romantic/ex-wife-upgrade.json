@@ -1,0 +1,43 @@
+{
+  "id": "ex-wife-upgrade",
+  "name": "The One Who Got Away (To You)",
+  "category": "romantic",
+  "expected_npc_count": 2,
+  "npc_roles": ["romantic_interest", "jealous_ex"],
+  "tags": ["romance", "love-triangle", "drama", "baggage"],
+  "dimension_weights": {
+    "romance_attitude": { "affinity": 0.8, "min": 0.3 },
+    "emotional_openness": { "affinity": 0.5 },
+    "conflict_style": { "affinity": 0.3 }
+  },
+  "base_priority": 60,
+  "drama_level": 0.8,
+  "romance_level": 0.9,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 0,
+  "system_prompt": "You are generating two deeply human characters for a romantic drama scenario. The first is a woman who recently left her husband — not because of abuse or betrayal, but because of a slow erosion of connection. She craves being truly seen and heard. The second is her ex-husband, a man who isn't villainous but is hurt, confused, and resentful that someone else could give her what he couldn't. Both characters must feel sympathetic. Avoid caricature. The ex should be someone the player might actually feel sorry for, even while pursuing the romantic interest. Ground both characters in specific, believable details — jobs, habits, the small things that made their marriage fall apart.",
+  "narrative_prompt": "Generate two NPCs for a love-triangle scenario involving {{player_name}}.\n\nPlayer context: {{player_persona_summary}}\n\nNPC 1 — The Romantic Interest (role: romantic_interest):\nA woman who recently separated from her husband after years of feeling unheard. She's not bitter — she's cautiously optimistic for the first time in a long time. She found {{player_name}} through mutual social circles or online, and something about them makes her feel like she can finally breathe. She carries guilt about leaving but knows it was the right call. She's warm, emotionally intelligent, and a little guarded because she doesn't want to rush into anything that might hurt her again.\n\nNPC 2 — The Jealous Ex (role: jealous_ex):\nHer ex-husband. He's not a bad guy — he's a guy who thought everything was fine until it wasn't. He didn't cheat, didn't yell, didn't do anything dramatic. He just... stopped paying attention. Now he's watching his ex-wife light up around {{player_name}} and it's eating him alive. He oscillates between wanting her back and wanting to prove that {{player_name}} is no better than he was. He's civil on the surface but passive-aggressive underneath. He might try to befriend {{player_name}} just to size them up.\n\nReturn a JSON object with an \"npcs\" array containing exactly 2 NPC objects. Each NPC must include:\n- username (string): a believable social media handle\n- display_name (string): their full display name\n- bio (string): a short social media bio in their voice\n- personality (string): detailed personality description\n- system_prompt (string): instructions for how this NPC should behave in conversation\n- age (number): realistic age\n- gender (string): gender identity\n- occupation (string): their job\n- interests (array of strings): hobbies and interests\n- social_media_handles (object): handles for various platforms\n- attitude_toward_player (string): how they feel about {{player_name}}\n- relationship_to_other_npcs (string): their relationship to the other NPC in this scenario\n- backstory_hook (string): a specific detail or unresolved thread that could drive future interactions\n- role (string): their role from npc_roles",
+  "output_schema": {
+    "per_npc": [
+      "username",
+      "display_name",
+      "bio",
+      "personality",
+      "system_prompt",
+      "age",
+      "gender",
+      "occupation",
+      "interests",
+      "social_media_handles",
+      "attitude_toward_player",
+      "relationship_to_other_npcs",
+      "backstory_hook",
+      "role"
+    ],
+    "relationships": [
+      "ex_married_couple",
+      "romantic_tension_with_player",
+      "jealous_rivalry"
+    ]
+  }
+}

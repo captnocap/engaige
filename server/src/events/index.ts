@@ -56,4 +56,7 @@ export {
   type MediaUploadedPayload,
   type MediaGeneratedPayload,
   type MediaDeletedPayload,
+  type OnboardingPersonalityTestCompletedPayload,
+  type OnboardingNPCWavePayload,
+  type OnboardingCompletedPayload,
 } from './event-types.js';

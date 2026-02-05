@@ -1,0 +1,24 @@
+{
+  "id": "accidental-celebrity",
+  "name": "Your Doppelganger Went Viral",
+  "category": "wildcard",
+  "expected_npc_count": 2,
+  "npc_roles": ["viral_lookalike", "their_agent"],
+  "tags": ["internet", "fame", "mistaken-identity", "comedy"],
+  "dimension_weights": {
+    "chaos_tolerance": { "affinity": 0.6 },
+    "social_energy": { "affinity": 0.4 },
+    "humor_preference": { "affinity": 0.5 }
+  },
+  "base_priority": 45,
+  "drama_level": 0.5,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Someone who went viral on social media and apparently looks exactly like {{player_name}}. People keep confusing them online. Maybe the lookalike did something embarrassing, or heroic, or just deeply weird - and now {{player_name}} is getting tagged in posts, receiving DMs from strangers, and being recognized at the grocery store for something they didn't do. The lookalike themselves has mixed feelings about their sudden fame. Their manager/agent is trying to monetize the whole situation and keeps DMing {{player_name}} about \"collaboration opportunities\" and \"brand synergy\" and \"the doppelganger economy.\" The agent is hustle-brained but not malicious - they genuinely think everyone can win here. Player context: {{player_persona_summary}}",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["viral_lookalike_and_their_agent"]
+  }
+}

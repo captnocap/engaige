@@ -1,0 +1,27 @@
+{
+  "id": "rebound",
+  "name": "The Revenge Date",
+  "category": "chain",
+  "expected_npc_count": 1,
+  "npc_roles": ["rebound_date"],
+  "tags": ["romance", "jealousy", "rebound", "drama"],
+  "dimension_weights": {
+    "romance_attitude": { "affinity": 0.5 },
+    "chaos_tolerance": { "affinity": 0.4 },
+    "conflict_style": { "affinity": 0.3 }
+  },
+  "base_priority": 35,
+  "drama_level": 0.6,
+  "romance_level": 0.2,
+  "requires_romantic_enabled": true,
+  "min_npc_total": 10,
+  "chain_from": "ex-wife-upgrade",
+  "chain_input_role": "jealous_ex",
+  "chain_depth": 1,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 1 character based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "{{chain_input_npc}} has started dating someone new - clearly to make their ex jealous and to get under {{player_name}}'s skin. Create this rebound person. They might be genuinely nice and completely unaware they're being used as a pawn in someone else's emotional chess game. Or they might be fully on board with the petty scheme because they think it's funny, or because they have their own ax to grind. Either way, they're now in {{player_name}}'s orbit and showing up on social media feeds, at the same coffee shops, tagged in posts that feel specifically designed to be seen. They're a real person caught in someone else's drama - give them their own motivations, their own insecurities, their own life outside of this situation. Player context: {{player_persona_summary}}",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["rebound_date_and_chain_input_npc"]
+  }
+}
