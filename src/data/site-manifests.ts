@@ -407,7 +407,7 @@ export const CORNHUB_MANIFEST: SiteManifest = {
   icon: '🌽',
   homepage: {
     title: 'CornHub - Free Corn Recipes',
-    description: 'The world\'s largest collection of free corn recipes. What did you think it was? Corn on the cob, cornbread, popcorn, and more.',
+    description: 'The world\'s largest collection of free corn recipes. Corn on the cob, cornbread, popcorn, creamed corn, and more. Over 10,000 user-submitted recipes.',
     keywords: ['corn', 'recipes', 'cooking', 'food', 'cornbread'],
   },
   seoScore: 65,
@@ -425,7 +425,7 @@ export const ONLYFANS_MANIFEST: SiteManifest = {
   icon: '🌀',
   homepage: {
     title: 'OnlyFans - Premium Fans for Enthusiasts',
-    description: 'The #1 destination for fan enthusiasts. Premium ceiling fans, desk fans, box fans, and oscillating fans. What did you think it was?',
+    description: 'The #1 destination for fan enthusiasts. Premium ceiling fans, desk fans, box fans, and oscillating fans. Subscribe for exclusive unboxings.',
     keywords: ['fans', 'ceiling fans', 'desk fans', 'cooling', 'appliances'],
   },
   seoScore: 50,
@@ -442,7 +442,7 @@ export const ONLYFARMS_MANIFEST: SiteManifest = {
   icon: '🚜',
   homepage: {
     title: 'OnlyFarms - Where Equipment Gets Exposed',
-    description: 'Premium agricultural equipment marketplace. Tractors, combines, harvesters, and more. What did you think it was?',
+    description: 'Premium agricultural equipment marketplace. Tractors, combines, harvesters, and irrigation systems. See what\'s under the hood.',
     keywords: ['farming', 'tractors', 'agriculture', 'equipment', 'farm'],
   },
   seoScore: 50,

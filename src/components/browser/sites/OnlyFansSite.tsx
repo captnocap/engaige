@@ -555,7 +555,7 @@ export function OnlyFansSite({ siteId }: SiteProps) {
           <div className="text-center py-6">
             <h2 className="text-3xl font-bold mb-2">Premium Fans. Exclusive Selection.</h2>
             <p className="text-pink-200">
-              What did you think this site was about? We sell FANS. Ceiling fans. Desk fans. All kinds of fans.
+              Subscribe to your favorite fan creators. Ceiling fans. Desk fans. Industrial-grade cooling solutions.
             </p>
           </div>
 

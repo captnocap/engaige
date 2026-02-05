@@ -447,7 +447,7 @@ export const FILLER_SITES = {
     url: 'www.onlyfans.corn',
     icon: '🌀',
     iconImage: '/src/assets/icon-onlyfans.png', // User uploaded
-    description: 'Premium ceiling fans, desk fans, and more. What did you think it was?',
+    description: 'Premium ceiling fans, desk fans, and more. Subscribe for exclusive unboxings.',
     theme: {
       primary: '#EC4899',      // Pink
       secondary: '#FDF2F8',    // Light pink
@@ -583,7 +583,7 @@ export const FILLER_SITES = {
     tagline: 'Free Corn Recipes',
     url: 'www.cornhub.corn',
     icon: '🌽',
-    description: 'The world\'s largest collection of free corn recipes. What did you think it was?',
+    description: 'The world\'s largest collection of free corn recipes. Over 10,000 user-submitted recipes.',
     theme: {
       primary: '#F97316',      // Orange (coincidentally similar to... something)
       secondary: '#EA580C',    // Darker orange
@@ -644,7 +644,7 @@ export const FILLER_SITES = {
     tagline: 'Where Equipment Gets Exposed',
     url: 'www.onlyfarms.corn',
     icon: '🚜',
-    description: 'Premium agricultural equipment marketplace. What did you think it was?',
+    description: 'Premium agricultural equipment marketplace. See what\'s under the hood.',
     theme: {
       primary: '#2D5A27',      // Deep forest green
       secondary: '#8B4513',    // Saddle brown
