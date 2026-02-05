@@ -1,0 +1,56 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "mars-banned-another-wonderwall-requester",
+
+  "parent_slug": "t-localmusic",
+  "category": "LocalMusic",
+
+  "title": "Mars permanently banned another Wonderwall requester",
+  "body": "Witnessed history tonight at The Underground. Some guy requested Wonderwall for the third time in one night.\n\nMars walked over, took his drink, poured it out, and handed him a piece of paper. It was a printed lifetime ban certificate. Pre-made. He has these READY TO GO.\n\nThe guy tried to argue and Mars just pointed to the sign: \"ABSOLUTELY NO WONDERWALL. NO EXCEPTIONS. NO APPEALS.\"\n\nLegend.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "underground_regular_2",
+    "flair": "Classic Mars",
+    "upvotes": 5678,
+    "downvotes": 0,
+    "upvote_ratio": 0.99,
+    "comment_count": 789,
+    "awards": ["\ud83c\udfc6", "\ud83d\ude02", "\ud83c\udfb8"]
+  },
+
+  "tags": ["the-underground", "mars", "wonderwall", "ban", "legend"],
+  "entities": ["Mars", "The Underground"],
+
+  "published_at": "2026-01-29T22:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "MarsTheOwner",
+      "author_avatar": null,
+      "content": "I have 200 of those certificates. We're down to 184.",
+      "like_count": 8934,
+      "published_at": "2026-01-29T22:30:00Z",
+      "metadata": {
+        "flair": "Underground Owner"
+      },
+      "replies": [
+        {
+          "author_name": "WonderwallWarrior",
+          "author_avatar": null,
+          "content": "One day I will hear my song in that venue.",
+          "like_count": -2341,
+          "published_at": "2026-01-29T23:00:00Z",
+          "metadata": {
+            "flair": "Banned x16"
+          },
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

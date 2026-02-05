@@ -1,0 +1,64 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "whats-the-weirdest-thing-at-a-local-venue",
+
+  "parent_slug": "t-askthreadit",
+  "category": "AskThreadit",
+
+  "title": "What's the weirdest thing you've ever witnessed at a local venue?",
+  "body": "I'll start: At The Underground last month, a guy tried to crowdsurf during an acoustic set. There were like 12 people in the audience. They did not catch him.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "curiosity_killed_me",
+    "flair": null,
+    "upvotes": 5621,
+    "downvotes": 0,
+    "upvote_ratio": 0.98,
+    "comment_count": 2341,
+    "awards": ["\ud83c\udfc6", "\ud83d\ude02", "\ud83c\udfb8", "\ud83d\udc80"]
+  },
+
+  "tags": ["askthreadit", "venues", "weird-stories", "the-underground"],
+  "entities": ["The Underground", "Mars", "Trust Fall Tim"],
+
+  "published_at": "2026-02-04T06:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "basement_show_veteran",
+      "author_avatar": null,
+      "content": "Saw a band's drummer quit mid-song because the frontman made a joke about his \"timekeeping.\" The drummer threw his sticks into the crowd and left.",
+      "like_count": 4521,
+      "published_at": "2026-02-04T07:00:00Z",
+      "replies": []
+    },
+    {
+      "author_name": "MarsTheOwner",
+      "author_avatar": null,
+      "content": "I own The Underground. The crowdsurf guy comes back every month. We call him \"Trust Fall Tim.\" No one has ever caught him. He keeps trying.",
+      "like_count": 8934,
+      "published_at": "2026-02-04T10:00:00Z",
+      "metadata": {
+        "flair": "Verified Venue Owner"
+      },
+      "replies": [
+        {
+          "author_name": "TrustFallTim",
+          "author_avatar": null,
+          "content": "One day Mars. One day.",
+          "like_count": 12453,
+          "published_at": "2026-02-04T12:00:00Z",
+          "metadata": {
+            "flair": "Performance Artist"
+          },
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

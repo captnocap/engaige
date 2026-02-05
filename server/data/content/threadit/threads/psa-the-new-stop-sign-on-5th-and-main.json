@@ -1,0 +1,50 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "psa-the-new-stop-sign-on-5th-and-main",
+
+  "parent_slug": "t-cornfield",
+  "category": "Cornfield",
+
+  "title": "PSA: The new stop sign on 5th and Main is NOT optional",
+  "body": "I've seen 12 people run this stop sign today. TWELVE. It's been there for a week. Yes it's new. No that doesn't mean you can ignore it.\n\nDeputy Morrison is setting up speed traps there starting Monday. Consider yourselves warned.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "concerned_citizen_847",
+    "flair": "PSA",
+    "upvotes": 234,
+    "downvotes": 0,
+    "upvote_ratio": 0.92,
+    "comment_count": 45,
+    "awards": []
+  },
+
+  "tags": ["cornfield", "psa", "stop-sign", "traffic", "deputy-morrison"],
+  "entities": ["Deputy Morrison"],
+
+  "published_at": "2026-02-05T04:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "long_time_resident",
+      "author_avatar": null,
+      "content": "There's been no stop sign there for 40 years and suddenly we need one? This is overreach.",
+      "like_count": 89,
+      "published_at": "2026-02-05T05:00:00Z",
+      "replies": [
+        {
+          "author_name": "concerned_citizen_847",
+          "author_avatar": null,
+          "content": "Mrs. Henderson got hit by a cyclist there last month",
+          "like_count": 156,
+          "published_at": "2026-02-05T05:00:00Z",
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

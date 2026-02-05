@@ -1,0 +1,58 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "velvet-algorithms-cancelled-existential-crisis",
+
+  "parent_slug": "t-localmusic",
+  "category": "LocalMusic",
+
+  "title": "The Velvet Algorithms cancelled their show due to \"existential crisis\" - anyone know what happened?",
+  "body": "Was supposed to see them at The Underground tonight and just got the notification that the show is cancelled. Anyone have inside info?\n\nTheir last Instagram post just says \"sometimes the algorithm needs to debug itself\" which tells me nothing.\n\nI drove 3 hours for this show. Anyone else stranded downtown?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "UndergroundRegular",
+    "flair": "News",
+    "upvotes": 423,
+    "downvotes": 0,
+    "upvote_ratio": 0.94,
+    "comment_count": 87,
+    "awards": []
+  },
+
+  "tags": ["velvet-algorithms", "the-underground", "cancelled-show", "existential-crisis"],
+  "entities": ["Velvet Algorithms", "The Underground", "Mars"],
+
+  "published_at": "2026-02-05T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "venue_insider",
+      "author_avatar": null,
+      "content": "Heard from Mars that both band members had some kind of breakdown during soundcheck. Something about \"the music no longer resonating with the fundamental frequency of existence\"",
+      "like_count": 312,
+      "published_at": "2026-02-05T01:00:00Z",
+      "replies": [
+        {
+          "author_name": "UndergroundRegular",
+          "author_avatar": null,
+          "content": "That's the most Velvet Algorithms reason ever",
+          "like_count": 189,
+          "published_at": "2026-02-05T01:00:00Z",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "author_name": "neon_dreams_fan",
+      "author_avatar": null,
+      "content": "Neon Requiem is doing an impromptu show at Murphy's Pub if anyone needs somewhere to go tonight.",
+      "like_count": 156,
+      "published_at": "2026-02-05T02:00:00Z",
+      "replies": []
+    }
+  ]
+}

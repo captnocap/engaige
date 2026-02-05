@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "why-were-8-fire-trucks-at-hartwell-last-night",
+
+  "parent_slug": "t-cornfield",
+  "category": "Cornfield",
+
+  "title": "Anyone know why there were 8 fire trucks at the Hartwell Building last night?",
+  "body": "Huge response around 2am. No smoke that I could see. Trucks just sat there for 3 hours then left.\n\nFire department says it was a \"routine check.\" At 2am? With 8 trucks?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "downtown_neighbor",
+    "flair": "Question",
+    "upvotes": 567,
+    "downvotes": 0,
+    "upvote_ratio": 0.96,
+    "comment_count": 123,
+    "awards": ["\ud83e\udd14"]
+  },
+
+  "tags": ["cornfield", "hartwell-building", "fire-trucks", "mystery"],
+  "entities": ["Hartwell Building", "Omnicorp"],
+
+  "published_at": "2026-02-04T08:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "floor13truther",
+      "author_avatar": null,
+      "content": "They found something on Floor 13",
+      "like_count": 892,
+      "published_at": "2026-02-04T08:30:00Z",
+      "replies": [
+        {
+          "author_name": "OmnicorpHR_Patricia",
+          "author_avatar": null,
+          "content": "There is no Floor 13! \ud83d\ude0a The fire department was checking our very normal smoke detectors!",
+          "like_count": -456,
+          "published_at": "2026-02-04T09:00:00Z",
+          "metadata": {
+            "flair": "Omnicorp Employee"
+          },
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

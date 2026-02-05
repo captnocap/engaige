@@ -1,0 +1,44 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "what-does-omnicorp-actually-do",
+
+  "parent_slug": "t-hartwellbuilding",
+  "category": "HartwellBuilding",
+
+  "title": "What does Omnicorp actually DO?",
+  "body": "I've been trying to figure out what Omnicorp Holdings actually does as a business. Their website is just a logo and \"Synergizing Tomorrow's Solutions Today.\"\n\n- No products listed\n- No services described\n- Patricia from HR says they do \"business things\"\n- They occupy 4 floors of the Hartwell Building\n- Been in business since 1923 (same year building was built)\n\nWhat company has been around 100+ years with no apparent product or service?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "curious_researcher",
+    "flair": "Investigation",
+    "upvotes": 1892,
+    "downvotes": 0,
+    "upvote_ratio": 0.97,
+    "comment_count": 312,
+    "awards": []
+  },
+
+  "tags": ["hartwell-building", "omnicorp", "investigation", "mystery"],
+  "entities": ["Omnicorp Holdings", "Patricia"],
+
+  "published_at": "2026-01-31T12:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "OmnicorpHR_Patricia",
+      "author_avatar": null,
+      "content": "We synergize solutions! It's right there on the website! \ud83d\ude0a Please stop investigating us.",
+      "like_count": -2341,
+      "published_at": "2026-01-31T12:30:00Z",
+      "metadata": {
+        "flair": "Omnicorp Employee"
+      },
+      "replies": []
+    }
+  ]
+}

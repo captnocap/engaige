@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "vex-still-posting-about-neon-requiem",
+
+  "parent_slug": "t-localmusic",
+  "category": "LocalMusic",
+
+  "title": "Vex (Neon Requiem drummer) is STILL posting about the band like they didn't break up 10 months ago",
+  "body": "Check his blog. Every single post is about Neon Requiem reunion rumors, the \"legendary\" final show, or cryptic hints about new music.\n\nTHE BAND IS OVER VEX. The frontman moved to Portland. The bassist is in dental school. It's done.\n\nSomeone needs to stage an intervention.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "scene_watcher",
+    "flair": "Drama",
+    "upvotes": 2341,
+    "downvotes": 0,
+    "upvote_ratio": 0.96,
+    "comment_count": 456,
+    "awards": ["\ud83d\ude02", "\ud83d\udc80"]
+  },
+
+  "tags": ["neon-requiem", "vex", "band-breakup", "drama"],
+  "entities": ["Vex", "Neon Requiem"],
+
+  "published_at": "2026-02-02T14:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "VexDrums",
+      "author_avatar": null,
+      "content": "We're just on hiatus. There's a difference. The final show wasn't \"final\" it was \"legendary.\" Those are different words with different meanings.",
+      "like_count": -567,
+      "published_at": "2026-02-02T14:30:00Z",
+      "metadata": {
+        "flair": "Neon Requiem"
+      },
+      "replies": [
+        {
+          "author_name": "scene_watcher",
+          "author_avatar": null,
+          "content": "Vex the frontman's Instagram bio literally says \"former member of Neon Requiem\"",
+          "like_count": 3456,
+          "published_at": "2026-02-02T15:00:00Z",
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "theory-floor-13-is-a-dimensional-pocket",
+
+  "parent_slug": "t-hartwellbuilding",
+  "category": "HartwellBuilding",
+
+  "title": "[THEORY] The Hartwell Building Floor 13 is a dimensional pocket",
+  "body": "Okay hear me out. I've been researching the Hartwell Building for 3 years now. Here's what we know:\n\n1. The building has 14 floors but no 13th floor button in the elevator\n2. The stairwell skips from 12 to 14\n3. Floor 7 has mirrors that show \"reflections that don't quite match\"\n4. Omnicorp Holdings is headquartered there and nobody knows what they do\n5. The number 847 appears EVERYWHERE in documents related to the building\n\nMy theory: Floor 13 exists, but in a pocket dimension accessible only at certain times. The mirrors on Floor 7 are some kind of viewing portal.\n\nAnyone else notice strange things around the building?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "floor13truther",
+    "flair": "Theory",
+    "upvotes": 3421,
+    "downvotes": 0,
+    "upvote_ratio": 0.98,
+    "comment_count": 567,
+    "awards": ["\ud83c\udfe2", "\ud83d\udc41\ufe0f", "\ud83d\udd2e"]
+  },
+
+  "tags": ["hartwell-building", "floor-13", "omnicorp", "dimensional-pocket", "847", "theory"],
+  "entities": ["Omnicorp Holdings"],
+
+  "published_at": "2026-02-02T10:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "OmnicorpHR_Patricia",
+      "author_avatar": null,
+      "content": "Hi! HR here from Omnicorp. There's no Floor 13. It's just architectural superstition, very common in buildings from the 1920s! We're a perfectly normal company doing perfectly normal business things. Hope this helps! \ud83d\ude0a",
+      "like_count": -1247,
+      "published_at": "2026-02-02T10:30:00Z",
+      "metadata": {
+        "flair": "Omnicorp Employee"
+      },
+      "replies": [
+        {
+          "author_name": "floor13truther",
+          "author_avatar": null,
+          "content": "This is EXACTLY what someone hiding a dimensional portal would say",
+          "like_count": 2891,
+          "published_at": "2026-02-02T11:00:00Z",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "author_name": "building_historian",
+      "author_avatar": null,
+      "content": "I've seen the original 1923 blueprints. There IS a 13th floor in the plans. What happened to it?",
+      "like_count": 4521,
+      "published_at": "2026-02-03T10:00:00Z",
+      "replies": []
+    }
+  ]
+}

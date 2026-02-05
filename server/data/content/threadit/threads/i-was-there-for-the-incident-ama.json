@@ -1,0 +1,61 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "i-was-there-for-the-incident-ama",
+
+  "parent_slug": "t-trustfalltim",
+  "category": "TrustFallTim",
+
+  "title": "I was there for The Incident. AMA.",
+  "body": "I was standing right next to Small Kevin when it happened. I've never spoken publicly about it but I feel like the community deserves to know the truth.\n\nAsk me anything (except Kevin's current whereabouts - he asked me not to share that).",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "witness_to_history",
+    "flair": "AMA",
+    "upvotes": 8934,
+    "downvotes": 0,
+    "upvote_ratio": 0.99,
+    "comment_count": 1247,
+    "awards": ["\ud83c\udfc6", "\ud83d\ude31", "\ud83d\udc80", "\ud83d\udc40"]
+  },
+
+  "tags": ["trust-fall-tim", "the-incident", "small-kevin", "ama"],
+  "entities": ["Trust Fall Tim", "Small Kevin"],
+
+  "published_at": "2026-01-05T12:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "curious_fan",
+      "author_avatar": null,
+      "content": "Was it really Kevin's fault?",
+      "like_count": 4521,
+      "published_at": "2026-01-05T12:30:00Z",
+      "replies": [
+        {
+          "author_name": "witness_to_history",
+          "author_avatar": null,
+          "content": "Kevin did nothing wrong. The positioning was off. Tim's trajectory was unexpected. It was a perfect storm of unfortunate timing.",
+          "like_count": 6789,
+          "published_at": "2026-01-05T13:00:00Z",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "author_name": "SmallKevin",
+      "author_avatar": null,
+      "content": "Thank you for this.",
+      "like_count": 15678,
+      "published_at": "2026-01-05T14:00:00Z",
+      "metadata": {
+        "flair": "The Other Guy"
+      },
+      "replies": []
+    }
+  ]
+}

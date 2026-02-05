@@ -1,0 +1,48 @@
+{
+  "$schema": "category",
+  "site_id": "threadit",
+  "categories": [
+    {
+      "slug": "t-quantumcoffee",
+      "name": "t/QuantumCoffee",
+      "description": "The unofficial threadit for quantum coffee enthusiasts. Derek is a mod.",
+      "icon_emoji": "\u2615",
+      "sort_order": 0
+    },
+    {
+      "slug": "t-hartwellbuilding",
+      "name": "t/HartwellBuilding",
+      "description": "Theories, sightings, and investigations into the Hartwell Building mystery",
+      "icon_emoji": "\ud83c\udfe2",
+      "sort_order": 1
+    },
+    {
+      "slug": "t-trustfalltim",
+      "name": "t/TrustFallTim",
+      "description": "Fan community for Trust Fall Tim. Fall statistics, meet-up planning, and The Incident discussions.",
+      "icon_emoji": "\ud83e\udd3e",
+      "sort_order": 2
+    },
+    {
+      "slug": "t-localmusic",
+      "name": "t/LocalMusic",
+      "description": "Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.",
+      "icon_emoji": "\ud83c\udfb8",
+      "sort_order": 3
+    },
+    {
+      "slug": "t-cornfield",
+      "name": "t/Cornfield",
+      "description": "General discussion for Cornfield, KS residents and enthusiasts",
+      "icon_emoji": "\ud83c\udf3d",
+      "sort_order": 4
+    },
+    {
+      "slug": "t-askthreadit",
+      "name": "t/AskThreadit",
+      "description": "Ask and answer thought-provoking questions",
+      "icon_emoji": "\u2753",
+      "sort_order": 5
+    }
+  ]
+}

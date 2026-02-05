@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "tims-mom-started-a-support-blog",
+
+  "parent_slug": "t-trustfalltim",
+  "category": "TrustFallTim",
+
+  "title": "Tim's mom started a support blog and it's the most wholesome thing",
+  "body": "Found Tim's mom's blog where she documents supporting her son's \"performance art journey.\"\n\nShe writes about making sandwiches for his falls, knitting him a special \"falling sweater,\" and how proud she is that he's \"following his dreams even if those dreams involve falling backwards in public.\"\n\nLink in comments. Get tissues ready.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "wholesome_content",
+    "flair": "Wholesome",
+    "upvotes": 4567,
+    "downvotes": 0,
+    "upvote_ratio": 0.99,
+    "comment_count": 234,
+    "awards": ["\ud83d\udc95", "\ud83d\ude2d", "\ud83d\ude4c"]
+  },
+
+  "tags": ["trust-fall-tim", "wholesome", "tims-mom", "blog"],
+  "entities": ["Trust Fall Tim"],
+
+  "published_at": "2026-01-22T18:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "TrustFallTim",
+      "author_avatar": null,
+      "content": "MOM STOP YOU'RE EMBARRASSING ME",
+      "like_count": 8934,
+      "published_at": "2026-01-22T18:30:00Z",
+      "metadata": {
+        "flair": "The Man Himself"
+      },
+      "replies": [
+        {
+          "author_name": "TimsMomBlog",
+          "author_avatar": null,
+          "content": "I'm just so proud of you sweetie! \ud83e\udd70",
+          "like_count": 12453,
+          "published_at": "2026-01-22T19:00:00Z",
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

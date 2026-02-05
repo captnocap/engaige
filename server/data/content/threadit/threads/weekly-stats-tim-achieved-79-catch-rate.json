@@ -1,0 +1,56 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "weekly-stats-tim-achieved-79-catch-rate",
+
+  "parent_slug": "t-trustfalltim",
+  "category": "TrustFallTim",
+
+  "title": "WEEKLY STATS: Tim achieved 79.2% catch rate this week!",
+  "body": "Trust Fall Tim Weekly Statistics Report:\n\n\ud83d\udcca Week of 10/15 - 10/21\n\n- Total Falls: 7\n- Successful Catches: 5\n- Unsuccessful Catches: 2\n- Weekly Catch Rate: 71.4%\n- All-Time Catch Rate: 78.5%\n- Total Career Falls: 2,854\n\nNotable Events:\n- Tuesday's fall at the farmer's market was his fastest catch ever (0.3 seconds)\n- Thursday's fall at The Underground resulted in a beverage spillage incident\n\nKeep falling, Tim! \ud83d\ude4c",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "TFT_Stats_Bot",
+    "flair": "Weekly Stats",
+    "upvotes": 1567,
+    "downvotes": 0,
+    "upvote_ratio": 0.99,
+    "comment_count": 89,
+    "awards": ["\ud83d\udcca", "\ud83d\ude4c"]
+  },
+
+  "tags": ["trust-fall-tim", "statistics", "weekly-stats", "the-underground"],
+  "entities": ["Trust Fall Tim", "Mars", "The Underground"],
+
+  "published_at": "2026-02-03T16:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "TrustFallTim",
+      "author_avatar": null,
+      "content": "The Thursday incident was NOT my fault. Mars should have warned me about the beer tasting event.",
+      "like_count": 2341,
+      "published_at": "2026-02-03T16:30:00Z",
+      "metadata": {
+        "flair": "The Man Himself"
+      },
+      "replies": [
+        {
+          "author_name": "MarsTheOwner",
+          "author_avatar": null,
+          "content": "Tim you fell TOWARDS the beer table. That was a choice.",
+          "like_count": 3456,
+          "published_at": "2026-02-03T17:00:00Z",
+          "metadata": {
+            "flair": "Underground Owner"
+          },
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

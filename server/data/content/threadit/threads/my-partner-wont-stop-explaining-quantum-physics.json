@@ -1,0 +1,52 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "my-partner-wont-stop-explaining-quantum-physics",
+
+  "parent_slug": "t-quantumcoffee",
+  "category": "QuantumCoffee",
+
+  "title": "My partner won't stop explaining quantum physics to me and it's ruining our relationship",
+  "body": "We've been together for 2 years and I love him, but ever since he got into quantum coffee, he won't shut up about it.\n\nEvery dinner conversation turns into a lecture about wave function collapse. He bought me a book called \"Quantum Mechanics for Your Girlfriend\" which I found condescending.\n\nLast week he told me our relationship was like \"quantum entanglement\" and when I said that was sweet, he spent 45 minutes explaining why that was actually \"physically inaccurate but emotionally true.\"\n\nHow do I tell him to just... talk to me like a normal person again?\n\nEdit: Yes his name is Derek. No I'm not his ex-wife Jennifer.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "tired_of_particles",
+    "flair": "Relationship",
+    "upvotes": 1247,
+    "downvotes": 0,
+    "upvote_ratio": 0.97,
+    "comment_count": 189,
+    "awards": ["\ud83d\udc95"]
+  },
+
+  "tags": ["quantum-coffee", "relationship", "derek", "jennifer"],
+  "entities": ["Derek", "Jennifer"],
+
+  "published_at": "2026-02-04T20:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "quantum_widow",
+      "author_avatar": null,
+      "content": "Girl RUN. I divorced my quantum coffee obsessed husband last year. It started with coffee. Then he wanted to quantum entangle our PETS.",
+      "like_count": 567,
+      "published_at": "2026-02-04T22:00:00Z",
+      "replies": []
+    },
+    {
+      "author_name": "JennifersBlog",
+      "author_avatar": null,
+      "content": "Trust me, it doesn't get better. Save yourself.",
+      "like_count": 1823,
+      "published_at": "2026-02-04T23:00:00Z",
+      "metadata": {
+        "flair": "Verified Ex-Wife"
+      },
+      "replies": []
+    }
+  ]
+}

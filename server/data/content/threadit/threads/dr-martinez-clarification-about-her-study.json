@@ -1,0 +1,50 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "dr-martinez-clarification-about-her-study",
+
+  "parent_slug": "t-quantumcoffee",
+  "category": "QuantumCoffee",
+
+  "title": "Dr. Martinez just posted clarification about her study AGAIN. When will people learn?",
+  "body": "For the 847th time: Dr. Martinez's study was about subatomic particle behavior, NOT coffee brewing. She has repeatedly stated this.\n\nHOWEVER - that doesn't mean quantum coffee doesn't work. It just means her study isn't the proof everyone thinks it is. We need to fund NEW studies specifically about quantum brewing methods.\n\nI've started a CobFundMe to fund independent research. Link in comments.\n\nEdit: Stop sending me hate mail Jennifer. I know it's you.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "DerekMod",
+    "flair": "Meta",
+    "upvotes": 567,
+    "downvotes": 0,
+    "upvote_ratio": 0.95,
+    "comment_count": 234,
+    "awards": ["\u2615"]
+  },
+
+  "tags": ["quantum-coffee", "martinez-study", "derek", "cobfundme"],
+  "entities": ["Derek", "Dr. Martinez", "Jennifer"],
+
+  "published_at": "2026-02-03T08:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "SkepticalSipper",
+      "author_avatar": null,
+      "content": "So you're admitting the study everyone cites doesn't actually support quantum coffee?",
+      "like_count": 892,
+      "published_at": "2026-02-03T08:30:00Z",
+      "replies": [
+        {
+          "author_name": "DerekMod",
+          "author_avatar": null,
+          "content": "I'm saying we need BETTER evidence, not that it doesn't work. I taste the difference every single morning.",
+          "like_count": 234,
+          "published_at": "2026-02-03T09:00:00Z",
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

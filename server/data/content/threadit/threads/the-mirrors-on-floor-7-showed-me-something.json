@@ -1,0 +1,50 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "the-mirrors-on-floor-7-showed-me-something",
+
+  "parent_slug": "t-hartwellbuilding",
+  "category": "HartwellBuilding",
+
+  "title": "The mirrors on Floor 7 showed me something that wasn't there",
+  "body": "I do deliveries for a restaurant near the Hartwell Building. Made a delivery to Floor 7 yesterday.\n\nWhile waiting for someone to sign, I glanced in the hallway mirror. My reflection... blinked when I didn't. I swear to god. It blinked, then smiled at me.\n\nI dropped the food and ran. Lost my job over it. Don't care. Something is WRONG with that building.\n\nHas anyone else seen things in those mirrors?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "delivery_driver_anon",
+    "flair": "Experience",
+    "upvotes": 2156,
+    "downvotes": 0,
+    "upvote_ratio": 0.96,
+    "comment_count": 423,
+    "awards": ["\ud83d\ude31"]
+  },
+
+  "tags": ["hartwell-building", "floor-7", "mirrors", "experience", "creepy"],
+  "entities": [],
+
+  "published_at": "2026-01-29T14:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "janitorial_staff_847",
+      "author_avatar": null,
+      "content": "I clean those mirrors every night. They're just mirrors. You probably saw someone walking behind you.",
+      "like_count": -567,
+      "published_at": "2026-01-29T15:00:00Z",
+      "replies": [
+        {
+          "author_name": "delivery_driver_anon",
+          "author_avatar": null,
+          "content": "I was ALONE in the hallway",
+          "like_count": 1234,
+          "published_at": "2026-01-29T15:30:00Z",
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

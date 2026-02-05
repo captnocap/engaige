@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "people-caught-by-trust-fall-tim-how-did-it-feel",
+
+  "parent_slug": "t-askthreadit",
+  "category": "AskThreadit",
+
+  "title": "People who've been caught by Trust Fall Tim: How did it feel?",
+  "body": "Statistically, 78.5% of people DO catch him. I want to hear from the catchers - what goes through your mind in that moment?",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "tft_researcher",
+    "flair": null,
+    "upvotes": 2341,
+    "downvotes": 0,
+    "upvote_ratio": 0.97,
+    "comment_count": 567,
+    "awards": ["\ud83d\ude4c"]
+  },
+
+  "tags": ["askthreadit", "trust-fall-tim", "catch-rate", "experiences"],
+  "entities": ["Trust Fall Tim"],
+
+  "published_at": "2026-01-31T08:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "accidental_catcher",
+      "author_avatar": null,
+      "content": "Terrifying. I was just walking to get coffee and suddenly there's a full grown man in my arms. He said \"thank you for your trust\" and walked away. Still processing.",
+      "like_count": 4567,
+      "published_at": "2026-01-31T08:30:00Z",
+      "replies": [
+        {
+          "author_name": "TrustFallTim",
+          "author_avatar": null,
+          "content": "You have excellent reflexes. I remember you.",
+          "like_count": 6789,
+          "published_at": "2026-01-31T09:00:00Z",
+          "metadata": {
+            "flair": "Performance Artist"
+          },
+          "replies": []
+        }
+      ]
+    }
+  ]
+}

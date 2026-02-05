@@ -1,0 +1,61 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "aita-for-refusing-to-drink-my-roommates-quantum-brewed-coffee",
+
+  "parent_slug": "t-quantumcoffee",
+  "category": "QuantumCoffee",
+
+  "title": "AITA for refusing to drink my roommate's \"quantum brewed\" coffee?",
+  "body": "My (24M) roommate (26F) just bought a $3000 quantum coffee maker and insists I try it every morning. I think it's pseudoscience bs and tastes the same as regular coffee.\n\nShe's now claiming I'm \"closed-minded\" and \"don't appreciate innovation.\" She's been making passive aggressive comments about how I \"wouldn't understand\" because I \"never finished my physics degree.\"\n\nThis morning she made a big show of brewing her quantum coffee and sighing loudly when I made instant coffee instead. Then she said \"some people just can't handle progress.\"\n\nI told her that until peer-reviewed studies prove quantum coffee is actually different, I'm not spending 45 minutes watching her \"collapse wave functions\" for a cup of coffee.\n\nNow she's not speaking to me and sent me a 47-minute YouTube video about quantum mechanics.\n\nAITA?\n\nEdit: Yes I know about the Martinez study. My roommate has told me about it approximately 400 times.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "throwaway_brew_123",
+    "flair": "Discussion",
+    "upvotes": 2847,
+    "downvotes": 0,
+    "upvote_ratio": 0.99,
+    "comment_count": 342,
+    "awards": ["\ud83c\udfc6", "\ud83d\ude02", "\u2615"]
+  },
+
+  "tags": ["quantum-coffee", "aita", "roommate", "martinez-study"],
+  "entities": ["Derek"],
+
+  "published_at": "2026-02-05T02:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "CaffeineAddict99",
+      "author_avatar": null,
+      "content": "NTA. Your coffee, your choice. Though I gotta say, quantum coffee IS pretty good...",
+      "like_count": 1523,
+      "published_at": "2026-02-05T03:00:00Z",
+      "replies": [
+        {
+          "author_name": "throwaway_brew_123",
+          "author_avatar": null,
+          "content": "I just don't see how quantum physics makes coffee taste better lol",
+          "like_count": 892,
+          "published_at": "2026-02-05T03:00:00Z",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "author_name": "DerekMod",
+      "author_avatar": null,
+      "content": "Mod here. I've conducted 847 personal brewing trials. The difference is REAL. But $3k is steep - you can get comparable results with a $1200 setup if you're patient.",
+      "like_count": 2104,
+      "published_at": "2026-02-05T04:00:00Z",
+      "metadata": {
+        "flair": "Moderator"
+      },
+      "replies": []
+    }
+  ]
+}

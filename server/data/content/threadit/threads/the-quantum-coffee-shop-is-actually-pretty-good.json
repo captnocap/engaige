@@ -1,0 +1,44 @@
+{
+  "$schema": "content",
+  "site_id": "threadit",
+  "content_type": "thread",
+  "slug": "the-quantum-coffee-shop-is-actually-pretty-good",
+
+  "parent_slug": "t-cornfield",
+  "category": "Cornfield",
+
+  "title": "The quantum coffee shop downtown is actually pretty good?",
+  "body": "I was a skeptic. Thought it was all pseudoscience nonsense. My coworker dragged me there and... okay the coffee IS somehow better?\n\nI don't understand the science but the pour-over they made me was genuinely the best coffee I've had. Even if it took 35 minutes.\n\nDerek if you're reading this, you were right. I'm sorry I called you a cult member at the office party.",
+  "summary": null,
+
+  "thumbnail_emoji": null,
+
+  "metadata": {
+    "author": "reluctant_convert",
+    "flair": "Food & Drink",
+    "upvotes": 345,
+    "downvotes": 0,
+    "upvote_ratio": 0.93,
+    "comment_count": 67,
+    "awards": []
+  },
+
+  "tags": ["cornfield", "quantum-coffee", "derek", "food-and-drink"],
+  "entities": ["Derek"],
+
+  "published_at": "2026-02-03T12:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "DerekMod",
+      "author_avatar": null,
+      "content": "Apology accepted. Welcome to enlightenment. \u2615",
+      "like_count": 234,
+      "published_at": "2026-02-03T12:30:00Z",
+      "metadata": {
+        "flair": "t/QuantumCoffee Mod"
+      },
+      "replies": []
+    }
+  ]
+}
