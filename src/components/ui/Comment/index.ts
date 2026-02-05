@@ -1,5 +1,0 @@
-export { BaseComment } from './BaseComment'
-export { CommentThread, flattenComments, buildCommentTree } from './CommentThread'
-export { CommentActions } from './CommentActions'
-export { getCommentStyles, PLATFORM_CSS_VARS } from './styles'
-export type { CommentData, CommentAuthor, CommentStyleConfig, CommentActions as CommentActionHandlers } from './types'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { SidebarNav } from '../settings/components/index.js'
 import {
+  SidebarNav,
   DisplaySettings,
   ThemeSettings,
   WallpaperSettings,
@@ -11,7 +11,7 @@ import {
   AIProviderSettings,
   DeveloperSettings,
   ContentRatingSettings,
-} from '../settings/sections/index.js'
+} from '../settings'
 
 type SettingsTab = 'display' | 'theme' | 'wallpaper' | 'typography' | 'graphics' | 'audio' | 'accessibility' | 'content-rating' | 'ai-providers' | 'developer'
 

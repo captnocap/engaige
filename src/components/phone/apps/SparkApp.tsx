@@ -17,9 +17,11 @@ import {
   useConversationMessages,
   useTypingIndicator,
 } from '../../../stores/conversationStore.js'
-import { MessageThread as MessageThreadComponent } from '../../ui/Message/MessageThread.js'
-import { TypingIndicator } from '../../ui/Message/TypingIndicator.js'
-import type { MessageStyleConfig } from '../../ui/Message/types.js'
+import {
+  MessageThread as MessageThreadComponent,
+  TypingIndicator,
+  type MessageStyleConfig,
+} from '../../ui/Message'
 import type { DatingMatch } from '../../../stores/datingStore.js'
 import type { NPC, NPCDatingProfile } from '../../../stores/npcStore.js'
 import type { DatingSiteDefinition } from '../../../config/dating-registry.js'

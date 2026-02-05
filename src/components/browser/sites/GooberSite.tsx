@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { SiteComponentProps } from '../../../router/types.js'
 import { getAllSearchEntries } from '../../../router/site-registry.js'
 import type { SearchIndexEntry } from '../../../router/types.js'
+import { useWSStore } from '../../../stores/wsStore.js'
 
 // ============================================================================
 // Theme
@@ -72,6 +73,94 @@ interface AutocompleteItem {
   contentType: string
 }
 
+interface AIOverviewState {
+  loading: boolean
+  content: string | null
+  sources: Array<{ title: string; url: string; domain: string }>
+  error: string | null
+}
+
+// ============================================================================
+// Sponsored/Fallback Results
+// ============================================================================
+
+/**
+ * Curated "sponsored" sites shown when search returns no results.
+ * These are popular/useful sites that are always relevant.
+ */
+const SPONSORED_SITES: Array<{
+  url: string
+  title: string
+  snippet: string
+  domain: string
+  contentType: string
+  isSponsored: true
+}> = [
+  {
+    url: 'www.wikiknow.corn',
+    title: 'WikiKnow - The Free Encyclopedia',
+    snippet: 'The free encyclopedia that anyone can edit. Millions of articles on every topic.',
+    domain: 'wikiknow.corn',
+    contentType: 'wiki',
+    isSponsored: true,
+  },
+  {
+    url: 'www.threadit.corn',
+    title: 'Threadit - The Front Page of the Fake Internet',
+    snippet: 'Dive into anything. Communities for every interest, upvotes, downvotes, and endless discussions.',
+    domain: 'threadit.corn',
+    contentType: 'forum',
+    isSponsored: true,
+  },
+  {
+    url: 'www.dailybuzz.corn',
+    title: 'DailyBuzz - All The News That Fits',
+    snippet: 'Breaking news, local stories, and everything in between. Your source for what\'s happening.',
+    domain: 'dailybuzz.corn',
+    contentType: 'news',
+    isSponsored: true,
+  },
+  {
+    url: 'www.vidtube.corn',
+    title: 'VidTube - Broadcast Yourself',
+    snippet: 'Share and discover videos. Upload, watch, and comment on the latest content.',
+    domain: 'vidtube.corn',
+    contentType: 'video',
+    isSponsored: true,
+  },
+  {
+    url: 'www.amaize.corn',
+    title: 'Amaize - Everything Store',
+    snippet: 'Shop millions of products with fast shipping. From corn to quantum coffee brewers.',
+    domain: 'amaize.corn',
+    contentType: 'product',
+    isSponsored: true,
+  },
+]
+
+/**
+ * Get sponsored results for when search returns empty.
+ * Can optionally filter based on the query for "did you mean" suggestions.
+ */
+function getSponsoredResults(query: string): SearchResult[] {
+  // For now, just return all sponsored sites
+  // Could add fuzzy matching here for "did you mean" suggestions
+  return SPONSORED_SITES.map((site, i) => ({
+    id: `sponsored-${i}`,
+    url: site.url,
+    siteDomain: site.domain,
+    contentType: site.contentType,
+    title: site.title,
+    snippet: site.snippet,
+    author: null,
+    tags: null,
+    metadata: null,
+    source: 'sponsored',
+    createdAt: null,
+    rank: 100 - i, // Keep order
+  }))
+}
+
 // ============================================================================
 // Client-Side Search (using site manifests)
 // ============================================================================
@@ -81,9 +170,7 @@ interface AutocompleteItem {
  * This is called lazily to ensure manifests are registered first.
  */
 function getSearchableContent(): SearchIndexEntry[] {
-  const entries = getAllSearchEntries()
-  console.log('[Goober] getSearchableContent:', entries.length, 'entries')
-  return entries
+  return getAllSearchEntries()
 }
 
 /**
@@ -91,25 +178,15 @@ function getSearchableContent(): SearchIndexEntry[] {
  * Searches through all registered site manifests.
  */
 function clientSearch(query: string): SearchResult[] {
-  console.log('[Goober] clientSearch called with query:', query)
-  if (!query.trim()) {
-    console.log('[Goober] Empty query, returning empty results')
-    return []
-  }
+  if (!query.trim()) return []
 
   const entries = getSearchableContent()
-  console.log('[Goober] Searching through', entries.length, 'entries for:', query)
-
   if (entries.length === 0) {
-    console.error('[Goober] WARNING: No entries in search index! Manifests may not be registered.')
+    console.warn('[Goober] No entries in search index - manifests may not be registered')
     return []
   }
 
-  // Log first few entries to verify content
-  console.log('[Goober] First 3 entries:', entries.slice(0, 3))
-
   const terms = query.toLowerCase().split(/\s+/)
-  console.log('[Goober] Search terms:', terms)
 
   // Score and filter results
   const allScored = entries.map(entry => {
@@ -134,13 +211,6 @@ function clientSearch(query: string): SearchResult[] {
     return { entry, score }
   })
 
-  // Log scoring details for debugging
-  const matchingEntries = allScored.filter(({ score }) => score > 0)
-  console.log('[Goober] Matching entries before filter:', matchingEntries.length)
-  if (matchingEntries.length > 0) {
-    console.log('[Goober] Top matches:', matchingEntries.slice(0, 5).map(m => ({ title: m.entry.title, score: m.score })))
-  }
-
   const scored = allScored
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
@@ -161,6 +231,157 @@ function clientSearch(query: string): SearchResult[] {
     createdAt: entry.indexedAt || null,
     rank: score,
   }))
+}
+
+// ============================================================================
+// Components
+// ============================================================================
+
+// ============================================================================
+// AI Overview Component
+// ============================================================================
+
+interface AIOverviewProps {
+  state: AIOverviewState
+  onSourceClick: (url: string) => void
+}
+
+function AIOverview({ state, onSourceClick }: AIOverviewProps) {
+  if (state.loading) {
+    return (
+      <div
+        style={{
+          marginBottom: '24px',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          border: `1px solid ${THEME.border}`,
+          background: `linear-gradient(135deg, ${THEME.surface} 0%, #e8f0fe 100%)`,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+          <div
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${THEME.logoBlue}, ${THEME.logoGreen})`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              animation: 'pulse 1.5s infinite',
+            }}
+          >
+            <span style={{ fontSize: '14px' }}>✨</span>
+          </div>
+          <span style={{ fontWeight: 500, color: THEME.text }}>AI Overview</span>
+          <span style={{ fontSize: '12px', color: THEME.textMuted }}>generating...</span>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {[1, 2, 3].map(i => (
+            <div
+              key={i}
+              style={{
+                height: '12px',
+                borderRadius: '6px',
+                background: THEME.border,
+                animation: `shimmer 1.5s infinite ${i * 0.2}s`,
+                flex: i === 1 ? 3 : i === 2 ? 2 : 1,
+              }}
+            />
+          ))}
+        </div>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes shimmer {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.3; }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
+  if (state.error) {
+    return null // Don't show error state, just skip AI overview
+  }
+
+  if (!state.content) {
+    return null
+  }
+
+  return (
+    <div
+      style={{
+        marginBottom: '24px',
+        padding: '16px 20px',
+        borderRadius: '12px',
+        border: `1px solid ${THEME.border}`,
+        background: `linear-gradient(135deg, ${THEME.surface} 0%, #e8f0fe 100%)`,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+        <div
+          style={{
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            background: `linear-gradient(135deg, ${THEME.logoBlue}, ${THEME.logoGreen})`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <span style={{ fontSize: '14px' }}>✨</span>
+        </div>
+        <span style={{ fontWeight: 500, color: THEME.text }}>AI Overview</span>
+        <span style={{ fontSize: '11px', color: THEME.textMuted, marginLeft: 'auto' }}>
+          Powered by CornGPT
+        </span>
+      </div>
+
+      {/* Content */}
+      <div style={{ fontSize: '14px', lineHeight: 1.6, color: THEME.text, whiteSpace: 'pre-wrap' }}>
+        {state.content}
+      </div>
+
+      {/* Sources */}
+      {state.sources.length > 0 && (
+        <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: `1px solid ${THEME.border}` }}>
+          <div style={{ fontSize: '12px', color: THEME.textMuted, marginBottom: '8px' }}>
+            Sources
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {state.sources.slice(0, 3).map((source, i) => (
+              <button
+                key={i}
+                onClick={() => onSourceClick(source.url)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 12px',
+                  borderRadius: '16px',
+                  border: `1px solid ${THEME.border}`,
+                  background: THEME.background,
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  color: THEME.linkBlue,
+                }}
+              >
+                <span style={{ color: THEME.textMuted }}>🔗</span>
+                {source.domain}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ============================================================================
@@ -217,9 +438,10 @@ function SearchBox({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      setShowSuggestions(false)
+      inputRef.current?.blur()
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         onSelectSuggestion?.(suggestions[selectedIndex])
-        setShowSuggestions(false)
       } else {
         onSubmit()
       }
@@ -231,6 +453,7 @@ function SearchBox({
       setSelectedIndex(prev => Math.max(prev - 1, -1))
     } else if (e.key === 'Escape') {
       setShowSuggestions(false)
+      inputRef.current?.blur()
     }
   }
 
@@ -326,13 +549,7 @@ function SearchBox({
               }}
               onMouseEnter={() => setSelectedIndex(i)}
               onClick={() => {
-                console.log('[Goober SearchBox] Suggestion clicked:', item)
-                console.log('[Goober SearchBox] onSelectSuggestion is:', typeof onSelectSuggestion)
-                if (onSelectSuggestion) {
-                  onSelectSuggestion(item)
-                } else {
-                  console.error('[Goober SearchBox] onSelectSuggestion is not defined!')
-                }
+                onSelectSuggestion?.(item)
                 setShowSuggestions(false)
               }}
             >
@@ -472,99 +689,149 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
   const [isLoading, setIsLoading] = useState(false)
   const [searchTime, setSearchTime] = useState(0)
   const [suggestions, setSuggestions] = useState<AutocompleteItem[]>([])
+  const [showingSponsored, setShowingSponsored] = useState(false)
+  const [aiOverview, setAiOverview] = useState<AIOverviewState>({
+    loading: false,
+    content: null,
+    sources: [],
+    error: null,
+  })
+
+  // WebSocket for AI requests
+  const ws = useWSStore()
 
   // Parse path to determine view
-  // Note: query params are now separate from path (via SiteComponentProps.query)
   const parsedPath = useMemo(() => {
-    console.log('[Goober] Parsing path:', path, 'query:', query?.toString())
     if (!path || path === '/') {
-      console.log('[Goober] Path is home')
       return { view: 'home' as const, query: '' }
     }
     if (path.startsWith('/search')) {
-      // Get query from URLSearchParams (separated by router)
       const q = query?.get('q') || ''
-      console.log('[Goober] Path is search, query from URLSearchParams:', q)
       return { view: 'results' as const, query: q }
     }
-    console.log('[Goober] Unknown path, defaulting to home')
     return { view: 'home' as const, query: '' }
   }, [path, query])
 
-  // Sync searchInput state with URL (only when URL changes, not when searchInput changes)
+  // Sync searchInput state with URL
   useEffect(() => {
-    console.log('[Goober] Query sync effect - parsedPath.query:', parsedPath.query)
     if (parsedPath.query) {
-      console.log('[Goober] Syncing searchInput from URL:', parsedPath.query)
       setSearchInput(parsedPath.query)
     }
   }, [parsedPath.query])
 
   const executeSearch = useCallback(async (searchQuery: string) => {
-    console.log('[Goober] executeSearch called with:', searchQuery)
     if (!searchQuery.trim()) {
-      console.log('[Goober] Empty query, clearing results')
       setResults([])
+      setShowingSponsored(false)
+      setAiOverview({ loading: false, content: null, sources: [], error: null })
       return
     }
 
     setIsLoading(true)
+    setAiOverview({ loading: false, content: null, sources: [], error: null })
     const startTime = Date.now()
 
     try {
-      // Use client-side search from site manifests
-      // In production, this could also use WebSocket to call search:query for dynamic content
       const searchResults = clientSearch(searchQuery)
-      console.log('[Goober] Search returned', searchResults.length, 'results:', searchResults)
-      setResults(searchResults)
+
+      if (searchResults.length === 0) {
+        setResults(getSponsoredResults(searchQuery))
+        setShowingSponsored(true)
+      } else {
+        setResults(searchResults)
+        setShowingSponsored(false)
+      }
       setSearchTime(Date.now() - startTime)
     } catch (error) {
       console.error('[Goober] Search error:', error)
-      setResults([])
+      setResults(getSponsoredResults(searchQuery))
+      setShowingSponsored(true)
     } finally {
       setIsLoading(false)
     }
   }, [])
 
+  // Request AI Overview when we have search results
+  const requestAIOverview = useCallback(async (searchQuery: string, searchResults: SearchResult[]) => {
+    // Don't request for sponsored results or if not connected
+    if (showingSponsored || !ws.connected || searchResults.length === 0) {
+      return
+    }
+
+    setAiOverview({ loading: true, content: null, sources: [], error: null })
+
+    try {
+      // Build context from top results
+      const topResults = searchResults.slice(0, 5)
+      const context = topResults
+        .map(r => `[${r.siteDomain}] ${r.title}: ${r.snippet}`)
+        .join('\n\n')
+
+      const prompt = `Based on these search results from the .corn internet, provide a brief, helpful overview answering the query "${searchQuery}". Be concise (2-3 sentences max). Use a helpful, informative tone like Google's AI Overview.
+
+Search results:
+${context}
+
+Respond naturally as if you're summarizing what you found. Don't mention that these are "search results" - just answer the query directly.`
+
+      const response = await ws.request<
+        { message: string; history?: Array<{ role: 'user' | 'assistant'; content: string }> },
+        { message: string; sources?: Array<{ title: string; url: string; snippet: string; domain: string }> }
+      >('ai:directChat', {
+        message: prompt,
+        history: [],
+      })
+
+      // Extract sources from search results
+      const sources = topResults.map(r => ({
+        title: r.title,
+        url: r.url,
+        domain: r.siteDomain,
+      }))
+
+      setAiOverview({
+        loading: false,
+        content: response.message,
+        sources,
+        error: null,
+      })
+    } catch (error) {
+      console.error('[Goober] AI Overview error:', error)
+      setAiOverview({
+        loading: false,
+        content: null,
+        sources: [],
+        error: error instanceof Error ? error.message : 'Failed to generate overview',
+      })
+    }
+  }, [ws, showingSponsored])
+
+  // Trigger AI overview when results change
+  useEffect(() => {
+    if (results.length > 0 && !showingSponsored && parsedPath.query) {
+      requestAIOverview(parsedPath.query, results)
+    }
+  }, [results, showingSponsored, parsedPath.query, requestAIOverview])
+
   // Execute search when on results page
   useEffect(() => {
-    console.log('[Goober] Search effect - view:', parsedPath.view, 'query:', parsedPath.query)
     if (parsedPath.view === 'results' && parsedPath.query) {
-      console.log('[Goober] On results page with query, executing search')
       executeSearch(parsedPath.query)
     }
   }, [parsedPath.view, parsedPath.query, executeSearch])
 
   const handleSearch = useCallback(() => {
-    console.log('[Goober] handleSearch called with searchInput:', searchInput)
-    if (!searchInput.trim()) {
-      console.log('[Goober] Empty searchInput, not searching')
-      return
-    }
+    if (!searchInput.trim()) return
     const encodedQuery = encodeURIComponent(searchInput).replace(/%20/g, '+')
-    const newPath = `/search?q=${encodedQuery}`
-    console.log('[Goober] Navigating to path:', newPath)
-    onPathChange(newPath)
+    onPathChange(`/search?q=${encodedQuery}`)
   }, [searchInput, onPathChange])
 
   const handleNavigateToResult = useCallback((url: string) => {
-    console.log('[Goober] handleNavigateToResult called with url:', url)
-    console.log('[Goober] onNavigateToUrl is:', typeof onNavigateToUrl, onNavigateToUrl ? 'defined' : 'undefined')
-    if (onNavigateToUrl) {
-      onNavigateToUrl(url)
-    } else {
-      console.error('[Goober] onNavigateToUrl is not defined!')
-    }
+    onNavigateToUrl(url)
   }, [onNavigateToUrl])
 
   const handleSelectSuggestion = useCallback((item: AutocompleteItem) => {
-    console.log('[Goober] handleSelectSuggestion called with item:', item)
-    console.log('[Goober] onNavigateToUrl is:', typeof onNavigateToUrl, onNavigateToUrl ? 'defined' : 'undefined')
-    if (onNavigateToUrl) {
-      onNavigateToUrl(item.url)
-    } else {
-      console.error('[Goober] onNavigateToUrl is not defined!')
-    }
+    onNavigateToUrl(item.url)
   }, [onNavigateToUrl])
 
   const handleFeelingCorny = useCallback(() => {
@@ -580,18 +847,16 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
   useEffect(() => {
     if (searchInput.length >= 2) {
       const entries = getSearchableContent()
-      console.log('[Goober] Autocomplete - searching', entries.length, 'entries for:', searchInput)
-      const matching = entries.filter(entry => entry.title.toLowerCase().includes(searchInput.toLowerCase()))
-      console.log('[Goober] Autocomplete - found', matching.length, 'matches')
-      const newSuggestions = matching
-        .slice(0, 5)
-        .map(entry => ({
+      const matching = entries.filter(entry =>
+        entry.title.toLowerCase().includes(searchInput.toLowerCase())
+      )
+      setSuggestions(
+        matching.slice(0, 5).map(entry => ({
           title: entry.title,
           url: entry.url,
           contentType: entry.category,
         }))
-      console.log('[Goober] Autocomplete - showing', newSuggestions.length, 'suggestions:', newSuggestions)
-      setSuggestions(newSuggestions)
+      )
     } else {
       setSuggestions([])
     }
@@ -721,7 +986,7 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
       {/* Results */}
       <div style={{ maxWidth: '700px', padding: '16px 24px 16px 150px' }}>
         {/* Stats */}
-        {!isLoading && results.length > 0 && (
+        {!isLoading && results.length > 0 && !showingSponsored && (
           <div style={{ fontSize: '14px', color: THEME.textMuted, marginBottom: '16px' }}>
             About {results.length} results ({(searchTime / 1000).toFixed(2)} seconds)
           </div>
@@ -734,16 +999,29 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
           </div>
         )}
 
-        {/* No results */}
-        {!isLoading && results.length === 0 && searchInput && (
-          <div style={{ padding: '32px 0' }}>
-            <p style={{ color: THEME.text }}>
+        {/* Sponsored results banner */}
+        {!isLoading && showingSponsored && (
+          <div
+            style={{
+              padding: '16px',
+              marginBottom: '16px',
+              borderRadius: '8px',
+              background: '#fff3cd',
+              border: '1px solid #ffc107',
+            }}
+          >
+            <p style={{ color: '#856404', margin: 0 }}>
               No results found for <strong>{searchInput}</strong>
             </p>
-            <p style={{ marginTop: '8px', color: THEME.textMuted }}>
-              Try different keywords or check your spelling.
+            <p style={{ color: '#856404', margin: '8px 0 0', fontSize: '14px' }}>
+              Here are some popular sites you might find helpful:
             </p>
           </div>
+        )}
+
+        {/* AI Overview */}
+        {!isLoading && !showingSponsored && (aiOverview.loading || aiOverview.content) && (
+          <AIOverview state={aiOverview} onSourceClick={handleNavigateToResult} />
         )}
 
         {/* Results list */}

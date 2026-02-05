@@ -62,6 +62,10 @@ import { initializeNPCRelationshipSchema, setupPreExistingDrama } from './servic
 initializeNPCRelationshipSchema();
 setupPreExistingDrama();
 
+// Initialize drama engine (subscribes to relationship events, generates drama posts)
+import { initializeDramaEngine, startDramaEngine } from './services/drama-engine.js';
+initializeDramaEngine();
+
 aiQueue.start();
 
 // ─────────────────────────────────────────────────────────────────
@@ -216,6 +220,7 @@ setTimeout(async () => {
   startSocialAutopilot({ initialBurst: true, postIntervalMinutes: 45 });
   startConversationInitiator({ checkIntervalMinutes: 60 });
   startChessAutopilot({ initialBurst: true, matchIntervalHours: 2 });
+  startDramaEngine({ tickIntervalMinutes: 5 });
 
   // Start awareness checks (NPCs checking social media based on their habits)
   const { simulateSocialMediaChecks } = await import('./services/awareness.js');
@@ -233,7 +238,7 @@ setTimeout(async () => {
     }
   }, 60 * 1000); // Check every minute
 
-  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess, awareness)');
+  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess, awareness, drama)');
 }, 5000);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)
@@ -329,8 +334,9 @@ console.log(`
 ║  Errors: Error Logger (centralized tracking)               ║
 ╠════════════════════════════════════════════════════════════╣
 ║  Agents: Memory, Profile, Relationship, Social, Chat, Chess║
+║  Drama Engine: Affair discovery, relationship posts, drama!║
 ║  Scheduler: Running (30s interval)                         ║
-║  Autonomous: NPCs post, DM, and play chess on their own!   ║
+║  Autonomous: NPCs post, DM, play chess, and cause drama!   ║
 ╚════════════════════════════════════════════════════════════╝
 `);
 

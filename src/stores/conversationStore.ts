@@ -7,7 +7,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { MessageData, MessageAuthor } from '../components/ui/Message/types.js'
+import type { MessageData, MessageAuthor } from '../components/ui/Message'
 import { useWSStore } from './wsStore.js'
 
 // ============================================================================

@@ -9,10 +9,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
-import { MessageThread as MessageThreadComponent } from '../../ui/Message/MessageThread.js'
-import { TypingIndicator } from '../../ui/Message/TypingIndicator.js'
-import { MESSAGE_CSS_VARS } from '../../ui/Message/styles.js'
-import type { MessageStyleConfig } from '../../ui/Message/types.js'
+import {
+  MessageThread as MessageThreadComponent,
+  TypingIndicator,
+  MESSAGE_CSS_VARS,
+  type MessageStyleConfig,
+} from '../../ui/Message'
 import { StyledCard, Button, Avatar, MetaRow, type MetaRowItem } from '../../ui/shared/index.js'
 import {
   useConversationStore,

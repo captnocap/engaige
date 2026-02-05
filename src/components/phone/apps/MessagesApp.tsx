@@ -7,10 +7,12 @@
 
 import { useState, useEffect, useRef } from 'react'
 import type { AppProps } from '../PhoneAppContainer.js'
-import { MessageThread as MessageThreadComponent } from '../../ui/Message/MessageThread.js'
-import { TypingBubble } from '../../ui/Message/TypingIndicator.js'
-import { MESSAGE_CSS_VARS } from '../../ui/Message/styles.js'
-import type { MessageStyleConfig } from '../../ui/Message/types.js'
+import {
+  MessageThread as MessageThreadComponent,
+  TypingBubble,
+  MESSAGE_CSS_VARS,
+  type MessageStyleConfig,
+} from '../../ui/Message'
 import {
   useConversationStore,
   useConversations,
