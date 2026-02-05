@@ -4,7 +4,7 @@
  * React hook providing navigation, history, and autocomplete for the browser.
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, useLayoutEffect } from 'react'
 import {
   parseURL,
   buildURL,
@@ -14,6 +14,7 @@ import {
   getSiteByDomain,
   getAllSites,
 } from './index.js'
+import { useBrowserStore } from '../stores/browserStore.js'
 import type {
   CornSite,
   RouteParams,
@@ -57,14 +58,124 @@ export function useCornRouter() {
   // State
   // -------------------------------------------------------------------------
 
-  const [tabs, setTabs] = useState<BrowserTab[]>(() => [createNewTab()])
+  const [tabs, setTabs] = useState<BrowserTab[]>(() => {
+    const { startupBehavior, startupTabs } = useBrowserStore.getState()
+
+    // Create the right number of tabs for startup tabs mode
+    if (startupBehavior === 'startupTabs' && startupTabs.length > 0) {
+      return startupTabs.map(() => createNewTab())
+    }
+
+    // Default: single new tab (homepage navigation handled in effect)
+    return [createNewTab()]
+  })
   const [activeTabId, setActiveTabId] = useState<string>(() => tabs[0].id)
+
+  // Initialize startup tabs on mount
+  const initializedRef = useRef(false)
 
   // Global history for autocomplete
   const [globalHistory, setGlobalHistory] = useState<HistoryEntry[]>([])
 
   // All registered sites (for autocomplete)
   const allSites = useMemo(() => getAllSites(), [])
+
+  // Initialize startup tabs on first render
+  useEffect(() => {
+    if (initializedRef.current) return
+    initializedRef.current = true
+
+    const { startupBehavior, homepage, startupTabs } = useBrowserStore.getState()
+
+    if (startupBehavior === 'homepage' && homepage) {
+      // Navigate first tab to homepage
+      const normalizedUrl = normalizeUserInput(homepage)
+      const parsed = parseURL(normalizedUrl)
+      const site = getSiteByDomain(parsed.domain)
+      const displayUrl = buildURL(parsed.domain, parsed.path, parsed.query, parsed.hash)
+
+      let title = site?.name || parsed.domain
+      let params: RouteParams = {}
+
+      if (site) {
+        const match = matchRoute(site.routes, parsed.path)
+        if (match) {
+          params = match.params
+          if (match.route.metadata?.title) {
+            const titleMeta = match.route.metadata.title
+            title = typeof titleMeta === 'function' ? titleMeta(params) : titleMeta
+          }
+        }
+      }
+
+      const historyEntry: HistoryEntry = {
+        url: displayUrl,
+        domain: parsed.domain,
+        path: parsed.path,
+        params,
+        title,
+        timestamp: Date.now(),
+      }
+
+      setTabs(prev => prev.map((tab, i) => i === 0 ? {
+        ...tab,
+        url: displayUrl,
+        site: site || null,
+        path: parsed.path,
+        params,
+        query: parsed.query,
+        title,
+        history: [historyEntry],
+        historyIndex: 0,
+      } : tab))
+    } else if (startupBehavior === 'startupTabs' && startupTabs.length > 0) {
+      // Navigate each tab to its startup URL
+      setTabs(prev => prev.map((tab, i) => {
+        if (i >= startupTabs.length) return tab
+
+        const startupTab = startupTabs[i]
+        const normalizedUrl = normalizeUserInput(startupTab.url)
+        const parsed = parseURL(normalizedUrl)
+        const site = getSiteByDomain(parsed.domain)
+        const displayUrl = buildURL(parsed.domain, parsed.path, parsed.query, parsed.hash)
+
+        let title = site?.name || parsed.domain
+        let params: RouteParams = {}
+
+        if (site) {
+          const match = matchRoute(site.routes, parsed.path)
+          if (match) {
+            params = match.params
+            if (match.route.metadata?.title) {
+              const titleMeta = match.route.metadata.title
+              title = typeof titleMeta === 'function' ? titleMeta(params) : titleMeta
+            }
+          }
+        }
+
+        const historyEntry: HistoryEntry = {
+          url: displayUrl,
+          domain: parsed.domain,
+          path: parsed.path,
+          params,
+          title,
+          timestamp: Date.now(),
+        }
+
+        return {
+          ...tab,
+          url: displayUrl,
+          site: site || null,
+          path: parsed.path,
+          params,
+          query: parsed.query,
+          title,
+          history: [historyEntry],
+          historyIndex: 0,
+        }
+      }))
+    }
+  }, [])
 
   // Active tab
   const activeTab = useMemo(
@@ -314,6 +425,15 @@ export function useCornRouter() {
   }, [activeTab, updateTab])
 
   const goHome = useCallback(() => {
+    const { homepage } = useBrowserStore.getState()
+
+    // If homepage is set, navigate to it
+    if (homepage) {
+      navigateTo(homepage)
+      return
+    }
+
+    // Otherwise go to blank new tab page
     const tab = activeTab
 
     // Create home history entry
@@ -339,7 +459,7 @@ export function useCornRouter() {
       history: newHistory,
       historyIndex: newHistory.length - 1,
     })
-  }, [activeTab, activeTabId, updateTab])
+  }, [activeTab, activeTabId, updateTab, navigateTo])
 
   const refresh = useCallback(() => {
     if (activeTab.url) {
@@ -404,6 +524,7 @@ export const ABOUT_BLANK = 'about:blank'
 
 function createNewTab(): BrowserTab {
   tabCounter++
+
   const homeEntry: HistoryEntry = {
     url: ABOUT_BLANK,
     domain: '',
@@ -412,6 +533,7 @@ function createNewTab(): BrowserTab {
     title: 'New Tab',
     timestamp: Date.now(),
   }
+
   return {
     id: `tab-${Date.now()}-${tabCounter}`,
     url: ABOUT_BLANK,

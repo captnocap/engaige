@@ -15,10 +15,24 @@ export interface SiteVisit {
   lastVisit: number
 }
 
+export interface StartupTab {
+  id: string
+  url: string
+  title: string
+  icon: string
+}
+
+export type StartupBehavior = 'homepage' | 'startupTabs' | 'blank'
+
 export interface BrowserState {
   bookmarks: Bookmark[]
   showBookmarksBar: boolean
   siteVisits: Record<string, SiteVisit>  // domain -> visit data
+
+  // Homepage & Startup Settings
+  homepage: string | null              // URL for home button (null = blank/new tab page)
+  startupTabs: StartupTab[]            // Tabs to open on browser start
+  startupBehavior: StartupBehavior     // What to do on startup
 
   // Bookmark Actions
   addBookmark: (url: string, title: string, icon: string) => void
@@ -34,10 +48,23 @@ export interface BrowserState {
   getVisitCount: (domain: string) => number
   getTopVisitedDomains: (limit?: number) => Array<{ domain: string; count: number; lastVisit: number }>
   clearHistory: () => void
+
+  // Homepage & Startup Actions
+  setHomepage: (url: string | null) => void
+  setCurrentAsHomepage: (url: string, title: string, icon: string) => void
+  addStartupTab: (url: string, title: string, icon: string) => void
+  removeStartupTab: (id: string) => void
+  clearStartupTabs: () => void
+  isStartupTab: (url: string) => boolean
+  setStartupBehavior: (behavior: StartupBehavior) => void
 }
 
 function generateBookmarkId(): string {
   return `bookmark-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
+function generateStartupTabId(): string {
+  return `startup-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
 export const useBrowserStore = create<BrowserState>()(
@@ -46,6 +73,9 @@ export const useBrowserStore = create<BrowserState>()(
       bookmarks: [],
       showBookmarksBar: true,
       siteVisits: {},
+      homepage: null,
+      startupTabs: [],
+      startupBehavior: 'blank' as StartupBehavior,
 
       addBookmark: (url: string, title: string, icon: string) => {
         const { bookmarks } = get()
@@ -159,6 +189,48 @@ export const useBrowserStore = create<BrowserState>()(
       clearHistory: () => {
         set({ siteVisits: {} })
       },
+
+      // Homepage & Startup Actions
+      setHomepage: (url: string | null) => {
+        set({ homepage: url })
+      },
+
+      setCurrentAsHomepage: (url: string, title: string, icon: string) => {
+        set({ homepage: url })
+      },
+
+      addStartupTab: (url: string, title: string, icon: string) => {
+        const { startupTabs } = get()
+
+        // Don't add duplicate
+        if (startupTabs.some(t => t.url === url)) return
+
+        const newTab: StartupTab = {
+          id: generateStartupTabId(),
+          url,
+          title,
+          icon,
+        }
+
+        set({ startupTabs: [...startupTabs, newTab] })
+      },
+
+      removeStartupTab: (id: string) => {
+        const { startupTabs } = get()
+        set({ startupTabs: startupTabs.filter(t => t.id !== id) })
+      },
+
+      clearStartupTabs: () => {
+        set({ startupTabs: [] })
+      },
+
+      isStartupTab: (url: string) => {
+        return get().startupTabs.some(t => t.url === url)
+      },
+
+      setStartupBehavior: (behavior: StartupBehavior) => {
+        set({ startupBehavior: behavior })
+      },
     }),
     {
       name: 'engaige-browser',
@@ -166,6 +238,9 @@ export const useBrowserStore = create<BrowserState>()(
         bookmarks: state.bookmarks,
         showBookmarksBar: state.showBookmarksBar,
         siteVisits: state.siteVisits,
+        homepage: state.homepage,
+        startupTabs: state.startupTabs,
+        startupBehavior: state.startupBehavior,
       }),
     }
   )

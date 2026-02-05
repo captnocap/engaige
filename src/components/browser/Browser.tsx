@@ -8,7 +8,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { getAppsForSurface, type AppDefinition } from '../../config/app-registry.js'
 import { BrowserSiteContainer } from './BrowserSiteContainer.js'
-import { useBrowserStore } from '../../stores/browserStore.js'
+import { useBrowserStore, type StartupTab, type StartupBehavior } from '../../stores/browserStore.js'
 import { useCornRouter, getAllSites, getUrlForSite, ABOUT_BLANK } from '../../router/index.js'
 import type { CornSite, AutocompleteSuggestion } from '../../router/index.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
@@ -73,7 +73,18 @@ export function Browser({ onClose }: BrowserProps) {
     reorderBookmark,
     isBookmarked,
     recordVisit,
+    homepage,
+    startupTabs,
+    startupBehavior,
+    setHomepage,
+    addStartupTab,
+    removeStartupTab,
+    isStartupTab,
+    setStartupBehavior,
   } = useBrowserStore()
+
+  // Settings modal state
+  const [showStartupSettings, setShowStartupSettings] = useState(false)
 
   // -------------------------------------------------------------------------
   // Sync URL Input with Active Tab
@@ -665,6 +676,66 @@ export function Browser({ onClose }: BrowserProps) {
                 </svg>
                 {isBookmarked(activeTab.url) ? 'Remove Bookmark' : 'Add Bookmark'}
               </button>
+
+              {/* Divider */}
+              <div className="my-1 border-t" style={{ borderColor: 'var(--color-border)' }} />
+
+              {/* Homepage & Startup Options */}
+              <button
+                onClick={() => {
+                  if (activeTab.site) {
+                    setHomepage(activeTab.url)
+                  }
+                  setMenuOpen(false)
+                }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--color-bgTertiary)] flex items-center gap-2"
+                style={{ color: activeTab.site ? 'var(--color-text)' : 'var(--color-textMuted)' }}
+                disabled={!activeTab.site}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Set as Homepage
+                {homepage === activeTab.url && (
+                  <svg className="w-3 h-3 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  if (activeTab.site) {
+                    if (isStartupTab(activeTab.url)) {
+                      const tab = startupTabs.find(t => t.url === activeTab.url)
+                      if (tab) removeStartupTab(tab.id)
+                    } else {
+                      addStartupTab(activeTab.url, activeTab.title, activeTab.site.icon || '')
+                    }
+                  }
+                  setMenuOpen(false)
+                }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--color-bgTertiary)] flex items-center gap-2"
+                style={{ color: activeTab.site ? 'var(--color-text)' : 'var(--color-textMuted)' }}
+                disabled={!activeTab.site}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                {isStartupTab(activeTab.url) ? 'Remove from Startup' : 'Add to Startup Tabs'}
+              </button>
+
+              <button
+                onClick={() => { setShowStartupSettings(true); setMenuOpen(false) }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--color-bgTertiary)] flex items-center gap-2"
+                style={{ color: 'var(--color-text)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Startup Settings...
+              </button>
             </div>
           )}
         </div>
@@ -771,6 +842,20 @@ export function Browser({ onClose }: BrowserProps) {
           )}
         </div>
       </div>
+
+      {/* Startup Settings Modal */}
+      {showStartupSettings && (
+        <StartupSettingsModal
+          homepage={homepage}
+          startupTabs={startupTabs}
+          startupBehavior={startupBehavior}
+          onSetHomepage={setHomepage}
+          onRemoveStartupTab={removeStartupTab}
+          onSetStartupBehavior={setStartupBehavior}
+          onNavigate={navigateTo}
+          onClose={() => setShowStartupSettings(false)}
+        />
+      )}
     </div>
   )
 }
@@ -855,6 +940,219 @@ function BrowserHomePage({ sites, onNavigate }: BrowserHomePageProps) {
               </span>
             </button>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// Startup Settings Modal
+// ============================================================================
+
+interface StartupSettingsModalProps {
+  homepage: string | null
+  startupTabs: StartupTab[]
+  startupBehavior: StartupBehavior
+  onSetHomepage: (url: string | null) => void
+  onRemoveStartupTab: (id: string) => void
+  onSetStartupBehavior: (behavior: StartupBehavior) => void
+  onNavigate: (url: string) => void
+  onClose: () => void
+}
+
+function StartupSettingsModal({
+  homepage,
+  startupTabs,
+  startupBehavior,
+  onSetHomepage,
+  onRemoveStartupTab,
+  onSetStartupBehavior,
+  onNavigate,
+  onClose,
+}: StartupSettingsModalProps) {
+  return (
+    <div
+      className="absolute inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0, 0, 0, 0.5)' }}
+      onClick={onClose}
+    >
+      <div
+        className="w-[500px] max-h-[80vh] rounded-xl shadow-2xl overflow-hidden flex flex-col"
+        style={{ background: 'var(--color-bg)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div
+          className="px-5 py-4 flex items-center justify-between"
+          style={{ borderBottom: '1px solid var(--color-border)' }}
+        >
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+            Startup Settings
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
+            style={{ color: 'var(--color-textMuted)' }}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-5 space-y-6">
+          {/* Startup Behavior */}
+          <div>
+            <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--color-text)' }}>
+              On Startup
+            </h3>
+            <div className="space-y-2">
+              {[
+                { value: 'blank' as StartupBehavior, label: 'Open New Tab page', description: 'Start with a blank new tab' },
+                { value: 'homepage' as StartupBehavior, label: 'Open Homepage', description: homepage ? `Go to ${homepage}` : 'No homepage set' },
+                { value: 'startupTabs' as StartupBehavior, label: 'Open Startup Tabs', description: `${startupTabs.length} tab${startupTabs.length !== 1 ? 's' : ''} configured` },
+              ].map(option => (
+                <label
+                  key={option.value}
+                  className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-[var(--color-bgSecondary)]"
+                  style={{
+                    background: startupBehavior === option.value ? 'var(--color-bgSecondary)' : 'transparent',
+                    border: `1px solid ${startupBehavior === option.value ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="startupBehavior"
+                    checked={startupBehavior === option.value}
+                    onChange={() => onSetStartupBehavior(option.value)}
+                    className="mt-0.5"
+                    style={{ accentColor: 'var(--color-primary)' }}
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+                      {option.label}
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--color-textMuted)' }}>
+                      {option.description}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Homepage */}
+          <div>
+            <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--color-text)' }}>
+              Homepage
+            </h3>
+            {homepage ? (
+              <div
+                className="flex items-center gap-3 p-3 rounded-lg"
+                style={{ background: 'var(--color-bgSecondary)', border: '1px solid var(--color-border)' }}
+              >
+                <span className="text-lg">🏠</span>
+                <div className="flex-1 min-w-0">
+                  <button
+                    onClick={() => { onNavigate(homepage); onClose() }}
+                    className="text-sm font-medium truncate block text-left hover:underline"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    {homepage}
+                  </button>
+                </div>
+                <button
+                  onClick={() => onSetHomepage(null)}
+                  className="w-7 h-7 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
+                  style={{ color: 'var(--color-textMuted)' }}
+                  title="Clear homepage"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <div
+                className="p-4 rounded-lg text-center"
+                style={{ background: 'var(--color-bgSecondary)', border: '1px dashed var(--color-border)' }}
+              >
+                <p className="text-sm" style={{ color: 'var(--color-textMuted)' }}>
+                  No homepage set. Visit a site and select "Set as Homepage" from the menu.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Startup Tabs */}
+          <div>
+            <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--color-text)' }}>
+              Startup Tabs
+            </h3>
+            {startupTabs.length > 0 ? (
+              <div className="space-y-2">
+                {startupTabs.map((tab, index) => (
+                  <div
+                    key={tab.id}
+                    className="flex items-center gap-3 p-3 rounded-lg"
+                    style={{ background: 'var(--color-bgSecondary)', border: '1px solid var(--color-border)' }}
+                  >
+                    <span className="text-sm" style={{ color: 'var(--color-textMuted)' }}>
+                      {index + 1}.
+                    </span>
+                    <span className="text-lg">{tab.icon || '🌐'}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate" style={{ color: 'var(--color-text)' }}>
+                        {tab.title}
+                      </div>
+                      <button
+                        onClick={() => { onNavigate(tab.url); onClose() }}
+                        className="text-xs truncate block text-left hover:underline"
+                        style={{ color: 'var(--color-textMuted)' }}
+                      >
+                        {tab.url}
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => onRemoveStartupTab(tab.id)}
+                      className="w-7 h-7 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
+                      style={{ color: 'var(--color-textMuted)' }}
+                      title="Remove from startup"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                className="p-4 rounded-lg text-center"
+                style={{ background: 'var(--color-bgSecondary)', border: '1px dashed var(--color-border)' }}
+              >
+                <p className="text-sm" style={{ color: 'var(--color-textMuted)' }}>
+                  No startup tabs configured. Visit sites and select "Add to Startup Tabs" from the menu.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div
+          className="px-5 py-4 flex justify-end"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{ background: 'var(--color-primary)', color: 'white' }}
+          >
+            Done
+          </button>
         </div>
       </div>
     </div>
