@@ -195,5 +195,3 @@ export function useStudioAssets() {
     cacheVersion,
   };
 }
-
-export default useStudioAssets;

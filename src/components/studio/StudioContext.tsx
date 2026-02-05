@@ -48,6 +48,7 @@ export interface StudioBudget {
   spent: number;
   remaining: number;
   costPerImage: number;
+  totalBudget?: number;
 }
 
 export interface StudioState {
@@ -359,5 +360,3 @@ export function useStudio(): StudioContextValue {
   }
   return context;
 }
-
-export default StudioContext;

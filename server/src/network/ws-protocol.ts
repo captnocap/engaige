@@ -375,6 +375,48 @@ export interface SocialUnsubscribeMessage extends WSMessage {
   type: 'social:unsubscribe';
 }
 
+// Media
+export interface MediaGetMessage extends WSMessage<{
+  id: string;
+}> {
+  type: 'media:get';
+}
+
+export interface MediaGetAllMessage extends WSMessage<{
+  filters?: {
+    category?: string;
+    owner_type?: string;
+    npc_id?: string;
+    search?: string;
+  };
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'media:getAll';
+}
+
+// Studio (Creative Studio)
+export interface StudioGenerateImageMessage extends WSMessage<{
+  prompt: string;
+  style?: string;
+  mood?: string;
+  referenceImageIds?: string[];
+}> {
+  type: 'studio:generateImage';
+}
+
+export interface StudioGetBudgetMessage extends WSMessage {
+  type: 'studio:getBudget';
+}
+
+export interface StudioSaveVideoConfigMessage extends WSMessage<{
+  config: Record<string, unknown>;
+  intent?: Record<string, unknown>;
+  generateThumbnail?: boolean;
+}> {
+  type: 'studio:saveVideoConfig';
+}
+
 // Search
 export interface SearchQueryMessage extends WSMessage<{
   query: string;
@@ -453,7 +495,12 @@ export type ClientMessage =
   | SocialUnsubscribeMessage
   | SearchQueryMessage
   | SearchAutocompleteMessage
-  | SearchGetStatsMessage;
+  | SearchGetStatsMessage
+  | MediaGetMessage
+  | MediaGetAllMessage
+  | StudioGenerateImageMessage
+  | StudioGetBudgetMessage
+  | StudioSaveVideoConfigMessage;
 
 // ============================================================================
 // Server -> Client Messages

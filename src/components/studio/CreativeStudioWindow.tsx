@@ -61,12 +61,12 @@ function CreativeStudioInner() {
 
     async function fetchBudget() {
       try {
-        const response = await request<object, { budget: { spent: number; remaining: number; costPerImage: number } }>(
+        const response = await request<object, { spent: number; remaining: number; costPerImage: number; totalBudget: number }>(
           'studio:getBudget',
           {}
         );
-        if (response && 'budget' in response) {
-          dispatch({ type: 'SET_BUDGET', payload: response.budget });
+        if (response && typeof response.remaining === 'number') {
+          dispatch({ type: 'SET_BUDGET', payload: response });
         }
       } catch (e) {
         // Budget fetch failed, not critical
