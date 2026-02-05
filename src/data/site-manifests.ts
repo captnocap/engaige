@@ -76,11 +76,11 @@ export const THREADIT_MANIFEST: SiteManifest = {
     { path: '/r/Cornfield', title: 'r/Cornfield - Threadit', description: 'General discussion for Cornfield, KS residents and enthusiasts', type: 'forum', tags: ['local', 'cornfield', 'community'] },
     { path: '/r/AskThreadit', title: 'r/AskThreadit - Threadit', description: 'Ask and answer thought-provoking questions on any topic', type: 'forum', tags: ['questions', 'discussion', 'community'] },
     // Notable threads (nested under subreddits in actual site navigation)
-    { path: '/t/hb_1', title: '[THEORY] Floor 13 is a dimensional pocket', description: 'Conspiracy theory about the missing Hartwell Building floor.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'], parent: '/r/HartwellBuilding' },
-    { path: '/t/tft_2', title: 'I was there for The Incident. AMA.', description: 'Eyewitness account of the infamous Trust Fall Tim incident.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'], parent: '/r/TrustFallTim' },
-    { path: '/t/qc_2', title: 'Dr. Martinez clarification about her study', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'], parent: '/r/QuantumCoffee' },
-    { path: '/t/at_2', title: 'What\'s your town\'s open secret?', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'], parent: '/r/AskThreadit' },
-    { path: '/t/lm_3', title: 'Mars banned another Wonderwall requester', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'], parent: '/r/LocalMusic' },
+    { path: '/t/theory_floor_13_is_a_dimensional_pocket', title: '[THEORY] Floor 13 is a dimensional pocket', description: 'Conspiracy theory about the missing Hartwell Building floor.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'], parent: '/r/HartwellBuilding' },
+    { path: '/t/i_was_there_for_the_incident_ama', title: 'I was there for The Incident. AMA.', description: 'Eyewitness account of the infamous Trust Fall Tim incident.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'], parent: '/r/TrustFallTim' },
+    { path: '/t/dr_martinez_clarification_about_her_study', title: 'Dr. Martinez clarification about her study', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'], parent: '/r/QuantumCoffee' },
+    { path: '/t/whats_your_towns_open_secret', title: 'What\'s your town\'s open secret?', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'], parent: '/r/AskThreadit' },
+    { path: '/t/mars_banned_another_wonderwall_requester', title: 'Mars banned another Wonderwall requester', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'], parent: '/r/LocalMusic' },
   ],
 }
 

@@ -67,7 +67,7 @@ const SAMPLE_THREADS: Thread[] = [
   // r/QuantumCoffee Threads
   // ============================================================================
   {
-    id: 'qc_1',
+    id: 'aita_for_refusing_to_drink_my_roommates_quantum_brewed_coffee',
     subreddit: 'r/QuantumCoffee',
     title: 'AITA for refusing to drink my roommate\'s "quantum brewed" coffee?',
     author: 'throwaway_brew_123',
@@ -120,7 +120,7 @@ Edit: Yes I know about the Martinez study. My roommate has told me about it appr
     ],
   },
   {
-    id: 'qc_2',
+    id: 'dr_martinez_clarification_about_her_study',
     subreddit: 'r/QuantumCoffee',
     title: 'Dr. Martinez just posted clarification about her study AGAIN. When will people learn?',
     author: 'DerekMod',
@@ -158,7 +158,7 @@ Edit: Stop sending me hate mail Jennifer. I know it's you.`,
     ],
   },
   {
-    id: 'qc_3',
+    id: 'my_partner_wont_stop_explaining_quantum_physics',
     subreddit: 'r/QuantumCoffee',
     title: 'My partner won\'t stop explaining quantum physics to me and it\'s ruining our relationship',
     author: 'tired_of_particles',
@@ -201,7 +201,7 @@ Edit: Yes his name is Derek. No I'm not his ex-wife Jennifer.`,
   // r/HartwellBuilding Threads
   // ============================================================================
   {
-    id: 'hb_1',
+    id: 'theory_floor_13_is_a_dimensional_pocket',
     subreddit: 'r/HartwellBuilding',
     title: '[THEORY] The Hartwell Building Floor 13 is a dimensional pocket',
     author: 'floor13truther',
@@ -252,7 +252,7 @@ Anyone else notice strange things around the building?`,
     ],
   },
   {
-    id: 'hb_2',
+    id: 'the_mirrors_on_floor_7_showed_me_something',
     subreddit: 'r/HartwellBuilding',
     title: 'The mirrors on Floor 7 showed me something that wasn\'t there',
     author: 'delivery_driver_anon',
@@ -290,7 +290,7 @@ Has anyone else seen things in those mirrors?`,
     ],
   },
   {
-    id: 'hb_3',
+    id: 'what_does_omnicorp_actually_do',
     subreddit: 'r/HartwellBuilding',
     title: 'What does Omnicorp actually DO?',
     author: 'curious_researcher',
@@ -324,7 +324,7 @@ What company has been around 100+ years with no apparent product or service?`,
   // r/TrustFallTim Threads
   // ============================================================================
   {
-    id: 'tft_1',
+    id: 'weekly_stats_tim_achieved_79_catch_rate',
     subreddit: 'r/TrustFallTim',
     title: 'WEEKLY STATS: Tim achieved 79.2% catch rate this week!',
     author: 'TFT_Stats_Bot',
@@ -372,7 +372,7 @@ Keep falling, Tim! 🙌`,
     ],
   },
   {
-    id: 'tft_2',
+    id: 'i_was_there_for_the_incident_ama',
     subreddit: 'r/TrustFallTim',
     title: 'I was there for The Incident. AMA.',
     author: 'witness_to_history',
@@ -415,7 +415,7 @@ Ask me anything (except Kevin's current whereabouts - he asked me not to share t
     ],
   },
   {
-    id: 'tft_3',
+    id: 'tims_mom_started_a_support_blog',
     subreddit: 'r/TrustFallTim',
     title: 'Tim\'s mom started a support blog and it\'s the most wholesome thing',
     author: 'wholesome_content',
@@ -455,7 +455,7 @@ Link in comments. Get tissues ready.`,
   // r/LocalMusic Threads
   // ============================================================================
   {
-    id: 'lm_1',
+    id: 'velvet_algorithms_cancelled_existential_crisis',
     subreddit: 'r/LocalMusic',
     title: 'The Velvet Algorithms cancelled their show due to "existential crisis" - anyone know what happened?',
     author: 'UndergroundRegular',
@@ -498,7 +498,7 @@ I drove 3 hours for this show. Anyone else stranded downtown?`,
     ],
   },
   {
-    id: 'lm_2',
+    id: 'vex_still_posting_about_neon_requiem',
     subreddit: 'r/LocalMusic',
     title: 'Vex (Neon Requiem drummer) is STILL posting about the band like they didn\'t break up 10 months ago',
     author: 'scene_watcher',
@@ -535,7 +535,7 @@ Someone needs to stage an intervention.`,
     ],
   },
   {
-    id: 'lm_3',
+    id: 'mars_banned_another_wonderwall_requester',
     subreddit: 'r/LocalMusic',
     title: 'Mars permanently banned another Wonderwall requester',
     author: 'underground_regular_2',
@@ -578,7 +578,7 @@ Legend.`,
   // r/Cornfield Threads
   // ============================================================================
   {
-    id: 'cf_1',
+    id: 'psa_the_new_stop_sign_on_5th_and_main',
     subreddit: 'r/Cornfield',
     title: 'PSA: The new stop sign on 5th and Main is NOT optional',
     author: 'concerned_citizen_847',
@@ -611,7 +611,7 @@ Deputy Morrison is setting up speed traps there starting Monday. Consider yourse
     ],
   },
   {
-    id: 'cf_2',
+    id: 'why_were_8_fire_trucks_at_hartwell_last_night',
     subreddit: 'r/Cornfield',
     title: 'Anyone know why there were 8 fire trucks at the Hartwell Building last night?',
     author: 'downtown_neighbor',
@@ -645,7 +645,7 @@ Fire department says it was a "routine check." At 2am? With 8 trucks?`,
     ],
   },
   {
-    id: 'cf_3',
+    id: 'the_quantum_coffee_shop_is_actually_pretty_good',
     subreddit: 'r/Cornfield',
     title: 'The quantum coffee shop downtown is actually pretty good?',
     author: 'reluctant_convert',
@@ -675,7 +675,7 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
   // r/AskThreadit Threads
   // ============================================================================
   {
-    id: 'at_1',
+    id: 'whats_the_weirdest_thing_at_a_local_venue',
     subreddit: 'r/AskThreadit',
     title: 'What\'s the weirdest thing you\'ve ever witnessed at a local venue?',
     author: 'curiosity_killed_me',
@@ -715,7 +715,7 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
     ],
   },
   {
-    id: 'at_2',
+    id: 'whats_your_towns_open_secret',
     subreddit: 'r/AskThreadit',
     title: 'What\'s your town\'s "open secret" that everyone knows but nobody talks about?',
     author: 'small_town_curious',
@@ -754,7 +754,7 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
     ],
   },
   {
-    id: 'at_3',
+    id: 'people_caught_by_trust_fall_tim_how_did_it_feel',
     subreddit: 'r/AskThreadit',
     title: 'People who\'ve been caught by Trust Fall Tim: How did it feel?',
     author: 'tft_researcher',
