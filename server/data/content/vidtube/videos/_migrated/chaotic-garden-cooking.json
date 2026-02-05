@@ -1,0 +1,55 @@
+{
+  "$schema": "content",
+  "site_id": "vidtube",
+  "content_type": "video",
+  "slug": "chaotic-garden-cooking",
+
+  "channel_slug": "chaoticcooking",
+  "category": "Howto & Style",
+
+  "title": "I Made Dinner Using Only Items From My Landlord's Garden (He Doesn't Know)",
+  "body": "Today's chaotic challenge: create a gourmet meal using only ingredients I could \"borrow\" from my landlord's garden at 3am.\n\nIngredients obtained:\n- 4 tomatoes\n- Some basil (I think)\n- A suspicious pepper\n- What might be oregano\n- One very confused cat (not used in recipe)\n\nRecipe in the description below... if I don't get evicted.\n\nDISCLAIMER: I did eventually tell my landlord and paid him $20 for the vegetables. He was not amused.\n\n#cooking #chaos #garden #3am",
+
+  "thumbnail_emoji": "🥗🏃",
+
+  "metadata": {
+    "duration": "18:56",
+    "views": "2.1M views",
+    "likes": "198K",
+    "dislikes": "4.2K",
+    "uploaded_at": "5 days ago",
+    "transcript": "What's up chaos crew, it's your boy back with another questionable cooking challenge. Tonight's mission: make a gourmet dinner using only ingredients from my landlord's garden. The catch? He doesn't know. Also it's 3am.\n\n[Cut to nighttime footage with night vision]\n\nOkay so I'm in the garden. Gerald - that's my landlord - is definitely asleep because I can hear him snoring from down here. Let's see what we're working with.\n\nGot some tomatoes here, looking good. These are definitely ripe. Taking four of them. Some basil... at least I think it's basil? Smells right. Oh, there's a pepper. Just one pepper. And some kind of herb, might be oregano, might be a weed, we'll find out.\n\n[A cat appears]\n\nOh no. That's Gerald's cat. Hey buddy. Please don't meow. Please don't - okay he's meowing. Time to go.\n\n[Cut to kitchen]\n\nAlright, made it back alive. Let's see what we can make with this haul. We've got Italian vibes here so I'm thinking... caprese-ish? But also maybe a sauce?\n\n[Cooking montage with increasingly chaotic energy]\n\nThe tomatoes are beautiful. Cutting them up for a quick sauce. The basil is definitely basil, thank god. The pepper is... actually pretty spicy? Okay very spicy. That's going to be interesting.\n\nThe mystery herb... tasting it... yeah that's oregano. We're good.\n\n[Final plating]\n\nAnd there we have it. Midnight garden pasta with stolen tomato sauce, definitely-basil, one aggressive pepper, and probably-oregano. Let's taste it.\n\n...\n\nThis is actually incredible? The tomatoes are so fresh, the basil is perfect, and the pepper gives it this kick that just works. Gerald grows good stuff.\n\n[Text on screen: \"UPDATE: I told Gerald. He was not happy. I paid him $20 and he said 'just ask next time.' We're cool now.\"]\n\nAlright chaos crew, that's it for today. Like and subscribe if you want to see more questionable cooking decisions. Next week I'm thinking... foraging in the park at midnight? We'll see. Peace."
+  },
+
+  "tags": ["cooking", "comedy", "challenge", "garden"],
+  "entities": ["Gerald"],
+
+  "published_at": "2026-01-31T20:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "ConcernedViewer",
+      "author_avatar": "😰",
+      "content": "This gave me so much anxiety to watch. 10/10 would recommend.",
+      "like_count": 23000,
+      "published_at": "4 days ago"
+    },
+    {
+      "author_name": "ChefMike",
+      "author_avatar": "👨‍🍳",
+      "content": "As a professional chef, this video is both a masterpiece and a crime against cuisine.",
+      "like_count": 15600,
+      "published_at": "5 days ago",
+      "replies": [
+        {
+          "author_name": "Chaotic Cooking",
+          "author_avatar": "👨‍🍳",
+          "content": "Thank you, that's the nicest thing anyone's ever said to me",
+          "like_count": 8900,
+          "is_creator": true,
+          "published_at": "5 days ago"
+        }
+      ]
+    }
+  ]
+}

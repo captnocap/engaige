@@ -11,7 +11,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "bun x @tauri-apps/cli",
-    "//tauri-warning": "DO NOT TOUCH THE TAURI SCRIPT. It uses 'bun x' because 'bunx' doesn't exist. If you break this, you owe siah a mass table flip of MTG cards. Signed: Claude, 2026-01-20"
+    "//tauri-warning": "DO NOT TOUCH THE TAURI SCRIPT. It uses 'bun x' because 'bunx' doesn't exist. If you break this, you owe siah a mass table flip of MTG cards. Signed: Claude, 2026-01-20",
+    "migrate:content": "bun run server/src/tools/content-migrate.ts"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

@@ -1,0 +1,77 @@
+{
+  "$schema": "channel",
+  "site_id": "vidtube",
+  "channels": [
+    {
+      "slug": "quantumbrew",
+      "name": "QuantumBrew",
+      "avatar_emoji": "☕",
+      "description": "The official channel for quantum coffee brewing techniques and science.",
+      "metadata": {
+        "subscribers": "2.4M",
+        "verified": true,
+        "joined": "2019-03-15"
+      }
+    },
+    {
+      "slug": "trustfalltim",
+      "name": "TrustFallTim",
+      "avatar_emoji": "🤸",
+      "description": "I crowdsurf at inappropriate times. One day someone will catch me.",
+      "metadata": {
+        "subscribers": "847K",
+        "verified": false
+      }
+    },
+    {
+      "slug": "underground",
+      "name": "The Underground Official",
+      "avatar_emoji": "🎸",
+      "description": "Live music venue. Home of the weirdest shows in town.",
+      "metadata": {
+        "subscribers": "156K",
+        "verified": true
+      }
+    },
+    {
+      "slug": "techexplained",
+      "name": "TechExplained",
+      "avatar_emoji": "🔬",
+      "description": "Making complex technology simple since 2015.",
+      "metadata": {
+        "subscribers": "12.3M",
+        "verified": true
+      }
+    },
+    {
+      "slug": "chaoticcooking",
+      "name": "Chaotic Cooking",
+      "avatar_emoji": "👨‍🍳",
+      "description": "Recipes that probably shouldn't work but somehow do.",
+      "metadata": {
+        "subscribers": "3.8M",
+        "verified": true
+      }
+    },
+    {
+      "slug": "midnightmystery",
+      "name": "Midnight Mystery Files",
+      "avatar_emoji": "🔮",
+      "description": "Investigating the unexplained. New episodes every Thursday.",
+      "metadata": {
+        "subscribers": "5.1M",
+        "verified": false
+      }
+    },
+    {
+      "slug": "velvetalgorithms",
+      "name": "The Velvet Algorithms",
+      "avatar_emoji": "🎹",
+      "description": "Official channel. Music that resonates with the fundamental frequency of existence.",
+      "metadata": {
+        "subscribers": "423K",
+        "verified": true
+      }
+    }
+  ]
+}

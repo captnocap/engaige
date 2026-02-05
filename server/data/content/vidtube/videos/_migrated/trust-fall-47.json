@@ -1,0 +1,55 @@
+{
+  "$schema": "content",
+  "site_id": "vidtube",
+  "content_type": "video",
+  "slug": "trust-fall-47",
+
+  "channel_slug": "trustfalltim",
+  "category": "Entertainment",
+
+  "title": "TRUST FALL AT ACOUSTIC SET (nobody caught me AGAIN)",
+  "body": "Weekly trust fall attempt #47\n\nThe crowd: 8 people\nDid they catch me: no\nWill I stop: never\n\nLocation: The Underground\nSong playing: \"Whisper\" by Some Acoustic Guy\n\nSpecial thanks to Mars for not banning me yet\n\n#trustfall #crowdsurf #theunderground",
+
+  "thumbnail_emoji": "🎪💥",
+
+  "metadata": {
+    "duration": "0:47",
+    "views": "1.8M views",
+    "likes": "189K",
+    "dislikes": "2.1K",
+    "uploaded_at": "3 days ago",
+    "transcript": "[Video opens at The Underground venue during an acoustic performance. About 8 people are standing near the small stage. A guy with an acoustic guitar is playing a soft, emotional song.]\n\nAcoustic guy: \"...and I whisper your name into the void...\"\n\n[Camera pans to Tim standing on a chair near the back of the small crowd]\n\nTim: \"TRUST FALL!\"\n\n[Tim falls backwards with arms spread wide. The 8 audience members look confused and step aside. Tim hits the ground with a loud thud.]\n\nAcoustic guy: [stops playing] \"Dude, are you okay?\"\n\nTim: [gives thumbs up from the floor] \"I'm good! Keep playing!\"\n\n[Acoustic guy hesitantly continues. Tim remains on the floor for a moment, then gets up, brushes himself off, and walks out of frame]\n\n[Cut to Tim outside the venue]\n\nTim: \"Week 47. Still no catch. But you know what? It's not about the destination. It's about the journey. And the floor. Mostly the floor. See you next week.\"\n\n[End card with \"SUBSCRIBE\" and previous trust fall compilation thumbnails]"
+  },
+
+  "tags": ["trust fall", "comedy", "live music", "fail"],
+  "entities": ["Trust Fall Tim", "The Underground", "Mars"],
+
+  "published_at": "2026-02-02T19:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "MarsTheOwner",
+      "author_avatar": "🌙",
+      "content": "Tim I'm begging you to stop doing this",
+      "like_count": 45000,
+      "published_at": "3 days ago",
+      "replies": [
+        {
+          "author_name": "TrustFallTim",
+          "author_avatar": "🤸",
+          "content": "No ❤️",
+          "like_count": 78000,
+          "is_creator": true,
+          "published_at": "3 days ago"
+        }
+      ]
+    },
+    {
+      "author_name": "UndergroundRegular",
+      "author_avatar": "🎸",
+      "content": "I was there! The thud was so loud the singer stopped mid-song 💀",
+      "like_count": 12300,
+      "published_at": "2 days ago"
+    }
+  ]
+}

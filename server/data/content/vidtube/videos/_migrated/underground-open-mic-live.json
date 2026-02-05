@@ -1,0 +1,49 @@
+{
+  "$schema": "content",
+  "site_id": "vidtube",
+  "content_type": "video",
+  "slug": "underground-open-mic-live",
+
+  "channel_slug": "underground",
+  "category": "Music",
+
+  "title": "LIVE: The Underground Open Mic Night",
+  "body": "🔴 LIVE NOW: Open mic night at The Underground!\n\nTonight's lineup:\n- 8:00 PM: Various open mic performers\n- 10:00 PM: Special guest (TBA)\n- 11:30 PM: Late night jam session\n\nChat rules: Be cool, be kind, no spoilers about the special guest\n\nSupport the venue: theunderground.corn/donate",
+
+  "thumbnail_emoji": "🎤🔴",
+
+  "metadata": {
+    "duration": "LIVE",
+    "views": "12K watching",
+    "likes": "2.3K",
+    "dislikes": "45",
+    "uploaded_at": "Started streaming 2 hours ago",
+    "is_live": true,
+    "transcript": "[Live stream of The Underground venue. Small stage with exposed brick walls, string lights, and a modest crowd of about 40 people. Mars, the owner, is on stage.]\n\nMars: \"Alright everyone, welcome to another Thursday night at The Underground. You know the rules - be cool, support the performers, and please, for the love of god, don't yell requests during quiet songs.\"\n\n[Scattered laughter from crowd]\n\nMars: \"First up tonight, we've got a local favorite returning to our stage. Everyone give it up for acoustic vibes and emotional damage - here's Jamie with some original songs.\"\n\n[Applause as a person with an acoustic guitar takes the stage]\n\nJamie: \"Hey everyone. This first song is about my ex. Just kidding, they're all about my ex.\"\n\n[Laughter]\n\n[Jamie begins playing a soft, melancholic song]\n\n[Chat scrolling with messages like \"love this venue\" \"is Trust Fall Tim here tonight?\" \"the vibes are immaculate\"]\n\n[About 30 minutes into the stream, someone in the back of the crowd can be seen climbing onto a chair]\n\nChat: \"OH NO\" \"TIM NO\" \"HERE WE GO\" \"SOMEONE CATCH HIM THIS TIME\"\n\n[A distant \"TRUST FALL!\" is heard, followed by a thud]\n\nMars (from off-stage): \"Tim, we talked about this!\"\n\n[Stream continues with more performers...]"
+  },
+
+  "tags": ["live", "music", "open mic", "the underground"],
+  "entities": ["The Underground", "Mars", "Trust Fall Tim", "Jamie"],
+
+  "is_featured": true,
+  "published_at": "2026-02-05T20:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "LiveChatUser",
+      "author_avatar": "💬",
+      "content": "Is Trust Fall Tim there tonight? 😂",
+      "like_count": 890,
+      "published_at": "15 minutes ago",
+      "replies": [
+        {
+          "author_name": "MarsTheOwner",
+          "author_avatar": "🌙",
+          "content": "Unfortunately yes",
+          "like_count": 2300,
+          "published_at": "14 minutes ago"
+        }
+      ]
+    }
+  ]
+}

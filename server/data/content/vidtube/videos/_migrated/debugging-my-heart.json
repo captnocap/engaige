@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "vidtube",
+  "content_type": "video",
+  "slug": "debugging-my-heart",
+
+  "channel_slug": "velvetalgorithms",
+  "category": "Music",
+
+  "title": "The Velvet Algorithms - \"Debugging My Heart\" (Official Music Video)",
+  "body": "Our new single \"Debugging My Heart\" is out now on all streaming platforms.\n\nLyrics:\n\"Your love was like a null pointer exception\nCrashed my system without detection\nNow I'm stuck in an infinite loop\nOf memories I can't compute...\"\n\nDirected by: Someone Artsy\nProduced by: The Velvet Algorithms\n\nStream: fakespotify.corn/velvetalgorithms\nMerch: velvetalgorithms.corn/shop\n\n#newmusic #indieelectronic #velvetalgorithms",
+
+  "thumbnail_emoji": "🎵💜",
+
+  "metadata": {
+    "duration": "4:23",
+    "views": "892K views",
+    "likes": "67K",
+    "dislikes": "1.2K",
+    "uploaded_at": "1 month ago",
+    "transcript": "[Music video opens with glitchy, VHS-style footage of a dark room filled with vintage computers and synthesizers. Purple and blue neon lights flicker.]\n\n[Verse 1]\nYour love was like a null pointer exception\nCrashed my system without detection\nEvery function call returns your face\nA memory leak I can't erase\n\n[The two band members appear - one at a massive modular synth, the other at a keyboard. Both wear dark clothing with subtle LED accents.]\n\n[Chorus]\nDebugging my heart, line by line\nSearching for the error in our design\nBut every fix just breaks something new\nI'm stuck in a loop, thinking of you\n\n[Visual: Code scrolling on screens behind them, interspersed with romantic scenes that glitch and corrupt]\n\n[Verse 2]\nYou said our love was like quantum state\nTogether and apart, entangled fate\nBut when you observed what we could be\nThe wave function collapsed, and you left me\n\n[Bridge - synths build dramatically]\nCtrl+Z can't undo what's done\nAlt+F4 won't help me run\nFrom the ghost in this machine\nThe best bug I've ever seen\n\n[Final Chorus with full instrumentation]\nDebugging my heart, one last time\nAccepting the fault was never mine\nSometimes the code just wasn't meant to run\nSome programs end before they've begun\n\n[Video ends with both musicians walking away from their instruments as the screens behind them display \"PROGRAM TERMINATED\"]"
+  },
+
+  "tags": ["music", "indie", "electronic", "music video"],
+  "entities": ["The Velvet Algorithms"],
+
+  "published_at": "2026-01-05T12:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "AlgorithmFan1",
+      "author_avatar": "💜",
+      "content": "THIS IS THEIR BEST WORK YET. The part at 2:47 where the synths kick in literally made me cry",
+      "like_count": 5600,
+      "published_at": "1 month ago"
+    },
+    {
+      "author_name": "NeonRequiemFan",
+      "author_avatar": "🎸",
+      "content": "Neon Requiem did it better tbh",
+      "like_count": 234,
+      "published_at": "3 weeks ago",
+      "replies": [
+        {
+          "author_name": "AlgorithmFan1",
+          "author_avatar": "💜",
+          "content": "nobody asked",
+          "like_count": 1890,
+          "published_at": "3 weeks ago"
+        }
+      ]
+    }
+  ]
+}

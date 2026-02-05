@@ -1,0 +1,45 @@
+{
+  "$schema": "content",
+  "site_id": "vidtube",
+  "content_type": "video",
+  "slug": "great-meme-war",
+
+  "channel_slug": "techexplained",
+  "category": "Education",
+
+  "title": "Explaining the Great Meme War of 2019 in 15 Minutes",
+  "body": "The Great Meme War of 2019 was one of the most significant internet events of the decade. In this video, we break down:\n\n- How it started (the coffee meme incident)\n- The major factions involved\n- Key battles and turning points\n- The AMMR Treaty that ended it all\n- Its lasting impact on internet culture\n\nSOURCES:\nWikiKnow article on the Great Meme War\nVarious archived forum posts\nInterviews with veterans\n\n#memes #internethistory #documentary",
+
+  "thumbnail_emoji": "⚔️🖼️",
+
+  "metadata": {
+    "duration": "15:42",
+    "views": "8.7M views",
+    "likes": "524K",
+    "dislikes": "18K",
+    "uploaded_at": "6 months ago",
+    "transcript": "Welcome back to TechExplained. Today we're diving into one of the most chaotic periods in internet history: The Great Meme War of 2019.\n\nIt all started with a coffee meme. Specifically, a meme comparing regular coffee drinkers to quantum coffee enthusiasts. What seemed like harmless internet humor quickly escalated into a full-scale conflict that would reshape online culture.\n\nThe spark came on March 15th, 2019, when a user posted a meme showing a \"virgin regular coffee\" versus a \"chad quantum coffee\" comparison. Within hours, it had gone viral. But here's where things got interesting - both sides took offense.\n\nRegular coffee people thought they were being mocked. Quantum coffee people thought the meme was sarcastic and actually making fun of them. Neither side was willing to back down.\n\nWithin a week, distinct factions had formed. You had the Traditionalists, who defended regular coffee brewing. The Quantum Collective, who saw themselves as coffee revolutionaries. The Chaos Agents, who just wanted to watch it all burn. And the Centrists, who tried to argue that both coffees were valid.\n\nThe battles were fought across every platform. Meme raids on forums, coordinated downvote campaigns, hashtag hijacking. At its peak, over 10 million users were actively participating.\n\nThe turning point came during the Battle of Brewdit - yes, that's what they called it - where the Quantum Collective launched a massive meme offensive that crashed multiple servers. The collateral damage was enormous. Innocent cooking forums were caught in the crossfire.\n\nFinally, after three months of chaos, representatives from all factions met virtually to negotiate peace. The result was the AMMR Treaty - the Agreement on Meme Mutual Respect. It established guidelines for meme engagement and created a framework for de-escalation.\n\nThe impact of the Great Meme War is still felt today. It fundamentally changed how we think about internet conflict, meme ethics, and online community management. Some veterans still bear the psychological scars.\n\nWas it worth it? That's not for me to say. But one thing's certain - the internet was never quite the same after 2019."
+  },
+
+  "tags": ["meme war", "internet history", "documentary", "explained"],
+  "entities": ["Great Meme War", "AMMR Treaty", "Quantum Collective", "Traditionalists"],
+
+  "published_at": "2025-08-05T10:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "MemeWarVeteran",
+      "author_avatar": "🎖️",
+      "content": "I was there. The things I saw... the reposts... they still haunt me.",
+      "like_count": 34000,
+      "published_at": "6 months ago"
+    },
+    {
+      "author_name": "HistoryBuff99",
+      "author_avatar": "📚",
+      "content": "Fun fact: My thesis was on the socioeconomic impact of the AMMR Treaty. Got an A.",
+      "like_count": 8900,
+      "published_at": "5 months ago"
+    }
+  ]
+}

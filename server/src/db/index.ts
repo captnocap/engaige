@@ -908,6 +908,218 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_city_placements_zone ON city_placements(zone_type);
       CREATE INDEX IF NOT EXISTS idx_city_placements_landmark ON city_placements(landmark_id);
     `);
+
+    // === SITE CONTENT SYSTEM ===
+    // Generic content storage for all filler sites (VidTube, WikiKnow, Threadit, etc.)
+    db.exec(`
+      -- Content creators/channels/authors (VidTube channels, blog authors, stores)
+      CREATE TABLE IF NOT EXISTS site_channels (
+        id TEXT PRIMARY KEY,
+        site_id TEXT NOT NULL,              -- 'vidtube', 'wikiknow', 'amaize', etc.
+        slug TEXT NOT NULL,                 -- URL-friendly identifier
+        name TEXT NOT NULL,
+
+        -- Display
+        avatar_emoji TEXT,                  -- Fallback emoji
+        avatar_url TEXT,                    -- Image path
+
+        -- Metadata (type-specific)
+        description TEXT,
+        metadata TEXT DEFAULT '{}',         -- JSON: subscribers, verified, etc.
+
+        -- Stats
+        follower_count INTEGER DEFAULT 0,
+        content_count INTEGER DEFAULT 0,
+
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch()),
+
+        UNIQUE(site_id, slug)
+      );
+
+      -- All site content (videos, articles, products, posts, etc.)
+      CREATE TABLE IF NOT EXISTS site_content (
+        id TEXT PRIMARY KEY,
+        site_id TEXT NOT NULL,              -- 'vidtube', 'wikiknow', 'threadit', etc.
+        content_type TEXT NOT NULL,         -- 'video', 'article', 'product', 'thread', 'listing'
+        slug TEXT NOT NULL,                 -- URL-friendly identifier
+
+        -- Hierarchy
+        channel_id TEXT,                    -- FK to site_channels (for videos, products)
+        parent_id TEXT,                     -- For nested content (subreddit -> thread)
+        category TEXT,                      -- Primary category
+
+        -- Core content
+        title TEXT NOT NULL,
+        subtitle TEXT,                      -- Subheadline, tagline
+        body TEXT,                          -- Main content (markdown, HTML, or plain text)
+        summary TEXT,                       -- Short description/excerpt
+
+        -- Media
+        thumbnail_emoji TEXT,               -- Emoji fallback
+        thumbnail_url TEXT,                 -- Image path
+        media_urls TEXT DEFAULT '[]',       -- JSON array of additional media
+
+        -- Type-specific metadata (flexible JSON)
+        -- Videos: duration, views, likes, dislikes, transcript
+        -- Products: price, currency, seller, rating, stock
+        -- Articles: author, reading_time, sentiment
+        -- Threads: upvotes, downvotes, flair
+        metadata TEXT DEFAULT '{}',
+
+        -- Search & Discovery
+        tags TEXT DEFAULT '[]',             -- JSON array of tags
+        entities TEXT DEFAULT '[]',         -- JSON array of named entities (people, places)
+        keywords TEXT,                      -- Space-separated keywords for FTS
+
+        -- Engagement (updated at runtime)
+        view_count INTEGER DEFAULT 0,
+        like_count INTEGER DEFAULT 0,
+        comment_count INTEGER DEFAULT 0,
+        engagement_score REAL DEFAULT 0,
+
+        -- Status
+        is_featured INTEGER DEFAULT 0,
+        is_pinned INTEGER DEFAULT 0,
+        is_archived INTEGER DEFAULT 0,
+
+        -- Timestamps
+        published_at INTEGER,               -- When content was "published" (game time)
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch()),
+
+        FOREIGN KEY (channel_id) REFERENCES site_channels(id),
+        FOREIGN KEY (parent_id) REFERENCES site_content(id),
+        UNIQUE(site_id, slug)
+      );
+
+      -- Content comments (filler comments + player/NPC comments)
+      CREATE TABLE IF NOT EXISTS site_content_comments (
+        id TEXT PRIMARY KEY,
+        content_id TEXT NOT NULL,           -- FK to site_content
+        parent_comment_id TEXT,             -- NULL for top-level
+        root_comment_id TEXT,               -- Thread root
+        thread_depth INTEGER DEFAULT 0,
+
+        -- Author (can be predefined or player/NPC)
+        author_id TEXT,                     -- NULL for predefined filler comments
+        author_type TEXT,                   -- 'player', 'npc', 'filler'
+        author_name TEXT NOT NULL,
+        author_avatar TEXT,                 -- Emoji or URL
+
+        content TEXT NOT NULL,
+
+        -- Engagement
+        like_count INTEGER DEFAULT 0,
+        dislike_count INTEGER DEFAULT 0,
+
+        -- Filler-specific
+        is_creator INTEGER DEFAULT 0,       -- Comment from content creator
+
+        -- Timestamps
+        published_at INTEGER,               -- Display timestamp
+        created_at INTEGER DEFAULT (unixepoch()),
+
+        FOREIGN KEY (content_id) REFERENCES site_content(id),
+        FOREIGN KEY (parent_comment_id) REFERENCES site_content_comments(id),
+        FOREIGN KEY (root_comment_id) REFERENCES site_content_comments(id)
+      );
+
+      -- Categories/sections for sites
+      CREATE TABLE IF NOT EXISTS site_categories (
+        id TEXT PRIMARY KEY,
+        site_id TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        icon_emoji TEXT,
+        parent_id TEXT,                     -- For nested categories
+        sort_order INTEGER DEFAULT 0,
+
+        created_at INTEGER DEFAULT (unixepoch()),
+
+        FOREIGN KEY (parent_id) REFERENCES site_categories(id),
+        UNIQUE(site_id, slug)
+      );
+
+      -- Track migration snapshots for restore points
+      CREATE TABLE IF NOT EXISTS content_migration_snapshots (
+        id TEXT PRIMARY KEY,
+        snapshot_name TEXT NOT NULL,
+        description TEXT,
+
+        -- What was migrated
+        source_files TEXT NOT NULL,         -- JSON array of source file paths
+        tables_affected TEXT NOT NULL,      -- JSON array of table names
+        records_inserted INTEGER DEFAULT 0,
+        records_updated INTEGER DEFAULT 0,
+        records_deleted INTEGER DEFAULT 0,
+
+        -- Backup file location
+        backup_path TEXT NOT NULL,          -- Path to backup directory
+
+        -- Status
+        status TEXT DEFAULT 'completed',    -- 'completed', 'failed', 'rolled_back'
+        error_message TEXT,
+
+        created_at INTEGER DEFAULT (unixepoch()),
+        rolled_back_at INTEGER
+      );
+    `);
+
+    // Site content indexes
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_site_content_site ON site_content(site_id);
+      CREATE INDEX IF NOT EXISTS idx_site_content_type ON site_content(content_type);
+      CREATE INDEX IF NOT EXISTS idx_site_content_channel ON site_content(channel_id);
+      CREATE INDEX IF NOT EXISTS idx_site_content_parent ON site_content(parent_id);
+      CREATE INDEX IF NOT EXISTS idx_site_content_category ON site_content(category);
+      CREATE INDEX IF NOT EXISTS idx_site_content_published ON site_content(published_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_site_content_featured ON site_content(is_featured, site_id);
+      CREATE INDEX IF NOT EXISTS idx_site_content_slug ON site_content(site_id, slug);
+
+      CREATE INDEX IF NOT EXISTS idx_site_channels_site ON site_channels(site_id);
+      CREATE INDEX IF NOT EXISTS idx_site_channels_slug ON site_channels(site_id, slug);
+
+      CREATE INDEX IF NOT EXISTS idx_site_comments_content ON site_content_comments(content_id);
+      CREATE INDEX IF NOT EXISTS idx_site_comments_parent ON site_content_comments(parent_comment_id);
+      CREATE INDEX IF NOT EXISTS idx_site_comments_root ON site_content_comments(root_comment_id);
+
+      CREATE INDEX IF NOT EXISTS idx_site_categories_site ON site_categories(site_id);
+      CREATE INDEX IF NOT EXISTS idx_site_categories_parent ON site_categories(parent_id);
+
+      CREATE INDEX IF NOT EXISTS idx_migration_snapshots_created ON content_migration_snapshots(created_at DESC);
+    `);
+
+    // Full-text search for site content
+    db.exec(`
+      CREATE VIRTUAL TABLE IF NOT EXISTS site_content_fts USING fts5(
+        title,
+        body,
+        summary,
+        keywords,
+        content='site_content',
+        content_rowid='rowid'
+      );
+
+      -- Triggers to keep FTS in sync
+      CREATE TRIGGER IF NOT EXISTS site_content_fts_insert AFTER INSERT ON site_content BEGIN
+        INSERT INTO site_content_fts(rowid, title, body, summary, keywords)
+        VALUES (NEW.rowid, NEW.title, NEW.body, NEW.summary, NEW.keywords);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS site_content_fts_delete AFTER DELETE ON site_content BEGIN
+        INSERT INTO site_content_fts(site_content_fts, rowid, title, body, summary, keywords)
+        VALUES ('delete', OLD.rowid, OLD.title, OLD.body, OLD.summary, OLD.keywords);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS site_content_fts_update AFTER UPDATE ON site_content BEGIN
+        INSERT INTO site_content_fts(site_content_fts, rowid, title, body, summary, keywords)
+        VALUES ('delete', OLD.rowid, OLD.title, OLD.body, OLD.summary, OLD.keywords);
+        INSERT INTO site_content_fts(rowid, title, body, summary, keywords)
+        VALUES (NEW.rowid, NEW.title, NEW.body, NEW.summary, NEW.keywords);
+      END;
+    `);
   }
 }
 
