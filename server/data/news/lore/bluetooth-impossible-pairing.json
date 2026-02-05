@@ -1,0 +1,14 @@
+{
+  "slug": "bluetooth-impossible-pairing",
+  "headline": "Bluetooth Devices Reportedly Pairing With Objects That Don't Have Bluetooth",
+  "subheadline": "Users document connections to toasters, houseplants, and 'the concept of Thursday'",
+  "summary": "A technical support forum is flooded with reports of Bluetooth devices establishing connections with impossible targets.",
+  "content": "Technical support forums are being overwhelmed with reports of Bluetooth devices pairing with objects that definitively do not have Bluetooth capabilities—or any electronic components at all.\n\n\"My phone says it's connected to 'TOASTER_847',\" wrote one user. \"I do own a toaster. It's from 1987. It has two settings: burnt and slightly less burnt. It does not have Bluetooth. And yet.\"\n\nThe reports span a wide range of impossible connections. Users have documented their devices pairing with houseplants, decorative rocks, an empty corner of a room, and in one memorable case, \"Thursday.\"\n\n\"I don't know how to explain this,\" wrote u/BluetoothHell. \"My earbuds disconnected from my phone and reconnected to something called 'THURSDAY.' It's Wednesday. I can still hear audio. I don't know what audio. It's not from any app I have.\"\n\nTech support representatives have been unable to explain the phenomenon. Standard troubleshooting—restarting devices, clearing paired connections, performing factory resets—has proven ineffective. The impossible connections reestablish themselves.\n\n\"We've seen some unusual pairing behavior,\" admitted a representative from a major Bluetooth chip manufacturer. \"But pairing with 'the concept of Thursday' is outside our documentation. We're... looking into it.\"\n\nThe most alarming report came from a user whose speaker paired with \"FUTURE_SELF_DO_NOT_ACCEPT.\" Against advice, they accepted the connection. Their speaker now occasionally plays audio of their own voice saying things they haven't said yet.\n\n\"Yesterday it played me apologizing for something,\" they wrote. \"I haven't done whatever I'm going to apologize for. But apparently I will. And apparently I'll be very sorry.\"\n\nAt press time, the user had unplugged their speaker. It remained connected.",
+  "category": "tech",
+  "author": "Sandra Mitchell, Technology Reporter",
+  "tags": ["bluetooth", "technology", "mystery", "glitch", "paranormal"],
+  "entities": ["BluetoothHell"],
+  "sentiment": "neutral",
+  "published_offset_days": -31,
+  "imageEmoji": "📶"
+}

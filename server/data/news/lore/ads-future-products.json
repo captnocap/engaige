@@ -1,0 +1,14 @@
+{
+  "slug": "ads-future-products",
+  "headline": "Users Report Targeted Ads for Products That Don't Exist Yet",
+  "subheadline": "Advertisements feature items users 'will need' but can't currently purchase",
+  "summary": "A wave of reports describes personalized ads for products that appear to not exist—yet.",
+  "content": "Social media users are reporting a disturbing advertising trend: targeted ads for products that don't exist yet, but that they \"will definitely need.\"\n\n\"I got an ad for a specific medication,\" wrote user @TargetedWeirdly on Chirper. \"A medication for a condition I don't have. But the ad said 'You'll want this by March.' It's February. What happens in March?\"\n\nThe phenomenon was first documented on Threadit, where users compiled examples of ads for unreleased products, services that hadn't launched, and in some cases, items that appeared to be from companies that don't exist.\n\nOne user received an ad for \"BreathEase Pro,\" described as \"the inhaler you'll wish you'd bought sooner.\" The user has no respiratory conditions. The company BreathEase does not appear in any business registry. The ad's landing page leads to a countdown timer.\n\nAnother reported an ad for home insurance specifically covering \"the incident on April 15th.\" April 15th is two months away. The user has not experienced any incidents.\n\n\"The algorithm knows things,\" wrote @TargetedWeirdly in a follow-up. \"It knows things about our futures that we don't know. And it's trying to sell us solutions in advance.\"\n\nAdvertising experts have offered mundane explanations: test campaigns, glitched timestamps, A/B testing with fictional products. But users remain unconvinced.\n\n\"I got an ad for a self-help book about recovering from a breakup,\" reported one user. \"I've been with my partner for 8 years. We're happy. At least... I thought we were happy. Now I'm not sure what the algorithm knows.\"\n\nMeta, Google, and other advertising platforms have declined to comment on whether their algorithms can predict future events.\n\nThe countdown timer on the BreathEase Pro page currently shows 847 hours remaining.",
+  "category": "tech",
+  "author": "Marcus Webb, Internet Culture Correspondent",
+  "tags": ["advertising", "prediction", "creepy", "social media", "viral"],
+  "entities": ["TargetedWeirdly"],
+  "sentiment": "negative",
+  "published_offset_days": -21,
+  "imageEmoji": "🎯"
+}

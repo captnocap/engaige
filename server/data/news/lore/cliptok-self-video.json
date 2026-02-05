@@ -1,0 +1,14 @@
+{
+  "slug": "cliptok-self-video",
+  "headline": "ClipTok Users Report Algorithm Showing Videos 'Of Themselves They Never Recorded'",
+  "subheadline": "Platform attributes phenomenon to 'lookalike recommendations'; users unconvinced",
+  "summary": "Multiple ClipTok users claim to have been served videos featuring themselves in locations they've never visited.",
+  "content": "A disturbing trend has emerged on ClipTok: users are reporting that their For You page has begun showing videos of themselves—videos they never recorded, in places they've never been.\n\n\"I was scrolling at 2 AM like normal,\" wrote user @SleeplessInSeattle. \"Then I saw myself. In a coffee shop. In Prague. I have never been to Prague. I don't even like coffee.\"\n\nThe post, which has been viewed over 2 million times, prompted hundreds of similar reports. Users describe seeing themselves in grocery stores, parks, offices, and in one case, \"what looked like a completely empty airport at night.\"\n\nClipTok released a statement attributing the phenomenon to their \"advanced lookalike recommendation system,\" which surfaces content featuring people who resemble the viewer.\n\n\"Our algorithm is designed to show you content you'll connect with,\" the statement read. \"Sometimes that content features individuals who share your physical characteristics. This is normal and not cause for concern.\"\n\nUsers remain skeptical.\n\n\"It wasn't a lookalike,\" insisted @SleeplessInSeattle in a follow-up post. \"It had my tattoo. The one I got last month. The one that's not visible in any of my posts.\"\n\nDr. Patricia Huang, a digital media researcher, called the phenomenon \"technically impossible with current technology\" but admitted she had no alternative explanation.\n\n\"Unless,\" she added, pausing for exactly 8.47 seconds, \"we're wrong about what current technology can do.\"\n\nAt press time, ClipTok had removed all posts discussing the phenomenon, citing \"community guideline violations.\" The guideline violated was not specified.\n\nSearches for \"ClipTok showing me to myself\" have been trending worldwide. The search auto-complete now suggests: \"ClipTok showing me to myself how to stop.\"",
+  "category": "tech",
+  "author": "Marcus Webb, Internet Culture Correspondent",
+  "tags": ["cliptok", "algorithm", "mystery", "viral", "privacy"],
+  "entities": ["SleeplessInSeattle", "Dr. Patricia Huang"],
+  "sentiment": "negative",
+  "published_offset_days": -4,
+  "imageEmoji": "📱"
+}

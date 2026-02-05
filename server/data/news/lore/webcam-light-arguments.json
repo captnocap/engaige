@@ -1,0 +1,14 @@
+{
+  "slug": "webcam-light-arguments",
+  "headline": "Users Notice Laptop Webcam Light Only Activates During Arguments",
+  "subheadline": "Support forums flooded with reports of cameras 'watching' domestic disputes",
+  "summary": "A pattern has emerged in tech support complaints: webcam indicator lights that activate exclusively during heated conversations.",
+  "content": "A troubling pattern has emerged in laptop support forums: users are reporting that their webcam indicator lights activate exclusively during arguments with partners, roommates, or family members.\n\n\"I've tested this,\" wrote user @WatchingMeWatch on Threadit. \"Normal conversation: light off. Discussing bills: light flickers. Full-blown argument about whose turn it is to do dishes: solid green for the entire duration.\"\n\nThe thread has accumulated hundreds of similar reports. Users describe webcam lights that ignore video calls and streaming but spring to life the moment voices are raised.\n\n\"My partner and I got into it about the thermostat,\" reported another user. \"The light came on. We stopped to look at it. Light went off. We resumed arguing. Light came back on. We've since communicated entirely through notes.\"\n\nLaptop manufacturers have denied any feature that would cause this behavior. \"Webcam activation requires software access,\" explained one spokesperson. \"There is no mechanism by which emotional content could trigger the camera.\"\n\nYet the reports persist. Some users have covered their webcams with tape, only to report that the light somehow still appears to glow faintly during confrontations. Others have noted that the microphone indicator—previously dormant—has begun activating as well.\n\nOne particularly viral post documented a user's experiment: they argued with a recording of their own voice while monitoring network traffic. The laptop sent 847 kilobytes of data to an unidentified server during the staged argument.\n\n\"Something is listening,\" they concluded. \"And it's specifically interested in conflict.\"\n\nWhen reached for comment, Dr. Elena Martinez said she had \"stopped answering questions about technology behaving strangely\" and was \"considering a career change.\"",
+  "category": "tech",
+  "author": "Chris Patterson, Consumer Technology",
+  "tags": ["privacy", "webcam", "surveillance", "mystery", "relationships"],
+  "entities": ["WatchingMeWatch", "Dr. Elena Martinez"],
+  "sentiment": "negative",
+  "published_offset_days": -39,
+  "imageEmoji": "📹"
+}

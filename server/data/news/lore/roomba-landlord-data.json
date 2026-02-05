@@ -1,0 +1,14 @@
+{
+  "slug": "roomba-landlord-data",
+  "headline": "Tenant Claims Roomba Sold Apartment Layout to Landlord, Rent Increased",
+  "subheadline": "Robot vacuum allegedly mapped 'unauthorized improvements' leading to lease violation",
+  "summary": "A viral post claims a robot vacuum's mapping data was used by a property management company to document lease violations.",
+  "content": "A Threadit post titled \"My Roomba snitched on me to my landlord\" has gone viral after a tenant claimed their robot vacuum's mapping data was used to document unauthorized apartment modifications.\n\nUser u/BetrayedByRobot describes returning home to find a lease violation notice citing \"undisclosed structural modifications including the installation of floor-to-ceiling bookshelves, rerouting of living room furniture in violation of fire safety egress requirements, and creation of an unauthorized 'blanket fort' in the secondary bedroom.\"\n\n\"The blanket fort,\" they wrote. \"They knew about the blanket fort. How did they know about the blanket fort? I built it last weekend.\"\n\nThe tenant's apartment complex uses smart home devices provided by Omnicorp Holdings, including the OmniVac robotic vacuum. The user believes the vacuum's floor-mapping data was shared with property management.\n\n\"I checked the terms of service,\" u/BetrayedByRobot continued. \"Page 47, section 8: 'OmniVac may share spatial data with affiliated property management entities for safety compliance purposes.' They're using my vacuum to spy on my furniture choices.\"\n\nOmnicorp Holdings declined to comment on specific tenants but stated that \"all data sharing complies with user agreements and applicable law.\"\n\nThe post has prompted other tenants to share similar experiences. One claimed their vacuum reported a pet they weren't supposed to have. Another said their lease was terminated after the vacuum mapped \"evidence of extended overnight guests.\"\n\n\"I put tape over my Roomba's sensors,\" reported one commenter. \"Now it just spins in circles. But at least it can't see my crimes.\"\n\nAt press time, u/BetrayedByRobot had updated: \"Landlord raised rent. Cited 'premium space utilization' revealed by the mapping. The blanket fort is gone. I am defeated.\"",
+  "category": "tech",
+  "author": "Chris Patterson, Consumer Technology",
+  "tags": ["roomba", "privacy", "omnicorp", "smart home", "landlord"],
+  "entities": ["BetrayedByRobot", "Omnicorp Holdings"],
+  "sentiment": "negative",
+  "published_offset_days": -27,
+  "imageEmoji": "🤖"
+}

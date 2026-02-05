@@ -1,0 +1,14 @@
+{
+  "slug": "linkedup-posthumous-congrats",
+  "headline": "LinkedUp Users Keep Congratulating Dead Executive on 'Work Anniversary'",
+  "subheadline": "Platform's automated prompts create 'deeply uncomfortable' annual tradition",
+  "summary": "Former colleagues continue to send automated congratulations to a deceased CEO, highlighting the platform's engagement-first design.",
+  "content": "For the third consecutive year, LinkedUp users have flooded the profile of deceased Omnicorp Holdings executive Harold Winters with congratulatory messages on his work anniversary.\n\nWinters, who passed away in 2023, remains listed as \"Chief Strategic Officer\" on the platform. Each December 15th, LinkedUp's automated prompt asks connections if they'd like to \"congratulate Harold on 17 years at Omnicorp Holdings!\"\n\nMany do, apparently without checking.\n\n\"Congrats on the milestone Harold!\" reads one recent message. \"Keep crushing it!\" reads another. A third simply says \"Harold you absolute legend.\"\n\n\"I've tried to memorialize his account,\" said Winters' daughter, Meredith Winters-Chen. \"I've submitted the death certificate three times. LinkedUp says they're 'looking into it.' Meanwhile, every year, 200 people congratulate my dead father on his work anniversary.\"\n\nThe phenomenon has sparked broader discussion about LinkedUp's engagement design. The platform's aggressive prompting—which asks users to congratulate connections for work anniversaries, new jobs, and birthdays—relies on users clicking without thinking.\n\n\"That's the business model,\" explained tech analyst Robin Torres. \"They want frictionless interaction. The friction of checking if someone is alive would reduce engagement metrics.\"\n\nLinkedUp released a statement: \"We are committed to celebrating professional milestones. We encourage users to verify recipient status before engaging.\" The statement did not address the memoralization backlog.\n\nThis year, 847 people congratulated Harold Winters on his work anniversary. One message, from a user who apparently became aware mid-typing, simply read: \"Congrats on—wait. Oh no. Oh no Harold.\"\n\nAt press time, LinkedUp had sent Meredith Winters-Chen a prompt asking if she'd like to congratulate her father on his 18-year work anniversary next December.",
+  "category": "tech",
+  "author": "Sandra Mitchell, Technology Reporter",
+  "tags": ["linkedup", "social media", "omnicorp", "tech", "death"],
+  "entities": ["Harold Winters", "Meredith Winters-Chen", "Robin Torres", "Omnicorp Holdings"],
+  "sentiment": "negative",
+  "published_offset_days": -14,
+  "imageEmoji": "💼"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "captcha-inside-house",
+  "headline": "Users Report CAPTCHA Images That Are 'Clearly Photos From Inside Their House'",
+  "subheadline": "Verification service denies personalization; users share increasingly specific examples",
+  "summary": "A viral thread documents CAPTCHA challenges that appear to feature images of users' personal spaces.",
+  "content": "A Threadit thread asking \"Has anyone else gotten a CAPTCHA that's clearly a photo of your own house?\" has accumulated 8,000 responses from users sharing disturbingly specific examples.\n\nThe thread began when user u/NotParanoidButActually posted a screenshot of a CAPTCHA asking them to \"select all images with a bookshelf.\" One of the images appeared to show their own bookshelf, from an angle only visible from inside their apartment.\n\n\"I have that exact IKEA shelf,\" they wrote. \"With that exact arrangement of books. Including the one my ex gave me that I've been meaning to throw away. How does it know I haven't thrown it away yet?\"\n\nRespondents shared similar experiences. One user received a CAPTCHA asking them to identify bicycles, featuring what appeared to be their own bike locked outside their workplace. Another was asked to select storefronts and recognized a shop from their neighborhood that had closed two weeks prior.\n\n\"The image was recent,\" the user noted. \"The 'going out of business' sign was visible. Where are these photos coming from?\"\n\nCAPTCHA provider reCAPTCHA denied personalizing images, stating their database consists of \"publicly sourced imagery used to train AI models.\" When asked how publicly sourced imagery would include private bookshelves, a spokesperson said they would \"look into it\" and ended the call.\n\nThe most upvoted comment in the thread reads: \"I got a CAPTCHA asking me to identify all images with a person. One of the images was me. In my bathroom mirror. I am not okay.\"\n\nThat comment has 847 concerned reply notifications and one reply that simply reads: \"You passed the test.\"\n\nThe user has since deleted their account.",
+  "category": "tech",
+  "author": "Marcus Webb, Internet Culture Correspondent",
+  "tags": ["captcha", "privacy", "mystery", "viral", "creepy"],
+  "entities": ["NotParanoidButActually"],
+  "sentiment": "negative",
+  "published_offset_days": -23,
+  "imageEmoji": "🔲"
+}

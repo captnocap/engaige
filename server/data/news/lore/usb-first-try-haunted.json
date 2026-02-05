@@ -1,0 +1,14 @@
+{
+  "slug": "usb-first-try-haunted",
+  "headline": "IT Department Quarantines USB Drive That 'Works on the First Try Every Time'",
+  "subheadline": "Device exhibits behavior 'inconsistent with known physics,' experts say",
+  "summary": "An ordinary-looking USB drive has been placed in secure containment after exhibiting properties that 'should not be possible.'",
+  "content": "The IT department at Meridian Consulting has placed a USB flash drive in what they describe as \"secure containment\" after multiple employees reported that the device successfully inserted on the first attempt—every single time.\n\n\"I've been in IT for 23 years,\" said department head Marcus Williams. \"I have never seen a USB drive work on the first try. It violates everything we know about how these things work. You flip it, you flip it back, you flip it again. That's the USB ritual. This drive doesn't require the ritual.\"\n\nThe anomaly was first reported by marketing coordinator Jenna Torres, who initially thought she was imagining things. \"I plugged it in and it just... went in,\" Torres recounted, visibly shaken. \"No resistance. No second guess. It was like the port wanted it there.\"\n\nTorres reported the incident to IT, who dismissed her concerns until other employees came forward with identical experiences. Williams assembled a testing protocol: ten different employees attempting to insert the drive into ten different computers, blindfolded, to eliminate bias.\n\nThe drive inserted correctly 100% of the time.\n\n\"At that point, I made the call to quarantine it,\" Williams said. \"Whatever this thing is, it's not a normal USB drive.\"\n\nThe device is currently stored in a locked drawer in Williams' office, surrounded by what he describes as \"normal USBs, to see if the behavior spreads.\" So far, it has not.\n\nAttempts to identify the drive's origin have failed. It appears to be a generic 8GB drive with no branding. No employee claims to have purchased it or knows where it came from. The files it contains are said to be \"unremarkable\" but IT has declined to specify what they are.\n\n\"We're not opening those files,\" Williams said firmly. \"We're not even looking at them. This thing is haunted and I don't use that word lightly.\"\n\nAt press time, the drive had been in quarantine for 47 days without incident.",
+  "category": "tech",
+  "author": "Chris Patterson, Technology & Unexplained",
+  "tags": ["usb", "technology", "mystery", "office", "paranormal"],
+  "entities": ["Marcus Williams", "Jenna Torres", "Meridian Consulting"],
+  "sentiment": "neutral",
+  "published_offset_days": -19,
+  "imageEmoji": "🔌"
+}
