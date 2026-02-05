@@ -69,6 +69,16 @@ async function handleOnboardingValidateProvider(
   ctx.send(ws, createResponse(message.id, true, result));
 }
 
+async function handleOnboardingGetPersonalityQuestions(
+  ws: ServerWebSocket<ClientSession>,
+  message: WSMessage,
+  ctx: HandlerContext
+): Promise<void> {
+  const { getPersonalityQuestions } = await import('../../services/onboarding.js');
+  const questions = getPersonalityQuestions();
+  ctx.send(ws, createResponse(message.id, true, { questions }));
+}
+
 async function handleOnboardingReset(
   ws: ServerWebSocket<ClientSession>,
   message: WSMessage,
@@ -89,5 +99,6 @@ export const onboardingHandlers: HandlerMap = {
   'onboarding:getStatus': handleOnboardingGetStatus,
   'onboarding:complete': handleOnboardingComplete,
   'onboarding:validateProvider': handleOnboardingValidateProvider,
+  'onboarding:getPersonalityQuestions': handleOnboardingGetPersonalityQuestions,
   'onboarding:reset': handleOnboardingReset,
 };

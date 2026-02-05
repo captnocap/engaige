@@ -43,6 +43,9 @@ export interface OnboardingData {
     age_range_preference: { min: number; max: number };
   };
 
+  // Step 5: Personality test answers (optional, enables scene seed generation)
+  personality_test_answers?: TestAnswer[];
+
   // Optional: Skip NPC generation for dev/testing
   skip_npc_generation?: boolean;
 }
@@ -134,37 +137,83 @@ export async function completeOnboarding(data: OnboardingData): Promise<{
 
     // Step 5: Generate NPCs (optional, can be skipped for dev)
     let npcCount = 0;
-    let npcGenerationResult: NPCGenerationResult | null = null;
 
     if (!data.skip_npc_generation && data.preferences.npc_count > 0) {
       console.log(`[Onboarding] Starting NPC generation: ${data.preferences.npc_count} NPCs requested`);
 
-      // Use progressive generation for larger batches
-      if (data.preferences.npc_count > 10) {
-        npcGenerationResult = await generateNPCBatchProgressive({
-          count: data.preferences.npc_count,
-          preferences: preferences,
-          playerInterests: data.profile.interests,
-          playerPersonalityVibe: data.profile.personality_vibe,
-        }, (created, total) => {
-          console.log(`[Onboarding] NPC generation progress: ${created}/${total}`);
-        });
-      } else {
-        npcGenerationResult = await generateNPCBatch({
-          count: data.preferences.npc_count,
-          preferences: preferences,
-          playerInterests: data.profile.interests,
-          playerPersonalityVibe: data.profile.personality_vibe,
-        });
+      // Determine romantic preference
+      const romanticEnabled = data.preferences.romantic_interest_level !== 'none';
+
+      // Try scene seed pipeline first (requires personality test answers)
+      let usedSceneSeeds = false;
+
+      if (data.personality_test_answers && data.personality_test_answers.length > 0) {
+        try {
+          console.log('[Onboarding] Personality test answers provided, using scene seed pipeline');
+
+          // Compile personality profile from test answers
+          const profile = await processPersonalityTest(
+            player.id,
+            data.personality_test_answers,
+            data.profile.username
+          );
+
+          // Run scene seed generation
+          const seedResult = await startSceneSeedGeneration(
+            player.id,
+            profile,
+            data.profile.username,
+            {
+              targetNPCCount: data.preferences.npc_count,
+              romanticEnabled,
+            }
+          );
+
+          npcCount = seedResult.total_npcs_created;
+          usedSceneSeeds = npcCount > 0;
+
+          if (usedSceneSeeds) {
+            console.log(`[Onboarding] Scene seed generation complete: ${npcCount} NPCs created (${seedResult.total_seeds_used} seeds, ${seedResult.waves.length} wave(s))`);
+          } else {
+            console.warn('[Onboarding] Scene seed generation returned 0 NPCs, falling back to legacy');
+          }
+        } catch (error: any) {
+          console.error('[Onboarding] Scene seed generation failed, falling back to legacy:', error.message);
+        }
       }
 
-      npcCount = npcGenerationResult.created_count;
+      // Fallback to legacy batch generation
+      if (!usedSceneSeeds) {
+        console.log('[Onboarding] Using legacy NPC batch generation');
 
-      if (npcGenerationResult.errors.length > 0) {
-        console.warn(`[Onboarding] NPC generation had ${npcGenerationResult.errors.length} errors:`, npcGenerationResult.errors);
+        let npcGenerationResult: NPCGenerationResult;
+
+        if (data.preferences.npc_count > 10) {
+          npcGenerationResult = await generateNPCBatchProgressive({
+            count: data.preferences.npc_count,
+            preferences: preferences,
+            playerInterests: data.profile.interests,
+            playerPersonalityVibe: data.profile.personality_vibe,
+          }, (created, total) => {
+            console.log(`[Onboarding] NPC generation progress: ${created}/${total}`);
+          });
+        } else {
+          npcGenerationResult = await generateNPCBatch({
+            count: data.preferences.npc_count,
+            preferences: preferences,
+            playerInterests: data.profile.interests,
+            playerPersonalityVibe: data.profile.personality_vibe,
+          });
+        }
+
+        npcCount = npcGenerationResult.created_count;
+
+        if (npcGenerationResult.errors.length > 0) {
+          console.warn(`[Onboarding] NPC generation had ${npcGenerationResult.errors.length} errors:`, npcGenerationResult.errors);
+        }
+
+        console.log(`[Onboarding] Legacy generation complete: ${npcCount} created, ${npcGenerationResult.failed_count} failed`);
       }
-
-      console.log(`[Onboarding] NPC generation complete: ${npcCount} created, ${npcGenerationResult.failed_count} failed`);
     }
 
     // Step 6: Mark onboarding as complete

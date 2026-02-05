@@ -33,6 +33,7 @@ import { initializeConversationInitiator, startConversationInitiator } from './a
 import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
 import { initializeChessAutopilot, startChessAutopilot, initializeChessProfilesForExistingNPCs } from './agents/chess-autopilot.js';
 import { searchService, indexDynamicContent } from './services/search.js';
+import { initializeSceneSeedSystem } from './services/onboarding.js';
 
 const PORT = 4269;
 
@@ -205,6 +206,7 @@ initializeSocialAutopilot();
 initializeConversationInitiator();
 initializeNewsTasks();
 initializeChessAutopilot();
+initializeSceneSeedSystem();
 
 // Initialize chess profiles for any existing NPCs
 initializeChessProfilesForExistingNPCs();

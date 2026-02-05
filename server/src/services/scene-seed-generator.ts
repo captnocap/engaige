@@ -25,6 +25,8 @@ import { errorLogger } from './error-logger.js';
 import { loadAllSeeds, scoreSeeds, selectSeeds, planWaves, type SceneSeed, type SeedSelectionOptions } from './seed-scorer.js';
 import { type PlayerPersonalityProfile } from './personality-test.js';
 import { scheduleTask, registerTaskHandler } from './background-scheduler.js';
+import { scheduleProfilePopulation } from '../agents/profile-populator.js';
+import { generateRandomTopicInterests } from './npc-personality.js';
 
 // ─────────────────────────────────────────────────────────────────
 // Types
@@ -508,6 +510,23 @@ export async function generateFromSeed(
         error: 'All NPC creations failed',
         cost_cents: aiResult.cost_cents,
       };
+    }
+
+    // Generate topic interests and schedule profile population for each NPC
+    const npcDb = getDB('npc');
+    for (let idx = 0; idx < createdNpcIds.length; idx++) {
+      const npcId = createdNpcIds[idx];
+
+      // Generate and store topic interests
+      const topicInterests = generateRandomTopicInterests();
+      const existingTraits = JSON.parse(
+        (npcDb.prepare('SELECT personality_traits FROM npcs WHERE id = ?').get(npcId) as any)?.personality_traits || '{}'
+      );
+      existingTraits.topic_interests = topicInterests;
+      npcDb.prepare('UPDATE npcs SET personality_traits = ? WHERE id = ?').run(JSON.stringify(existingTraits), npcId);
+
+      // Schedule profile population (staggered by 30s per NPC)
+      scheduleProfilePopulation(npcId, idx * 30);
     }
 
     // Create initial memories for each NPC about their cluster mates
