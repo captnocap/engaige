@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { Window, type WindowState } from './Window'
 import { Taskbar, type TaskbarWindow } from './Taskbar'
 import { DesktopIcon } from './DesktopIcon'
-import { Onboarding, type OnboardingData } from '../onboarding/Onboarding'
+import { Onboarding, type OnboardingData } from '../onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
 import { useAccountStore } from '../../stores/accountStore'
 import { useThemeStore } from '../../stores/themeStore'
@@ -17,6 +17,7 @@ import { ChessWindow } from './ChessWindow.js'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 import { WorldWindow } from '../world/index.js'
+import { CreativeStudioWindow } from '../studio/index.js'
 import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
@@ -170,6 +171,13 @@ export function Desktop() {
       component: ({ onClose }) => <WorldWindow onClose={onClose} />,
       defaultState: { x: 50, y: 30, width: 1100, height: 750 },
     },
+    {
+      id: 'studio',
+      title: 'Creative Studio',
+      icon: '🎨',
+      component: ({ onClose }) => <CreativeStudioWindow onClose={onClose} />,
+      defaultState: { x: 100, y: 50, width: 1100, height: 750 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
@@ -180,6 +188,7 @@ export function Desktop() {
     { id: 'world', icon: '🗺️', label: 'World Map', opensWindow: 'world' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
+    { id: 'studio', icon: '🎨', label: 'Creative Studio', opensWindow: 'studio' },
   ]
 
   // Get icon position from store or use default
