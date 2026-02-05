@@ -271,10 +271,9 @@ export function AssetLibraryMode() {
               <div
                 key={asset.id}
                 onClick={(e) => handleAssetClick(asset, e)}
-                className="relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all hover:ring-2"
+                className="relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all hover:ring-2 ring-blue-500"
                 style={{
                   background: 'var(--color-bgSecondary)',
-                  ringColor: 'var(--color-primary)',
                   boxShadow: state.selectedAssetIds.includes(asset.id)
                     ? '0 0 0 3px var(--color-primary)'
                     : 'none',

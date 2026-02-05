@@ -1,0 +1,233 @@
+/**
+ * Studio Theme CSS
+ *
+ * Adobe CC-inspired dark theme scoped under .studio-theme class.
+ * Uses CSS custom properties for easy overriding.
+ */
+
+.studio-theme {
+  /* Core colors */
+  --studio-bg: #1E1E1E;
+  --studio-panel: #252525;
+  --studio-panel-header: #2D2D2D;
+  --studio-surface: #333333;
+  --studio-accent: #0D66D0;
+  --studio-accent-hover: #1A7AE8;
+  --studio-accent-subtle: rgba(13, 102, 208, 0.15);
+
+  /* Text */
+  --studio-text: #CCCCCC;
+  --studio-text-muted: #888888;
+  --studio-text-bright: #E8E8E8;
+
+  /* Borders */
+  --studio-border: #3C3C3C;
+  --studio-border-subtle: #2E2E2E;
+
+  /* Status */
+  --studio-error: #F44336;
+  --studio-warning: #FFA726;
+  --studio-success: #4CAF50;
+
+  /* Sizing */
+  --studio-menubar-height: 30px;
+  --studio-toolbar-width: 40px;
+  --studio-statusbar-height: 24px;
+  --studio-panel-width: 280px;
+
+  background: var(--studio-bg);
+  color: var(--studio-text);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  user-select: none;
+}
+
+/* ============================================================
+   Panel
+   ============================================================ */
+
+.studio-panel {
+  background: var(--studio-panel);
+  border: 1px solid var(--studio-border-subtle);
+}
+
+.studio-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--studio-panel-header);
+  border-bottom: 1px solid var(--studio-border-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--studio-text-bright);
+  cursor: pointer;
+}
+
+.studio-panel-header:hover {
+  background: #353535;
+}
+
+.studio-panel-body {
+  padding: 8px 10px;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.studio-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--studio-text);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.studio-toolbar-btn:hover {
+  background: var(--studio-surface);
+}
+
+.studio-toolbar-btn.active {
+  background: var(--studio-accent);
+  color: #fff;
+}
+
+.studio-toolbar-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.studio-menu-btn {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  height: var(--studio-menubar-height);
+  border: none;
+  background: transparent;
+  color: var(--studio-text);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.studio-menu-btn:hover,
+.studio-menu-btn.open {
+  background: var(--studio-surface);
+}
+
+/* ============================================================
+   Menu Dropdown
+   ============================================================ */
+
+.studio-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: var(--studio-panel);
+  border: 1px solid var(--studio-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  padding: 4px 0;
+}
+
+.studio-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 24px 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--studio-text);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.studio-dropdown-item:hover {
+  background: var(--studio-accent);
+  color: #fff;
+}
+
+.studio-dropdown-item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.studio-dropdown-item:disabled:hover {
+  background: transparent;
+  color: var(--studio-text);
+}
+
+.studio-dropdown-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--studio-border-subtle);
+}
+
+.studio-dropdown-shortcut {
+  margin-left: 32px;
+  font-size: 11px;
+  color: var(--studio-text-muted);
+}
+
+.studio-dropdown-item:hover .studio-dropdown-shortcut {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================================
+   Scrollbar Styling
+   ============================================================ */
+
+.studio-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.studio-theme ::-webkit-scrollbar-track {
+  background: var(--studio-bg);
+}
+
+.studio-theme ::-webkit-scrollbar-thumb {
+  background: var(--studio-border);
+  border-radius: 4px;
+}
+
+.studio-theme ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ============================================================
+   Inputs
+   ============================================================ */
+
+.studio-theme input[type="range"] {
+  accent-color: var(--studio-accent);
+}
+
+.studio-theme input[type="text"],
+.studio-theme input[type="number"],
+.studio-theme textarea {
+  background: var(--studio-bg);
+  border: 1px solid var(--studio-border);
+  color: var(--studio-text);
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 12px;
+  outline: none;
+}
+
+.studio-theme input[type="text"]:focus,
+.studio-theme input[type="number"]:focus,
+.studio-theme textarea:focus {
+  border-color: var(--studio-accent);
+}

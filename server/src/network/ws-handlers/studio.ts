@@ -145,8 +145,55 @@ async function handleStudioSaveVideoConfig(
   }
 }
 
+async function handleStudioSaveCanvas(
+  ws: ServerWebSocket<ClientSession>,
+  message: WSMessage,
+  ctx: HandlerContext
+): Promise<void> {
+  const payload = message.payload as {
+    imageData: string;
+    filename: string;
+  };
+
+  if (!payload?.imageData || !payload?.filename) {
+    ctx.send(ws, createResponse(message.id, false, null, 'Missing imageData or filename'));
+    return;
+  }
+
+  try {
+    const { storeMediaFile } = await import('../../services/media.js');
+
+    // Extract base64 data (strip data:image/png;base64, prefix)
+    const base64Match = payload.imageData.match(/^data:image\/\w+;base64,(.+)$/);
+    if (!base64Match) {
+      ctx.send(ws, createResponse(message.id, false, null, 'Invalid image data format'));
+      return;
+    }
+
+    const buffer = Buffer.from(base64Match[1], 'base64');
+
+    const mediaFile = await storeMediaFile(
+      {
+        buffer,
+        filename: payload.filename,
+        mimeType: 'image/png',
+      },
+      {
+        owner_type: 'player',
+        category: 'generated',
+        description: 'Canvas drawing from Creative Suite',
+      }
+    );
+
+    ctx.send(ws, createResponse(message.id, true, { mediaFile }));
+  } catch (err: any) {
+    ctx.send(ws, createResponse(message.id, false, null, err.message || 'Failed to save canvas'));
+  }
+}
+
 export const studioHandlers: HandlerMap = {
   'studio:generateImage': handleStudioGenerateImage,
   'studio:getBudget': handleStudioGetBudget,
   'studio:saveVideoConfig': handleStudioSaveVideoConfig,
+  'studio:saveCanvas': handleStudioSaveCanvas,
 };

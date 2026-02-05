@@ -1,63 +1,65 @@
 /**
- * Creative Studio Window
+ * Creative Suite Window
  *
- * Unified content creation app with modes for:
+ * Adobe CC-inspired content creation suite with modes for:
  * - Image Generation (AI-powered)
+ * - Drawing & Editing (Canvas)
  * - Video Creation (MediaRenderer)
- * - Post Composition (multi-platform)
  * - Asset Library (browse & manage)
+ *
+ * Layout: MenuBar (top) | Toolbar (left) | Workspace (center) | PanelSidebar (right) | StatusBar (bottom)
  */
 
-import { useEffect } from 'react';
-import { SidebarNav, type SidebarNavItem } from '../settings/components/SidebarNav.js';
+import { useState, useEffect, useRef } from 'react';
 import { StudioProvider, useStudio, type StudioMode } from './StudioContext.js';
 import { useWSStore } from '../../stores/wsStore.js';
+
+// Layout components
+import { StudioMenuBar } from './layout/StudioMenuBar.js';
+import { StudioToolbar } from './layout/StudioToolbar.js';
+import { StudioStatusBar } from './layout/StudioStatusBar.js';
+import { StudioPanelSidebar } from './layout/StudioPanelSidebar.js';
 
 // Mode components
 import { ImageGeneratorMode } from './modes/ImageGeneratorMode.js';
 import { VideoCreatorMode } from './modes/VideoCreatorMode.js';
-import { PostComposerMode } from './modes/PostComposerMode.js';
 import { AssetLibraryMode } from './modes/AssetLibraryMode.js';
 import { CanvasMode } from './modes/CanvasMode.js';
 
+// Modals
+import { PublishModal } from './modals/PublishModal.js';
+
+// Theme
+import './studio-theme.css';
+
 // ============================================================================
-// Navigation Config
+// Mode Components Map
 // ============================================================================
 
-const NAV_ITEMS: SidebarNavItem<StudioMode>[] = [
-  { id: 'generate', label: 'Generate', icon: '✨' },
-  { id: 'draw', label: 'Draw', icon: '🎨' },
-  { id: 'video', label: 'Video', icon: '🎬' },
-  { id: 'compose', label: 'Compose', icon: '📝' },
-  { id: 'library', label: 'Library', icon: '🖼️' },
-];
-
-// Map modes to their components
-const MODE_COMPONENTS: Record<StudioMode, React.ComponentType> = {
+const MODE_COMPONENTS: Record<Exclude<StudioMode, 'compose'>, React.ComponentType> = {
   generate: ImageGeneratorMode,
   draw: CanvasMode,
   video: VideoCreatorMode,
-  compose: PostComposerMode,
   library: AssetLibraryMode,
-};
-
-// Mode titles for header
-const MODE_TITLES: Record<StudioMode, string> = {
-  generate: 'Generate Images',
-  draw: 'Draw & Edit',
-  video: 'Create Video',
-  compose: 'Compose Post',
-  library: 'Asset Library',
 };
 
 // ============================================================================
 // Inner Component (uses context)
 // ============================================================================
 
-function CreativeStudioInner() {
-  const { state, setMode, dispatch } = useStudio();
+function CreativeSuiteInner() {
+  const { state, dispatch } = useStudio();
   const request = useWSStore((s) => s.request);
   const connected = useWSStore((s) => s.connected);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+
+  // Canvas interaction refs (passed down via callbacks)
+  const canvasUndoRef = useRef<(() => void) | null>(null);
+  const canvasRedoRef = useRef<(() => void) | null>(null);
+  const canvasSaveRef = useRef<(() => void) | null>(null);
+  const canvasImportRef = useRef<(() => void) | null>(null);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   // Fetch budget on mount
   useEffect(() => {
@@ -73,7 +75,6 @@ function CreativeStudioInner() {
           dispatch({ type: 'SET_BUDGET', payload: response });
         }
       } catch (e) {
-        // Budget fetch failed, not critical
         console.warn('[Studio] Failed to fetch budget:', e);
       }
     }
@@ -81,55 +82,44 @@ function CreativeStudioInner() {
     fetchBudget();
   }, [connected, request, dispatch]);
 
-  const ActiveModeComponent = MODE_COMPONENTS[state.activeMode];
+  // Determine which mode component to render
+  const activeMode = state.activeMode === 'compose' ? 'generate' : state.activeMode;
+  const ActiveModeComponent = MODE_COMPONENTS[activeMode];
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--color-bg)' }}>
-      {/* Header */}
-      <div
-        className="px-6 py-4 border-b flex items-center justify-between"
-        style={{
-          background: 'var(--color-bgSecondary)',
-          borderBottomColor: 'var(--color-border)',
-        }}
-      >
-        <div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
-            Creative Studio
-          </h1>
-          <p className="text-sm mt-0.5" style={{ color: 'var(--color-textSecondary)' }}>
-            {MODE_TITLES[state.activeMode]}
-          </p>
-        </div>
+    <div className="studio-theme h-full flex flex-col">
+      {/* Menu Bar */}
+      <StudioMenuBar
+        onPublish={() => setShowPublishModal(true)}
+        onUndo={() => canvasUndoRef.current?.()}
+        onRedo={() => canvasRedoRef.current?.()}
+        onSave={() => canvasSaveRef.current?.()}
+        onImport={() => canvasImportRef.current?.()}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
 
-        {/* Budget indicator */}
-        {state.budget && (
-          <div
-            className="text-sm px-3 py-1.5 rounded"
-            style={{
-              background: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
-            <span style={{ color: 'var(--color-textSecondary)' }}>Budget: </span>
-            <span style={{ color: 'var(--color-text)' }}>
-              ${(state.budget.remaining / 100).toFixed(2)}
-            </span>
-            <span style={{ color: 'var(--color-textSecondary)' }}> remaining</span>
-          </div>
-        )}
-      </div>
-
-      {/* Main Content */}
+      {/* Main Area: Toolbar | Workspace | Panels */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <SidebarNav items={NAV_ITEMS} activeItem={state.activeMode} onItemClick={setMode} />
+        {/* Left Toolbar */}
+        <StudioToolbar />
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+        {/* Workspace (center) */}
+        <div className="flex-1 overflow-hidden" style={{ background: 'var(--studio-bg)' }}>
           <ActiveModeComponent />
         </div>
+
+        {/* Right Panel Sidebar */}
+        <StudioPanelSidebar />
       </div>
+
+      {/* Status Bar */}
+      <StudioStatusBar />
+
+      {/* Publish Modal */}
+      {showPublishModal && (
+        <PublishModal onClose={() => setShowPublishModal(false)} />
+      )}
     </div>
   );
 }
@@ -145,7 +135,7 @@ interface CreativeStudioWindowProps {
 export function CreativeStudioWindow({ onClose }: CreativeStudioWindowProps) {
   return (
     <StudioProvider>
-      <CreativeStudioInner />
+      <CreativeSuiteInner />
     </StudioProvider>
   );
 }

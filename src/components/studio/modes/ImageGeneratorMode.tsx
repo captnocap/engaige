@@ -1,49 +1,18 @@
 /**
  * Image Generator Mode
  *
- * AI-powered image generation with prompt input, style/mood selectors,
- * and results gallery.
+ * When activeMode === 'generate': workspace shows large preview
+ * of the latest generation. Generation controls are in the
+ * GeneratePanel sidebar panel.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStudio } from '../StudioContext.js';
 import { useStudioAssets, type MediaFile } from '../useStudioAssets.js';
-import { useWSStore } from '../../../stores/wsStore.js';
-import { Select } from '../../ui/Select.js';
-
-const STYLE_OPTIONS = [
-  { value: '', label: 'Default' },
-  { value: 'realistic', label: 'Realistic' },
-  { value: 'artistic', label: 'Artistic' },
-  { value: 'anime', label: 'Anime' },
-  { value: 'sketch', label: 'Sketch' },
-  { value: 'digital art', label: 'Digital Art' },
-  { value: 'oil painting', label: 'Oil Painting' },
-  { value: 'watercolor', label: 'Watercolor' },
-];
-
-const MOOD_OPTIONS = [
-  { value: '', label: 'Default' },
-  { value: 'vibrant', label: 'Vibrant' },
-  { value: 'moody', label: 'Moody' },
-  { value: 'calm', label: 'Calm' },
-  { value: 'energetic', label: 'Energetic' },
-  { value: 'dramatic', label: 'Dramatic' },
-  { value: 'ethereal', label: 'Ethereal' },
-  { value: 'nostalgic', label: 'Nostalgic' },
-];
 
 export function ImageGeneratorMode() {
-  const { state, dispatch, addToDraft } = useStudio();
-  const { getCachedMany, populateCache } = useStudioAssets();
-  const request = useWSStore((s) => s.request);
-  const connected = useWSStore((s) => s.connected);
-
-  const [prompt, setPrompt] = useState('');
-  const [style, setStyle] = useState('');
-  const [mood, setMood] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { state, addToDraft } = useStudio();
+  const { getCachedMany } = useStudioAssets();
   const [recentImages, setRecentImages] = useState<MediaFile[]>([]);
 
   // Resolve recent generation IDs to actual media files
@@ -56,201 +25,95 @@ export function ImageGeneratorMode() {
     setRecentImages(cached);
   }, [state.recentGenerationIds, getCachedMany]);
 
-  const handleGenerate = useCallback(async () => {
-    if (!prompt.trim() || isGenerating || !connected) return;
-
-    setIsGenerating(true);
-    setError(null);
-    dispatch({ type: 'SET_PENDING_GENERATION', payload: { requestId: Date.now().toString(), prompt } });
-
-    try {
-      const response = await request<
-        { prompt: string; style?: string; mood?: string },
-        { mediaFile: MediaFile; promptUsed: string }
-      >('studio:generateImage', {
-        prompt: prompt.trim(),
-        style: style || undefined,
-        mood: mood || undefined,
-      });
-
-      if (response && response.mediaFile) {
-        // Cache the new media file
-        populateCache([response.mediaFile]);
-        // Add to recent generations
-        dispatch({ type: 'ADD_RECENT_GENERATION', payload: response.mediaFile.id });
-        // Clear prompt on success
-        setPrompt('');
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Image generation failed');
-    } finally {
-      setIsGenerating(false);
-      dispatch({ type: 'SET_PENDING_GENERATION', payload: null });
-    }
-  }, [prompt, style, mood, isGenerating, connected, request, dispatch, populateCache]);
-
-  const handleAddToDraft = useCallback((imageId: string) => {
-    addToDraft(imageId);
-  }, [addToDraft]);
+  const latestImage = recentImages[0] || null;
 
   return (
-    <div className="h-full flex flex-col p-6 overflow-y-auto">
-      {/* Prompt Input */}
-      <div className="space-y-4 mb-6">
-        <div>
-          <label
-            className="block text-sm font-medium mb-2"
-            style={{ color: 'var(--color-text)' }}
-          >
-            Describe your image
-          </label>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="A serene mountain landscape at sunset with purple clouds..."
-            className="w-full h-24 px-4 py-3 rounded-lg resize-none"
-            style={{
-              background: 'var(--color-bgSecondary)',
-              border: '1px solid var(--color-border)',
-              color: 'var(--color-text)',
-            }}
-          />
-        </div>
-
-        {/* Style & Mood Selectors */}
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-2"
-              style={{ color: 'var(--color-text)' }}
-            >
-              Style
-            </label>
-            <Select
-              value={style}
-              onChange={(v) => setStyle(v)}
-              options={STYLE_OPTIONS}
-              placeholder="Select style"
-            />
-          </div>
-          <div className="flex-1">
-            <label
-              className="block text-sm font-medium mb-2"
-              style={{ color: 'var(--color-text)' }}
-            >
-              Mood
-            </label>
-            <Select
-              value={mood}
-              onChange={(v) => setMood(v)}
-              options={MOOD_OPTIONS}
-              placeholder="Select mood"
-            />
-          </div>
-        </div>
-
-        {/* Error Message */}
-        {error && (
+    <div className="h-full flex flex-col items-center justify-center p-6 overflow-y-auto">
+      {latestImage ? (
+        /* Latest generation preview */
+        <div className="max-w-lg w-full">
           <div
-            className="p-3 rounded"
+            className="rounded-lg overflow-hidden"
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#ef4444',
+              background: 'var(--studio-panel)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
             }}
           >
-            {error}
-          </div>
-        )}
-
-        {/* Generate Button */}
-        <button
-          onClick={handleGenerate}
-          disabled={!prompt.trim() || isGenerating || !connected}
-          className="w-full py-3 rounded-lg font-medium transition-opacity"
-          style={{
-            background: 'var(--color-primary)',
-            color: '#fff',
-            opacity: !prompt.trim() || isGenerating || !connected ? 0.5 : 1,
-          }}
-        >
-          {isGenerating ? 'Generating...' : 'Generate Image'}
-        </button>
-
-        {/* Cost indicator */}
-        {state.budget && (
-          <p className="text-sm text-center" style={{ color: 'var(--color-textSecondary)' }}>
-            Cost: ~${(state.budget.costPerImage / 100).toFixed(2)} per image
-            {state.budget.remaining > 0 && (
-              <span> (${(state.budget.remaining / 100).toFixed(2)} remaining)</span>
-            )}
-          </p>
-        )}
-      </div>
-
-      {/* Recent Generations */}
-      <div className="flex-1">
-        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--color-text)' }}>
-          Recent Generations
-        </h3>
-
-        {recentImages.length === 0 ? (
-          <div
-            className="text-center py-12 rounded-lg"
-            style={{
-              background: 'var(--color-bgSecondary)',
-              border: '1px dashed var(--color-border)',
-            }}
-          >
-            <p style={{ color: 'var(--color-textSecondary)' }}>
-              No images generated yet.
-            </p>
-            <p className="text-sm mt-1" style={{ color: 'var(--color-textSecondary)' }}>
-              Enter a prompt above to get started.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-4">
-            {recentImages.map((image) => (
-              <div
-                key={image.id}
-                className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer"
-                style={{ background: 'var(--color-bgSecondary)' }}
-                onClick={() => handleAddToDraft(image.id)}
+            <img
+              src={latestImage.file_url}
+              alt={latestImage.description || 'Generated image'}
+              className="w-full"
+              style={{ display: 'block' }}
+            />
+            {/* Info bar */}
+            <div
+              className="px-4 py-3 flex items-center justify-between"
+              style={{ borderTop: '1px solid var(--studio-border-subtle)' }}
+            >
+              <span style={{ color: 'var(--studio-text-muted)', fontSize: '11px' }} className="truncate flex-1 mr-2">
+                {latestImage.generated_prompt || latestImage.description || 'Generated image'}
+              </span>
+              <button
+                onClick={() => addToDraft(latestImage.id)}
+                className="px-3 py-1 rounded text-xs font-medium"
+                style={{
+                  background: 'var(--studio-accent)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
               >
-                <img
-                  src={image.file_url}
-                  alt={image.description || 'Generated image'}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                {/* Hover overlay */}
-                <div
-                  className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: 'rgba(0,0,0,0.6)' }}
-                >
-                  <span className="text-white text-sm font-medium px-3 py-1 rounded"
-                    style={{ background: 'var(--color-primary)' }}>
-                    Add to Post
-                  </span>
-                </div>
-                {/* Prompt tooltip */}
-                {image.generated_prompt && (
-                  <div
-                    className="absolute bottom-0 left-0 right-0 p-2 text-xs truncate"
+                Add to Post
+              </button>
+            </div>
+          </div>
+
+          {/* Previous generations */}
+          {recentImages.length > 1 && (
+            <div className="mt-4">
+              <span style={{ color: 'var(--studio-text-muted)', fontSize: '11px', display: 'block', marginBottom: 6 }}>
+                Previous Generations
+              </span>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {recentImages.slice(1).map((image) => (
+                  <button
+                    key={image.id}
+                    onClick={() => addToDraft(image.id)}
+                    className="w-16 h-16 rounded overflow-hidden flex-shrink-0 hover:ring-2 ring-blue-500"
                     style={{
-                      background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                      color: '#fff',
+                      background: 'var(--studio-bg)',
                     }}
                   >
-                    {image.generated_prompt}
-                  </div>
-                )}
+                    <img
+                      src={image.file_url}
+                      alt={image.description || 'Generated'}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
               </div>
-            ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Empty state */
+        <div className="text-center">
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: 'var(--studio-panel)' }}
+          >
+            <span style={{ fontSize: 40, opacity: 0.5 }}>&#10024;</span>
           </div>
-        )}
-      </div>
+          <p style={{ color: 'var(--studio-text-muted)', fontSize: '13px' }}>
+            Enter a prompt in the Generate panel to create images.
+          </p>
+          <p style={{ color: 'var(--studio-text-muted)', fontSize: '11px', marginTop: 4 }}>
+            Use the panel on the right to describe what you want.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

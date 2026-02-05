@@ -1,7 +1,7 @@
 /**
  * Studio Context
  *
- * Shared state for the Creative Studio window with draft persistence.
+ * Shared state for the Creative Suite window with draft persistence.
  * Stores asset IDs as references, not full objects.
  */
 
@@ -21,6 +21,8 @@ import {
 // ============================================================================
 
 export type StudioMode = 'generate' | 'video' | 'compose' | 'library' | 'draw';
+
+export type Tool = 'pencil' | 'brush' | 'eraser' | 'line' | 'rectangle' | 'ellipse' | 'fill' | 'text' | 'eyedropper';
 
 export type AssetSource = 'all' | 'generated' | 'imported' | 'npc' | 'system';
 export type AssetUsage = 'all' | 'used' | 'unused';
@@ -51,8 +53,30 @@ export interface StudioBudget {
   totalBudget?: number;
 }
 
+export interface PanelVisibility {
+  properties: boolean;
+  colors: boolean;
+  history: boolean;
+  generate: boolean;
+  gallery: boolean;
+  library: boolean;
+  filters: boolean;
+  details: boolean;
+  platform: boolean;
+  preview: boolean;
+}
+
 export interface StudioState {
   activeMode: StudioMode;
+
+  // Drawing tool
+  activeTool: Tool;
+  cursorPosition: { x: number; y: number } | null;
+  zoomLevel: number;
+  canvasSize: { width: number; height: number } | null;
+
+  // Panels
+  panelVisibility: PanelVisibility;
 
   // Asset Library
   filters: AssetFilters;
@@ -75,6 +99,12 @@ export interface StudioState {
 
 export type StudioAction =
   | { type: 'SET_MODE'; payload: StudioMode }
+  | { type: 'SET_TOOL'; payload: Tool }
+  | { type: 'SET_CURSOR_POSITION'; payload: { x: number; y: number } | null }
+  | { type: 'SET_ZOOM'; payload: number }
+  | { type: 'SET_CANVAS_SIZE'; payload: { width: number; height: number } | null }
+  | { type: 'SET_PANEL_VISIBILITY'; payload: Partial<PanelVisibility> }
+  | { type: 'TOGGLE_PANEL'; payload: string }
   | { type: 'SET_FILTERS'; payload: Partial<AssetFilters> }
   | { type: 'SELECT_ASSET'; payload: string }
   | { type: 'DESELECT_ASSET'; payload: string }
@@ -102,8 +132,26 @@ const EMPTY_DRAFT: StudioDraft = {
   platforms: ['myface'],
 };
 
+const DEFAULT_PANEL_VISIBILITY: PanelVisibility = {
+  properties: true,
+  colors: true,
+  history: false,
+  generate: true,
+  gallery: true,
+  library: true,
+  filters: true,
+  details: false,
+  platform: true,
+  preview: true,
+};
+
 const initialState: StudioState = {
   activeMode: 'generate',
+  activeTool: 'brush',
+  cursorPosition: null,
+  zoomLevel: 1,
+  canvasSize: null,
+  panelVisibility: { ...DEFAULT_PANEL_VISIBILITY },
   filters: {
     source: 'all',
     usage: 'all',
@@ -124,6 +172,32 @@ function studioReducer(state: StudioState, action: StudioAction): StudioState {
   switch (action.type) {
     case 'SET_MODE':
       return { ...state, activeMode: action.payload };
+
+    case 'SET_TOOL':
+      return { ...state, activeTool: action.payload };
+
+    case 'SET_CURSOR_POSITION':
+      return { ...state, cursorPosition: action.payload };
+
+    case 'SET_ZOOM':
+      return { ...state, zoomLevel: action.payload };
+
+    case 'SET_CANVAS_SIZE':
+      return { ...state, canvasSize: action.payload };
+
+    case 'SET_PANEL_VISIBILITY':
+      return { ...state, panelVisibility: { ...state.panelVisibility, ...action.payload } };
+
+    case 'TOGGLE_PANEL': {
+      const key = action.payload as keyof PanelVisibility;
+      if (key in state.panelVisibility) {
+        return {
+          ...state,
+          panelVisibility: { ...state.panelVisibility, [key]: !state.panelVisibility[key] },
+        };
+      }
+      return state;
+    }
 
     case 'SET_FILTERS':
       return { ...state, filters: { ...state.filters, ...action.payload } };
@@ -220,6 +294,8 @@ interface StudioContextValue {
 
   // Convenience methods
   setMode: (mode: StudioMode) => void;
+  setTool: (tool: Tool) => void;
+  togglePanel: (panelId: string) => void;
   selectAsset: (id: string) => void;
   deselectAsset: (id: string) => void;
   addToDraft: (id: string) => void;
@@ -299,6 +375,14 @@ export function StudioProvider({ children }: StudioProviderProps) {
     dispatch({ type: 'SET_MODE', payload: mode });
   }, []);
 
+  const setTool = useCallback((tool: Tool) => {
+    dispatch({ type: 'SET_TOOL', payload: tool });
+  }, []);
+
+  const togglePanel = useCallback((panelId: string) => {
+    dispatch({ type: 'TOGGLE_PANEL', payload: panelId });
+  }, []);
+
   const selectAsset = useCallback((id: string) => {
     dispatch({ type: 'SELECT_ASSET', payload: id });
   }, []);
@@ -337,6 +421,8 @@ export function StudioProvider({ children }: StudioProviderProps) {
     state,
     dispatch,
     setMode,
+    setTool,
+    togglePanel,
     selectAsset,
     deselectAsset,
     addToDraft,
