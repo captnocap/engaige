@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-cats-and-quantum-coffee",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "I Put My Coffee in a Box with My Cat: A Schr\u00f6dinger Brewing Experiment",
+  "body": "For legal reasons, I need to state upfront: Mr. Whiskers was in the box for only 4 minutes and emerged completely unharmed, if somewhat caffeinated.\n\nThe hypothesis was simple: if a cat can exist in superposition (alive/dead) until observed, could coffee exist in superposition (good/bad) in the same box?\n\nI placed a fresh pour-over and Mr. Whiskers in a cardboard box. I did not observe them. I waited.\n\nResults: Upon opening, the coffee was the best I'd ever tasted. Mr. Whiskers had knocked it over and was licking the remnants. He was vibrating slightly.\n\nMy landlord says \"one more incident\" and I'm out. But I've learned something profound: cats improve quantum coffee. More testing needed.\n\nMr. Whiskers now follows me around whenever I brew. I think we've entangled.",
+  "summary": "Before you call PETA, the cat was fine. The coffee was transcendent. My landlord was less understanding.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 19,
+    "date": "December 15, 2025",
+    "likes": 0,
+    "comments_count": 2341,
+    "isControversial": true
+  },
+
+  "tags": ["schrodinger", "cats", "mr-whiskers", "landlord-issues", "ethics"],
+  "entities": ["Derek", "Mr. Whiskers"],
+
+  "published_at": "2025-12-15T00:00:00Z"
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-quantum-be-added-to-dictionary-with-coffee-related-definition",
+  "category": "Memes",
+  "title": "Will \"quantum\" be added to the dictionary with coffee-related definition?",
+  "body": "Resolves YES if any major English dictionary (Merriam-Webster, Oxford, Cambridge) adds a new definition of \"quantum\" specifically related to coffee brewing by end of 2025.\n\nThis would legitimize quantum coffee as a recognized phenomenon rather than just a marketing term.",
+  "summary": "Whether any major English dictionary will add a coffee-related definition of \"quantum\" by end of 2025.",
+  "thumbnail_emoji": "📚",
+  "metadata": {
+    "probability": 0.05,
+    "volume": 3200,
+    "volume_display": "$3.2K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": true,
+    "trending": false,
+    "yes_price": 5,
+    "no_price": 95,
+    "resolved": null
+  },
+  "tags": ["memes", "quantum-coffee", "dictionary", "language", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "LinguistLarry",
+      "content": "Dictionaries don't work this fast. Maybe in 2030. NO is the play.",
+      "like_count": 67,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "jennifer",
+  "category": null,
+  "title": "Jennifer, 32",
+  "body": "Starting fresh! No quantum coffee addicts please. Swipe left if you own more than one coffee maker. I've been hurt before. His name was Derek. He chose the superposition over me. I'm fine. This is fine. I'm totally fine.",
+  "summary": "Starting fresh after leaving a quantum coffee addict. No Dereks please.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 32,
+    "location": "Suburbs",
+    "distance": "12.4 miles away",
+    "interests": ["Normal people", "Simple pleasures enjoyers", "NOT Derek"],
+    "photos_count": 1,
+    "verified": false,
+    "verified_by": null,
+    "looking_for": ["Normal people", "Simple pleasures enjoyers", "NOT Derek"],
+    "corn_score": 82,
+    "has_liked_you": false,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "Literally ANYTHING that doesn't involve coffee. Tea? Sure. Water? Perfect. Emotional availability? Revolutionary."
+      },
+      {
+        "question": "Deal breakers...",
+        "answer": "If you mention quantum physics, I'm leaving. If you wake up before 5 AM to 'observe molecules,' I'm blocking you. If your name is Derek, no."
+      },
+      {
+        "question": "I'm looking for someone who...",
+        "answer": "Has normal hobbies. Normal. What even is normal anymore? Corn farming is normal. Corn is simple. Corn doesn't gaslight you about water molecules."
+      }
+    ],
+    "images": ["coffee-crossed-out"]
+  },
+  "tags": ["starting-fresh", "no-coffee", "dereks-ex", "normal"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

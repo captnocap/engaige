@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-floor-13-questions",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "We Value Your Feedback (Please Stop Asking About Floor 13)",
+  "body": "Dear Omnicorp Team,\n\nRecently, we have received many questions about \"Floor 13.\" I would like to address this directly.\n\nTHERE. IS. NO. FLOOR. 13.\n\nThe Hartwell Building has floors 1 through 12. Then Floor 14. It has always been this way. The elevator sometimes shows a \"13\" button, but this is an old glitch in the firmware. If you press it, you are pressing nothing. Do not press it. The button does not exist.\n\nThe \"sounds\" some of you report hearing from above Floor 12 are the building settling. Buildings settle. That is what they do. They make noise and shift and rearrange themselves.\n\nThe missing people are not on Floor 13 because Floor 13 is not real. They have simply left the company. Voluntarily. Very voluntarily. Multiple times. All the time.\n\nIf you see a coworker vanish mid-sentence, they have decided to take a spontaneous PTO day. This is great! Omnicorp encourages work-life balance.\n\nPlease stop asking me about Floor 13. I do not know anything about Floor 13. I have never been to Floor 13. If I had been, I would not remember. This is what I have been told to say.\n\nBest regards,\n\nPatricia\n\nHR Manager\n\nPlease stop emailing me about this.",
+  "summary": "At Omnicorp, we love hearing from our employees! But can we talk about something? Floor 13. There is no Floor 13.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 4,
+    "date": "January 5, 2026",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["faq", "floor-13", "help-me", "please"],
+  "entities": ["Patricia", "Omnicorp", "Hartwell Building"],
+
+  "published_at": "2026-01-05T00:00:00Z"
+}

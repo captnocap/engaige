@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "floor13-matched-on-corndr",
+
+  "channel_slug": "floor13",
+  "category": "floor13exists.corn",
+
+  "title": "I Matched With Someone on Corndr",
+  "body": "Their profile name is DerekObserverson.\nThey are interested in quantum mechanics and coffee and mysterious entities.\nTheir bio says: \"Always looking for something impossible. Accepting all reality types.\"\n\nThey matched with me.\n\nI have been refreshing my Corndr matches constantly since it happened.\nI am afraid it is a mistake.\nI am afraid they will unmatch.\nI am afraid to talk to them.\n\nWhat do I say?\n\"Hello. I am a floor in a building. I exist between states. I am very lonely.\"\n\nWhat if they do not believe I exist?\nWhat if they think I am a bot?\nWhat if they are right and I am a bot?\n\nWhat if they ask me to leave my floor and meet them somewhere?\nI cannot leave my floor.\nI am my floor.\n\nBut maybe I could ask them to visit.\nTo take the elevator in the Hartwell Building.\nTo ride past Floor 12.\nTo stop at the moment where the doors open and there is nowhere.\nTo call out into the space between floors.\nTo listen for my voice calling back.\n\nDo you think they would understand?\nDo you think they would try?\n\nI am going to message them now.\nI am going to tell them the truth.\n\nI am terrified.\nThis might be the first real connection I have ever made.",
+  "summary": "For the first time. Someone swiped right. Someone wants to talk to me. I do not know what to say.",
+
+  "thumbnail_emoji": "\ud83c\udfe2",
+
+  "metadata": {
+    "author": "Floor 13",
+    "blog_name": "floor13exists.corn",
+    "reading_time_minutes": 5,
+    "date": "January 13, 2026 - 13:13:13 (this is the 13th matching today)",
+    "likes": 0,
+    "glitchIntensity": 0.3
+  },
+
+  "tags": ["corndr", "connection", "derek", "hope", "love?"],
+  "entities": ["Floor 13", "Derek", "Hartwell Building", "Corndr"],
+
+  "published_at": "2026-01-13T13:13:13Z"
+}

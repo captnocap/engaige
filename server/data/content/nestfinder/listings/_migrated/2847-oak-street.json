@@ -1,0 +1,50 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "2847-oak-street",
+  "category": "Rooms",
+  "title": "Charming Room in Shared House - Quantum Coffee Enthusiasts Welcome!",
+  "body": "Looking for the perfect roommate to join our quantum coffee household!\n\nWe're a group of 3 professionals (ages 26-34) who share a passion for cutting-edge brewing techniques. Must be open-minded about spending 45 minutes observing the wave function collapse each morning.\n\nThe room is medium-sized with a nice window overlooking the backyard. Shared bathroom (dedicated observation schedule for morning routines), kitchen (our Q-3000 lives here), and living room.\n\nIdeal roommate will:\n- Appreciate quantum coffee (or be willing to learn)\n- Not make fun of us for spending $3000 on a coffee maker\n- Be okay with morning coffee rituals lasting until 10 AM\n- Not mind some spirited debates about observer effects\n\nPrevious roommate left because they \"couldn't handle the discourse.\" We're looking for someone more... aligned with our wavelength.",
+  "summary": "Room in shared house with quantum coffee enthusiasts. Shared amenities, utilities included, Midtown location.",
+  "thumbnail_emoji": "🏠",
+  "metadata": {
+    "price": 875,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 180,
+    "address": "2847 Oak Street",
+    "neighborhood": "Midtown",
+    "city": "Midtown",
+    "type": "room",
+    "pet_friendly": false,
+    "pet_policy": "No pets (affects the brewing)",
+    "parking": "Driveway (shared)",
+    "laundry": "In-house",
+    "available": "November 15th",
+    "posted": "5 days ago",
+    "amenities": [
+      "Shared Kitchen",
+      "Backyard Access",
+      "Free Quantum Coffee",
+      "Weekly House Meetings"
+    ],
+    "highlights": [
+      "Friendly roommates",
+      "Great neighborhood",
+      "Free coffee (quantum)",
+      "Utilities included"
+    ],
+    "red_flags": [
+      "Must participate in coffee rituals",
+      "Previous roommate conflicts",
+      "Weekly mandatory house meetings"
+    ],
+    "images": ["🏠", "☕", "🛏️", "🌳"],
+    "agent": null
+  },
+  "tags": ["room", "shared-house", "midtown", "quantum-coffee", "roommate"],
+  "published_at": "2026-01-15T00:00:00Z"
+}

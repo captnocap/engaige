@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "flying-j-truck-stop",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "Flying J #847: A Trucker's Paradise, A Sushi Pilgrim's Mecca",
+  "body": "The Flying J Travel Center on Interstate 29 is a cathedral of petroleum and possibility. When I pulled into the parking lot, I felt something I had not felt since Gerald surprised me with a trip to Branson in 2018: hope.\n\nThe sushi display case was extensive - six varieties, each with visible sell-by dates posted with transparency I can only describe as \"revolutionary.\" This is how Big Grocery loses: through honesty.\n\nThe sashimi - and I use this term deliberately - achieved a freshness that defied both logic and geography. We are 1,200 miles from any ocean. And yet.\n\nThe Philadelphia Roll demonstrated perfect cream cheese distribution, each slice revealing that iconic spiral of dairy and smoked salmon that has launched a thousand debates about sushi authenticity. I take no position. I simply eat.\n\nA trucker at the adjacent pump, who identified himself as Big Mike from Tulsa, inquired about my meal. I explained my mission. He nodded solemnly and said, \"My ex-wife did something like this, but with Cracker Barrel locations.\" Big Mike understood.\n\nFive pumps. Full marks. I have added Flying J #847 to my \"Essential Midwest Petroleum Sushi\" list, which currently features seven locations. I am planning a pilgrimage route for spring 2026.\n\nI remained at Pump 15 for seventy-three minutes. No one asked me to leave. This is the Flying J difference.",
+  "summary": "I wept openly at Pump 15. A trucker named Big Mike offered me a napkin. I declined. These tears were earned.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "Flying J Travel Center",
+    "station_number": "#847",
+    "location": "Interstate 29, Sioux City, Iowa",
+    "pump_number": 15,
+    "rating": 5,
+    "sushi_type": "Deluxe Sashimi Combo + Philadelphia Roll (16pc)",
+    "price": "$14.99",
+    "would_return_for": "Everything. I would drive 300 miles for this. I have driven 300 miles for this. Twice.",
+    "gerald_note": "Gerald never understood why I couldn't just \"eat sushi at a restaurant like a normal person.\" Gerald, wherever you are, I want you to know: they don't photograph their sushi next to pump numbers at restaurants. Where is the authenticity? Where is the SOUL?"
+  },
+
+  "tags": ["5-pumps", "flying-j", "sashimi", "sioux-city", "pilgrimage", "big-mike"],
+  "entities": ["Mildred Gasketsworth", "Gerald Gasketsworth", "Big Mike"],
+
+  "published_at": "2025-11-29T00:00:00Z",
+
+  "comments": []
+}

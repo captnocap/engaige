@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "caseys-general-store",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "Casey's Conundrum: When Pizza People Attempt Raw Fish",
+  "body": "Casey's General Store is a midwest institution, known primarily for breakfast pizza and surprisingly adequate fountain drinks. Their entry into the sushi market is what we in the insurance industry call a \"calculated risk.\" In my professional opinion, they miscalculated.\n\nThe Rainbow Roll presented itself with all the colors promised, though the \"rainbow\" appeared to have weathered a storm. The fish draped over the roll like tiny, tired blankets.\n\nI detected salmon, tuna, and what I believe was meant to be yellowtail. Each fish seemed to be having a private crisis about its life choices. I related to them.\n\nThe rice achieved adequacy - not the excellence of Love's Travel Stop, but a respectful mediocrity that speaks to Midwestern values.\n\nI consumed this roll in my vehicle (a 2019 Honda CR-V with 67,000 miles, excellent for sushi consumption due to cup holder placement) while watching a teenager fail to parallel park for fourteen minutes. Life, like sushi, requires patience.\n\nThree pumps. Casey's should stick to what they know. But I applaud the ambition. In the gas station sushi community, we reward effort.",
+  "summary": "Casey's is beloved for its pizza. Their venture into sushi is like watching a Methodist church attempt a Diwali celebration. Earnest, but confused.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "Casey's General Store",
+    "station_number": "#3391",
+    "location": "Main Street, Small Town, Nebraska",
+    "pump_number": 4,
+    "rating": 3,
+    "sushi_type": "Rainbow Roll (8pc)",
+    "price": "$9.49",
+    "would_return_for": "The pizza. Never the sushi. But perhaps the sushi again, for science.",
+    "gerald_note": null
+  },
+
+  "tags": ["3-pumps", "caseys", "rainbow-roll", "nebraska", "ambitious"],
+  "entities": ["Mildred Gasketsworth"],
+
+  "published_at": "2025-12-19T00:00:00Z",
+
+  "comments": []
+}

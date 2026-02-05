@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-hiatus-not-breakup",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "We're Not Broken Up, It's a Hiatus",
+  "body": "I see the posts online. People saying Neon Requiem is \"over.\" That we \"broke up.\" These people don't understand what's actually happening.\n\nWe're on a HIATUS. There's a difference.\n\nMaya said she was \"starting a new chapter.\" What she meant was: exploring other creative directions temporarily. The band will be there when she's ready.\n\nJames said something about \"the final show being our goodbye.\" I think that's just how he processes major events. He gets emotional. It's part of why he's such a good bassist.\n\nAnd Iris? She hasn't returned my calls, but I'm sure that's just because her new job is keeping her busy. When the reunion starts, she'll be right back.\n\nThe math is simple: we played together for 8 years. One show doesn't end that. We've taken breaks before. This is just a longer one.\n\nWe'll reconvene when everyone's ready. I give it three months, maybe six.\n\nDefinitely not a breakup though.",
+  "summary": "Some people are calling it a \"breakup.\" They're wrong. We're just taking some time apart to focus on personal growth.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 8,
+    "date": "January 28, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 3
+  },
+
+  "tags": ["hiatus", "neon-requiem", "denial", "totally-fine"],
+  "entities": ["Vex", "Maya", "James", "Iris", "Neon Requiem"],
+
+  "published_at": "2024-01-28T00:00:00Z"
+}

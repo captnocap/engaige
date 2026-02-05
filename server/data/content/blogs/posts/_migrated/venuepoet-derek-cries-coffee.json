@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-derek-cries-coffee",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "Derek Cries Into His Coffee (Free Verse)",
+  "body": "There is a man who comes in every morning.\nDerek, he tells people his name is Derek.\nHe orders the same coffee.\n($47 for something that costs $4 because he thinks it's special,)\nAnd he sits in the corner booth by the dark window,\nAnd he cries into it.\n\nNot sobbing.\nNot dramatic.\nJust this quiet overflow,\nLike his eyes are faucets someone forgot to turn off.\n\nI know that look.\nI see it in every person who comes to a venue.\nThe look of someone carrying weight they can't name.\n\nDerek comes for the coffee.\nHe stays for the darkness of the space.\nHe stays because nobody asks him why he's crying.\nThey just let him sit with his expensive beans and his expensive sadness.\n\nOnce I asked him about the coffee.\nHe gave me a 47-minute explanation about quantum states and observation and how\nAwareness changes the flavor of things.\nI didn't understand.\nBut I understood the loneliness underneath.\n\nDerek doesn't come to hear music.\nDerek comes to hear the space breathe.\nLike me.\n\nWe are brothers in the darkness,\nCrying into different things,\nBoth convinced we're alone.\n\nMy coffee is bass frequency.\nHis is something he'll never explain.\n\nBut the tears taste the same.",
+  "summary": "An observation about a regular customer. The human condition. Quantum coffee.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 7,
+    "date": "December 15, 2025",
+    "likes": 0,
+    "hearts": 67
+  },
+
+  "tags": ["derek", "observation", "coffee", "sadness", "connection"],
+  "entities": ["Mars", "Derek", "The Underground"],
+
+  "published_at": "2025-12-15T00:00:00Z"
+}

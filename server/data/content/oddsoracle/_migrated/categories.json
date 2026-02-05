@@ -1,0 +1,13 @@
+{
+  "$schema": "category",
+  "site_id": "oddsoracle",
+  "categories": [
+    { "slug": "local-events", "name": "Local Events", "icon_emoji": "📍", "sort_order": 0 },
+    { "slug": "entertainment", "name": "Entertainment", "icon_emoji": "🎭", "sort_order": 1 },
+    { "slug": "science", "name": "Science", "icon_emoji": "🔬", "sort_order": 2 },
+    { "slug": "politics", "name": "Politics", "icon_emoji": "🏛️", "sort_order": 3 },
+    { "slug": "sports", "name": "Sports", "icon_emoji": "⚽", "sort_order": 4 },
+    { "slug": "crypto", "name": "Crypto", "icon_emoji": "🪙", "sort_order": 5 },
+    { "slug": "memes", "name": "Memes", "icon_emoji": "🐸", "sort_order": 6 }
+  ]
+}

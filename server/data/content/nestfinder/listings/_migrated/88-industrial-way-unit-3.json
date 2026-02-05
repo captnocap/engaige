@@ -1,0 +1,55 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "88-industrial-way-unit-3",
+  "category": "Apartments",
+  "title": "Artist Loft - Former Warehouse - SO MUCH NATURAL LIGHT",
+  "body": "Calling all artists, creators, and people who appreciate REALLY TALL CEILINGS!\n\nThis converted warehouse loft features 16-foot ceilings, exposed brick, and floor-to-ceiling windows on two sides. The natural light situation is truly incredible - perfect for artists, photographers, or anyone who's tired of living in a cave.\n\nOpen floor plan lets you configure the space however you want. Previous tenant (a sculptor) built a sleeping loft - it's still there if you want it, but you're welcome to remove it.\n\nThe neighborhood has really changed in the last few years - now there's a great coffee shop downstairs (they do quantum brewing!), several galleries, and The Underground venue is just a 10-minute walk.\n\nFair warning: The building was a factory in the 1940s. The freight elevator works... most of the time. And the heating is \"character-building\" in winter.",
+  "summary": "Converted warehouse loft with 16-foot ceilings, exposed brick, incredible natural light. Arts District location near The Underground.",
+  "thumbnail_emoji": "🏭",
+  "metadata": {
+    "price": 1950,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 1200,
+    "address": "88 Industrial Way, Unit 3",
+    "neighborhood": "Arts District",
+    "city": "Arts District",
+    "type": "apartment",
+    "pet_friendly": true,
+    "pet_policy": "Cats OK, small dogs OK",
+    "parking": "Loading zone available",
+    "laundry": "Shared in basement",
+    "available": "January 1st",
+    "posted": "4 days ago",
+    "amenities": [
+      "Exposed Brick",
+      "16' Ceilings",
+      "Freight Elevator",
+      "Artist Community"
+    ],
+    "highlights": [
+      "Incredible light",
+      "Huge space",
+      "Live/work potential",
+      "Arts District location"
+    ],
+    "red_flags": [
+      "Freight elevator reliability",
+      "Heating is \"character-building\"",
+      "Check noise levels"
+    ],
+    "images": ["🏭", "🎨", "☀️", "🖼️"],
+    "agent": {
+      "name": "Alex Rivera",
+      "avatar": "🧑‍🎨",
+      "phone": "(555) 321-0987",
+      "response_time": "Usually responds within 4 hours (artist schedule)"
+    }
+  },
+  "tags": ["apartment", "loft", "arts-district", "warehouse-conversion", "artist"],
+  "published_at": "2026-01-16T00:00:00Z"
+}

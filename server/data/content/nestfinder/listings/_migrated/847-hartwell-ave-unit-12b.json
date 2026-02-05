@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "847-hartwell-ave-unit-12b",
+  "category": "Apartments",
+  "title": "Stunning 2BR with City Views - Near The Underground!",
+  "body": "Beautiful 2-bedroom apartment in the heart of downtown, just 2 blocks from The Underground music venue! Perfect for music lovers and night owls.\n\nModern finishes throughout, including quartz countertops, stainless steel appliances, and hardwood floors. Large windows provide abundant natural light and stunning city views.\n\nThe building features a rooftop deck, secure entry, and on-site maintenance. Walkable to restaurants, cafes, and public transit.\n\nNote: Previous tenant was a musician. Soundproofing is... adequate.",
+  "summary": "Beautiful 2BR apartment in downtown, 2 blocks from The Underground. Modern finishes, city views, rooftop access.",
+  "thumbnail_emoji": "🏢",
+  "metadata": {
+    "price": 2450,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "sqft": 950,
+    "address": "847 Hartwell Ave, Unit 12B",
+    "neighborhood": "Downtown",
+    "city": "Downtown",
+    "type": "apartment",
+    "pet_friendly": true,
+    "pet_policy": "Cats OK, Dogs OK (under 50 lbs)",
+    "parking": "Street parking available",
+    "laundry": "In-unit",
+    "available": "Immediate",
+    "posted": "3 days ago",
+    "amenities": [
+      "Central A/C",
+      "Dishwasher",
+      "In-unit Washer/Dryer",
+      "Rooftop Access",
+      "Secure Entry",
+      "Package Room"
+    ],
+    "highlights": [
+      "2 blocks from The Underground",
+      "City views",
+      "Recently renovated",
+      "Pet-friendly building"
+    ],
+    "red_flags": [],
+    "images": ["🏢", "🛋️", "🍳", "🛏️"],
+    "agent": {
+      "name": "Sarah Martinez",
+      "avatar": "👩‍💼",
+      "phone": "(555) 234-5678",
+      "response_time": "Usually responds within 1 hour"
+    }
+  },
+  "tags": ["apartment", "downtown", "pet-friendly", "city-views", "the-underground"],
+  "published_at": "2026-01-20T00:00:00Z"
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "content",
+  "site_id": "wikiknow",
+  "content_type": "article",
+  "slug": "the-underground-venue",
+
+  "category": "Music Venues",
+
+  "title": "The Underground (venue)",
+  "subtitle": null,
+  "body": "## History\n\nThe venue was founded by former record store owner Marcus \"Mars\" Williams after he discovered the unused basement space while exploring the abandoned Hartwell Building. Despite lacking any formal permits, Williams began hosting small shows in late 2015, initially lit only by Christmas lights and battery-powered lanterns.\n\n\"The first show had maybe twelve people,\" Williams recalled in a 2022 interview. \"We had one band, no PA system, and I'm pretty sure the drummer was playing on paint buckets. It was perfect.\"[1]\n\nThe venue gained legal status in 2017 following a successful crowdfunding campaign that raised $127,000 for safety renovations and proper licensing. The campaign notably received contributions from artists who had played early shows at the space, including several who had since achieved mainstream success.\n\n## Notable Performances\n\n**The Velvet Algorithms (2016)**: The electronic duo's third-ever performance, now considered legendary among fans. Bootleg recordings of the show regularly sell for hundreds of dollars.\n\n**Neon Requiem Reunion Show (2019)**: The post-punk band's surprise reunion after their 2018 breakup drew over 400 people to a venue with a 200-person capacity. The fire marshal was not pleased.\n\n**DJ Probability's \"Infinite Set\" (2021)**: The DJ performed for 27 consecutive hours, breaking the venue's longest-set record. Audience members came and went in shifts, with some reportedly taking power naps on the venue's infamous \"couch corner.\"\n\n**The Cancelled Show (2023)**: The Velvet Algorithms were scheduled to perform but cancelled due to what the band described as an \"ongoing existential crisis.\" The event made national news.\n\n## Cultural Significance\n\nThe Underground has been credited with fostering a distinct local sound that music critics have termed \"basement wave\" - characterized by lo-fi production, introspective lyrics, and a tendency toward unusual time signatures.\n\nThe venue maintains a strict \"no phones during sets\" policy, enforced by the honor system and occasional gentle shaming. This policy has become part of The Underground's identity, with regular patrons considering it essential to the experience.\n\nA small section of one wall is reserved for artists to leave handwritten notes. As of 2024, the \"artist wall\" contains messages from over 600 performers and has been photographed extensively for a forthcoming documentary.",
+  "summary": "The Underground is a music venue and cultural space located in the basement of the former Hartwell Building in downtown. Established in 2015, it has become a significant hub for independent music, hosting over 1,200 shows and launching the careers of numerous artists including The Velvet Algorithms, Neon Requiem, and DJ Probability.",
+
+  "thumbnail_emoji": "🎸",
+
+  "metadata": {
+    "author": "Various Contributors",
+    "last_edited": "2026-01-28",
+    "reading_time_minutes": 4,
+    "references": 2,
+    "is_disputed": false,
+    "views": 23156,
+    "infobox": {
+      "image": "🎸",
+      "image_caption": "The Underground logo",
+      "facts": {
+        "Established": "2015",
+        "Location": "Hartwell Building, Downtown",
+        "Capacity": "200 (officially)",
+        "Shows hosted": "1,200+",
+        "Genre": "Independent, Electronic, Post-punk",
+        "Owner": "Marcus \"Mars\" Williams",
+        "Notable policy": "No phones during sets"
+      }
+    },
+    "sections": [
+      { "id": "history", "heading": "History" },
+      { "id": "notable_performances", "heading": "Notable Performances" },
+      { "id": "cultural_significance", "heading": "Cultural Significance" }
+    ],
+    "related_articles": [
+      "The Velvet Algorithms",
+      "Neon Requiem",
+      "DJ Probability",
+      "Basement wave",
+      "Marcus Williams",
+      "Independent music venues"
+    ],
+    "references_list": [
+      "Williams, M. (2022). Interview with Local Music Monthly, Issue 47.",
+      "Chen, L. (2023). \"The Underground at Eight: A Retrospective\". Rolling Stone Digital."
+    ]
+  },
+
+  "tags": ["music venue", "The Underground", "basement wave", "independent music", "Hartwell Building"],
+  "entities": ["Marcus \"Mars\" Williams", "The Velvet Algorithms", "Neon Requiem", "DJ Probability", "Hartwell Building"],
+
+  "published_at": "2024-06-15T00:00:00Z"
+}

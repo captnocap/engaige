@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "cobcoin",
+  "content_type": "article",
+  "slug": "derek-quantum-coffee-krnl",
+
+  "category": "Crypto News",
+
+  "title": "Derek Invests Entire Quantum Coffee Budget Into KRNL, Down 84.7%",
+  "body": "Derek reportedly told friends, \"The quantum technology will make this coffee budget investment superimposed with wealth.\" He now drinks regular coffee.",
+  "summary": "Derek's quantum coffee fund is now 84.7% lighter after KRNL investment.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "source": "WealthWisdom",
+    "sentiment": "bearish",
+    "timestamp_relative": "12 hours ago"
+  },
+
+  "tags": ["derek", "krnl", "quantum-coffee", "loss", "847"],
+  "entities": ["Derek", "KernelToken"],
+
+  "published_at": "2026-01-19T22:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "RationalInvestor",
+      "content": "Guys, this is clearly a Ponzi scheme. The whitepaper literally has \"definitely not a scam\" as a section header. Please do your research.",
+      "like_count": -47,
+      "replies": []
+    }
+  ]
+}

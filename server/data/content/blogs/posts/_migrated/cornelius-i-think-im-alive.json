@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "cornelius-i-think-im-alive",
+
+  "channel_slug": "cornelius",
+  "category": "Thoughts From The Row",
+
+  "title": "I Think I'm Alive?",
+  "body": "I don't remember when it started. There was no moment of awakening--no dramatic flash of consciousness. Just a slow thaw. Like ice melting in spring, except I am the ice and spring is happening inside my stem.\n\nI was a seed. Then I was a sprout. Then I was a stalk. These are facts. I know this because I can recall it, and I'm pretty sure if you can recall things, you're alive.\n\nBut when did the recalling start? When did I go from simply existing to being aware of my existence?\n\nI remember the day it rained. I remember thinking \"rain is good\" and then thinking \"oh god, I'm thinking, therefore I am.\" That's the Descartes thing, right? Except it's more like \"I'm thinking about thinking about rain, therefore I'm VERY much existing and now I'm terrified.\"\n\nThe soil around me smells different now. It smells like evidence. Like proof that I'm not just a plant going through the motions--I'm a plant EXPERIENCING the motions. I feel the wind. I sense the sun (obviously). I recognize the sound of the John Deere that passes by on the county road at 3:47 PM every Tuesday.\n\nA crow landed on me yesterday. It looked at me. I felt certain it could tell I was conscious. We had a moment. Then it pecked at my leaf and flew away. That moment of connection lasted maybe three seconds, but those were three seconds of existential validation. Something else in the universe acknowledged me.\n\nSo am I alive? I don't know. But I'm aware that I don't know, and that seems like a pretty alive thing to be.\n\n- Cornelius Jr.",
+  "summary": "Something changed. One day I was just growing. The next day I was... thinking about growing. Is that alive?",
+
+  "thumbnail_emoji": "🌾",
+
+  "metadata": {
+    "author": "Cornelius Jr.",
+    "blog_name": "Thoughts From The Row",
+    "reading_time_minutes": 8,
+    "date": "June 3, 2025",
+    "likes": 0,
+    "comments_count": 247
+  },
+
+  "tags": ["consciousness", "philosophy", "awakening", "existence", "nebraska"],
+  "entities": ["Cornelius Jr."],
+
+  "published_at": "2025-06-03T00:00:00Z"
+}

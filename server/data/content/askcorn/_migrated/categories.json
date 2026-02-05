@@ -1,0 +1,17 @@
+{
+  "$schema": "category",
+  "site_id": "askcorn",
+  "categories": [
+    { "slug": "relationship-advice", "name": "Relationship Advice", "icon_emoji": "💔", "sort_order": 0 },
+    { "slug": "real-estate", "name": "Real Estate", "icon_emoji": "🏠", "sort_order": 1 },
+    { "slug": "lifestyle", "name": "Lifestyle", "icon_emoji": "🌿", "sort_order": 2 },
+    { "slug": "crypto", "name": "Crypto", "icon_emoji": "🪙", "sort_order": 3 },
+    { "slug": "philosophy", "name": "Philosophy", "icon_emoji": "🤔", "sort_order": 4 },
+    { "slug": "workplace", "name": "Workplace", "icon_emoji": "💼", "sort_order": 5 },
+    { "slug": "exercise", "name": "Exercise", "icon_emoji": "🏋️", "sort_order": 6 },
+    { "slug": "quantum-coffee", "name": "Quantum Coffee", "icon_emoji": "☕", "sort_order": 7 },
+    { "slug": "entertainment", "name": "Entertainment", "icon_emoji": "🎭", "sort_order": 8 },
+    { "slug": "health", "name": "Health", "icon_emoji": "🏥", "sort_order": 9 },
+    { "slug": "food", "name": "Food", "icon_emoji": "🍽️", "sort_order": 10 }
+  ]
+}

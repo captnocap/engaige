@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "velvet-algorithms-your-favorite-venue-missed",
+
+  "category": "Just Missed",
+
+  "title": "The Velvet Algorithms at Your Favorite Venue (Missed)",
+  "body": "The Velvet Algorithms played at Your Favorite Venue in Your City 2 days ago. Tickets were $25 and the show was sold out.\n\nYou missed it: You were sick that day.",
+  "summary": "The Velvet Algorithms played your city 2 days ago. You were sick.",
+
+  "thumbnail_emoji": "\ud83c\udfb8",
+
+  "metadata": {
+    "band": "The Velvet Algorithms",
+    "venue": "Your Favorite Venue",
+    "city": "Your City",
+    "date": "2 days ago",
+    "time": "8:00 PM",
+    "price": "$25",
+    "sold_out": true,
+    "distance": "0 miles",
+    "reason_you_cant_go": "You were sick that day"
+  },
+
+  "tags": ["velvet-algorithms", "missed", "sick-day", "regret"],
+  "entities": ["The Velvet Algorithms"],
+
+  "published_at": "2026-01-18T00:00:00Z",
+
+  "comments": []
+}

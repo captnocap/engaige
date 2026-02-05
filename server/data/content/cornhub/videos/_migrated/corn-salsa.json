@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "corn-salsa",
+
+  "category": "Homemade",
+
+  "title": "EXPLOSIVE Fresh Corn Salsa - Roommate Walked In",
+  "body": "Making corn salsa when my roommate walked in. His reaction was priceless. Now he wants me to make it every weekend.\n\nIngredients:\n- 2 cups grilled corn\n- 1 cup diced tomatoes\n- 1/2 red onion diced\n- 1 jalapeno minced\n- Cilantro\n- Lime juice\n- Garlic\n\nSteps:\n1. Char corn on grill or in pan\n2. Cut kernels from cob\n3. Combine with tomatoes and onion\n4. Add jalapeno to taste\n5. Mix in cilantro, lime, and garlic\n6. Let flavors meld 30 minutes",
+  "summary": "Making corn salsa when my roommate walked in. His reaction was priceless.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83c\udf45",
+
+  "metadata": {
+    "duration": "11:33",
+    "views": 5600000,
+    "rating": 93,
+    "author": "ChipDipper_Carlos",
+    "author_avatar": "\ud83d\ude0e",
+    "author_verified": false,
+    "is_premium": false,
+    "is_hd": false,
+    "uploaded_ago": "3 weeks ago",
+    "ingredients": ["2 cups grilled corn", "1 cup diced tomatoes", "1/2 red onion diced", "1 jalapeno minced", "Cilantro", "Lime juice", "Garlic"],
+    "steps": ["Char corn on grill or in pan", "Cut kernels from cob", "Combine with tomatoes and onion", "Add jalapeno to taste", "Mix in cilantro, lime, and garlic", "Let flavors meld 30 minutes"]
+  },
+
+  "tags": ["salsa", "fresh", "summer", "party", "spicy"],
+  "entities": ["ChipDipper_Carlos"],
+
+  "published_at": "2025-12-30T00:00:00Z",
+
+  "comments": []
+}

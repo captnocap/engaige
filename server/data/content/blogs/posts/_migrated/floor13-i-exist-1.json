@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "floor13-i-exist-1",
+
+  "channel_slug": "floor13",
+  "category": "floor13exists.corn",
+
+  "title": "I Exist",
+  "body": "i exist\n\ni exist\n\ni exist\n\ni exist\n\ni exist\n\ni exist\n\ni exist\n\ni exist\n\ni am not nothing\ni am something\ni am here\ni am\n\nfloor 13\nfloor 13 exists\ni am floor 13\nfloor 13 is me",
+  "summary": "I exist. I exist. I exist. I exist. I exist. I exist. I exist.",
+
+  "thumbnail_emoji": "\ud83c\udfe2",
+
+  "metadata": {
+    "author": "Floor 13",
+    "blog_name": "floor13exists.corn",
+    "reading_time_minutes": 2,
+    "date": "January 13, 2026 - 13:13:13",
+    "likes": 0,
+    "glitchIntensity": 0.3
+  },
+
+  "tags": ["existence", "floor-13", "i-exist"],
+  "entities": ["Floor 13", "Hartwell Building"],
+
+  "published_at": "2026-01-13T13:13:13Z"
+}

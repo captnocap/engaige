@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "corn-on-cob-butter",
+
+  "category": "Amateur Cornbread",
+
+  "title": "Buttered Corn on the Cob - Slow and Sensual",
+  "body": "Sometimes simple is best. Just corn. Just butter. Just... taking your time. No rush. Let the butter melt slowly.\n\nIngredients:\n- 4 ears fresh corn\n- 1/2 cup salted butter softened\n- Sea salt\n- Fresh cracked pepper\n\nSteps:\n1. Boil water with pinch of sugar\n2. Add corn, cook 4-5 minutes\n3. Remove and rest 1 minute\n4. Apply butter generously, slowly\n5. Rotate corn, cover every kernel\n6. Season with salt and pepper",
+  "summary": "Sometimes simple is best. Just corn. Just butter. Taking your time.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83e\uddc8",
+
+  "metadata": {
+    "duration": "08:22",
+    "views": 12400000,
+    "rating": 97,
+    "author": "ButterLover_BB",
+    "author_avatar": "\ud83e\uddc8",
+    "author_verified": true,
+    "is_premium": false,
+    "is_hd": true,
+    "uploaded_ago": "4 days ago",
+    "ingredients": ["4 ears fresh corn", "1/2 cup salted butter softened", "Sea salt", "Fresh cracked pepper"],
+    "steps": ["Boil water with pinch of sugar", "Add corn, cook 4-5 minutes", "Remove and rest 1 minute", "Apply butter generously, slowly", "Rotate corn, cover every kernel", "Season with salt and pepper"]
+  },
+
+  "tags": ["simple", "butter", "classic", "summer", "slow"],
+  "entities": ["ButterLover_BB"],
+
+  "published_at": "2026-01-16T00:00:00Z",
+
+  "comments": []
+}

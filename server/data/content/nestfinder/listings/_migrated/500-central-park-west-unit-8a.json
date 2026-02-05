@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "500-central-park-west-unit-8a",
+  "category": "Condos",
+  "title": "Modern 2BR Condo - Just Renovated!",
+  "body": "Just completed a full renovation on this beautiful 2-bedroom, 2-bathroom condo! Everything is brand new and move-in ready.\n\nFeatures include:\n- Open concept living/dining area\n- Custom kitchen with waterfall island\n- Primary suite with en-suite bath\n- Second bedroom perfect for office/guest room\n- In-unit laundry\n\nBuilding amenities include gym, bike storage, and package lockers. Great location - walk to shops, restaurants, and the park.\n\nNo expense was spared on this renovation. We're looking for tenants who will appreciate and maintain the quality finishes. Please note this is a SHOES-OFF apartment.",
+  "summary": "Fully renovated 2BR/2BA condo in Westside. Brand new everything, building amenities, great location.",
+  "thumbnail_emoji": "🏢",
+  "metadata": {
+    "price": 2800,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "sqft": 1100,
+    "address": "500 Central Park West, Unit 8A",
+    "neighborhood": "Westside",
+    "city": "Westside",
+    "type": "condo",
+    "pet_friendly": false,
+    "pet_policy": "No pets",
+    "parking": "Garage parking available ($200/mo)",
+    "laundry": "In-unit",
+    "available": "December 15th",
+    "posted": "1 day ago",
+    "amenities": [
+      "In-unit Laundry",
+      "Gym",
+      "Bike Storage",
+      "Package Lockers",
+      "Central A/C",
+      "Balcony"
+    ],
+    "highlights": [
+      "Brand new everything",
+      "Two full baths",
+      "Great location",
+      "Building amenities"
+    ],
+    "red_flags": [],
+    "images": ["🏢", "🛋️", "🍳", "🛁"],
+    "agent": {
+      "name": "David Park",
+      "avatar": "👨‍💼",
+      "phone": "(555) 567-8901",
+      "response_time": "Usually responds within 1 hour"
+    }
+  },
+  "tags": ["condo", "renovated", "westside", "modern", "two-bath"],
+  "published_at": "2026-01-19T00:00:00Z"
+}

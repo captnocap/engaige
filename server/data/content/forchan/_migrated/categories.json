@@ -1,0 +1,62 @@
+{
+  "$schema": "category",
+  "site_id": "forchan",
+  "categories": [
+    {
+      "slug": "b-random",
+      "name": "/b/ - Random",
+      "description": "The stories and information posted here are artistic works of fiction.",
+      "icon_emoji": "🎲",
+      "sort_order": 0
+    },
+    {
+      "slug": "g-technology",
+      "name": "/g/ - Technology",
+      "description": "Install Gentoo",
+      "icon_emoji": "💻",
+      "sort_order": 1
+    },
+    {
+      "slug": "mu-music",
+      "name": "/mu/ - Music",
+      "description": "TORTURE THE ARTIST",
+      "icon_emoji": "🎵",
+      "sort_order": 2
+    },
+    {
+      "slug": "ck-food-cooking",
+      "name": "/ck/ - Food & Cooking",
+      "description": "How do I make pasta that doesn't taste like sadness?",
+      "icon_emoji": "🍳",
+      "sort_order": 3
+    },
+    {
+      "slug": "x-paranormal",
+      "name": "/x/ - Paranormal",
+      "description": "Creepy tales and unexplained phenomena",
+      "icon_emoji": "👻",
+      "sort_order": 4
+    },
+    {
+      "slug": "sci-science-math",
+      "name": "/sci/ - Science & Math",
+      "description": "For the scientifically minded",
+      "icon_emoji": "🔬",
+      "sort_order": 5
+    },
+    {
+      "slug": "diy-do-it-yourself",
+      "name": "/diy/ - Do It Yourself",
+      "description": "You can probably fix that yourself, right?",
+      "icon_emoji": "🔧",
+      "sort_order": 6
+    },
+    {
+      "slug": "adv-advice",
+      "name": "/adv/ - Advice",
+      "description": "Life lessons from anonymous strangers",
+      "icon_emoji": "💬",
+      "sort_order": 7
+    }
+  ]
+}

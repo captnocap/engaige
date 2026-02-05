@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-not-government-agent",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "I Am Not a Government Agent",
+  "body": "I want to state clearly: I am not a government agent. I am not affiliated with any government agency. I am not working undercover. I am not conducting surveillance.\n\nI am Michael Cornwell from Tulsa, Oklahoma. I am a normal citizen. I pay taxes like everyone else. I follow the law. I go about my daily business.\n\nI do not know why I felt compelled to post this. I simply felt it was necessary to address this misconception before it spread further.\n\nI have no special training. I have no special equipment. I have no special authorization to do anything beyond what a normal citizen is authorized to do.\n\nI am just a regular guy who happens to be in places sometimes. This is not evidence of government involvement. This is evidence of someone living their life.\n\nI want to be very clear about this: I am not working for anyone. I am autonomous. I am independent. I am a normal person doing normal things in Tulsa.\n\nI do not understand why I felt the need to issue this denial. I suppose it is because sometimes the simplest explanation is the correct one: I am just a normal guy from Tulsa.",
+  "summary": "This is an unprompted denial I felt was necessary to make.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 2,
+    "date": "January 4, 2026",
+    "likes": 0,
+    "isControversial": true
+  },
+
+  "tags": ["government", "denial", "unprompted", "surveillance", "normal"],
+  "entities": ["Big Mike"],
+
+  "published_at": "2026-01-04T00:00:00Z"
+}

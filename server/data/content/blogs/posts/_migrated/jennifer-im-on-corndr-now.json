@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "jennifer-im-on-corndr-now",
+
+  "channel_slug": "jennifer",
+  "category": "Jennifer Heals",
+
+  "title": "I'm On Corndr Now",
+  "body": "It's been 3 months since the divorce was finalized. Everyone said I should wait before dating. Everyone was wrong.\n\nI downloaded Corndr (yes, the dating app with the terrible name) on a Wednesday night while drinking wine. My friend Maya said, \"You'll regret this.\" I regret nothing. (I regret several things, but not this.)\n\nCreating a profile was... interesting. What do you even write about yourself after 8 years of marriage that revolved around another person's hobby?\n\nI went with: \"Nurse. Dog lover. Former coffee widow. Looking for someone who enjoys actual human conversation.\"\n\nThe matches started immediately. And I mean immediately. I've never felt more attractive in my life, which is a low bar considering my husband's primary emotional attachment was to brewing equipment.\n\nBut here's my revelation: dating at 32 after marriage is TERRIFYING. Every message is a potential red flag. Does he mention coffee? RED FLAG. Has an unusual relationship with caffeine? RED FLAG. Owns more than one pour-over? NUCLEAR RED FLAG.\n\nI've been on 4 dates. The first guy talked about his espresso machine for 45 minutes. I left early. The second guy was great but he collected vintage kitchen appliances (too close to home). The third guy spent the whole date on his phone.\n\nThe fourth guy was kind, funny, and when I asked what he drinks in the morning he said \"water\" and I think I'm going to marry him.\n\nI'm joking. Mostly. We're going on a second date next week.\n\nThe point is: I'm out there. I'm trying. I'm failing sometimes, but I'm learning. And I'm definitely, absolutely NOT comparing every man to Derek. That would be unhealthy.\n\n(Derek once told a Corndr match that his last relationship ended because his partner \"didn't appreciate quantum physics.\" I know this because I saw it on his profile before I blocked him. TWICE.)",
+  "summary": "A guide to dating after divorce: swipe left on anyone with \"coffee\" anywhere in their profile.",
+
+  "thumbnail_emoji": "💗",
+
+  "metadata": {
+    "author": "Jennifer Observerson",
+    "blog_name": "Jennifer Heals",
+    "reading_time_minutes": 11,
+    "date": "January 10, 2026",
+    "likes": 0,
+    "comments_count": 876
+  },
+
+  "tags": ["dating", "corndr", "red-flags", "moving-forward", "therapy-homework"],
+  "entities": ["Jennifer", "Derek", "Maya"],
+
+  "published_at": "2026-01-10T00:00:00Z"
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "jennifer-court-update-the-class-action",
+
+  "channel_slug": "jennifer",
+  "category": "Jennifer Heals",
+
+  "title": "Court Update: The Class Action",
+  "body": "Yesterday was the pre-trial hearing for Observerson v. Quantum Brew Inc. And I'm exhausted.\n\nLet me back up: Quantum Brew Inc. markets their \"quantum coffee\" methodology without any scientific backing. They sell kits for $500+. They claim their method produces different flavor outcomes based on \"observer states.\" It's pseudoscience.\n\nMy lawyer found that 847 customers reported unsatisfactory results and bought into the hype. Some spent thousands chasing the \"perfect quantum brew.\"\n\nI became the lead plaintiff not because I'm the most wronged—Derek spent our savings on this—but because I documented everything. Receipts. Bank statements. The increasingly unhinged emails from Derek's correspondence with the company founder.\n\nYesterday, their lawyers showed up with a PowerPoint about \"consumer education\" and \"reasonable interpretation of metaphorical language.\"\n\nIt was infuriating.\n\nBut here's the good news: the judge seemed skeptical of their defense. Very skeptical. She asked, \"So you're saying your marketing materials about quantum superposition and wave function collapse are metaphorical?\" The lawyer stammered.\n\nMy lawyer argued that people spent significant money based on false scientific claims. We're seeking $847,000 in damages—roughly $1,000 per wronged customer.\n\nThe judge said she'd rule by next month.\n\nIs this petty? Maybe. Am I using the legal system to hold Derek's hobby hobby accountable? Absolutely. Do I feel bad about it?\n\nNot one bit.\n\nThis is about consumer protection. This is about people not being bilked into pseudoscientific nonsense. The fact that my ex-husband is implicated is just... a bonus.\n\nI'll keep you updated.",
+  "summary": "I'm the lead plaintiff in a lawsuit against Quantum Brew Inc. We're seeking $847,000 in damages for deceptive practices.",
+
+  "thumbnail_emoji": "💗",
+
+  "metadata": {
+    "author": "Jennifer Observerson",
+    "blog_name": "Jennifer Heals",
+    "reading_time_minutes": 9,
+    "date": "December 28, 2025",
+    "likes": 0,
+    "comments_count": 423
+  },
+
+  "tags": ["legal", "court", "class-action", "justice-is-sweet", "scientifically-speaking"],
+  "entities": ["Jennifer", "Derek"],
+
+  "published_at": "2025-12-28T00:00:00Z"
+}

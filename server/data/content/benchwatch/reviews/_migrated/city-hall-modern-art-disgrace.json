@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "city-hall-modern-art-disgrace",
+
+  "category": "Bench Review",
+
+  "title": "The Controversial \"Modern Art\" Bench at City Hall: Form Over Function, A National Disgrace",
+  "body": "I need you to understand something. The City Council approved $47,000 of taxpayer money for a \"sculptural seating installation\" that scores an 8 on the Mantooth Comfort Index. EIGHT.\n\nThe designer, who I will not name but whose address I have legally obtained through public records, claims the bench \"challenges our preconceptions of rest.\" Let me challenge HIS preconceptions. Of lawsuits.\n\nThe seating surface is CONVEX. It curves AWAY from you. You cannot sit on this bench without sliding forward. I timed it: average citizen slides off completely in 47 seconds. I stayed for three hours to gather statistically significant data.\n\nThere is no back support because backs are \"a social construct,\" according to the artist's statement. My chiropractor disagrees. So does my herniated disc.\n\nI have filed complaints with: the City Council, the Parks Commission, the Arts Board, the Better Business Bureau, the State Attorney General, and, in a moment of desperation, the FBI Art Crime Team. They all said this is \"outside their jurisdiction.\" CONVENIENT.\n\nThe petition to remove this monstrosity has 3,847 signatures. My ex-wife Janet signed it. We agree on nothing except this bench must be destroyed.",
+  "summary": "The city paid $47,000 for what is essentially a curved piece of granite that actively harms citizens. I have started a petition.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "City Hall Plaza, Installation #3",
+    "mci_score": 8,
+    "measurements": {
+      "slat_width": "N/A (monolithic granite)",
+      "back_angle": "N/A (no back support)",
+      "seat_height": "14 inches (too low)",
+      "armrest_present": false,
+      "material_grade": "Polished granite (hazardous when wet)"
+    },
+    "phantom_sitter_alert": false,
+    "fraud_alert": true
+  },
+
+  "tags": ["modern-art", "taxpayer-fraud", "petition", "fbi-no-response", "janet-agrees"],
+  "entities": ["Greg Mantooth", "Janet", "City Council", "FBI Art Crime Team"],
+
+  "published_at": "2026-01-05T00:00:00Z",
+
+  "comments": []
+}

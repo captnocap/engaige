@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "the-phantom-sitter-strikes",
+
+  "category": "Bench Review",
+
+  "title": "URGENT: The Phantom Sitter Has Struck Again - Cemetery Hill Bench Compromised",
+  "body": "At 0545 on December 15th, I arrived at Cemetery Hill Park for a routine bi-monthly assessment of bench CH-07. What I found chilled me to my core.\n\nThe bench was gone. In its place: a new bench, clearly installed within the past 48 hours, with synthetic slats and chrome armrests. On the backrest, etched into the wood: a small \"PS\" inside a sitting figure silhouette.\n\nThe Phantom Sitter.\n\nFor those new to BenchWatch, the Phantom Sitter is my nemesis. They have been leaving fake reviews on Yelp, Google Maps, and TripAdvisor praising benches I have rated below 50. They have contacted the Parks Department claiming to be me. They have subscribed me to seventeen bench manufacturer mailing lists.\n\nThis escalation\u2014physical bench replacement\u2014represents a new chapter in our conflict. They know my assessment schedule. They are watching me. But I am also watching them.\n\nThe new bench is unratable until proper analysis can be conducted. I am assigning a precautionary MCI of 0. Trust nothing. The Phantom Sitter wants you comfortable. Comfort leads to complacency. Complacency is how they win.\n\nIf you have any information about the identity of the Phantom Sitter, contact me through the secure form on this website. Use the code word: \"ARMREST.\"",
+  "summary": "I arrived for my scheduled assessment to find the bench had been REPLACED overnight. The Phantom Sitter's calling card was left at the scene. This is personal now.",
+
+  "thumbnail_emoji": "\ud83d\udc7b",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "Cemetery Hill Park, North Entrance",
+    "mci_score": 0,
+    "measurements": {
+      "slat_width": "COMPROMISED",
+      "back_angle": "COMPROMISED",
+      "seat_height": "COMPROMISED",
+      "armrest_present": true,
+      "material_grade": "UNDER INVESTIGATION"
+    },
+    "phantom_sitter_alert": true,
+    "fraud_alert": false
+  },
+
+  "tags": ["phantom-sitter", "nemesis", "bench-replacement", "investigation-ongoing", "armrest"],
+  "entities": ["Greg Mantooth", "Phantom Sitter"],
+
+  "published_at": "2025-12-15T00:00:00Z",
+
+  "comments": []
+}

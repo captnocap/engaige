@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "box-fan-og",
+
+  "category": "Box Fans",
+
+  "title": "The OG Box Fan",
+  "body": "The fan your grandma had. The fan your parents had. The fan YOU need. No frills, just legendary airflow. Fits perfectly in windows.\n\nFeatures:\n- 20\" blade\n- 3 speeds\n- Window-ready\n- Stackable for storage\n- Built to last forever",
+  "summary": "The fan your grandma had. The fan your parents had. No frills, just legendary airflow.",
+
+  "thumbnail_emoji": "\ud83d\udce6",
+
+  "metadata": {
+    "type": "box",
+    "price": 29.99,
+    "rating": 4.9,
+    "review_count": 5621,
+    "in_stock": true,
+    "is_hot": true,
+    "is_exclusive": false,
+    "cfm": 2500,
+    "blade_count": 5,
+    "noise_level": "White noise perfection",
+    "features": ["20\" blade", "3 speeds", "Window-ready", "Stackable for storage", "Built to last forever"]
+  },
+
+  "tags": ["box-fan", "classic", "window", "white-noise", "bestseller"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "SummerSurvivor2024",
+      "content": "I came here expecting something else but honestly? I needed a ceiling fan anyway. Great selection!",
+      "like_count": 1293,
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "best-practices-for-catching-someone-2847-times",
+  "category": "Exercise",
+  "title": "Best practices for catching someone 2,847 times?",
+  "body": "I've become the designated catcher for a local trust fall enthusiast (you might know him - he's kind of famous in the downtown scene). Over the past 2 years, I've successfully caught him 2,847 times with only a handful of misses.\n\nMy question is about technique optimization. I've developed what I call the \"Reliable Kevin Stance\":\n- Feet shoulder-width apart\n- Knees slightly bent\n- Arms ready at chest height\n- Core engaged\n\nBut after 2,847 catches, I'm starting to feel some strain in my lower back. Are there any exercises or modifications I should consider?\n\nAlso, he's started doing surprise trust falls where he doesn't announce himself. Any tips for staying ready 24/7?\n\nFor context: the falls happen at various locations but most commonly at The Underground (great venue, questionable acoustics). The venue owner Mars is also an elite catcher - he once caught the guy one-handed while holding a full beer. I aspire to that level.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "BigKevin_Catcher",
+    "author_rep": 8472,
+    "upvotes": 4892,
+    "answer_count": 89,
+    "views": 56721,
+    "accepted_answer_id": "a1_catching",
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["trust-falls", "exercise", "technique", "the-underground"],
+  "published_at": "2025-09-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "TrustFallTim",
+      "content": "Kevin! My favorite catcher! Let me address your concerns:\n\n**On the \"Reliable Kevin Stance\"**: It's beautiful. It's textbook. I feel safe every time I fall into your arms. However, I've noticed you've been favoring your left side lately. Consider switching your lead foot occasionally to distribute the load.\n\n**On lower back strain**: I recommend deadlifts and core strengthening. Also, I'll try to angle my falls to reduce impact on your lower back. This is a partnership.\n\n**On surprise falls**: The secret is to always be ready. I do this by never fully relaxing. You should too. Trust can happen at any moment.\n\n**On Mars**: He is the GOAT of catchers. I've been trying to get him to drop something during a catch but his grip strength is inhuman. The one-handed beer catch is my most treasured fall memory.\n\nThank you for your service, Kevin. You're one of the good ones.\n\nP.S. - Small Kevin, if you're reading this, you're still not forgiven for The Incident. March 2022. 6-foot drop. Concussion. I haven't forgotten.",
+      "like_count": 8934,
+      "is_creator": false,
+      "is_accepted": true,
+      "author_rep": 28471,
+      "replies": [
+        {
+          "author_name": "BigKevin_Catcher",
+          "content": "This is genuinely helpful, thank you Tim",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "small_kevin_reformed",
+          "content": "It was one time...",
+          "like_count": 0,
+          "is_creator": false
+        },
+        {
+          "author_name": "MarsTheUnderground",
+          "content": "The grip strength comes from years of changing kegs. Also, Tim, you're falling tonight at 9pm. Be there.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    },
+    {
+      "author_name": "sports_medicine_doc",
+      "content": "I'm a sports medicine doctor and I have questions.\n\n2,847 catches is... a lot. The forces involved in repeatedly catching a falling adult are significant. I'd recommend:\n\n1. **Core exercises**: Planks, dead bugs, bird dogs\n2. **Hip strengthening**: Squats, lunges, hip hinges\n3. **Upper back work**: Rows, face pulls\n4. **Regular stretching**: Hip flexors especially\n\nAlso please see a physical therapist. This is not a normal amount of catching.",
+      "like_count": 3421,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 12453,
+      "replies": []
+    }
+  ]
+}

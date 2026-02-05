@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-quantum-brew-encounter",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "I Saw Our Lead Singer at Quantum Brew (He Pretended Not to See Me)",
+  "body": "Quantum Coffee Co. on Fifth Street. I go there every morning now. It's become my routine.\n\nI was waiting for my coffee when I saw him. James. Our bassist. My friend.\n\nHe was with someone I didn't recognize. They were holding hands.\n\nFor a second, I thought about going over. Saying hi. Asking how he's been. But then I realized: he wasn't at the last band practice. He's never coming back, is he?\n\nHe saw me. I know he did. Our eyes met for like half a second.\n\nHe immediately looked away and shifted his body so his back was to me.\n\nThe barista called my name. I got my coffee. I left.\n\nOn the walk home, I thought about what it means when someone you've been making art with for eight years pretends not to see you.\n\nIt means they don't want to talk about the band.\n\nIt means they've moved on.\n\nIt means they're not coming back.\n\nI haven't been to Quantum Brew since.\n\nI'm getting coffee somewhere else now. This place on the corner that's always empty. The coffee is worse, but at least I won't see anyone I know.\n\nI haven't played the drums since that day.\n\nI just sit there. The kit sits there too. We just... exist together. In silence.",
+  "summary": "I was getting coffee. My usual order. V60, light roast. And there was James. He looked different. Shorter hair. Happier.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 6,
+    "date": "March 28, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 10
+  },
+
+  "tags": ["james", "heartbreak", "moving-on", "acceptance", "denial-breaking"],
+  "entities": ["Vex", "James"],
+
+  "published_at": "2024-03-28T00:00:00Z"
+}

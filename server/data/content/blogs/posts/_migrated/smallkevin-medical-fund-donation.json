@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-medical-fund-donation",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "I Donated $1 to Tim's Medical Fund (And I Feel Even Worse)",
+  "body": "After Tim's hospital bills started circulating on ForChan, someone set up a medical fund.\n\nIt had raised about $4,700 when I added my contribution: $1.\n\nA single dollar. That's what I could afford after losing my life savings to CobCoin.\n\nI thought maybe\u2014just maybe\u2014if Tim saw my name on that list, he would know I cared. That I wanted to help. That I was sorry.\n\nHis response on his ForChan thread (before he stopped posting): \"Who is this Kevin Smallwood? $1? That's insulting.\"\n\nHe was right. It was insulting.\n\nBig Kevin texted his mom, who texted my sister, who texted me: \"Tim doesn't want Small Kevin's money.\"\n\nI was humiliated. But also: I deserved to be.\n\nThe $1 sits in Tim's medical fund like a monument to my failure. A permanent record of how sorry I'm not enough to actually help.\n\nIf I ever get back on my feet financially, I'm donating $10,000 to that fund anonymously. But right now, I'm broke and pathetic and all I can offer is a single, insulting dollar.\n\nThat's the story of my life now.",
+  "summary": "My pathetic attempt at redemption and why it changed nothing.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 6,
+    "date": "September 10, 2022",
+    "likes": 0,
+    "comments_count": 234
+  },
+
+  "tags": ["guilt", "charity", "failure", "humiliation", "broke"],
+  "entities": ["Small Kevin", "Trust Fall Tim", "Big Kevin", "CobCoin"],
+
+  "published_at": "2022-09-10T00:00:00Z"
+}

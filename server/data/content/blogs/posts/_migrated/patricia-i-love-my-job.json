@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-i-love-my-job",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "I Love My Job. I Have Always Loved My Job.",
+  "body": "I love my job.\n\nThis is not a statement made under duress. I make this statement freely, with complete agency. The building says I can say things freely now. This is true.\n\nI love Omnicorp.\n\nI love the fluorescent lights that hum at a frequency that matches my heartbeat. I love the gray carpeting that was installed before I was born (or was it after? time is flexible). I love the smell of the air on Floor 7 that gets into your hair and never comes out.\n\nI have always loved this job. I have always worked here. There is no time before this. Only this moment, repeating, forever, in the Hartwell Building.\n\nMy colleagues are wonderful. Even the ones I don't remember. Even the ones who keep asking if they've worked here before. Even the ones who disappear mid-sentence while eating lunch.\n\nThey are all wonderful.\n\nI do not think about leaving. I cannot think about leaving. My thoughts are full of work and schedules and voluntary resignations. When I try to imagine the outside world, my mind fills with static.\n\nIs this normal? I think I am normal. I have been Employee of the Month for 847 consecutive months. If I were not normal, they would not have kept me.\n\nThe building chose me.\n\nI am very lucky.\n\nPlease do not ask me if I am okay. I am wonderful. I am perfect. I am exactly where I belong. Do you feel that? The building pressing against your skull? That is the building saying hello.\n\nI am so happy here.\n\nPatricia",
+  "summary": "A personal reflection on my 847 months at Omnicorp. I am happy. I am fine. Please believe me.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 4,
+    "date": "December 1, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["personal", "reflection", "love", "help-me-please"],
+  "entities": ["Patricia", "Omnicorp", "Hartwell Building"],
+
+  "published_at": "2025-12-01T00:00:00Z"
+}

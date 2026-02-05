@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-underground-mustache",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "Why I Infiltrated The Underground in a Fake Mustache",
+  "body": "The Underground is the venue where all the trust fall community hangs out. They banned me after The Incident.\n\nMars, the owner, said I wasn't welcome. Period. End of discussion.\n\nLast month, I put on a fake mustache and tried to get in.\n\nYeah. I know. Stupid.\n\nI bought the mustache from a costume shop for $8.47 (I remember because I almost didn't have enough money). I wore a hoodie. I kept my head down. I thought maybe I could just... sit in the corner. Listen to some music. Feel like I was part of something again.\n\nMars recognized me within 30 seconds.\n\nI didn't even make it to the bar.\n\nHe called security. I left without any trouble, but I could feel everyone's eyes on me as I walked out. The fake mustache fell off halfway to the door.\n\nI drove home and cried in my car for an hour.\n\nWhat was I trying to prove? That I could fool people? That I could fake my way back into community? That I could pretend The Incident never happened?\n\nIt didn't work. It never will.\n\nI'm banned from The Underground, and I deserve to be.",
+  "summary": "What was I even trying to do? I still don't know.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 7,
+    "date": "November 2, 2023",
+    "likes": 0,
+    "comments_count": 1847,
+    "isControversial": true
+  },
+
+  "tags": ["the-underground", "infiltration", "desperation", "humiliation", "ban"],
+  "entities": ["Small Kevin", "Mars", "The Underground"],
+
+  "published_at": "2023-11-02T00:00:00Z"
+}

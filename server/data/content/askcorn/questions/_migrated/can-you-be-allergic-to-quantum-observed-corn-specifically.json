@@ -1,0 +1,25 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "can-you-be-allergic-to-quantum-observed-corn-specifically",
+  "category": "Health",
+  "title": "Can you be allergic to quantum-observed corn specifically?",
+  "body": "",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "anonymous_user",
+    "author_rep": 0,
+    "upvotes": 234,
+    "answer_count": 45,
+    "views": 8923,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["corn-allergy", "quantum-coffee", "medical"],
+  "published_at": "2026-01-06T00:00:00Z",
+  "comments": []
+}

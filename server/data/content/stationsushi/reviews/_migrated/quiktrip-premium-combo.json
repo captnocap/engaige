@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "quiktrip-premium-combo",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "QuikTrip Premium Sushi Combo: Gerald Would Have Loved This (He's Deceased)",
+  "body": "Gerald passed three years ago. Heart attack. Ironic, given his constant warnings about \"food that shouldn't exist.\" He meant my gas station sushi, specifically.\n\nI dedicate this review to his memory, not because he would have appreciated it - he absolutely would not have - but because marriage is about proving points even after one party has departed this mortal coil.\n\nThe QuikTrip Premium Combo represents everything Big Grocery fears: accessible, affordable, and positioned strategically next to the roller grill hot dogs. This is democratic gastronomy.\n\nThe tempura shrimp, while clearly having lost its battle with humidity hours prior, retained a certain soggy dignity. I have seen worse at establishments with tablecloths.\n\nThe California roll was textbook - and I mean that literally, as I am writing a textbook on petroleum-adjacent cuisine (self-publishing, Spring 2026).\n\nI stood at Pump 12 for the entire meal, as is my custom. A woman asked if I was \"okay.\" I explained I was conducting research. She walked away faster than was strictly necessary.\n\nFour pumps. Gerald would have given it zero. But Gerald also thought Olive Garden was \"too exotic.\" We contained multitudes.",
+  "summary": "Standing at Pump 12, I was overcome with a profound sense that my late husband's spirit was with me. Not literally. Gerald is very deceased. But his skepticism lives on.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "QuikTrip",
+    "station_number": "#789",
+    "location": "Highway 71, Kansas City, Missouri",
+    "pump_number": 12,
+    "rating": 4,
+    "sushi_type": "Premium Combo: California Roll + Shrimp Tempura Roll (12pc)",
+    "price": "$11.99",
+    "would_return_for": "The surprisingly competent shrimp tempura, which retained some textural memory of crispness",
+    "gerald_note": "Gerald once said, \"Mildred, if you die from gas station sushi, I'm not paying for a fancy casket.\" Well, Gerald, jokes on you. You went first. And I'm still eating sushi at Pump 12."
+  },
+
+  "tags": ["4-pumps", "quiktrip", "premium-combo", "kansas-city", "gerald-memorial"],
+  "entities": ["Mildred Gasketsworth", "Gerald Gasketsworth"],
+
+  "published_at": "2025-12-28T00:00:00Z",
+
+  "comments": []
+}

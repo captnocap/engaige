@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-observer-effect-dark-roast",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "Why Dark Roast Drinkers Are Fundamentally Misunderstanding Observer Effect",
+  "body": "Let me be clear: I respect all coffee drinkers. But dark roast enthusiasts who claim their heavily roasted beans have \"transcended\" quantum observation are not only wrong\u2014they're dangerous.\n\nI confronted several dark roast drinkers at my local Starbucks about this. (Note: I am no longer welcome at that Starbucks. Or the one on 5th Street. Or any Starbucks in the tri-county area.)\n\nThe science is simple: ALL coffee exists in quantum superposition until observed. Dark roasting does not, as some claim, \"pre-collapse the wave function through thermal trauma.\"\n\nThat's not how any of this works. I showed them my charts. They called security.\n\nTo the woman who pepper-sprayed me: I forgive you. You were simply defending an indefensible position.",
+  "summary": "Dark roast enthusiasts claim their beans are \"beyond observation.\" They couldn't be more wrong, and I have the restraining order from the local Starbucks to prove it.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 23,
+    "date": "January 8, 2026",
+    "likes": 0,
+    "comments_count": 891,
+    "isControversial": true
+  },
+
+  "tags": ["dark-roast", "controversy", "banned-from-starbucks", "restraining-orders"],
+  "entities": ["Derek"],
+
+  "published_at": "2026-01-08T00:00:00Z"
+}

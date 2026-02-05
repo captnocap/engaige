@@ -1,0 +1,19 @@
+{
+  "$schema": "category",
+  "site_id": "nestfinder",
+  "categories": [
+    { "slug": "apartments", "name": "Apartments", "icon_emoji": "🏢", "sort_order": 0 },
+    { "slug": "studios", "name": "Studios", "icon_emoji": "🏠", "sort_order": 1 },
+    { "slug": "condos", "name": "Condos", "icon_emoji": "🏙️", "sort_order": 2 },
+    { "slug": "houses", "name": "Houses", "icon_emoji": "🏡", "sort_order": 3 },
+    { "slug": "rooms", "name": "Rooms", "icon_emoji": "🛏️", "sort_order": 4 },
+    { "slug": "downtown", "name": "Downtown", "icon_emoji": "🌆", "parent_slug": null, "sort_order": 5 },
+    { "slug": "eastside", "name": "Eastside", "icon_emoji": "🌅", "sort_order": 6 },
+    { "slug": "financial-district", "name": "Financial District", "icon_emoji": "🏦", "sort_order": 7 },
+    { "slug": "midtown", "name": "Midtown", "icon_emoji": "🏬", "sort_order": 8 },
+    { "slug": "riverside", "name": "Riverside", "icon_emoji": "🌊", "sort_order": 9 },
+    { "slug": "arts-district", "name": "Arts District", "icon_emoji": "🎨", "sort_order": 10 },
+    { "slug": "near-university", "name": "Near University", "icon_emoji": "🎓", "sort_order": 11 },
+    { "slug": "westside", "name": "Westside", "icon_emoji": "🌇", "sort_order": 12 }
+  ]
+}

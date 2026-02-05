@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "dailybuzz",
+  "content_type": "article",
+  "slug": "city-council-meme-ban-ordinance",
+
+  "category": "Politics",
+
+  "title": "City Council Votes on Controversial \"Meme Ban\" Ordinance",
+  "body": "City Council convened last night for a heated debate over Ordinance 2026-47, colloquially known as the \"Meme Ban,\" which would regulate the public display and distribution of \"unverified humor content\" within city limits.\n\nThe proposed ordinance, introduced by Councilmember Harold Chen, defines regulated content as \"digital images or video combined with text intended to convey humor, commentary, or social criticism without verified factual basis.\"\n\n\"This is about public discourse integrity,\" Chen said during opening statements. \"When people can share any image with any text without accountability, we risk a degradation of our shared reality. The Great Meme War of 2019 should have taught us that.\"\n\n**Opposition Speaks**\n\nThe proposal faced immediate pushback from free speech advocates and a surprisingly organized contingent of what one observer described as \"extremely online residents.\"\n\n\"This is censorship dressed up as public safety,\" argued ACLU representative Maria Santos. \"Memes are a form of protected speech, and attempting to regulate them based on 'verification' is both unworkable and unconstitutional.\"\n\nThe public comment period stretched to three hours as residents lined up to voice opposition. Notable moments included:\n\n- A man who read the entire text of the \"Navy Seal copypasta\" as his public comment, arguing it demonstrated the absurdity of regulating ironic content\n- A woman who held up a series of cat pictures and asked the council to explain which ones constituted \"unverified humor\"\n- A group of teenagers who silently held up phones displaying \"This meeting could have been an email\" memes\n\n**The Vote**\n\nAfter deliberation, the council voted 4-3 to table the ordinance for further study. Councilmember Chen expressed disappointment but acknowledged the need for \"more precise language.\"\n\n\"I stand by the intent of this proposal,\" Chen said. \"But clearly the execution needs work. We'll be consulting with experts in digital media and constitutional law before bringing this back.\"\n\n**Community Response**\n\nOutside City Hall, the mood was celebratory among opponents. Someone had projected a giant \"Victory Royale\" image onto the building's facade, which security was unable to trace.\n\nLocal social media was flooded with memes about the proceedings, including several featuring Councilmember Chen's face. When reached for comment about his newfound meme status, Chen declined to respond.\n\nThe ordinance is expected to return to council in modified form within 90 days.",
+  "summary": "Proposed regulation would restrict sharing of \"unverified humor content\" in public spaces.",
+
+  "thumbnail_emoji": "\u2696\ufe0f",
+
+  "metadata": {
+    "author": "Jennifer Walsh",
+    "date": "January 18, 2026",
+    "read_time": 6,
+    "related_articles": ["The Great Meme War of 2019: A Retrospective", "Digital Rights in the Modern Age"]
+  },
+
+  "tags": ["politics", "city-council", "free-speech", "memes"],
+  "entities": ["Councilmember Harold Chen", "Maria Santos", "ACLU"],
+
+  "published_at": "2026-01-18T00:00:00Z",
+
+  "comments": []
+}

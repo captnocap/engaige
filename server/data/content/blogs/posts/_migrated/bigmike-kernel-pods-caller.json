@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-kernel-pods-caller",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "Called Into KernelPods Today",
+  "body": "KernelPods is a podcast series. I listen to it. I have called into it multiple times. This is what listeners do. They listen and then they call in to discuss the content.\n\nToday I called in again to discuss an episode. I contributed my perspective on the topic. This is the purpose of call-in segments.\n\nSome people have suggested that I call into every episode. This is not accurate. I call in when I feel I have something valuable to contribute.\n\nThe fact that I happen to call in frequently is because I listen frequently and I have opinions about the content. Having opinions and sharing them is normal behavior.\n\nI do not understand why people are surprised that the same person calls in multiple times. A listener becomes familiar with a show. That listener calls in. The host recognizes that listener's voice. This is normal radio dynamics.\n\nJust because I am recognizable does not mean something unusual is happening. I simply have a consistent perspective and a willingness to share it.\n\nI call in. We discuss topics. The episode ends. I move on with my life, as anyone would. There is nothing to investigate here.",
+  "summary": "I have been a regular caller to KernelPods for some time. I do not see why this is unusual.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 3,
+    "date": "January 16, 2026",
+    "likes": 0
+  },
+
+  "tags": ["kernelpods", "podcast", "caller", "opinions", "normal"],
+  "entities": ["Big Mike", "KernelPods"],
+
+  "published_at": "2026-01-16T00:00:00Z"
+}

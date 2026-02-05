@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-anyone-solve-the-hartwell-building-mystery-on-vidtube",
+  "category": "Entertainment",
+  "title": "Will anyone solve the Hartwell Building mystery on VidTube?",
+  "body": "Resolves YES if a VidTube video definitively explains what happened at the Hartwell Building in 2018, with evidence that is widely accepted as credible.\n\n\"Widely accepted\" = more than 70% positive reception and no successful debunking.\n\nMidnight Mystery Files has been investigating but no conclusive evidence yet.",
+  "summary": "Whether a VidTube video will definitively solve the Hartwell Building 2018 mystery with credible evidence.",
+  "thumbnail_emoji": "🔍",
+  "metadata": {
+    "probability": 0.22,
+    "volume": 18900,
+    "volume_display": "$18.9K",
+    "traders": null,
+    "closes_at": "2025-06-30T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 22,
+    "no_price": 78,
+    "resolved": null
+  },
+  "tags": ["hartwell-building", "entertainment", "vidtube", "mystery", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "MidnightMysteryFan",
+      "content": "MMF is getting close. Their last video had some really compelling evidence.",
+      "like_count": 34,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "SkepticalDebunker",
+      "content": "There's nothing to solve. It was a gas leak. This will never resolve YES.",
+      "like_count": 23,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}

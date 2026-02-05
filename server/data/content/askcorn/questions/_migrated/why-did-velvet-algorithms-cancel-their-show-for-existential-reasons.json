@@ -1,0 +1,25 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "why-did-velvet-algorithms-cancel-their-show-for-existential-reasons",
+  "category": "Entertainment",
+  "title": "Why did Velvet Algorithms cancel their show for \"existential reasons\"?",
+  "body": "",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "anonymous_user",
+    "author_rep": 0,
+    "upvotes": 423,
+    "answer_count": 87,
+    "views": 12453,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["velvet-algorithms", "concerts", "the-underground"],
+  "published_at": "2025-12-30T00:00:00Z",
+  "comments": []
+}

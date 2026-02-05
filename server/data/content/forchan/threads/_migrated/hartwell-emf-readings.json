@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "hartwell-emf-readings",
+
+  "parent_slug": "sci-science-math",
+  "category": "Science & Math",
+
+  "title": "Can someone explain the Hartwell EMF readings?",
+  "body": "Not a schizo I promise. I do EMF work for a living and was called to inspect the Hartwell Building last year.\n\nThe readings on floors 6-8 were normal. Floor 7 specifically showed some anomalies but nothing crazy.\n\nWhat was weird was when I tried to test between floors 12 and 14. My equipment showed readings that shouldn't be possible. Like the field was coming from a direction that doesn't exist.\n\nAnyone have a scientific explanation?",
+  "summary": null,
+
+  "thumbnail_emoji": "📡❓",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94805456,
+    "replies_count": 3,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/sci/"
+  },
+
+  "tags": ["hartwell-building", "emf", "science", "paranormal"],
+  "entities": ["Hartwell Building"],
+
+  "published_at": "2024-11-22T08:45:33Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94805456\n>direction that doesn't exist\nelaborate",
+      "like_count": 0,
+      "published_at": "2024-11-22T08:48:12Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94805456\nProbably just equipment interference from the elevator machinery. Older buildings have terrible electrical shielding.\n\nSource: also do EMF work",
+      "like_count": 0,
+      "published_at": "2024-11-22T08:51:27Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94805522\nThis. Industrial elevators from the 1920s produce weird readings all the time.\n\n>>94805456 is probably just new to the job",
+      "like_count": 0,
+      "published_at": "2024-11-22T08:54:43Z",
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "elote-street",
+
+  "category": "Professional Chefs",
+
+  "title": "ELOTE Mexican Street Corn - Hot and Messy",
+  "body": "The authentic way to make elote. Warning: this gets messy. Very messy. The mayo drips everywhere. You will need napkins.\n\nIngredients:\n- 4 ears of corn\n- 1/2 cup mayo\n- 1/2 cup crumbled cotija cheese\n- 1 tbsp chili powder\n- 2 limes\n- Fresh cilantro\n- Butter\n\nSteps:\n1. Grill corn until charred\n2. Spread mayo generously\n3. Roll in cotija cheese\n4. Dust with chili powder\n5. Squeeze lime juice\n6. Garnish with cilantro",
+  "summary": "The authentic way to make elote. Warning: this gets messy. Very messy.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83d\udd25",
+
+  "metadata": {
+    "duration": "12:47",
+    "views": 15200000,
+    "rating": 99,
+    "author": "ChefMiguel_Official",
+    "author_avatar": "\ud83d\udc68\u200d\ud83c\udf73",
+    "author_verified": true,
+    "is_premium": true,
+    "is_hd": true,
+    "uploaded_ago": "3 days ago",
+    "ingredients": ["4 ears of corn", "1/2 cup mayo", "1/2 cup crumbled cotija cheese", "1 tbsp chili powder", "2 limes", "Fresh cilantro", "Butter"],
+    "steps": ["Grill corn until charred", "Spread mayo generously", "Roll in cotija cheese", "Dust with chili powder", "Squeeze lime juice", "Garnish with cilantro"]
+  },
+
+  "tags": ["elote", "mexican", "street-food", "spicy", "grilled"],
+  "entities": ["ChefMiguel_Official"],
+
+  "published_at": "2026-01-17T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "ProChef_Marcus",
+      "content": "Professional chef here. This technique is actually spot-on. Well done.",
+      "like_count": 3456,
+      "replies": []
+    }
+  ]
+}

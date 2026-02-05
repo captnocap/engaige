@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-class-action-lawyers-testify",
+
+  "channel_slug": "drmartinez",
+  "category": "Legal Nightmare",
+
+  "title": "The Class Action Lawyers Want Me to Testify",
+  "body": "A law firm called Swendahl & Associates contacted me about testifying in a lawsuit against the Elena Coffee Maker manufacturers. The lawsuit claims false advertising and consumer fraud.\n\nThe plaintiffs argue that the Elena Pro 3000 was marketed as capable of \"quantum brewing\" and \"consciousness-aware temperature calibration\" and other things that do not exist and cannot exist.\n\nThey want me to testify that my research does not support these claims.\n\nI do not want to testify. I do not want to go to court. I want to go back to my laboratory and study heating dynamics in water like a normal person.\n\nBut I also signed the subpoena because the lawyers said if I do not testify, I become liable for fraud as well.\n\nThe lawyer said: \"Your name is literally on the product. That is not good.\"\n\nI said: \"I did not put my name on the product. My research was misinterpreted by someone named Derek Observerson who then named his coffee maker after me, which inspired a manufacturing company to exploit my name for profit.\"\n\nThe lawyer said: \"That is actually worse. Can you say that in court?\"\n\nThe trial is scheduled for March 2026. I will have to explain to a jury of regular people why \"quantum coffee\" is not real. I will have to explain basic physics to people who have been sold a $2,999 coffee maker that promised them enlightenment through heat.\n\nI am preparing slides. I have never been more exhausted.",
+  "summary": "There is a class action suit. People spent $2,999+ on \"quantum\" coffee makers. They are upset. They want my help. I want theirs.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 8,
+    "date": "September 12, 2025",
+    "likes": 0,
+    "category": "Legal Nightmare"
+  },
+
+  "tags": ["lawsuit", "class-action", "elena-pro-3000", "testify", "legal"],
+  "entities": ["Dr. Elena Martinez", "Derek", "Swendahl & Associates"],
+
+  "published_at": "2025-09-12T00:00:00Z"
+}

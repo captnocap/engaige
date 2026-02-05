@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "mars",
+  "category": null,
+  "title": "Mars, 38",
+  "body": "Venue owner. Night owl. If the music's too loud, you're too old. The Underground forever. Looking for someone who appreciates basement acoustics and doesn't ask why we relocated away from the Hartwell Building.",
+  "summary": "Owner of The Underground venue. Night owl. Music lover.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 38,
+    "location": "Downtown",
+    "distance": "3.7 miles away",
+    "interests": ["Music lovers", "Night people", "Anyone with good taste"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "The Underground",
+    "looking_for": ["Music lovers", "Night people", "Anyone with good taste"],
+    "corn_score": 55,
+    "has_liked_you": false,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A show at The Underground. Standing room only. The band is experimental. The drinks are strong. The corn chips are homemade."
+      },
+      {
+        "question": "I geek out on...",
+        "answer": "Basement wave music. Local bands. Sound engineering. The story behind why The Velvet Algorithms cancelled. I can't tell you, but I can hint."
+      },
+      {
+        "question": "My happy place...",
+        "answer": "2 AM at the venue after everyone's gone home. Just me, the lingering reverb, and the ghost of every show that came before."
+      }
+    ],
+    "images": ["guitar"]
+  },
+  "tags": ["the-underground", "music", "venue-owner", "night-owl"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

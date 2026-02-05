@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-underground-that-night",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "Why I Happened to Be at The Underground That Night",
+  "body": "The Underground is a popular music venue in Tulsa. I go there regularly. So does everyone else who likes music in Tulsa.\n\nOn the night in question, I attended because there was a band playing. This is a normal reason to go to a music venue. People attend music venues to see bands. That is how music venues work.\n\nThe fact that something \"unusual\" happened that night has nothing to do with my presence. I was simply there to enjoy live music, like any other person would be.\n\nMultiple people have asked me to \"explain\" why I was there. I don't see why explanation is necessary. I like music. There was music. I attended. This is a logical chain of events.\n\nWhen the incident occurred, I was in the audience like everyone else. I witnessed it. I was present. So were 847 other people.\n\nJust because I was there does not mean I am \"always there\" or that my presence is \"somehow significant.\" I went to an event in my own city. This is normal behavior.\n\nI don't understand why people find this noteworthy. Do they expect me to never leave my house? To avoid popular venues? To somehow anticipate when incidents will occur?\n\nI was just a man who wanted to see a band. That is all that happened here.",
+  "summary": "People keep asking where I was the night of the incident at The Underground. I have a perfectly reasonable explanation.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 5,
+    "date": "January 25, 2026",
+    "likes": 0,
+    "isControversial": true
+  },
+
+  "tags": ["the-underground", "coincidence", "explanation", "847", "normal"],
+  "entities": ["Big Mike", "The Underground"],
+
+  "published_at": "2026-01-25T00:00:00Z"
+}

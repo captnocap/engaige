@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "cobcoin",
+  "content_type": "article",
+  "slug": "hodler-cob-prediction",
+
+  "category": "Crypto News",
+
+  "title": "HODLer Claims COB Will Hit $847 by End of Year, Sources: \"Trust Me Bro\"",
+  "body": "Local investor with 0.003 BTC in savings is \"absolutely certain\" that CobCoin will moon. When pressed for analysis, they showed us a chart that looked like corn.",
+  "summary": "Bullish CobCoin investor predicts massive price surge based on corn-shaped chart patterns.",
+
+  "thumbnail_emoji": "\ud83c\udf3d",
+
+  "metadata": {
+    "source": "Threadit r/CobCoinBets",
+    "sentiment": "bullish",
+    "timestamp_relative": "8 hours ago"
+  },
+
+  "tags": ["cob", "hodl", "price-prediction", "trust-me-bro"],
+  "entities": ["CobCoin"],
+
+  "published_at": "2026-01-20T04:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "CobHODLer69",
+      "content": "My wife left me and took the kids but I'm NOT selling. Paper hands don't deserve generational wealth. COB to the MOON! Who needs family when you have decentralized corn?",
+      "like_count": 423,
+      "replies": []
+    }
+  ]
+}

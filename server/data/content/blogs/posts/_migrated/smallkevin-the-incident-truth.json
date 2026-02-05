@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-the-incident-truth",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "My Side of the Story: What REALLY Happened on March 15, 2022",
+  "body": "Okay. I'm going to say this once, and I'm going to say it clearly. I did not intentionally drop Tim.\n\nOn March 15, 2022, I was at the Westgate Mall food court. Tim was there with about 30 other people. He yelled \"TRUST FALL\" like he always does. I was positioned behind him. I was ready.\n\nHere's what happened: My phone was buzzing. I thought it was my mom. It wasn't. But in that split second when I looked down\u2014just a microsecond\u2014Tim fell.\n\nI reached out. I swear I did. My hands were there. But his momentum carried him past me. Past all of us. He hit the ground and I\u2014I tried to catch him on the way down but he was already falling too fast.\n\nThe mall security blamed me. The trust fall community blamed me. But here's the thing: I've caught Tim 847 times before. EIGHT. HUNDRED. FORTY. SEVEN. Times. One moment of distraction doesn't erase that.\n\nExcept it does. One moment does erase all of that.\n\nI'm sorry, Tim. I say that every day, but I need you to know: it was an accident.",
+  "summary": "Everyone blames me for The Incident. But nobody was there. Nobody knows what it was like in that moment.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 18,
+    "date": "March 15, 2023 (Anniversary Post)",
+    "likes": 0,
+    "comments_count": 847,
+    "isPinned": true
+  },
+
+  "tags": ["the-incident", "accountability", "falling", "regret", "march-2022"],
+  "entities": ["Small Kevin", "Trust Fall Tim"],
+
+  "published_at": "2023-03-15T00:00:00Z"
+}

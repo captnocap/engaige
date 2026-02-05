@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "building-own-quantum-coffee-maker",
+
+  "parent_slug": "diy-do-it-yourself",
+  "category": "Do It Yourself",
+
+  "title": "Building my own quantum coffee maker - parts list?",
+  "body": "Not paying $3000 for something I can probably build myself\n\nI've watched a few videos and it doesn't look that complicated. Basically just need:\n>precision temperature control\n>some kind of EMF generator?\n>observation chamber (whatever that is)\n>regular coffee maker parts\n\nAnyone have a real parts list? Not finding good resources",
+  "summary": null,
+
+  "thumbnail_emoji": "🔧☕",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94804789,
+    "replies_count": 3,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/diy/"
+  },
+
+  "tags": ["quantum-coffee", "diy", "building", "coffee-maker"],
+  "entities": [],
+
+  "published_at": "2024-11-21T22:33:15Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94804789\n>observation chamber\nbro that's literally just a glass window\nthey're selling you air",
+      "like_count": 0,
+      "published_at": "2024-11-21T22:36:28Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94804789\nDon't do this. I tried building one and nearly burned my apartment down. The EMF field generator needs to be calibrated PERFECTLY or it just makes heat.\n\nJust save up for a real one or accept that regular coffee is fine",
+      "like_count": 0,
+      "published_at": "2024-11-21T22:39:44Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94804855\n>nearly burned apartment down trying to make fancy coffee\n/diy/ moment",
+      "like_count": 0,
+      "published_at": "2024-11-21T22:42:57Z",
+      "replies": []
+    }
+  ]
+}

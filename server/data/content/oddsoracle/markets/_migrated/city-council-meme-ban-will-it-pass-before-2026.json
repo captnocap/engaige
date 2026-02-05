@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "city-council-meme-ban-will-it-pass-before-2026",
+  "category": "Politics",
+  "title": "City council meme ban: Will it pass before 2026?",
+  "body": "Resolves YES if the city council passes any form of \"meme regulation\" legislation before 2026.\n\nCouncilman Henderson proposed a ban on \"disruptive digital imagery\" following the Great Meme War of 2019. The proposal has been tabled multiple times.\n\nAny regulation counts - doesn't have to be a full ban.",
+  "summary": "Whether the city council will pass any form of meme regulation legislation before 2026.",
+  "thumbnail_emoji": "🏛️",
+  "metadata": {
+    "probability": 0.03,
+    "volume": 8900,
+    "volume_display": "$8.9K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 3,
+    "no_price": 97,
+    "resolved": null
+  },
+  "tags": ["politics", "memes", "city-council", "legislation", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "MemeWarVeteran",
+      "content": "They've been trying to pass this for 5 years. The internet always wins. NO is free money.",
+      "like_count": 156,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}

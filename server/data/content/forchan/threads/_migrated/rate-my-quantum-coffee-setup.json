@@ -1,0 +1,75 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "rate-my-quantum-coffee-setup",
+
+  "parent_slug": "ck-food-cooking",
+  "category": "Food & Cooking",
+
+  "title": "Rate my quantum coffee setup",
+  "body": "Just upgraded my coffee station\n\n>Quantum Q-3000 brewer\n>Single origin beans from Guatemala\n>Filtered water (important for wave function stability)\n>Ceramic mug (no metal, affects readings)\n\nAsk me anything about home quantum brewing",
+  "summary": null,
+
+  "thumbnail_emoji": "☕🔬",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94810987,
+    "replies_count": 6,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/ck/"
+  },
+
+  "tags": ["quantum-coffee", "food", "cooking", "coffee-setup"],
+  "entities": [],
+
+  "published_at": "2024-11-22T18:23:45Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94810987\n>ceramic mug for readings\nyou know you're drinking it right? not measuring it?",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:26:12Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94811023\nThe container absolutely affects taste. This is basic quantum physics. The electrons in metal interfere with the superposition.\n\nDid you even take high school physics?",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:29:47Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94811056\n>electrons interfere with superposition\nthat's... that's not how any of this works\n\nt. actual physics PhD",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:32:58Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94811089\n>physics PhD\n>on /ck/\n>believes in \"real\" physics\nngmi",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:35:33Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": "Anyway OP how long does your setup take to brew? Mine takes like 50 minutes and my wife keeps complaining",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:38:16Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94811155\nAbout 45 minutes if I'm being precise with the observation timing. You can speed it up but quality suffers.\n\nAlso don't let your wife observe it during brewing. Multiple observers collapse the wave function wrong.",
+      "like_count": 0,
+      "published_at": "2024-11-22T18:41:52Z",
+      "replies": []
+    }
+  ]
+}

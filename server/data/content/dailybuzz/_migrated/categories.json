@@ -1,0 +1,11 @@
+{
+  "$schema": "category",
+  "site_id": "dailybuzz",
+  "categories": [
+    { "slug": "local", "name": "Local", "icon_emoji": "\ud83c\udfe0", "sort_order": 0 },
+    { "slug": "tech", "name": "Tech", "icon_emoji": "\ud83d\udcbb", "sort_order": 1 },
+    { "slug": "entertainment", "name": "Entertainment", "icon_emoji": "\ud83c\udfac", "sort_order": 2 },
+    { "slug": "politics", "name": "Politics", "icon_emoji": "\u2696\ufe0f", "sort_order": 3 },
+    { "slug": "opinion", "name": "Opinion", "icon_emoji": "\ud83d\udcdd", "sort_order": 4 }
+  ]
+}

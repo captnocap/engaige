@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-nebraska-trip",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "My Trip to Nebraska",
+  "body": "I visited Nebraska for a week. It was a normal vacation. I saw normal things. There were no incidents of note.\n\nI did not witness anything strange. I did not encounter anything that would require explanation or comment.\n\nI visited corn fields. They looked like corn fields look. I visited small towns. They looked like small towns look. I ate at local restaurants. The food was good and normal.\n\nWhen I returned to Tulsa, nothing in my trip report was deemed significant by anyone who asked about it. This is correct. My trip was not significant. It was a normal vacation.\n\nI do not understand why people seem to think I was looking for something in Nebraska or that something found me there. I simply wanted to see a different state and I did.\n\nNothing unusual happened. I repeat this because I sense people are waiting for me to reveal something. There is nothing to reveal. It was a normal trip.",
+  "summary": "I took a trip to Nebraska last month. I did not see anything unusual. Just a normal vacation.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 2,
+    "date": "January 10, 2026",
+    "likes": 0
+  },
+
+  "tags": ["nebraska", "vacation", "corn-fields", "nothing-unusual", "normal"],
+  "entities": ["Big Mike"],
+
+  "published_at": "2026-01-10T00:00:00Z"
+}

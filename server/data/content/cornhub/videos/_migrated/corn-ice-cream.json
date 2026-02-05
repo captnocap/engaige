@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "corn-ice-cream",
+
+  "category": "Experimental",
+
+  "title": "Sweet Corn Ice Cream - Unexpected But So Good",
+  "body": "I know what you're thinking. Corn? In ice cream? Trust me. TRUST ME. Your taste buds will thank you.\n\nIngredients:\n- 2 cups sweet corn\n- 2 cups heavy cream\n- 1 cup whole milk\n- 3/4 cup sugar\n- 5 egg yolks\n- Vanilla extract\n- Pinch of salt\n\nSteps:\n1. Steep corn in warm cream 1 hour\n2. Strain, pressing to extract flavor\n3. Heat corn-infused cream\n4. Temper egg yolks with cream\n5. Cook to 170F\n6. Chill and churn in ice cream maker",
+  "summary": "Corn? In ice cream? Trust me. TRUST ME. Your taste buds will thank you.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83c\udf66",
+
+  "metadata": {
+    "duration": "28:45",
+    "views": 1900000,
+    "rating": 91,
+    "author": "Dessert_Deviant",
+    "author_avatar": "\ud83c\udf68",
+    "author_verified": true,
+    "is_premium": true,
+    "is_hd": true,
+    "uploaded_ago": "2 months ago",
+    "ingredients": ["2 cups sweet corn", "2 cups heavy cream", "1 cup whole milk", "3/4 cup sugar", "5 egg yolks", "Vanilla extract", "Pinch of salt"],
+    "steps": ["Steep corn in warm cream 1 hour", "Strain, pressing to extract flavor", "Heat corn-infused cream", "Temper egg yolks with cream", "Cook to 170F", "Chill and churn in ice cream maker"]
+  },
+
+  "tags": ["ice-cream", "dessert", "sweet", "unusual", "summer"],
+  "entities": ["Dessert_Deviant"],
+
+  "published_at": "2025-11-20T00:00:00Z",
+
+  "comments": []
+}

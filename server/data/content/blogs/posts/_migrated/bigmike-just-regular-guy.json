@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-just-regular-guy",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "Just a Regular Guy from Tulsa",
+  "body": "Hi there. My name is Michael Cornwell. I go by Big Mike. I'm 52 years old and I've lived in Tulsa, Oklahoma my whole life.\n\nSome people online have been suggesting that something is \"unusual\" about me being at various events and locations. I want to set the record straight: I'm just a normal guy who enjoys normal things.\n\nI like attending local events. I like going to concerts. I like engaging with my community. I like being helpful and showing up where I'm needed. This is all very normal behavior.\n\nThe fact that I happen to be at the same places as other people sometimes is just called \"living in the same city.\" It's called \"having common interests.\" It's called coincidence.\n\nI understand that people might find it surprising to see the same face in multiple locations. But that's how the world works. We live in the same place. We go to the same establishments. This is normal.\n\nI'm starting this blog to address some of the more unusual questions I've been receiving. I'm just a regular guy. From Tulsa. Nothing more.\n\nSee you around.",
+  "summary": "My name is Michael Cornwell, and I'm just a regular 52-year-old man from Tulsa, Oklahoma. Nothing unusual about me or my life.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 3,
+    "date": "January 28, 2026",
+    "likes": 0
+  },
+
+  "tags": ["introduction", "tulsa", "normal", "coincidence", "regular-guy"],
+  "entities": ["Big Mike"],
+
+  "published_at": "2026-01-28T00:00:00Z"
+}

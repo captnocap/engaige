@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "popcorn-gourmet",
+
+  "category": "Professional Chefs",
+
+  "title": "Gourmet Popcorn 3 Ways - White Cheddar Explosion",
+  "body": "Three incredible popcorn flavors that will make you forget movie theater popcorn exists. The white cheddar is absolutely sinful.\n\nIngredients:\n- 1 cup popcorn kernels\n- 1/2 cup white cheddar powder\n- 2 tbsp truffle oil\n- 1/4 cup parmesan\n- Rosemary\n- Cayenne pepper\n\nSteps:\n1. Pop kernels in hot oil\n2. Divide into three bowls\n3. Toss with white cheddar powder\n4. Drizzle truffle oil on second\n5. Season third with cayenne and parmesan\n6. Serve immediately",
+  "summary": "Three incredible gourmet popcorn flavors. The white cheddar is absolutely sinful.",
+
+  "thumbnail_emoji": "\ud83c\udf7f\u2728",
+
+  "metadata": {
+    "duration": "22:15",
+    "views": 7800000,
+    "rating": 96,
+    "author": "SnackQueen_Premium",
+    "author_avatar": "\ud83d\udc78",
+    "author_verified": true,
+    "is_premium": true,
+    "is_hd": true,
+    "uploaded_ago": "1 week ago",
+    "ingredients": ["1 cup popcorn kernels", "1/2 cup white cheddar powder", "2 tbsp truffle oil", "1/4 cup parmesan", "Rosemary", "Cayenne pepper"],
+    "steps": ["Pop kernels in hot oil", "Divide into three bowls", "Toss with white cheddar powder", "Drizzle truffle oil on second", "Season third with cayenne and parmesan", "Serve immediately"]
+  },
+
+  "tags": ["popcorn", "gourmet", "snack", "party", "cheddar"],
+  "entities": ["SnackQueen_Premium"],
+
+  "published_at": "2026-01-13T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "MidnightSnacker",
+      "content": "It's 3am and I'm watching corn recipe videos. No regrets.",
+      "like_count": 9847,
+      "replies": []
+    }
+  ]
+}

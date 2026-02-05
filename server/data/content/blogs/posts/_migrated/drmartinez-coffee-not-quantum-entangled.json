@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-coffee-not-quantum-entangled",
+
+  "channel_slug": "drmartinez",
+  "category": "Corrections",
+
+  "title": "I Did NOT Say Coffee Could Be Quantum Entangled",
+  "body": "TO WHOM IT MAY CONCERN:\n\nQuantum entanglement is a property of paired particles at extreme scales. Coffee is a macroscopic beverage. These two things do not interact. They are not friends. They do not know each other.\n\nQuantum entanglement requires:\n\n1. Extremely cold temperatures (millidegrees above absolute zero)\n2. Isolated particle pairs\n3. No thermal noise or interference\n\nCoffee requires:\n\n1. Hot water (around 200\u00b0F, which is 370K, a billion times warmer)\n2. Millions of molecules in chaotic motion\n3. Maximum thermal noise\n\nThese are OPPOSITE CONDITIONS. This is the opposite of quantum entanglement. This is quantum DISENTANGLEMENT. If anything, coffee destroys quantum coherence.\n\nDerek: When you brew coffee and both cups taste the same, that is not entanglement. That is replication. That is chemical equilibrium. That is a high school laboratory demonstration.\n\nI have spent 2 years writing academic corrections to my own paper. This is not the career I envisioned. I wanted to study phase transitions. Instead I am writing internet blog posts explaining that hot coffee is not quantum.\n\nThis will be the last time I clarify this.\n\nIt will not be the last time.",
+  "summary": "A formal clarification. Emphasis on FORMAL. And CLARIFICATION. Both serious words.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 7,
+    "date": "December 15, 2025",
+    "likes": 0,
+    "category": "Corrections",
+    "updated": true
+  },
+
+  "tags": ["entanglement", "clarification", "physics", "derek", "frustration"],
+  "entities": ["Dr. Elena Martinez", "Derek"],
+
+  "published_at": "2025-12-15T00:00:00Z"
+}

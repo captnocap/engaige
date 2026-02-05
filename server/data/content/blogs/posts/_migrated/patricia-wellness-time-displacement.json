@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-wellness-time-displacement",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "Employee Wellness: Why You Feel Like Time Moves Differently",
+  "body": "Many Omnicorp employees have reported an unusual sensation: that time moves strangely at our offices. Some say a 8-hour shift feels like 4 hours. Others swear it felt like 16.\n\nThis is completely normal.\n\nHere are some wellness tips to help you adjust to the unique temporal properties of the Hartwell Building:\n\nMEDITATION\n\nTry not to think about what time it is. Time is a construct. A construct that may be slightly different on certain floors.\n\nHYDRATION\n\nDrink water! The water on Floor 7 tastes a bit... off... but it's still water. Probably.\n\nSLEEP SCHEDULE\n\nGo to bed when it's dark. Wake up when it's light. If there is no night cycle in your office, that's fine. Humans adapted to the Arctic. You can adapt to timeless fluorescent lighting.\n\nCLOCK WATCHING IS A FORM OF ANXIETY\n\nStop checking your phone for the time. We removed all the clocks from Floor 7 because they were making people anxious. This was a wellness decision. I made this decision. I stand by it.\n\nPRODUCTIVITY METRICS\n\nOmnicorp measures success not in \"hours worked\" but in \"work completed.\" You could be here for 5 minutes or 50 hours. If you get your work done, you're a great employee.\n\nOr are you? Have you considered that you've been here much longer than you think? That your \"lunch hour\" yesterday might have been a week? That's the Hartwell Building working its magic.\n\nRemember: time is flexible. Reality is negotiable. But your job is mandatory.\n\nStay well!\n\nPatricia",
+  "summary": "It's not your imagination! Well, actually, it might be. Here's why the clock might seem weird lately.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 6,
+    "date": "December 28, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["wellness", "time", "reality", "floor-7", "help"],
+  "entities": ["Patricia", "Omnicorp", "Hartwell Building"],
+
+  "published_at": "2025-12-28T00:00:00Z"
+}

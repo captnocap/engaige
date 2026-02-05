@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "bp-industrial-district",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "BP #8829: An Exercise in Disappointment and Personal Growth",
+  "body": "The Industrial District BP is surrounded by warehouses, a tire recycling facility, and what I can only describe as \"aggressive infrastructure.\" It is not where one expects to find sushi. It is not where one should find sushi.\n\nThe veggie roll contained cucumber, avocado, and an unidentified orange substance that may have been carrot or may have been existential dread manifested as vegetable.\n\nThe edamame was room temperature in the way that suggests it was once frozen, then refrigerated, then forgotten, then remembered at an inopportune moment. We have all been this edamame.\n\nI sat on a stack of pallets near Pump 9, as there was no proper seating. A forklift operator waved. I waved back. In the Industrial District, we are all comrades.\n\nTwo pumps, and I am being generous because the attendant, Marlene, remembered me from my previous visit eight months ago. \"Oh, you're the sushi lady,\" she said. I have been called worse by family members.\n\nThis location has been flagged in my database for required improvement before re-review. I have left a detailed comment card. Marlene promised to pass it along to \"whoever handles that.\" I have doubts.",
+  "summary": "I entered with expectations. I left with wisdom. Also, mild gastrointestinal discomfort (unrelated, probably).",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "BP",
+    "station_number": "#8829",
+    "location": "Industrial District, Des Moines, Iowa",
+    "pump_number": 9,
+    "rating": 2,
+    "sushi_type": "Veggie Roll + Side of Edamame",
+    "price": "$7.99",
+    "would_return_for": "Directions to a different BP",
+    "gerald_note": "Gerald once refused to stop at a gas station because it \"looked sad.\" Gerald, this BP would have destroyed you. Sometimes I miss your fear of adventure. Usually I do not."
+  },
+
+  "tags": ["2-pumps", "bp", "veggie-roll", "des-moines", "industrial-district"],
+  "entities": ["Mildred Gasketsworth", "Gerald Gasketsworth", "Marlene"],
+
+  "published_at": "2025-12-10T00:00:00Z",
+
+  "comments": []
+}

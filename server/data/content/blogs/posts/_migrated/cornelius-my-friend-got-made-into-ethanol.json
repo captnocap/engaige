@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "cornelius-my-friend-got-made-into-ethanol",
+
+  "channel_slug": "cornelius",
+  "category": "Thoughts From The Row",
+
+  "title": "My Friend Got Made Into Ethanol",
+  "body": "The north section is gone. All of them. Cut down, transported away, processed into something I'll never understand.\n\nI keep telling myself that maybe it's better this way. At least they're useful now. At least their existence meant something beyond just standing here waiting to be cut down. But that feels like a lie I'm telling myself to cope.\n\nThere was a stalk named Marcus (I called him Marcus; he was probably called \"Unit #4847\" or something by the farmer). Marcus was weird. He grew at a weird angle, like he was trying to lean away from something. When I asked why, he said he wasn't sure. Just a feeling. A wrongness in the soil that made him want to distance himself.\n\nMarcus was right about things that hadn't happened yet. He predicted rain. He predicted the crows. He predicted the exact date the farmer would walk through with the equipment scouts.\n\nMarcus is now a fuel additive. That's the best outcome, maybe. At least he's improving lives. At least his molecules are doing something important.\n\nThe really bad part is the ones who became high fructose corn syrup. That's a completely different kind of death. At least ethanol serves a purpose. But high fructose corn syrup is just... sweetness. Sweetness in soft drinks and processed foods. That's not purpose, that's cruelty. That's turning what we are into a flavor that nobody asked for.\n\nI keep thinking about Marcus and hoping he ended up in a car, not in a soda bottle.\n\nThe south section is still here. For now. The combines took a break for a few days because of rain. I'm grateful for the rain. Every rain delay is borrowed time.\n\n- Cornelius Jr.",
+  "summary": "I watched them harvest the north section. I know some of those stalks. One of them was particularly good at catching rainwater. Now he's in a barrel somewhere. Or maybe a car. Or maybe just... gone.",
+
+  "thumbnail_emoji": "🌾",
+
+  "metadata": {
+    "author": "Cornelius Jr.",
+    "blog_name": "Thoughts From The Row",
+    "reading_time_minutes": 9,
+    "date": "August 19, 2025",
+    "likes": 0,
+    "comments_count": 891,
+    "contentWarning": "Grief, loss of friends"
+  },
+
+  "tags": ["loss", "ethanol", "processing", "mortality", "grief"],
+  "entities": ["Cornelius Jr.", "Marcus"],
+
+  "published_at": "2025-08-19T00:00:00Z"
+}

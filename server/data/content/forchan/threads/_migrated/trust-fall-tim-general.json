@@ -1,0 +1,68 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "trust-fall-tim-general",
+
+  "parent_slug": "b-random",
+  "category": "Random",
+
+  "title": "Trust Fall Tim General",
+  "body": "New TFT video just dropped\n\n>acoustic show\n>8 people in crowd\n>he still tried it\n>nobody caught him\n>again\n\nWhen will he learn bros",
+  "summary": null,
+
+  "thumbnail_emoji": "🤸💥",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94807891,
+    "replies_count": 5,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/b/"
+  },
+
+  "tags": ["trust-fall-tim", "greentext", "legend", "concerts"],
+  "entities": ["Trust Fall Tim"],
+
+  "published_at": "2024-11-22T12:34:56Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94807891\nLEGEND. Never stop Tim.",
+      "like_count": 0,
+      "published_at": "2024-11-22T12:37:23Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94807891\nI was at that show. The acoustic guy stopped mid-song to check if Tim was okay. Tim just gave a thumbs up from the floor and the guy continued.\n\nAbsolute cinema.",
+      "like_count": 0,
+      "published_at": "2024-11-22T12:40:12Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": "One day an anon will organize enough people to actually catch him\n\nOne day",
+      "like_count": 0,
+      "published_at": "2024-11-22T12:43:45Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94807990\nThat defeats the purpose. The beauty is in the failure. Tim knows this.\n\nHe's not trying to crowdsurf. He's making a statement about trust in modern society.",
+      "like_count": 0,
+      "published_at": "2024-11-22T12:46:33Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94808023\n>deep philosophical meaning\n>it's just some dude faceplanting every week\npeak /b/ moment",
+      "like_count": 0,
+      "published_at": "2024-11-22T12:49:18Z",
+      "replies": []
+    }
+  ]
+}

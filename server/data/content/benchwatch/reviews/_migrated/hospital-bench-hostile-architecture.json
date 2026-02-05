@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "hospital-bench-hostile-architecture",
+
+  "category": "Bench Review",
+
+  "title": "St. Vincent's Hospital Bench: Hostile Architecture Meets Healthcare",
+  "body": "I spent 9 hours in the St. Vincent's waiting room last month (kidney stones, not relevant). This gave me ample time to assess their exterior seating situation.\n\nThe main entrance features three benches with what the industry calls \"hostile architecture\"\u2014central armrests designed to prevent lying down. What they don't tell you is these armrests also create sitting compartments of exactly 19 inches.\n\n19 INCHES. The average American hip width is 16.4 inches for men and 17.2 inches for women. This leaves, at maximum, 2.6 inches of clearance. Try sitting comfortably with 2.6 inches of clearance while your husband is having his gallbladder removed.\n\nI asked to speak with the hospital's facilities manager. He refused. I left my business card. He had security escort me to my car. I left seventeen business cards in various locations throughout the hospital.\n\nThe board of directors will be receiving my 34-page assessment at their next meeting. I have confirmed the meeting time and location through public records. I will be attending. They cannot legally prevent me from attending. I have checked.",
+  "summary": "A hospital\u2014a place of HEALING\u2014has installed anti-homeless armrests that also prevent comfortable sitting. The irony is not lost on me. Or my lawyer.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "St. Vincent's Hospital, Main Entrance",
+    "mci_score": 41,
+    "measurements": {
+      "slat_width": "3.8 inches (standard)",
+      "back_angle": "100 degrees (acceptable)",
+      "seat_height": "18 inches (optimal)",
+      "armrest_present": true,
+      "material_grade": "Aluminum (cold, unforgiving)"
+    },
+    "phantom_sitter_alert": false,
+    "fraud_alert": false
+  },
+
+  "tags": ["hostile-architecture", "healthcare", "awaiting-board-meeting", "security-escort"],
+  "entities": ["Greg Mantooth", "St. Vincent's Hospital"],
+
+  "published_at": "2025-12-20T00:00:00Z",
+
+  "comments": []
+}

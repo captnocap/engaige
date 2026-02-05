@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "shelly",
+  "category": null,
+  "title": "Shelly, 27",
+  "body": "Corn maze designer by day, corn maze solver by night. I've never been lost. The corn guides me. 847 mazes designed. 0 complaints (that I acknowledge). My corn maze won 'Most Disorienting' three years running.",
+  "summary": "Corn maze designer. 847 mazes designed. The corn guides her.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 27,
+    "location": "Rural",
+    "distance": "47.8 miles away",
+    "interests": ["Adventure seekers", "Good direction sense", "Claustrophobia-free"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "American Corn Maze Association",
+    "looking_for": ["Adventure seekers", "Good direction sense", "Claustrophobia-free"],
+    "corn_score": 95,
+    "has_liked_you": false,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "Getting lost together in one of my mazes. Don't worry, I'll find the way out. Eventually. Time is relative in the corn."
+      },
+      {
+        "question": "A skill I'm proud of...",
+        "answer": "I can navigate any corn maze blindfolded. The stalks tell me which way to go. You think I'm joking."
+      },
+      {
+        "question": "My love language is...",
+        "answer": "Quality time. Specifically, quality time spent surrounded by 8-foot tall corn plants in a labyrinth of my own design."
+      }
+    ],
+    "images": ["kernel"]
+  },
+  "tags": ["corn-maze", "designer", "adventurous", "rural"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

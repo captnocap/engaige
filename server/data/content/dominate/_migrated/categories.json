@@ -1,0 +1,14 @@
+{
+  "$schema": "category",
+  "site_id": "dominate",
+  "categories": [
+    { "slug": "morning-domination", "name": "MORNING DOMINATION", "icon_emoji": "\ud83c\udf05", "sort_order": 0 },
+    { "slug": "nutrition-warfare", "name": "NUTRITION WARFARE", "icon_emoji": "\ud83c\udf57", "sort_order": 1 },
+    { "slug": "mental-fortress", "name": "MENTAL FORTRESS", "icon_emoji": "\ud83e\udde0", "sort_order": 2 },
+    { "slug": "supply-chain-domination", "name": "SUPPLY CHAIN DOMINATION", "icon_emoji": "\ud83d\uded2", "sort_order": 3 },
+    { "slug": "thermal-warfare", "name": "THERMAL WARFARE", "icon_emoji": "\ud83e\uddca", "sort_order": 4 },
+    { "slug": "social-warfare", "name": "SOCIAL WARFARE", "icon_emoji": "\ud83e\udd1d", "sort_order": 5 },
+    { "slug": "digital-warfare", "name": "DIGITAL WARFARE", "icon_emoji": "\ud83d\udce7", "sort_order": 6 },
+    { "slug": "anti-sleep-protocol", "name": "ANTI-SLEEP PROTOCOL", "icon_emoji": "\ud83d\ude34", "sort_order": 7 }
+  ]
+}

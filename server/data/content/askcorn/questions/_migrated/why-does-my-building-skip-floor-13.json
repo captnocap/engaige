@@ -1,0 +1,70 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "why-does-my-building-skip-floor-13",
+  "category": "Real Estate",
+  "title": "Why does my building skip floor 13?",
+  "body": "I just moved into the Hartwell Building downtown. Great rent, beautiful architecture, very spacious units. But I noticed something weird when I was in the elevator:\n\nThe floors go 11, 12, 14, 15...\n\nThere's no 13th floor button. I assumed this was a superstition thing - lots of old buildings skip 13. But then I found some old photographs from 1952 and the building clearly has 13 floors in the pictures.\n\nI asked the building manager and he just said \"there is no 13th floor\" in this really flat voice and walked away.\n\nI tried to find the stairwell to floor 13 but the door between 12 and 14 is welded shut. Not locked. Welded.\n\nAlso my neighbor on floor 7 says I shouldn't look at the mirrors for too long. What does that mean??\n\nThe rent is really cheap though so I'm not sure if I should be concerned or just enjoy the deal.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "new_tenant_confused",
+    "author_rep": 134,
+    "upvotes": 1847,
+    "answer_count": 89,
+    "views": 34129,
+    "accepted_answer_id": "a2_hartwell",
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["hartwell-building", "architecture", "real-estate", "unexplained"],
+  "published_at": "2025-10-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "omnicorp_official",
+      "content": "The Hartwell Building has always had 12 floors. The photographs you found must be doctored. There is nothing unusual about the building. Please do not investigate further.\n\nThe mirrors are normal mirrors.\n\nYour rent is correct.\n\nHave a pleasant day.",
+      "like_count": -847,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 1,
+      "replies": [
+        {
+          "author_name": "new_tenant_confused",
+          "content": "Who are you and how did you find this post so fast?",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "definitely_not_omnicorp",
+          "content": "Do not ask questions about Omnicorp Holdings.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    },
+    {
+      "author_name": "hartwell_researcher",
+      "content": "Oh boy, you moved into THAT building.\n\nLet me break it down:\n- **1923**: Magnus Hartwell builds the building with 13 floors\n- **1931**: Magnus disappears. Body never found. Building sold.\n- **1952**: Photos clearly show 13 floors\n- **1967**: UFO sighting above building (officially \"weather balloon\")\n- **1984**: Floor 7 \"renovated.\" 13th floor no longer accessible.\n- **Present**: Omnicorp Holdings owns it through 7 shell companies\n\nThe mirrors on floor 7 allegedly show things that aren't there. Multiple tenants have reported seeing a figure in formal 1920s attire. The figure is always facing away.\n\nMy advice: don't look at the mirrors after midnight, don't take the stairs between 12 and 14, and if you hear static that sounds like it's breathing, that's normal.\n\nAlso check out www.hartwellfiles.corn for more info. We have a whole community.",
+      "like_count": 3421,
+      "is_creator": false,
+      "is_accepted": true,
+      "author_rep": 8472,
+      "replies": [
+        {
+          "author_name": "new_tenant_confused",
+          "content": "This is not reassuring",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "floor_7_resident",
+          "content": "The mirrors are fine. Everything is fine. I am fine.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    }
+  ]
+}

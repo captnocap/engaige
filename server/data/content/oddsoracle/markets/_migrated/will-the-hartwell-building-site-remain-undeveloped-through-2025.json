@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-the-hartwell-building-site-remain-undeveloped-through-2025",
+  "category": "Local Events",
+  "title": "Will the Hartwell Building site remain undeveloped through 2025?",
+  "body": "Resolves YES if the former Hartwell Building site (100 Hartwell Plaza) remains an empty lot with no construction beginning through December 31, 2025.\n\nA parking garage was announced but permits have been delayed repeatedly. Some say the site is \"cursed.\" The city says it's just bureaucracy.\n\nConstruction beginning = any groundbreaking or foundation work starting.",
+  "summary": "Whether the former Hartwell Building site will remain an empty lot with no construction through 2025.",
+  "thumbnail_emoji": "🏢",
+  "metadata": {
+    "probability": 0.78,
+    "volume": 156700,
+    "volume_display": "$156.7K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": false,
+    "trending": true,
+    "yes_price": 78,
+    "no_price": 22,
+    "resolved": null
+  },
+  "tags": ["hartwell-building", "local-events", "real-estate", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "LocalResident2018",
+      "content": "Nothing will ever be built there. The contractors know. Easy YES.",
+      "like_count": 234,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "RealEstateDev",
+      "content": "I've seen the permits moving through city hall. They're serious this time. NO is undervalued.",
+      "like_count": 45,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}

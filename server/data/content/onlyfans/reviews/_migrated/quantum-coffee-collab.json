@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "quantum-coffee-collab",
+
+  "category": "Desk Fans",
+
+  "title": "Quantum Coffee \u00d7 OnlyFans Collab",
+  "body": "LIMITED EDITION: A desk fan that exists in multiple airflow states simultaneously until you observe it. Cools your quantum coffee perfectly.\n\nFeatures:\n- Superposition mode\n- Schr\u00f6dinger speed settings\n- Observation-activated\n- Comes with coffee stickers\n- Derek approved",
+  "summary": "LIMITED EDITION: A desk fan in multiple airflow states simultaneously. Cools your quantum coffee perfectly.",
+
+  "thumbnail_emoji": "\u2615\ud83d\udca8",
+
+  "metadata": {
+    "type": "desk",
+    "price": 89.99,
+    "rating": 4.7,
+    "review_count": 42,
+    "in_stock": true,
+    "is_hot": true,
+    "is_exclusive": true,
+    "cfm": 200,
+    "blade_count": 3,
+    "noise_level": "Uncertain",
+    "features": ["Superposition mode", "Schr\u00f6dinger speed settings", "Observation-activated", "Comes with coffee stickers", "Derek approved"]
+  },
+
+  "tags": ["quantum-coffee", "collab", "limited-edition", "derek", "exclusive"],
+  "entities": ["Quantum Coffee", "OnlyFans", "Derek"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "FanFan42",
+      "content": "I have bought 17 fans from this site. My wife is concerned. I regret nothing.",
+      "like_count": 567,
+      "replies": []
+    }
+  ]
+}

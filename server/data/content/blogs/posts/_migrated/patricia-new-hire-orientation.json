@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-new-hire-orientation",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "New Hire Orientation Tomorrow (If They Show Up)",
+  "body": "Orientation schedule is posted for tomorrow, November 26th, Conference Room B.\n\nWe have 12 new hires registered. Assuming they arrive.\n\nHistorically, about 50% of scheduled new hires show up for their first day. The other 50% simply... do not appear. I send emails. I call their listed phone numbers. The calls go to nobody. It's just silence and wind sounds.\n\nHR has stopped asking where they go. I stopped answering questions long ago.\n\nFor those who DO arrive tomorrow, please bring:\n\n• Your government-issued ID (Proof of existence)\n• Your completed I-9 form (Proof of eligibility to work)\n• Your will and testament (Just a joke! Unless?)\n• Your fear of the unknown (Omnicorp standard)\n\nOrientation will cover:\n\n• Benefits (Some of them)\n• Safety (Don't go to Floor 13. Don't look at mirrors. Don't ask questions.)\n• Workplace culture (We don't leave. We don't complain. We work.)\n• Your new desk assignment (Hopefully in a place with windows. Unless you're on Floor 7.)\n\nI expect about 6 of you to complete the full orientation. The rest will transfer or resign or simply cease to exist during the bathroom break.\n\nWelcome to Omnicorp.\n\nPatricia\n\nP.S. - If you see me in the hallway and I don't respond, I am not ignoring you. I am in a state where I cannot perceive external stimuli. This happens sometimes. It will pass.",
+  "summary": "We have 12 new hires scheduled for orientation tomorrow. I hope they show up. Sometimes they don't. I don't know where they go.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 3,
+    "date": "November 25, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["onboarding", "new-hires", "where-do-they-go", "doesnt-matter"],
+  "entities": ["Patricia", "Omnicorp"],
+
+  "published_at": "2025-11-25T00:00:00Z"
+}

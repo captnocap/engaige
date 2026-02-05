@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-my-son-the-artist",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "My Son the \"Artist\" (How Do I Explain This at Book Club?)",
+  "body": "My son Timothy is 34 years old and his job is jumping off things and hoping people catch him.\n\nI know how that sounds. I have a Master's degree in Library Science. I understand how it sounds.\n\nLast Tuesday, I was at my book club--we were discussing \"Educated\"--and Brenda asked what Tim does for work. I said, \"He's an artist.\" And that's technically true! But then she asked what KIND of artist, and I had to explain that he literally jumps in the air and trusts that strangers will catch him before he hits the ground.\n\nDead silence. Someone dropped their wine glass.\n\nBarbara asked if it was performance art. I said yes. Barbara seemed satisfied. I didn't mention the hospital bills.\n\nTim says this is his \"calling.\" He says the trust fall is \"a meditation on human connection.\" His father just shakes his head and watches ESPN louder.\n\nI brought a photo to show them. He was mid-fall, captured by a professional photographer. His hair looked good, at least. Hair looked expensive. I wish he spent that much on health insurance.\n\nI'm proud of him. I really am. But I'm also very concerned. These are not mutually exclusive feelings.",
+  "summary": "Tim told me he \"performs trust falls professionally.\" I spent 20 minutes explaining it to Carol from Pilates. She thought I meant he was a personal trainer.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 8,
+    "date": "January 22, 2026",
+    "likes": 0,
+    "comments_count": 0,
+    "concerns": ["Career instability", "Injury risk", "Explaining him to people"]
+  },
+
+  "tags": ["tim-career", "book-club", "concerned-mom", "what-is-he-doing"],
+  "entities": ["Carol", "Tim", "Gary"],
+
+  "published_at": "2026-01-22T00:00:00Z"
+}

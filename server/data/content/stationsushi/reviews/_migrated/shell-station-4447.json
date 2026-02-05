@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "shell-station-4447",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "Shell Station #4447, Exit 89: A Surprisingly Nuanced California Roll Experience",
+  "body": "I arrived at Shell #4447 at precisely 2:47 PM, having triangulated this location based on reports from fellow enthusiasts in my Facebook group \"Midwest Petroleum Sushi Aficionados\" (287 members, highly vetted).\n\nThe refrigeration unit hummed a B-flat, which I took as an auspicious sign. The temperature display read 38 degrees Fahrenheit - technically within acceptable parameters, though I would have preferred 36.\n\nThe sushi rested beside the string cheese and the energy drinks, like a diamond among costume jewelry. The \"sell by\" date was a mere 47 hours hence. Practically fresh from the sea, if the sea were in New Jersey and the fish were surimi.\n\nI consumed my repast at the outdoor seating area - a concrete parking bumper that offered surprisingly adequate lumbar support. A passing trucker gave me a concerned look. I gave him a knowing nod. He does not understand the mission.\n\nThe soy sauce packet required the grip strength I developed during my years assessing hail damage claims. A small price for authenticity.\n\nOne pump deducted for the absence of chopsticks. I was forced to use a coffee stirrer, which, while functional, lacked the ceremonial gravitas the moment deserved.",
+  "summary": "Between the automotive additives and the beef jerky display, I discovered what I can only describe as a piccolo masterpiece of rice and imitation crab.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "Shell",
+    "station_number": "#4447",
+    "location": "Exit 89, Interstate 80, Iowa",
+    "pump_number": 3,
+    "rating": 4,
+    "sushi_type": "Premium California Roll (8pc)",
+    "price": "$7.49",
+    "would_return_for": "The avocado, which showed remarkable restraint in its browning",
+    "gerald_note": null
+  },
+
+  "tags": ["4-pumps", "shell", "california-roll", "iowa", "interstate-80"],
+  "entities": ["Mildred Gasketsworth"],
+
+  "published_at": "2026-01-12T00:00:00Z",
+
+  "comments": []
+}

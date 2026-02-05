@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-bargainbay-listing",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "I Listed My Kit on BargainBay (But I'm Not Selling)",
+  "body": "People keep asking me why I'm selling my drums. I'm NOT selling my drums.\n\nI listed them on BargainBay because... because I wanted to see what they're worth, actually. A drummer needs to know his equipment's value for insurance purposes.\n\nThe listing was live for three days. Got seventeen offers. The highest was $4,800, which I thought was reasonable considering the condition and the upgrades I've done.\n\nThen I realized: I can't actually sell these. They're the Yamaha kit I've been playing since 2016. The kit I used on our first EP. The kit that played The Underground.\n\nSo I pulled the listing. Not because I realized the band might come back (though they definitely might). Just because... I wasn't ready.\n\nOne of the offers left a note: \"Beautiful kit. Previous owner clearly loves playing.\" I read that and had to step outside for a while.\n\nI might list them again. Or maybe not. I haven't decided.\n\nThe thing about selling instruments is that it feels like you're admitting something. And I'm not admitting anything.\n\nMy drums are staying right where they are: set up in my apartment, ready for practice at a moment's notice.\n\nThey don't gather dust. I play them. Sometimes for hours.\n\nMostly at 2 AM.\n\nWhen the neighbors are asleep.",
+  "summary": "Listed my Yamaha kit on BargainBay for $4,200. Not because I'm getting rid of it. Just testing the market. I'm canceling the sale.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 9,
+    "date": "February 3, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 8
+  },
+
+  "tags": ["denial", "bargainbay", "selling-kit", "not-selling-kit", "conflict"],
+  "entities": ["Vex", "Neon Requiem"],
+
+  "published_at": "2024-02-03T00:00:00Z"
+}

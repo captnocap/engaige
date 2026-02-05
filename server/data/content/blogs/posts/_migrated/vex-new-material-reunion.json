@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-new-material-reunion",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "Working on New Material (For When We Reunite)",
+  "body": "The next Neon Requiem album is going to be incredible.\n\nI know that sounds weird to say when the band isn't technically together, but I'm preparing. That's what professionals do.\n\nI've written six drum patterns. Complex stuff. Polyrhythmic. It's going to blow everyone's mind.\n\nThe songs don't have titles yet because they don't have lyrics yet because nobody's here to write the lyrics.\n\nBut when everyone comes back, the framework will be ready.\n\nI've been listening to a lot of Velvet Algorithms lately. Which is sad because they're on hiatus too. And they broke up for real--like, they literally said they were breaking up.\n\nBut even broken up bands have a legacy. We'll have a legacy too. When we come back.\n\nI started keeping a journal. Track ideas. Rhythms. Timing. When Maya returns and wants to work on new material, I'll have months of prep.\n\nIt's not the same as writing with the band. When you're all in the room together, there's magic. Magic I can't replicate alone.\n\nBut I'm trying.\n\nI play the patterns every day. No bass. No guitars. No voice.\n\nJust me and the drums, building the blueprint of something that doesn't exist anymore.\n\nSomething that might exist again.\n\nProbably.",
+  "summary": "Been writing. New compositions for the next album. Heavier stuff. Angrier. Better.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 8,
+    "date": "April 22, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 5
+  },
+
+  "tags": ["new-material", "reunion", "preparation", "hope", "delusion"],
+  "entities": ["Vex", "Maya", "Neon Requiem", "Velvet Algorithms"],
+
+  "published_at": "2024-04-22T00:00:00Z"
+}

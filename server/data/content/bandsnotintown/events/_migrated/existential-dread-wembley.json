@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "existential-dread-wembley",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "The Existential Dread at Wembley Stadium",
+  "body": "The Existential Dread are performing at Wembley Stadium in London, UK on April 20, 2026. Tickets are \u00a385 with 2847 tickets remaining.\n\nWhy you can't go: It's in another country.",
+  "summary": "The Existential Dread at Wembley. 5,000+ miles away. Another country entirely.",
+
+  "thumbnail_emoji": "\ud83d\ude30",
+
+  "metadata": {
+    "band": "The Existential Dread",
+    "venue": "Wembley Stadium",
+    "city": "London, UK",
+    "date": "April 20, 2026",
+    "time": "6:00 PM",
+    "price": "\u00a385",
+    "sold_out": false,
+    "distance": "5,000+ miles away",
+    "reason_you_cant_go": "It's in another country",
+    "tickets_left": 2847
+  },
+
+  "tags": ["existential-dread", "wembley", "international", "fomo"],
+  "entities": ["The Existential Dread", "Wembley Stadium"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

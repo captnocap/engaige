@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-im-fine",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "I'm Fine. The Band Is Fine. Everything Is Fine.",
+  "body": "I'm fine.\n\nEveryone keeps asking and I need to say it clearly: I am fine.\n\nThe band is fine. We're just taking some time. That's healthy. That's normal.\n\nI haven't heard from Maya in four months.\n\nI haven't heard from James in five weeks.\n\nIris never responded to my last seventeen messages.\n\nBut that's fine.\n\nI'm playing my drums every night. Alone. In my apartment. Where no one can hear me.\n\nI'm eating. Sometimes. When I remember.\n\nI got a job at a coffee shop. Not Quantum Brew. Somewhere else. Where I don't see anyone I know.\n\nI'm saving money. For when the band reunites and we need to rent a studio. For when we're ready to record.\n\nWe're going to record that album. The one with the new material I wrote.\n\nEveryone is going to be so impressed with what I've done.\n\nI'm fine.\n\nReally.\n\nThe only thing I can't do is listen to our old songs. Because when I do, I remember what it felt like to play with them, and that remembering feels like dying a little, and I can't afford to die anymore because I've already died like thirty-seven times since January.\n\nBut other than that?\n\nFine.\n\nEverything is fine.",
+  "summary": "People keep asking how I'm doing. I'm doing great. Never better. The band is taking a break. I'm taking a break. We're all on a break.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 3,
+    "date": "June 3, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 10
+  },
+
+  "tags": ["breakdown", "denial", "fine", "not-fine", "falling-apart", "help-me"],
+  "entities": ["Vex", "Maya", "James", "Iris", "Neon Requiem"],
+
+  "published_at": "2024-06-03T00:00:00Z"
+}

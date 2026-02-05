@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "tim",
+  "category": null,
+  "title": "Tim, 29",
+  "body": "Professional trust faller. Looking for someone to catch me (78.5% success rate preferred). 2,847 falls and counting. Small Kevin need not apply. I will explain The Incident if we match. Maybe. If you earn my trust. By catching me.",
+  "summary": "Professional trust faller. 2,847 falls and counting. 78.5% catch rate.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 29,
+    "location": "Downtown",
+    "distance": "4.7 miles away",
+    "interests": ["Trust fall partners", "People with strong arms", "NOT Small Kevin"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "The Underground",
+    "looking_for": ["Trust fall partners", "People with strong arms", "NOT Small Kevin"],
+    "corn_score": 45,
+    "has_liked_you": false,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A controlled trust exercise in a padded environment. Bring athletic shoes and sign this waiver."
+      },
+      {
+        "question": "The most spontaneous thing I've done...",
+        "answer": "Fell backwards at a corn festival. Into a corn maze. Got caught by a scarecrow. Counted it."
+      },
+      {
+        "question": "I'm known for...",
+        "answer": "My trust fall statistics spreadsheet. Also my podcast: 'Falling Forward, Landing Backward.' 12 listeners and growing!"
+      }
+    ],
+    "images": ["person-falling"]
+  },
+  "tags": ["trust-falls", "the-underground", "active", "athletic"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

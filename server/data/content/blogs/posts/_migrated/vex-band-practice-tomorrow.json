@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-band-practice-tomorrow",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "Band Practice Tomorrow (They'll Show Up This Time)",
+  "body": "Got my message out to the group chat at 3 AM. Practice session tomorrow at 8 PM at The Underground.\n\nI know they're \"busy.\" I know they haven't responded. But sometimes the best bands are the ones that just SHOW UP, you know?\n\nLast time they didn't make it, Maya said she had \"other commitments.\" This time she doesn't have an excuse because I gave them 24 hours notice.\n\nJames will come. He always comes. Even if he says he's \"moved on to other projects\" or \"doesn't think the band is worth his time anymore,\" deep down, a drummer and bassist connection is sacred.\n\nI've been practicing our entire catalog. Two hours a day on the kit. My neighbors complained, but they don't understand what's at stake here.\n\nMars said we could use The Underground if we wanted to. He seemed sad about it, actually. Like he knew something I didn't. But that's irrelevant.\n\nThey'll show up. They have to. We have unfinished business.\n\nI'm bringing extra picks. And new heads for the toms. And I'll have a speech prepared for when they arrive, about how we can do this differently, how we can make it work.\n\nActually, I think I'll skip the speech. Just get straight into \"Fade to Violet.\" Our opener. Our song.\n\nThey'll remember why we started this.",
+  "summary": "Mars texted me the code to The Underground. We're going in at 8 PM. I know they didn't confirm, but that's just because they haven't seen the message.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 5,
+    "date": "February 15, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 6
+  },
+
+  "tags": ["practice", "denial", "the-underground", "they-wont-come", "but-really"],
+  "entities": ["Vex", "Maya", "James", "Mars", "Neon Requiem"],
+
+  "published_at": "2024-02-15T00:00:00Z"
+}

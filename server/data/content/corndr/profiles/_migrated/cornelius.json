@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "cornelius",
+  "category": null,
+  "title": "Cornelius, 41",
+  "body": "Fourth generation corn farmer. My great-grandmother invented the corn dog (unverified). I speak to my corn daily. They speak back (also unverified). Looking for someone who understands that corn isn't just a crop, it's a lifestyle.",
+  "summary": "Fourth generation corn farmer. Speaks to his corn daily. Maximum corn score.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 41,
+    "location": "Rural",
+    "distance": "84.7 miles away",
+    "interests": ["Corn enthusiasts", "Plant whisperers", "Anyone who's not allergic"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "GrainTruth",
+    "looking_for": ["Corn enthusiasts", "Plant whisperers", "Anyone who's not allergic"],
+    "corn_score": 100,
+    "has_liked_you": true,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A sunset walk through my cornfields. I'll introduce you to my favorites. Gerald is the tall one on the left. He's shy at first."
+      },
+      {
+        "question": "I'm passionate about...",
+        "answer": "Corn-based everything. Corn syrup, corn starch, corn bread, corn on the cob, baby corn, popcorn, candy corn (controversial, I know)."
+      },
+      {
+        "question": "The way to my heart is...",
+        "answer": "Show genuine interest in corn. Ask me about heirloom varieties. Compliment my stalks. That's not a euphemism. Or is it? It's not. Unless..."
+      }
+    ],
+    "images": ["corn"]
+  },
+  "tags": ["corn-farmer", "rural", "traditional", "corn-lifestyle"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

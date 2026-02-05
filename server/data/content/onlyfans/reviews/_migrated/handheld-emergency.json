@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "handheld-emergency",
+
+  "category": "Handheld Fans",
+
+  "title": "Pocket Emergency Breeze",
+  "body": "For when you NEED air and you need it NOW. Fits in your pocket. Battery powered. Has saved countless lives (citation needed).\n\nFeatures:\n- Battery powered\n- Foldable design\n- Lanyard included\n- 3 colors available\n- Great for concerts",
+  "summary": "For when you NEED air and you need it NOW. Fits in your pocket. Battery powered.",
+
+  "thumbnail_emoji": "\u270b",
+
+  "metadata": {
+    "type": "handheld",
+    "price": 12.99,
+    "rating": 4.3,
+    "review_count": 3291,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": false,
+    "cfm": 50,
+    "blade_count": 2,
+    "noise_level": "Cute little whir",
+    "features": ["Battery powered", "Foldable design", "Lanyard included", "3 colors available", "Great for concerts"]
+  },
+
+  "tags": ["handheld-fan", "portable", "emergency", "pocket"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "AirflowEnthusiast",
+      "content": "The CFM ratings are accurate. I measured. This is the only fan site you need.",
+      "like_count": 234,
+      "replies": []
+    }
+  ]
+}

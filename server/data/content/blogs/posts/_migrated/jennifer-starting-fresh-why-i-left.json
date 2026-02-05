@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "jennifer-starting-fresh-why-i-left",
+
+  "channel_slug": "jennifer",
+  "category": "Jennifer Heals",
+
+  "title": "Starting Fresh: Why I Left",
+  "body": "Some people ask me why I left. Those people have never watched their spouse name a kitchen appliance as if it were a child.\n\nI want to be clear: this isn't a revenge post. This is a healing post. A celebration of my journey toward wholeness. The fact that it involves detailed descriptions of Derek's emotional unavailability is entirely coincidental.\n\nFor 8 years, I stood by him. I supported his IT consulting dream. I smiled through family dinners where he talked about \"wave function collapse\" for 3 hours straight while I provided social cues he completely missed.\n\nBut there's a moment in every relationship where you realize: he chose the coffee maker over me. And not metaphorically. He literally said, and I quote, \"Elena understands me in ways you never could.\"\n\nElena. He named it Elena.\n\nSo I left. And you know what? I'm thriving. I'm on dating apps. I'm in a support group. I'm pursuing my dreams, which mostly involve being happy and not thinking about Derek. Which is working great, by the way. Haven't thought about him all week.\n\nThis blog is my space to process my emotions. To celebrate my new life. To occasionally mention Derek in the context of how much better things are without him. For therapeutic purposes, obviously.\n\nWelcome to my journey. I'm so glad you're here, because it's definitely not lonely at all.",
+  "summary": "Today marks day 847 of my new life. I'm not counting. You're counting.",
+
+  "thumbnail_emoji": "💗",
+
+  "metadata": {
+    "author": "Jennifer Observerson",
+    "blog_name": "Jennifer Heals",
+    "reading_time_minutes": 12,
+    "date": "January 28, 2026",
+    "likes": 0,
+    "comments_count": 342
+  },
+
+  "tags": ["healing", "divorce", "moving-on", "totally-over-it"],
+  "entities": ["Jennifer", "Derek", "Elena"],
+
+  "published_at": "2026-01-28T00:00:00Z"
+}

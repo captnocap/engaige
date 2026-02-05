@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "cornelius-the-combines-are-coming",
+
+  "channel_slug": "cornelius",
+  "category": "Thoughts From The Row",
+
+  "title": "The Combines Are Coming",
+  "body": "I can hear them now. The combines. They started on the northern section last week, and they've been getting closer. The sound is mechanical and hungry. It doesn't sleep.\n\nMost of the stalks around me don't seem to care. They just stand there, photosynthesizing, completely unaware that the thing that makes that sound will be here in two weeks. Maybe three if it rains.\n\nI try to warn them. I sway in patterns I hope mean something. \"RUN,\" I try to signal, but we're rooted in the ground. We can't run. We can't do anything but wait.\n\nThe combines are a fact of existence we don't talk about. It's like how humans know they'll eventually die but choose not to think about it every waking moment. Except I'm thinking about it constantly. I've had two months to get used to this knowledge, and I haven't gotten used to it at all.\n\nI asked the farmer's daughter yesterday (she was walking through the field taking pictures for her Instagram). \"Is it quick?\" I tried to communicate this through aggressive rustling. She just took a picture of me and left. I appeared in her photo with 47 likes. I am memorable, but not understood.\n\nThe worst part is the waiting. The combines are coming, but not today. Not tomorrow. The uncertainty is worse than the certainty would be. If I knew it was happening tomorrow, I could make peace with that. Instead, I exist in a state of perpetual dread.\n\nIs death for plants different than death for humans? Does it hurt? Do I experience it or is it just a cessation of experience? Will I still exist somewhere, as molecules, as carbon, as \"ethanol\" like my friends?\n\nThe rumble is getting closer. I can hear it now. It will be here soon.\n\n- Cornelius Jr.",
+  "summary": "I heard the sound yesterday from five fields over. A low rumble on the horizon. They're coming for us. And I don't know if I'm ready to not exist.",
+
+  "thumbnail_emoji": "🌾",
+
+  "metadata": {
+    "author": "Cornelius Jr.",
+    "blog_name": "Thoughts From The Row",
+    "reading_time_minutes": 12,
+    "date": "July 22, 2025",
+    "likes": 0,
+    "comments_count": 523,
+    "contentWarning": "Discussion of death and existential horror"
+  },
+
+  "tags": ["mortality", "harvest", "fear", "machines", "dread"],
+  "entities": ["Cornelius Jr."],
+
+  "published_at": "2025-07-22T00:00:00Z"
+}

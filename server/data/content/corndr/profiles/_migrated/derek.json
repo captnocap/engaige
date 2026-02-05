@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "derek",
+  "category": null,
+  "title": "Derek, 34",
+  "body": "Recently single. Jennifer didn't understand my passion. Looking for someone who appreciates a $47 cup of coffee. 847 quantum brewing experiments and counting. I wake up at 3:47 AM to observe my coffee grounds entering superposition. Yes, I time it to the second. Yes, it matters.",
+  "summary": "Quantum coffee obsessive. Recently single. 847 experiments and counting.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 34,
+    "location": "Downtown",
+    "distance": "8.47 miles away",
+    "interests": ["Coffee enthusiasts", "Science believers", "Early risers"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "Westbrook Institute",
+    "looking_for": ["Coffee enthusiasts", "Science believers", "Early risers"],
+    "corn_score": 67,
+    "has_liked_you": true,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A tour of my quantum coffee lab. I'll explain the entanglement process while we wait the precise 3.7 seconds for the brew cycle. No touching the equipment, please."
+      },
+      {
+        "question": "I'm looking for someone who...",
+        "answer": "Understands that 'regular coffee' is just molecular chaos in a cup. Also must be okay with my 847 coffee makers. They each have names."
+      },
+      {
+        "question": "The way to my heart is...",
+        "answer": "Through properly entangled water molecules. And corn. Corn in the coffee? Maybe. I'm experimenting."
+      }
+    ],
+    "images": ["coffee"]
+  },
+  "tags": ["quantum-coffee", "science", "early-riser", "recently-single"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

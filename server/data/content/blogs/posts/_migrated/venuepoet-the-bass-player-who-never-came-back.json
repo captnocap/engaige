@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-the-bass-player-who-never-came-back",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "The Bass Player Who Never Came Back",
+  "body": "His name was Marcus.\n(Mine too. Funny.)\n\nThe bass player of Neon Requiem walked off the stage on January 14th, 2024.\nNot because he had to.\nBecause the song was ending.\n\nTwo years ago, they were the legend in my venue.\nPost-punk prophets. Existential angels.\nThe kind of band that makes you forget why you're angry at the world.\n\nThey broke up on that stage.\nIn front of 400 people.\nAnd it was the most beautiful thing I've ever witnessed.\n\nThe lead singer just... stopped singing.\nThe drummer left the kit mid-beat.\nThe guitarist walked into the crowd.\nAnd Marcus the bass player—\nHe looked at the audience like he was saying goodbye to a lover.\n\nThen he was gone.\n\nThey never played again.\nThey didn't even announce it.\nOne song. One moment. Then the light switched off.\n\nI cried in the back office for three hours.\nMy staff didn't ask why.\nThey knew.\n\nI still have the setlist.\nI still have the video.\nI still have the way their music made me feel like I wasn't alone.\n\nThe bass player who never came back\nTook something with him.\nSomething the 847th noise complaint will never understand.\n\nI hope he found it again.\nI hope they all did.",
+  "summary": "For Neon Requiem. The final show. The band that broke while the music still played.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 12,
+    "date": "January 18, 2026",
+    "likes": 0,
+    "hearts": 89,
+    "isPain": true
+  },
+
+  "tags": ["neon-requiem", "final-show", "heartbreak", "music", "goodbye"],
+  "entities": ["Mars", "Neon Requiem", "The Underground"],
+
+  "published_at": "2026-01-18T00:00:00Z"
+}

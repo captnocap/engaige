@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-stopped-drinking-coffee",
+
+  "channel_slug": "drmartinez",
+  "category": "Personal",
+
+  "title": "Why I Stopped Drinking Coffee Entirely",
+  "body": "I used to drink coffee. Three cups a day. Black. No sugar. Just the pure, simple bitterness of coffee.\n\nI loved coffee. It was reliable. It was warm. It did what it was supposed to do.\n\nNow I cannot drink coffee without thinking about Derek.\n\nThis is not rational. Derek did not invent coffee. Derek did not ruin coffee. But Derek has contaminated my mental association with coffee so thoroughly that I now experience a Pavlovian anxiety response to the smell of brewing water.\n\nMy doctor says this is called \"secondary trauma.\"\n\nI says it is called \"Derek.\"\n\nLast week I attended a department lunch. There was coffee. I asked for tea. Everybody asked why. I said \"I just prefer tea now\" which is a lie, but it is easier than explaining that I cannot drink coffee because a stranger named Derek has made it impossible.\n\nThe smell of coffee now triggers:\n\n1. Memories of email 247 (the coffee maker photo)\n2. Visions of courtrooms\n3. Existential dread about consumer fraud\n4. A strong desire to run away to a small college in a remote area\n\nI drink tea now. Green tea. Chamomile. Earl Grey when I am feeling fancy.\n\nTea does not have a cult following. Tea does not inspire $2,999 brewing machines. Tea is safe.\n\nTea cannot be quantum. Tea just sits there, warm and harmless, never hurting anyone.\n\nI have made peace with tea.\n\nI will never drink coffee again.",
+  "summary": "Coffee used to be my favorite beverage. Now every cup reminds me of Derek. I drink tea now. Tea is safe.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 7,
+    "date": "July 10, 2025",
+    "likes": 0,
+    "category": "Personal"
+  },
+
+  "tags": ["coffee", "tea", "trauma", "derek", "coping"],
+  "entities": ["Dr. Elena Martinez", "Derek"],
+
+  "published_at": "2025-07-10T00:00:00Z"
+}

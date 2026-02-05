@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "memorial-park-lumbar-betrayal",
+
+  "category": "Bench Review",
+
+  "title": "The Memorial Park Bench: A Masterclass in Lumbar Betrayal",
+  "body": "I approached the Memorial Park bench at 0600 hours with my full assessment kit: portable cushion pressure gauge, lumbar curvature template, slat gap caliper, and the infrared thermometer I legally obtained from a veterinary supply website.\n\nInitial impressions were poor. The back angle\u2014and I measured this seventeen times to be certain\u2014is 97.3 degrees. The industry standard for lumbar support is 95-100 degrees, but this particular configuration creates what I call a \"betrayal zone\" at the L4-L5 vertebrae junction.\n\nThe slat gaps of 1.2 inches are just wide enough to create pressure points, but not wide enough for adequate ventilation. This is not incompetence. This is INTENTIONAL.\n\nI have submitted a FOIA request to the Parks Department for the procurement documents. Someone approved this bench. Someone signed their name. I will find them.\n\nMy ex-wife walked by during hour three of my assessment. She pretended not to see me. Classic Janet.\n\nVERDICT: This bench should be removed, melted down, and the metal used to create a monument to municipal negligence. The manufacturer, BenchCorp Industries, has been added to my watchlist.",
+  "summary": "What the city calls \"ergonomic seating\" I call \"spinal warfare.\" After 4 hours of comprehensive analysis, I can confirm this bench hates you.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "Memorial Park, Sector 7-G",
+    "mci_score": 23,
+    "measurements": {
+      "slat_width": "3.2 inches (substandard)",
+      "back_angle": "97.3 degrees (betrayal zone)",
+      "seat_height": "17.5 inches (acceptable)",
+      "armrest_present": false,
+      "material_grade": "Recycled composite (suspicious)"
+    },
+    "phantom_sitter_alert": false,
+    "fraud_alert": true
+  },
+
+  "tags": ["lumbar-crime", "parks-department", "foia-pending", "benchcorp"],
+  "entities": ["Greg Mantooth", "Janet", "BenchCorp Industries", "Parks Department"],
+
+  "published_at": "2026-01-19T00:00:00Z",
+
+  "comments": []
+}

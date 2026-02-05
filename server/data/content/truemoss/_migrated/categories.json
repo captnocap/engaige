@@ -1,0 +1,11 @@
+{
+  "$schema": "category",
+  "site_id": "truemoss",
+  "categories": [
+    { "slug": "expose", "name": "Expose", "icon_emoji": "\ud83d\udea8", "sort_order": 0 },
+    { "slug": "care-guide", "name": "Care Guide", "icon_emoji": "\ud83e\udeb4", "sort_order": 1 },
+    { "slug": "equipment-review", "name": "Equipment Review", "icon_emoji": "\ud83d\udca7", "sort_order": 2 },
+    { "slug": "manifesto", "name": "Manifesto", "icon_emoji": "\ud83c\udf11", "sort_order": 3 },
+    { "slug": "personal", "name": "Personal", "icon_emoji": "\ud83d\udccf", "sort_order": 4 }
+  ]
+}

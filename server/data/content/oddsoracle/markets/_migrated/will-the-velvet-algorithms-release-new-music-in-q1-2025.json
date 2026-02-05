@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-the-velvet-algorithms-release-new-music-in-q1-2025",
+  "category": "Entertainment",
+  "title": "Will The Velvet Algorithms release new music in Q1 2025?",
+  "body": "Resolves YES if The Velvet Algorithms release at least one new song (single, EP, or album) between January 1 and March 31, 2025.\n\nThe band has been on hiatus since their \"existential crisis\" incident in November. However, they were recently spotted at a recording studio.\n\nNote: Remixes and live recordings do not count. Must be new original material.",
+  "summary": "Whether The Velvet Algorithms will release new original music in Q1 2025 after their existential crisis hiatus.",
+  "thumbnail_emoji": "🎹",
+  "metadata": {
+    "probability": 0.67,
+    "volume": 23400,
+    "volume_display": "$23.4K",
+    "traders": null,
+    "closes_at": "2025-03-31T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 67,
+    "no_price": 33,
+    "resolved": null
+  },
+  "tags": ["velvet-algorithms", "entertainment", "music", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "AlgorithmFan1",
+      "content": "They're definitely working on something. I saw them at Quantum Cafe last week and they looked inspired.",
+      "like_count": 28,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "MusicIndustryInsider",
+      "content": "I have it on good authority they've booked studio time for January. Take this info as you will.",
+      "like_count": 89,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    }
+  ]
+}

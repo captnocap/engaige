@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "repairing-sound-system-underground",
+
+  "parent_slug": "diy-do-it-yourself",
+  "category": "Do It Yourself",
+
+  "title": "Repairing the sound system at The Underground",
+  "body": "Mars is letting me help fix the PA system at The Underground after some drunk idiot spilled beer on the mixing board\n\nAnyone have experience with vintage Mackie boards? Need to replace some capacitors but can't find the right specs",
+  "summary": null,
+
+  "thumbnail_emoji": "🔊🔧",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94803456,
+    "replies_count": 3,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/diy/"
+  },
+
+  "tags": ["diy", "audio", "the-underground", "mackie", "repair"],
+  "entities": ["Mars", "The Underground", "Neon Requiem"],
+
+  "published_at": "2024-11-21T18:22:45Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94803456\nPost the board model. Most Mackies from that era use pretty standard caps.",
+      "like_count": 0,
+      "published_at": "2024-11-21T18:25:33Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94803456\n>The Underground\nbased. Mars is cool. Tell him Anon says hi",
+      "like_count": 0,
+      "published_at": "2024-11-21T18:28:47Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94803456\nWait was this the beer that got spilled during the Neon Requiem show? That was legendary",
+      "like_count": 0,
+      "published_at": "2024-11-21T18:31:58Z",
+      "replies": []
+    }
+  ]
+}

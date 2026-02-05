@@ -1,0 +1,37 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "how-to-convert-cobcoin-to-real-money",
+  "category": "Crypto",
+  "title": "How to convert CobCoin to real money?",
+  "body": "I invested my life savings into CobCoin last year because my cousin said it was \"the corn-based cryptocurrency revolution.\" He showed me a whitepaper about how blockchain technology could revolutionize the corn supply chain.\n\nI now have 847,000 CobCoin but I can't find any exchange that will accept them. The CobCoin website just says \"Coming Soon\" and has for 14 months.\n\nMy cousin says to \"HODL\" but I need to pay rent. Is there any way to convert this to actual money?\n\nAlso the \"CobWallet\" app keeps sending me notifications about \"staking opportunities\" but when I click them it just shows a picture of a corn cob wearing sunglasses.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "invested_in_corn",
+    "author_rep": 12,
+    "upvotes": 892,
+    "answer_count": 67,
+    "views": 23456,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": true,
+    "close_reason": "Duplicate",
+    "is_duplicate": true,
+    "duplicate_of": "q_cobcoin_original"
+  },
+  "tags": ["crypto", "scam", "cobcoin", "help"],
+  "published_at": "2025-11-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "crypto_skeptic",
+      "content": "I'm sorry to tell you this, but CobCoin is not a real cryptocurrency. It was a scam that made the rounds last year.\n\nThe whitepaper you mentioned was literally copy-pasted from the Bitcoin whitepaper with \"Bitcoin\" replaced with \"Corn\" and \"blockchain\" replaced with \"cornchain.\"\n\nYour cousin either also got scammed or was in on it. Either way, those 847,000 CobCoin are worth exactly $0.\n\nThe corn cob with sunglasses is named \"Chad Cob\" and he is the mascot of your lost money.",
+      "like_count": 2341,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 9823,
+      "replies": []
+    }
+  ]
+}

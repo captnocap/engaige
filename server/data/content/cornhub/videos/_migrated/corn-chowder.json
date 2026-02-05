@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "corn-chowder",
+
+  "category": "Homemade",
+
+  "title": "She Said She Wanted Corn Chowder So I Made Her Corn Chowder",
+  "body": "My wife mentioned she was craving corn chowder. I had never made soup before. This is my journey. She cried when she tasted it.\n\nIngredients:\n- 6 ears of corn\n- 4 slices bacon\n- 1 onion diced\n- 3 potatoes cubed\n- 4 cups chicken broth\n- 1 cup heavy cream\n- Fresh thyme\n\nSteps:\n1. Crisp bacon, set aside\n2. Saute onion in bacon fat\n3. Add potatoes and broth\n4. Simmer until potatoes tender\n5. Add corn and cream\n6. Garnish with bacon and thyme",
+  "summary": "Wife wanted corn chowder. Never made soup before. She cried when she tasted it.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83c\udf72",
+
+  "metadata": {
+    "duration": "34:12",
+    "views": 2100000,
+    "rating": 97,
+    "author": "GoodHusband_Gary",
+    "author_avatar": "\ud83d\udc68",
+    "author_verified": false,
+    "is_premium": false,
+    "is_hd": true,
+    "uploaded_ago": "5 days ago",
+    "ingredients": ["6 ears of corn", "4 slices bacon", "1 onion diced", "3 potatoes cubed", "4 cups chicken broth", "1 cup heavy cream", "Fresh thyme"],
+    "steps": ["Crisp bacon, set aside", "Saute onion in bacon fat", "Add potatoes and broth", "Simmer until potatoes tender", "Add corn and cream", "Garnish with bacon and thyme"]
+  },
+
+  "tags": ["chowder", "soup", "comfort", "romantic", "homemade"],
+  "entities": ["GoodHusband_Gary"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

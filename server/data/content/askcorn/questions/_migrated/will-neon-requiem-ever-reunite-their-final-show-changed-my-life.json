@@ -1,0 +1,25 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "will-neon-requiem-ever-reunite-their-final-show-changed-my-life",
+  "category": "Entertainment",
+  "title": "Will Neon Requiem ever reunite? Their final show changed my life",
+  "body": "",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "anonymous_user",
+    "author_rep": 0,
+    "upvotes": 1234,
+    "answer_count": 234,
+    "views": 45672,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["neon-requiem", "concerts", "reunion"],
+  "published_at": "2025-11-20T00:00:00Z",
+  "comments": []
+}

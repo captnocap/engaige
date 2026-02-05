@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "truemoss",
+  "content_type": "post",
+  "slug": "moisture-reader-reviews",
+
+  "category": "Equipment Review",
+
+  "title": "Moisture Reader Reviews: What the Industry Doesn't Test",
+  "body": "After The Incident, I vowed to never again be caught without proper instrumentation. I have spent $3,400 testing moisture readers so you don't have to.\n\nTHE GOOD:\n\n- Hygrometer Pro X7 ($189): Accurate to 0.3%, works on all substrate types. This is what the judges SHOULD have used in Burlington.\n- BryoMeter Classic ($145): Old school analog gauge. No batteries to fail. Patricia wouldn't know how to read it.\n- MossCheck Digital ($220): Best for shade-tolerant species. The only reader I trust with Hypnum.\n\nTHE MEDIOCRE:\n\n- MossReader 3000 ($79): The one THEY use at competitions. Inconsistent readings on silver moss. Suspiciously cheap. Ask yourself why.\n- HydroSpike Basic ($45): Fine for sphagnum (of course). Useless for real cultivation.\n\nTHE GARBAGE (Industry-Promoted):\n\n- MossCo QuickRead ($35): Literally rebranded soil meter. They sponsor ABS. Connect the dots.\n- FernCo DualProbe ($55): Patricia Fernsworth endorsed this in 2022. Need I say more?\n\nTESTING METHODOLOGY: Each reader tested on 5 species across 3 substrate types over 6 months. Full data available on request (not you, Patricia).\n\nInvest in good tools. Your moss deserves better than industry marketing.",
+  "summary": "I have purchased and tested 23 different moisture readers. Most are garbage designed to sell sphagnum. Here are the three that actually work.",
+
+  "thumbnail_emoji": "\ud83d\udca7",
+
+  "metadata": {
+    "author": "Agatha Mosswell",
+    "read_time": "31 min read",
+    "comment_count": 892,
+    "is_expose": false,
+    "moss_emoji": "\ud83d\udca7"
+  },
+
+  "tags": ["equipment", "moisture-readers", "reviews", "mossco-exposed", "buyer-guide"],
+  "entities": ["Agatha Mosswell", "Patricia Fernsworth", "MossCo International"],
+
+  "published_at": "2025-12-08T00:00:00Z",
+
+  "comments": []
+}

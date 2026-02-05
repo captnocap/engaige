@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "is-it-normal-to-see-my-future-self-in-quantum-coffee-reflections",
+  "category": "Quantum Coffee",
+  "title": "Is it normal to see my future self in quantum coffee reflections?",
+  "body": "I've been drinking quantum coffee daily for about 4 months now (QuBrew Pro 3000, properly calibrated, observing for full 45 minutes).\n\nStarting about 2 weeks ago, when I look at the surface of the coffee before drinking, I sometimes see... myself? But older. And doing things I haven't done yet.\n\nLast week I saw myself getting a promotion at work. Then I got the promotion on Friday.\n\nYesterday I saw myself crying at what looked like a funeral. I don't know whose funeral.\n\nIs this a known side effect of quantum coffee? I checked the Martinez Study but it doesn't mention anything about temporal precognition.\n\nI should also mention I live in the Hartwell Building (floor 3, not floor 7). Could that be related?",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "quantum_seer_confused",
+    "author_rep": 567,
+    "upvotes": 1892,
+    "answer_count": 78,
+    "views": 34521,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["quantum-coffee", "side-effects", "hartwell-building", "precognition"],
+  "published_at": "2026-01-13T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "quantum_derek_847",
+      "content": "Welcome to the club.\n\nYes, this happens. No, the Martinez Study doesn't cover it because Dr. Martinez refuses to acknowledge it. I've emailed her 847 times about this phenomenon.\n\nMy theory: the quantum observation process creates a localized field of probability awareness. Your consciousness, focused on the coffee, briefly accesses adjacent timeline information. It's not precognition - it's probability perception.\n\nThe Hartwell Building location is definitely relevant. That building has... unusual properties that may amplify the effect.\n\nAs for the funeral vision - I saw something similar before my cat Mr. Whiskers got sick. He recovered, but only after I changed his diet based on what I saw. So consider it a warning, not a certainty.\n\nCheck out my blog at www.quantumbrewblog.corn for more information on this and other quantum coffee phenomena.\n\nAlso, your QuBrew Pro 3000 is a solid choice. Worth every penny of the divorce.",
+      "like_count": 2341,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 847,
+      "replies": [
+        {
+          "author_name": "quantum_seer_confused",
+          "content": "This is both helpful and concerning",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "dr_martinez_official",
+          "content": "I have never received 847 emails from this person. Also this is not how quantum mechanics works.",
+          "like_count": 0,
+          "is_creator": false
+        },
+        {
+          "author_name": "quantum_derek_847",
+          "content": "Check your spam folder, Elena",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    }
+  ]
+}

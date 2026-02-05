@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-elevator-fixed-soon",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "The Elevator Will Be Fixed Soon",
+  "body": "Hello Everyone,\n\nWe have received many complaints about the elevator on the East side of the building. Specifically:\n\n• It goes to Floor 13\n• It smells wrong\n• People who get on don't always get off at the right floor\n• It sometimes makes sounds that aren't mechanical in nature\n• One employee reported seeing \"another version\" of the elevator lobby inside the elevator\n\nWe are working with our maintenance team to fix these issues. The maintenance team is very brave. Several of them have not come back.\n\nIn the meantime, please use the West elevator. It is perfectly safe. It only goes to Floors 1-12 (and sometimes 13 but we don't talk about that). Use the stairs if you need to go above Floor 12. The stairs have better lighting now. We added more lights. So many lights. But it's still dark.\n\nThank you for your patience.\n\nPatricia\n\nP.S. - I do not ride the elevators. I simply appear where I need to be. This is normal for HR managers.",
+  "summary": "We apologize for the elevator troubles. The problem is... complicated. Maintenance says it will be resolved.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 3,
+    "date": "December 22, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["maintenance", "elevator", "it-will-be-fine", "it-wont"],
+  "entities": ["Patricia", "Omnicorp"],
+
+  "published_at": "2025-12-22T00:00:00Z"
+}

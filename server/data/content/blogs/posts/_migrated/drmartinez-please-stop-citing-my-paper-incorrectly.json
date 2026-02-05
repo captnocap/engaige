@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-please-stop-citing-my-paper-incorrectly",
+
+  "channel_slug": "drmartinez",
+  "category": "Corrections",
+
+  "title": "Please Stop Citing My Paper Incorrectly",
+  "body": "I have received 847 citations of my paper \"Quantum Phase Transitions in Thermal Systems\" published in Physical Review B (2021). Approximately 846 of these citations are incorrect.\n\nMy paper does NOT claim that coffee can achieve quantum entanglement states.\n\nMy paper does NOT suggest that brewing coffee with \"quantum awareness\" produces different results.\n\nMy paper does NOT support any inference that a coffee maker can become sentient [citation needed].\n\nI studied heating dynamics in pure water samples using spectroscopic analysis. The \"quantum\" part refers to the quantum nature of molecular interactions during phase transitions. This is standard physics, not speculation.\n\nWhen I wrote about \"consciousness emerging from phase transitions,\" I was being METAPHORICAL about how complex systems exhibit emergent properties. Not literal. Not. Literal.\n\nEvery email starts with Derek explaining his latest experiment. \"Dr. Martinez, I heated the water to 203\u00b0F and asked it about the meaning of existence. What did I do wrong?\" Derek, you did nothing wrong. You just did not do physics.\n\nI am considering retracting the word \"quantum\" from my next paper and replacing it with \"very normal.\" Maybe then people will stop.",
+  "summary": "My 2021 paper explored quantum phase transitions in heated water. It did not say what you think it said.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 8,
+    "date": "January 22, 2026",
+    "likes": 0,
+    "category": "Corrections"
+  },
+
+  "tags": ["corrections", "citations", "quantum-coffee", "derek", "misinterpretation"],
+  "entities": ["Dr. Elena Martinez", "Derek"],
+
+  "published_at": "2026-01-22T00:00:00Z"
+}

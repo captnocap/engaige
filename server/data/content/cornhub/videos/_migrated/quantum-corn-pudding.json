@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "quantum-corn-pudding",
+
+  "category": "Experimental",
+
+  "title": "Quantum Corn Pudding - Derek's Wife Left But The Recipe Stayed",
+  "body": "Jennifer said I spent too much on quantum coffee AND corn recipes. She took the kids, Derek Jr. and little Quanta. But she couldn't take this recipe. The corn exists in a superposition of sweet and savory until observed.\n\nIngredients:\n- 3 cups corn (observed)\n- 1 cup quantum coffee\n- 2 eggs (Schr\u00f6dinger-approved)\n- 1 cup cream\n- Sugar and salt (superposition)\n- Tears (optional)\n\nSteps:\n1. Do not observe the corn until ready\n2. Mix wet ingredients without looking directly\n3. Fold in corn while questioning reality\n4. Bake at 350F for 45 minutes or until you feel it\n5. Serve to no one because you are alone now\n6. Call Jennifer. She won't answer.",
+  "summary": "Jennifer left. She took the kids. But she couldn't take this recipe. The corn exists in a superposition.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\u2615",
+
+  "metadata": {
+    "duration": "847:00",
+    "views": 847000,
+    "rating": 100,
+    "author": "QuantumDerek",
+    "author_avatar": "\ud83d\udd2c",
+    "author_verified": true,
+    "is_premium": true,
+    "is_hd": true,
+    "uploaded_ago": "847 days ago",
+    "ingredients": ["3 cups corn (observed)", "1 cup quantum coffee", "2 eggs (Schr\u00f6dinger-approved)", "1 cup cream", "Sugar and salt (superposition)", "Tears (optional)"],
+    "steps": ["Do not observe the corn until ready", "Mix wet ingredients without looking directly", "Fold in corn while questioning reality", "Bake at 350F for 45 minutes or until you feel it", "Serve to no one because you are alone now", "Call Jennifer. She won't answer."]
+  },
+
+  "tags": ["quantum", "experimental", "corn-pudding", "derek", "existential"],
+  "entities": ["Derek", "Jennifer", "Derek Jr.", "Quanta", "Quantum Coffee"],
+
+  "published_at": "2023-10-20T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "QuantumCoffeeFan",
+      "content": "Derek, if you're reading this, Jennifer will come back. The corn pudding was worth it.",
+      "like_count": 847,
+      "replies": []
+    }
+  ]
+}

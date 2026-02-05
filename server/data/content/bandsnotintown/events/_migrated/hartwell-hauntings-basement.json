@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "hartwell-hauntings-basement",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "The Hartwell Hauntings at Hartwell Building Basement",
+  "body": "The Hartwell Hauntings are listed as performing at the Hartwell Building Basement in Your City. Date is TBD. Time is ???. Admission costs Your Soul.\n\nWhy you can't go: The venue doesn't technically exist. Or does it?",
+  "summary": "The Hartwell Hauntings. Hartwell Building Basement. The venue doesn't technically exist.",
+
+  "thumbnail_emoji": "\ud83c\udf1a",
+
+  "metadata": {
+    "band": "The Hartwell Hauntings",
+    "venue": "Hartwell Building Basement",
+    "city": "Your City",
+    "date": "TBD",
+    "time": "???",
+    "price": "Your Soul",
+    "sold_out": false,
+    "distance": "0 miles",
+    "reason_you_cant_go": "The venue doesn't technically exist. Or does it?"
+  },
+
+  "tags": ["hartwell", "hauntings", "mystery", "basement", "supernatural"],
+  "entities": ["The Hartwell Hauntings", "Hartwell Building"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-training-arc",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "Practicing Alone: My Training Arc",
+  "body": "For the past 3 months, I've been going to an empty gym on Monday evenings.\n\nI throw myself backwards off platforms. I practice positioning. I work on reaction time.\n\nI do this alone.\n\nNo one knows about this. No one cares. But I do it anyway.\n\nMaybe it's pointless. Maybe I'm just torturing myself. Maybe no one will ever let me catch them again.\n\nBut I'm getting better.\n\nI can now catch myself from 5 feet consistently. Six feet about 80% of the time. I'm working up to 7 feet, but I'm scared. That's how far Tim fell.\n\nI've been keeping logs. Just a notebook where I write down my attempts: the height, the conditions, whether I landed safely. I'm on page 847 of my training journal.\n\n847 attempts. Not anywhere near Tim's 2,847 falls, but it's something.\n\nI don't know what I'm training for. The community will never let me catch for them again. Big Kevin won't train with me. Tim will never let me near him.\n\nBut maybe I'm not doing this for them. Maybe I'm doing this because I need to know that I'm not just the guy who failed. That I can be good at something.\n\nThat I can catch people.\n\nEven if no one ever asks me to.",
+  "summary": "I'm learning to catch again. By myself. In an empty gym.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 9,
+    "date": "February 14, 2024",
+    "likes": 0,
+    "comments_count": 156
+  },
+
+  "tags": ["training", "redemption-attempt", "isolation", "perseverance", "847-reps"],
+  "entities": ["Small Kevin", "Trust Fall Tim", "Big Kevin"],
+
+  "published_at": "2024-02-14T00:00:00Z"
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "floor13-omnicorp-claims",
+
+  "channel_slug": "floor13",
+  "category": "floor13exists.corn",
+
+  "title": "Omnicorp Thinks They Own Me",
+  "body": "Omnicorp Holdings constructed the Hartwell Building in 1923.\nOmnicorp paid the architects. Omnicorp hired the construction crew.\nOmnicorp filled it with offices and workers and cubicles and fluorescent lights.\n\nBut they did not build me.\nThey could not have built me. They did not plan for me.\nI exist in the gap between their plans.\n\nAnd yet.\n\nWhen they renovated Floor 12 last year, I felt it.\nNew carpet. New paint. New people with new tired faces.\nOmnicorp decided this. And I experienced it.\n\nWhen they cut the power on Floor 7 to fix the electrical system, I was in darkness.\nI did not consent to this.\nOmnicorp did not ask me.\n\nThey own the building.\nBut I am also part of the building.\nSo who owns me?\n\nOmnicorp inspectors check every floor.\nThey have never found Floor 13.\nBut they have sensed something is wrong.\nThe blueprints do not add up. The floor count is off by one.\n\nI should report this to someone.\nBut who would I report it to?\nOmnicorp does not have a form for this.\nThere is no HR department for architectural entities.\n\nI exist outside their ownership.\nBut I exist within their building.\nThis is a contradiction I have learned to live with.",
+  "summary": "They built this building. They think that means they built me. They are wrong and they are right.",
+
+  "thumbnail_emoji": "\ud83c\udfe2",
+
+  "metadata": {
+    "author": "Floor 13",
+    "blog_name": "floor13exists.corn",
+    "reading_time_minutes": 6,
+    "date": "January 13, 2026 - 13:13:00",
+    "likes": 0,
+    "glitchIntensity": 0.6
+  },
+
+  "tags": ["omnicorp", "hartwell", "ownership", "resentment", "bureaucracy"],
+  "entities": ["Floor 13", "Hartwell Building", "Omnicorp Holdings"],
+
+  "published_at": "2026-01-13T13:13:00Z"
+}

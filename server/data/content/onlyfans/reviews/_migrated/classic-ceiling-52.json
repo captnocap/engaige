@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "classic-ceiling-52",
+
+  "category": "Ceiling Fans",
+
+  "title": "The Classic 52\" Ceiling Fan",
+  "body": "Our most popular ceiling fan. Whisper-quiet motor, reversible blades, and a pull chain that actually works. Revolutionary.\n\nFeatures:\n- 52\" blade span\n- 3-speed pull chain\n- Reversible motor\n- Includes light kit\n- 10-year warranty",
+  "summary": "Our most popular ceiling fan. Whisper-quiet motor, reversible blades, and a pull chain that actually works.",
+
+  "thumbnail_emoji": "\ud83c\udf00",
+
+  "metadata": {
+    "type": "ceiling",
+    "price": 189.99,
+    "original_price": 249.99,
+    "rating": 4.8,
+    "review_count": 2847,
+    "in_stock": true,
+    "is_hot": true,
+    "is_exclusive": false,
+    "cfm": 5200,
+    "blade_count": 5,
+    "noise_level": "Whisper quiet",
+    "features": ["52\" blade span", "3-speed pull chain", "Reversible motor", "Includes light kit", "10-year warranty"]
+  },
+
+  "tags": ["ceiling-fan", "classic", "whisper-quiet", "bestseller"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "CoolBreezeLover",
+      "content": "Finally, a website dedicated to what REALLY matters. The OG Box Fan changed my life.",
+      "like_count": 847,
+      "replies": []
+    }
+  ]
+}

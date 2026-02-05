@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-entanglement-brewing-pairs",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "Quantum Entanglement Brewing: Can Two Cups Be Connected Across Space?",
+  "body": "After my brother stopped returning my calls (something about \"boundaries\" and \"concerning behavior\"), I decided to prove our connection through quantum coffee entanglement.\n\nThe Setup: I brewed two cups from the same batch of quantum-ground beans. One stayed with me. One I FedExed to Portland.\n\nThe Experiment: At exactly 8:47 AM PST, I added one sugar cube to my cup while focusing my intention toward Portland.\n\nThe Results: My brother blocked my number, so I can't confirm the results. But I FELT something. Science is about feelings, right?\n\nNext month I'm trying this with 47 cups sent to various family members. Surely someone will respond.\n\nUPDATE: My therapist says this is \"displacement behavior.\" I say she doesn't understand quantum mechanics.",
+  "summary": "I brewed one cup here and sent the other to my estranged brother in Portland. When I added sugar to mine, did his get sweeter? The results will shock you.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 31,
+    "date": "December 29, 2025",
+    "likes": 0,
+    "comments_count": 456
+  },
+
+  "tags": ["entanglement", "family", "experiment", "portland", "therapy"],
+  "entities": ["Derek"],
+
+  "published_at": "2025-12-29T00:00:00Z"
+}

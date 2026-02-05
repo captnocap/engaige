@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "schrodingers-cats-tiny-venue",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "Schr\u00f6dinger's Cats at The Tiny Venue",
+  "body": "Schr\u00f6dinger's Cats are performing at The Tiny Venue in Town Next To Yours this Saturday at 10:00 PM. Tickets were $15 but the show is sold out.\n\nWhy you can't go: Sold out in 0.3 seconds. You didn't even know about it.",
+  "summary": "Schr\u00f6dinger's Cats. Sold out in 0.3 seconds. 12 miles away.",
+
+  "thumbnail_emoji": "\ud83d\udc31",
+
+  "metadata": {
+    "band": "Schr\u00f6dinger's Cats",
+    "venue": "The Tiny Venue",
+    "city": "Town Next To Yours",
+    "date": "This Saturday",
+    "time": "10:00 PM",
+    "price": "$15",
+    "sold_out": true,
+    "distance": "12 miles away",
+    "reason_you_cant_go": "Sold out in 0.3 seconds. You didn't even know about it."
+  },
+
+  "tags": ["schrodingers-cats", "quantum-jazz", "sold-out", "fomo"],
+  "entities": ["Schr\u00f6dinger's Cats", "The Tiny Venue"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

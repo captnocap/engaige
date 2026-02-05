@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "velvet-algorithms-somewhere-else-arena",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "The Velvet Algorithms at The Somewhere Else Arena",
+  "body": "The Velvet Algorithms are performing at The Somewhere Else Arena in Literally Anywhere But Here. Tickets are $25 with 12 tickets remaining.\n\nWhy you can't go: It's tomorrow and 847 miles away.",
+  "summary": "The Velvet Algorithms performing 847 miles away. Tomorrow.",
+
+  "thumbnail_emoji": "\ud83c\udfb8",
+
+  "metadata": {
+    "band": "The Velvet Algorithms",
+    "venue": "The Somewhere Else Arena",
+    "city": "Literally Anywhere But Here",
+    "date": "Tomorrow",
+    "time": "8:00 PM",
+    "price": "$25",
+    "sold_out": false,
+    "distance": "847 miles away",
+    "reason_you_cant_go": "It's tomorrow and 847 miles away",
+    "tickets_left": 12
+  },
+
+  "tags": ["velvet-algorithms", "electronic", "existential", "fomo"],
+  "entities": ["The Velvet Algorithms", "The Somewhere Else Arena"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

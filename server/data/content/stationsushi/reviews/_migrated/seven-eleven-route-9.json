@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "seven-eleven-route-9",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "The 7-Eleven on Route 9: Where Dreams of Spicy Tuna Die",
+  "body": "There are moments in life that test one's commitment to their calling. January 5th, 2026, was mine.\n\nThe spicy tuna roll sat alone in the refrigerated case, orphaned beside a container of fruit that had clearly given up on life. I should have heeded the warning.\n\nThe rice had achieved a texture I can only describe as \"post-rigor.\" It crumbled not with the delicate separation of properly prepared sushi, but with the resigned collapse of a condemned building.\n\nThe \"spicy\" component appeared to be generic hot sauce applied with the precision of a garden sprinkler. It pooled in the container like accusations.\n\nI detected no tuna. What I detected was a protein of indeterminate origin that seemed to resent its circumstances. We had that in common.\n\nThe wasabi was absent. The ginger was present but appeared to be weeping. Or perhaps that was condensation. In this establishment, one cannot be certain.\n\nI left my review card with the night clerk, a young man named Travis who seemed genuinely confused by the concept of \"constructive criticism.\" I wish him well in his journey.",
+  "summary": "I have seen things in my career. Tornado damage. Flood claims. A man who tried to file a claim for \"emotional distress from a haunted refrigerator.\" Nothing prepared me for this.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "7-Eleven",
+    "station_number": "#12847",
+    "location": "Route 9, Cedar Rapids, Iowa",
+    "pump_number": 2,
+    "rating": 1,
+    "sushi_type": "Spicy Tuna Roll (6pc)",
+    "price": "$6.99",
+    "would_return_for": "Absolutely nothing. I have removed this location from my mapping software.",
+    "gerald_note": "Gerald's brother ate gas station sushi once in 1987 and was \"never the same,\" according to family legend. After today, I understand."
+  },
+
+  "tags": ["1-pump", "7-eleven", "spicy-tuna", "cedar-rapids", "disaster"],
+  "entities": ["Mildred Gasketsworth", "Gerald Gasketsworth", "Travis"],
+
+  "published_at": "2026-01-05T00:00:00Z",
+
+  "comments": []
+}

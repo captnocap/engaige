@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "trust-fall-tim-community-center",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "Trust Fall Tim & The Catchers at Community Center",
+  "body": "Trust Fall Tim & The Catchers are performing at the Community Center in Your City on Your Birthday at 7:00 PM. Tickets were $20 but the show is sold out.\n\nWhy you can't go: It's on your birthday and you already have plans you can't cancel.",
+  "summary": "Trust Fall Tim & The Catchers on your birthday. Sold out. In your city. Can't go.",
+
+  "thumbnail_emoji": "\ud83d\ude46\u200d\u2642\ufe0f",
+
+  "metadata": {
+    "band": "Trust Fall Tim & The Catchers",
+    "venue": "Community Center",
+    "city": "Your City",
+    "date": "Your Birthday",
+    "time": "7:00 PM",
+    "price": "$20",
+    "sold_out": true,
+    "distance": "0 miles",
+    "reason_you_cant_go": "It's on your birthday and you already have plans you can't cancel"
+  },
+
+  "tags": ["trust-fall-tim", "community-center", "birthday", "sold-out"],
+  "entities": ["Trust Fall Tim", "The Catchers", "Community Center"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

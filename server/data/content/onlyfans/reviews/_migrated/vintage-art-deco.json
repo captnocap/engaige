@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "vintage-art-deco",
+
+  "category": "Vintage",
+
+  "title": "Art Deco Revival (1920s Replica)",
+  "body": "A faithful reproduction of a 1920s oscillating desk fan. Brass finish. Works like it's from the future of the past.\n\nFeatures:\n- Solid brass construction\n- Cloth cord\n- Authentic design\n- 2 speeds\n- Conversation starter",
+  "summary": "A faithful reproduction of a 1920s oscillating desk fan. Brass finish. The future of the past.",
+
+  "thumbnail_emoji": "\ud83c\udfad",
+
+  "metadata": {
+    "type": "vintage",
+    "price": 299.99,
+    "rating": 4.8,
+    "review_count": 127,
+    "in_stock": false,
+    "is_hot": false,
+    "is_exclusive": false,
+    "cfm": 400,
+    "blade_count": 4,
+    "noise_level": "Gentle vintage hum",
+    "features": ["Solid brass construction", "Cloth cord", "Authentic design", "2 speeds", "Conversation starter"]
+  },
+
+  "tags": ["vintage", "art-deco", "brass", "1920s", "replica"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

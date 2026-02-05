@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "benchcorp-conspiracy",
+
+  "category": "Bench Review",
+
+  "title": "EXPOS\u00c9: BenchCorp Industries and the Great Municipal Bench Scandal of 2019",
+  "body": "This is the article they do not want me to publish. But truth has no price. (Although I do accept donations.)\n\nIn 2019, the City Parks Commission approved a contract with BenchCorp Industries for 47 \"premium outdoor seating solutions\" at $7,234 each. Total cost: $340,000.\n\nThrough 147 FOIA requests, 23 phone calls to the manufacturer, and one very informative conversation with a recently terminated BenchCorp employee at a bar, I have obtained the actual manufacturing cost: $1,893 per unit.\n\nThe markup was 282%. The benches themselves score an average MCI of 34. Someone approved this. Someone signed the purchase order. Someone received kickbacks. I have theories.\n\nThe City Manager has declined to comment. The Parks Commissioner resigned in 2021 and now lives in Arizona, where I have confirmed they have excellent public seating (MCI average: 71). Coincidence?\n\nMy lawyer has advised me to note that these are allegations based on publicly available documents and \"that one conversation at O'Malley's.\" I stand by my reporting.\n\nJanet, if you're reading this: THIS is why I couldn't make your mother's birthday dinner. Some things are bigger than family.",
+  "summary": "After 3 years of FOIA requests, I can finally reveal: the city paid $340,000 for 47 benches that cost $89,000 to manufacture. Someone got rich. Someone got comfortable.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "City-Wide Investigation",
+    "mci_score": 0,
+    "measurements": {
+      "slat_width": "VARIES (inconsistent quality)",
+      "back_angle": "95-103 degrees (no standardization)",
+      "seat_height": "16-19 inches (lottery)",
+      "armrest_present": false,
+      "material_grade": "Recycled composite (lowest bidder)"
+    },
+    "phantom_sitter_alert": false,
+    "fraud_alert": true
+  },
+
+  "tags": ["benchcorp", "municipal-fraud", "foia-victory", "arizona-connection", "sorry-janet"],
+  "entities": ["Greg Mantooth", "Janet", "BenchCorp Industries", "City Parks Commission"],
+
+  "published_at": "2025-12-08T00:00:00Z",
+
+  "comments": []
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "channel",
+  "site_id": "askcorn",
+  "channels": [
+    {
+      "slug": "quantum-derek-847",
+      "name": "quantum_derek_847",
+      "avatar_emoji": "☕",
+      "description": "IT consultant (between contracts). Quantum coffee enthusiast. Divorced. My cat Mr. Whiskers understands me.",
+      "metadata": {
+        "reputation": 847,
+        "badges": { "gold": 0, "silver": 8, "bronze": 47 },
+        "top_tags": ["quantum-coffee", "relationship-advice", "hartwell-building"]
+      }
+    },
+    {
+      "slug": "trustfalltim",
+      "name": "TrustFallTim",
+      "avatar_emoji": "🤸",
+      "description": "Professional trust faller. 2,847 documented falls. 78.5% catch rate. The Incident was not my fault.",
+      "metadata": {
+        "reputation": 28471,
+        "badges": { "gold": 2, "silver": 84, "bronze": 7 },
+        "top_tags": ["trust-falls", "exercise", "the-underground"]
+      }
+    },
+    {
+      "slug": "hartwell-researcher",
+      "name": "hartwell_researcher",
+      "avatar_emoji": "🔍",
+      "description": "Documenting the truth about the Hartwell Building since 2019. The mirrors are doors.",
+      "metadata": {
+        "reputation": 8472,
+        "badges": { "gold": 1, "silver": 23, "bronze": 56 },
+        "top_tags": ["hartwell-building", "unexplained", "omnicorp"]
+      }
+    }
+  ]
+}

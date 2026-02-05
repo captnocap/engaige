@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-grinder-particle-duality",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "Your Burr Grinder is Destroying Particle-Wave Duality (And Your Marriage)",
+  "body": "When Jennifer left, she took the KitchenAid, the good towels, and the Baratza Encore burr grinder. At first I was devastated. Then I realized: she did me a favor.\n\nBurr grinders, with their precise, consistent grinding, force coffee particles into a deterministic state. They CHOOSE a grind size. This is violence against superposition.\n\nMy $12 blade grinder from Target? It creates a beautiful chaos of particle sizes\u2014large chunks existing alongside fine powder, each in its own quantum probability cloud.\n\nJennifer said I \"cared more about coffee than our relationship.\" Jennifer also used a burr grinder. Coincidence? I think not.\n\nThe science doesn't lie. Consistency is the enemy of quantum brewing. Embrace chaos. Embrace the blade.\n\nI sleep much better now. On my couch. By choice.",
+  "summary": "A comprehensive analysis of why blade grinders preserve quantum states better than burr grinders, and why my wife took the burr grinder when she left.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 38,
+    "date": "December 22, 2025",
+    "likes": 0,
+    "comments_count": 127
+  },
+
+  "tags": ["grinders", "blade-vs-burr", "jennifer", "couch-life", "chaos-theory"],
+  "entities": ["Derek", "Jennifer"],
+
+  "published_at": "2025-12-22T00:00:00Z"
+}

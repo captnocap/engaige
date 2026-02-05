@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "corn-fritters",
+
+  "category": "Homemade",
+
+  "title": "Hot Corn Fritters Fresh From the Oil - Caught on Camera",
+  "body": "Caught my first batch of corn fritters on camera. Look at how golden they are. Listen to that sizzle. ASMR warning.\n\nIngredients:\n- 2 cups corn\n- 1 cup flour\n- 1 egg\n- 1/2 cup milk\n- 1 tsp baking powder\n- Oil for frying\n- Honey for drizzling\n\nSteps:\n1. Mix flour, baking powder, salt\n2. Add egg and milk\n3. Fold in corn kernels\n4. Heat oil to 375F\n5. Drop spoonfuls into oil\n6. Fry until golden, drain on paper towels",
+  "summary": "First batch of corn fritters caught on camera. Look at how golden they are. ASMR warning.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83e\udd59",
+
+  "metadata": {
+    "duration": "15:47",
+    "views": 3400000,
+    "rating": 95,
+    "author": "FryDaddy_Frank",
+    "author_avatar": "\ud83e\uddd4",
+    "author_verified": true,
+    "is_premium": false,
+    "is_hd": true,
+    "uploaded_ago": "2 weeks ago",
+    "ingredients": ["2 cups corn", "1 cup flour", "1 egg", "1/2 cup milk", "1 tsp baking powder", "Oil for frying", "Honey for drizzling"],
+    "steps": ["Mix flour, baking powder, salt", "Add egg and milk", "Fold in corn kernels", "Heat oil to 375F", "Drop spoonfuls into oil", "Fry until golden, drain on paper towels"]
+  },
+
+  "tags": ["fritters", "fried", "appetizer", "asmr", "crispy"],
+  "entities": ["FryDaddy_Frank"],
+
+  "published_at": "2026-01-06T00:00:00Z",
+
+  "comments": []
+}

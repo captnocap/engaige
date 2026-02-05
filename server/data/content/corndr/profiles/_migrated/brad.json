@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "brad",
+  "category": null,
+  "title": "Brad, 35",
+  "body": "Life coach (gentle approach). Some call me Brad Whispermentor. I believe in soft motivation and reasonable sleep schedules. If you're looking for someone who WON'T yell affirmations at you at 3:47 AM, I'm your guy.",
+  "summary": "Gentle life coach. Brad Whispermentor. Believes in reasonable sleep schedules.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 35,
+    "location": "Suburbs",
+    "distance": "8.47 miles away",
+    "interests": ["Calm souls", "Sleep enthusiasts", "Normal volume speakers"],
+    "photos_count": 1,
+    "verified": false,
+    "verified_by": null,
+    "looking_for": ["Calm souls", "Sleep enthusiasts", "Normal volume speakers"],
+    "corn_score": 40,
+    "has_liked_you": true,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A quiet walk. Maybe some tea. Discussing our feelings at a reasonable volume. Going to bed at a sensible hour. Revolutionary, I know."
+      },
+      {
+        "question": "I believe in...",
+        "answer": "Work-life balance. Getting 8 hours of sleep. Warm showers. Being kind to yourself. This makes me controversial in certain circles."
+      },
+      {
+        "question": "Looking for someone who...",
+        "answer": "Doesn't think self-care is weakness. Who has hobbies that don't involve screaming at mirrors. Who likes corn, gently."
+      }
+    ],
+    "images": ["whisper"]
+  },
+  "tags": ["life-coach", "calm", "self-care", "gentle"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

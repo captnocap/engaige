@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-distracted-confession",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "I Was Distracted (A Confession)",
+  "body": "I promised myself I would never write this post. But I owe Tim the truth.\n\nWhen Tim yelled \"TRUST FALL\" at the food court, I was checking my CobCoin portfolio on my phone. Specifically, I was watching COBS crash from $47.23 to $23.60 in real-time.\n\nI had invested $8,470\u2014my entire savings\u2014at the top of the market. I was panic-selling.\n\nThat's where my focus was. Not on Tim. Not on the 30 people around us. On a cryptocurrency that went to zero by 2023.\n\nIf I had just ignored my phone. If I had just been PRESENT for one moment.\n\nBut I wasn't. I was thinking about my money. About how stupid I was for buying into the hype. About how I would tell Big Kevin that I lost everything.\n\nAnd then Tim fell.\n\nThe phone addiction destroyed my finances AND my reputation. Pretty sure I also lost a Corndr date because I was checking crypto prices during dinner. She said \"you're not even looking at me\" and she was right. I was looking at COBS at $3.20.\n\nThis is my confession: I failed Tim because I was a distracted, greedy, broke 27-year-old man with a problem.",
+  "summary": "The real reason I wasn't fully focused on Tim that day. I was checking CobCoin prices.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 8,
+    "date": "May 3, 2022",
+    "likes": 0,
+    "comments_count": 1200,
+    "isControversial": true
+  },
+
+  "tags": ["cobcoin", "distraction", "confession", "crypto-failure", "regret"],
+  "entities": ["Small Kevin", "Trust Fall Tim", "Big Kevin", "CobCoin"],
+
+  "published_at": "2022-05-03T00:00:00Z"
+}

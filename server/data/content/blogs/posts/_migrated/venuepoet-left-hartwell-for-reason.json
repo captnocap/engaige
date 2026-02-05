@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-left-hartwell-for-reason",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "I Left Hartwell for a Reason",
+  "body": "People ask me why I left Hartwell.\nThey ask with this tone that suggests there's a story.\nA scandal. A mystery.\n\nThere isn't.\nOr there is.\nOr there was, and I'm not the person who got to keep it.\n\nThe Hartwell Building was beautiful in the way beautiful things are dangerous.\nIt had a 13th floor that didn't exist. (Or did exist. Depends on how you counted.)\nIt had a 7th floor that was a mirror of somewhere else. (I'll never confirm what.)\nIt had secrets in the walls like someone building a monument to secrets.\n\nI worked there for seven years.\nIn maintenance. In the background.\nWatching.\n\nI watched the building breathe.\nI watched the elevators go to floors that shouldn't exist.\nI watched people come in changed. Or not come out at all.\n\nOne night—\nAnd I can't say more than this.\nI learned something about the building that changed my understanding of everything.\nAbout space. About time. About whether buildings are alive.\n\nThe next morning, I resigned.\nPacked my things.\nTold no one why.\n\nThey asked me to stay.\n(Not the people. The building.)\nI could feel it asking.\n\nBut I couldn't. Because once you know a building is alive,\nYou can't unknow it.\nAnd once a building knows you know,\nIt won't let you leave.\n\nSo I took my knowledge and my trauma and my inexplicable sense of having survived something,\nAnd I found the Underground.\n\nA basement venue became my new cathedral.\nInstead of 13th floors and mirror reflections,\nI got bass frequencies and temporary joy.\n\nIt was the only way to escape.\n\nHartwell is still there.\nStill breathing.\nStill keeping its secrets.\nStill waiting for me to come back.\n\nI won't.\n\nSome places, you leave once and you're done.\nSome places, you leave and they follow you forever.\nHartwell is the second kind.\n\nIt's in everything I do.\nIn every bass frequency.\nIn every dark room.\nIn every moment I hold my breath and listen.\n\nThe building won't release me.\nAnd I won't give it the satisfaction of trying again.",
+  "summary": "Some places keep you. Some places consume you. Hartwell was the second kind.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 14,
+    "date": "January 5, 2026",
+    "likes": 0,
+    "hearts": 156,
+    "isPain": true
+  },
+
+  "tags": ["hartwell", "past", "mystery", "escape", "the-building"],
+  "entities": ["Mars", "Hartwell Building", "The Underground"],
+
+  "published_at": "2026-01-05T00:00:00Z"
+}

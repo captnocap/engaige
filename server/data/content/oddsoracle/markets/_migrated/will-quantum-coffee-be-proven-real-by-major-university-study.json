@@ -1,0 +1,51 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-quantum-coffee-be-proven-real-by-major-university-study",
+  "category": "Science",
+  "title": "Will quantum coffee be proven \"real\" by a major university study?",
+  "body": "Resolves YES if a peer-reviewed study from a top 50 university confirms that quantum coffee brewing produces measurably different results from traditional brewing methods.\n\nThe Martinez Study (2021) showed preliminary results but has not been fully replicated. Several attempts are ongoing.\n\nNote: \"Different\" must be statistically significant (p < 0.05). Taste tests alone do not count - must be measurable at molecular level.",
+  "summary": "Whether a top university will validate quantum coffee brewing with a peer-reviewed study.",
+  "thumbnail_emoji": "☕",
+  "metadata": {
+    "probability": 0.34,
+    "volume": 892100,
+    "volume_display": "$892.1K",
+    "traders": null,
+    "closes_at": "2025-06-30T00:00:00Z",
+    "hot": true,
+    "trending": false,
+    "yes_price": 34,
+    "no_price": 66,
+    "resolved": null
+  },
+  "tags": ["quantum-coffee", "science", "martinez-study", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "PhysicsPhD",
+      "content": "MIT is running a study right now. Preliminary results look promising. I'm all in on YES.",
+      "like_count": 67,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "SkepticalSally",
+      "content": "This is literally just expensive placebo. Universities are wasting grant money. Easy NO.",
+      "like_count": 34,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    },
+    {
+      "author_name": "QuantumBaristaGirl",
+      "content": "I work at a quantum cafe. The difference is REAL. You can literally taste it. Science will catch up.",
+      "like_count": 156,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    }
+  ]
+}

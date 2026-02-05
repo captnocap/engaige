@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "mildred",
+  "category": null,
+  "title": "Mildred, 67",
+  "body": "Gas station sushi critic. 847 stations reviewed. If you can't handle me at my Flying J, you don't deserve me at my Pilot. Looking for a co-pilot for this beautiful journey. Must appreciate the subtle art of truck stop cuisine.",
+  "summary": "Gas station sushi critic. 847 stations reviewed. Looking for a co-pilot.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": 67,
+    "location": "Traveling",
+    "distance": "84.7 miles away",
+    "interests": ["Adventurous eaters", "Night owls", "Strong stomachs"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "Station Sushi Review",
+    "looking_for": ["Adventurous eaters", "Night owls", "Strong stomachs"],
+    "corn_score": 78,
+    "has_liked_you": true,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "A romantic gas station sushi tasting along Interstate 84. I know all the best spots. Bring antacids (for you, not me - I'm immune)."
+      },
+      {
+        "question": "Green flags I look for...",
+        "answer": "Someone who doesn't judge sushi by its location. Also someone with their own rewards card at multiple gas station chains."
+      },
+      {
+        "question": "My simple pleasures...",
+        "answer": "The crinkle of a gas station sushi container at 2 AM. The fluorescent lights. The judgmental stares from other customers. Heaven."
+      }
+    ],
+    "images": ["sushi"]
+  },
+  "tags": ["gas-station-sushi", "food-critic", "night-owl", "adventurous"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

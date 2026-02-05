@@ -1,0 +1,61 @@
+{
+  "$schema": "content",
+  "site_id": "wikiknow",
+  "content_type": "article",
+  "slug": "the-great-meme-war-of-2019",
+
+  "category": "Internet History",
+
+  "title": "The Great Meme War of 2019",
+  "subtitle": null,
+  "body": "## Background\n\nTensions between the r/dankmemes and r/memes communities had been building since early 2019, with each subreddit accusing the other of \"normifying\" popular formats. The final catalyst came on August 3, 2019, when user u/MemeLord420x posted a Surprised Pikachu meme with what purists considered \"improper caption spacing.\"\n\nThe post received over 50,000 upvotes before being removed by moderators, sparking accusations of censorship. Within hours, both subreddits had mobilized their members for what would become known as \"Operation Dank Storm.\"[1]\n\n## Major Battles\n\nThe conflict saw several significant engagements:\n\n**The Battle of New (August 5-7)**: Both communities attempted to flood each other's \"New\" sections with low-quality content to bury original posts. Moderators on both sides worked in shifts to combat the influx, with some reporting they removed over 10,000 posts per hour.\n\n**The Twitter Incursion (August 12)**: r/dankmemes attempted to expand the conflict to Twitter, creating thousands of accounts to spread propaganda. The campaign backfired when Twitter's algorithm began promoting the content, inadvertently giving r/memes more visibility.\n\n**The Great Watermarking (August 18)**: In a controversial move, r/dankmemes began watermarking all original content with elaborate, removal-resistant marks. This strategy proved effective but was criticized as \"destroying the open-source nature of meme culture.\"[2]\n\n## Resolution\n\nThe conflict officially ended on August 31, 2019, with the signing of the \"Accord of Mutual Memetic Respect\" (AMMR). Key provisions included:\n\n- Recognition of both subreddits as \"legitimate memetic territories\"\n- Establishment of a joint moderation council\n- Creation of the Meme Historians Archive to preserve content from the conflict\n- A mutual non-aggression pact regarding format disputes\n\nThe accord was signed by representatives of both communities during a livestreamed ceremony that attracted over 500,000 concurrent viewers.[3]\n\n## Legacy\n\nThe Great Meme War of 2019 is studied in several university communications courses as an example of \"digital tribalism and community identity formation.\" Dr. Amanda Price of Stanford's Digital Culture Lab has described it as \"the first true war fought entirely through irony and inside jokes.\"\n\nAnnual commemorations are held by both communities, typically involving the ceremonial posting of \"throwback\" memes from the conflict period. The Meme Historians Archive, established as part of the peace agreement, contains over 2.4 million preserved images and remains an active research resource.",
+  "summary": "The Great Meme War of 2019 was a month-long conflict between rival online communities that took place primarily on social media platforms during August 2019. What began as a dispute over the proper use of the \"Surprised Pikachu\" format escalated into one of the largest coordinated memetic campaigns in internet history, involving an estimated 2.3 million participants across 47 countries.",
+
+  "thumbnail_emoji": "⚔️",
+
+  "metadata": {
+    "author": "Various Contributors",
+    "last_edited": "2026-01-26",
+    "reading_time_minutes": 5,
+    "references": 3,
+    "is_disputed": false,
+    "views": 128453,
+    "infobox": {
+      "image": "⚔️",
+      "image_caption": "Symbolic representation of the conflict",
+      "facts": {
+        "Date": "August 2019",
+        "Duration": "28 days",
+        "Participants": "~2.3 million",
+        "Countries involved": "47",
+        "Posts removed": "~45 million",
+        "Result": "AMMR Treaty",
+        "Casualties": "12 subreddits banned"
+      }
+    },
+    "sections": [
+      { "id": "background", "heading": "Background" },
+      { "id": "major_battles", "heading": "Major Battles" },
+      { "id": "resolution", "heading": "Resolution" },
+      { "id": "legacy", "heading": "Legacy" }
+    ],
+    "related_articles": [
+      "r/dankmemes",
+      "r/memes",
+      "Internet culture",
+      "Surprised Pikachu",
+      "Digital tribalism",
+      "Meme Historians Archive"
+    ],
+    "references_list": [
+      "Price, A. (2020). \"Digital Warfare: The Great Meme War and Its Implications\". Journal of Internet Studies, 8(2), 112-134.",
+      "Thompson, K. (2021). \"Watermarking and Ownership in Meme Culture\". Digital Humanities Quarterly, 15(3).",
+      "The Meme Historians Archive. (2019). \"Official Documentation of the AMMR Signing Ceremony\"."
+    ]
+  },
+
+  "tags": ["meme war", "internet culture", "reddit", "digital tribalism", "memes", "AMMR"],
+  "entities": ["Dr. Amanda Price", "Stanford Digital Culture Lab", "Meme Historians Archive"],
+
+  "published_at": "2024-06-15T00:00:00Z"
+}

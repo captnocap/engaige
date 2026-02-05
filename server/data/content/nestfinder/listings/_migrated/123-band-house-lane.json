@@ -1,0 +1,51 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "123-band-house-lane",
+  "category": "Rooms",
+  "title": "ROOM FOR RENT - MUST LOVE MUSIC (and noise)",
+  "body": "Okay, I'm just gonna be honest with you.\n\nWe're a 4-piece band (Neon Requiem - you might have heard of us, we play The Underground sometimes) and we need a 5th roommate to help with rent. The room is small but the vibes are immaculate.\n\nWhat you should know:\n- We practice 3-4 nights a week (usually 7-10 PM)\n- Our drummer lives here. Yes, you'll hear drums.\n- We're all late-night people. If you need quiet by 9 PM, this isn't for you.\n- The house is... well, it's got \"character\"\n\nWhat we offer:\n- Free tickets to all our shows\n- A ready-made friend group\n- Stories to tell at parties\n- Access to our recording equipment (if you're into that)\n\nWe're not looking for another band member (unless you play keys?) but someone who can vibe with the chaos. Previous roommate (our old bassist) left on good terms - he just got a day job and needed sleep. Weak.\n\nRent is cheap because no one else will live with us lol",
+  "summary": "Cheap room in band house (Neon Requiem) near university. Free concert tickets, built-in social life. Noisy.",
+  "thumbnail_emoji": "🎸",
+  "metadata": {
+    "price": 650,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 150,
+    "address": "123 Band House Lane",
+    "neighborhood": "Near University",
+    "city": "Near University",
+    "type": "room",
+    "pet_friendly": false,
+    "pet_policy": "Cats only (the drummer is allergic to dogs)",
+    "parking": "Street parking",
+    "laundry": "Broken (use laundromat)",
+    "available": "Immediate",
+    "posted": "2 days ago",
+    "amenities": [
+      "Free Concert Tickets",
+      "Recording Equipment",
+      "Built-in Social Life",
+      "Cheap Rent"
+    ],
+    "highlights": [
+      "Super cheap",
+      "Fun roommates",
+      "Live music (free)",
+      "Near university"
+    ],
+    "red_flags": [
+      "Band practice 3-4 nights/week",
+      "Late night lifestyle",
+      "House needs work",
+      "Not for light sleepers"
+    ],
+    "images": ["🎸", "🥁", "🎤", "😅"],
+    "agent": null
+  },
+  "tags": ["room", "cheap", "near-university", "neon-requiem", "music", "the-underground"],
+  "published_at": "2026-01-18T00:00:00Z"
+}

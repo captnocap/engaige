@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "dereks-wave-function-portland",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "Derek's Wave Function at Coffee Shop Basement",
+  "body": "Derek's Wave Function perform every Tuesday at a Coffee Shop Basement in Portland, OR at 11:00 PM. Admission is free with 847 tickets available.\n\nWhy you can't go: It's every Tuesday in Portland. You don't live in Portland.",
+  "summary": "Derek's Wave Function. Every Tuesday. Portland. Free. You don't live there.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "band": "Derek's Wave Function",
+    "venue": "Coffee Shop Basement",
+    "city": "Portland, OR",
+    "date": "Every Tuesday",
+    "time": "11:00 PM",
+    "price": "Free",
+    "sold_out": false,
+    "distance": "1,200 miles away",
+    "reason_you_cant_go": "It's every Tuesday in Portland. You don't live in Portland.",
+    "tickets_left": 847
+  },
+
+  "tags": ["derek", "wave-function", "portland", "free", "recurring"],
+  "entities": ["Derek", "Derek's Wave Function"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

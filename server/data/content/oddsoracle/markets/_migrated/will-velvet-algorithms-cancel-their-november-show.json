@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-velvet-algorithms-cancel-their-november-show",
+  "category": "Entertainment",
+  "title": "Will Velvet Algorithms cancel their November show?",
+  "body": "This market has resolved YES. The Velvet Algorithms cancelled their November 15th show due to an \"existential crisis.\"",
+  "summary": "Resolved market: The Velvet Algorithms cancelled their November 15th show due to existential crisis.",
+  "thumbnail_emoji": "🎹",
+  "metadata": {
+    "probability": 1.0,
+    "volume": 45600,
+    "volume_display": "$45.6K",
+    "traders": null,
+    "closes_at": "2024-11-15T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 100,
+    "no_price": 0,
+    "resolved": "yes"
+  },
+  "tags": ["velvet-algorithms", "entertainment", "concerts", "resolved"],
+  "published_at": "2024-10-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "WinnerWinner",
+      "content": "Called it! Those guys have been on the edge for months. Easy money.",
+      "like_count": 234,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    }
+  ]
+}

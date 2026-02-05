@@ -1,0 +1,75 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "velvet-algorithms-appreciation-thread",
+
+  "parent_slug": "mu-music",
+  "category": "Music",
+
+  "title": "Velvet Algorithms Appreciation Thread",
+  "body": "ITT: We discuss the greatest synth-rock duo of our generation\n\nJust saw them live at The Underground before they had their \"existential crisis\" and cancelled everything. AMA about the show.\n\npic unrelated but they didn't let us take photos",
+  "summary": null,
+
+  "thumbnail_emoji": "🎹✨",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94815102,
+    "replies_count": 6,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/mu/"
+  },
+
+  "tags": ["velvet-algorithms", "music", "the-underground", "neon-requiem", "mars"],
+  "entities": ["Velvet Algorithms", "The Underground", "Mars", "Neon Requiem"],
+
+  "published_at": "2024-11-23T09:15:33Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815102\n>greatest synth-rock duo\n>Neon Requiem exists\nop has literally never listened to music",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:18:45Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815134\nNeon Requiem is good but VA has better songwriting\n\ntheir new track \"Debugging My Heart\" is unironically kino",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:21:22Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815102\nWhat was the existential crisis about? I heard they had a breakdown during soundcheck",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:23:57Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815189\nI was there. Mars (venue owner) said they started arguing about whether music can truly express human emotion or if it's all just mathematical patterns\n\nThen one of them said \"what's even the point\" and they both just... left\n\nIt was surreal",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:27:14Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815212\n>Mars\nbased venue owner. The Underground is literally the only good venue left in this city",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:30:01Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94815212\nkek that's the most Velvet Algorithms thing I've ever heard\n\nthey'll be back in like 2 weeks acting like nothing happened",
+      "like_count": 0,
+      "published_at": "2024-11-23T09:33:46Z",
+      "replies": []
+    }
+  ]
+}

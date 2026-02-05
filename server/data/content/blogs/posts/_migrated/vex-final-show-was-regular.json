@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-final-show-was-regular",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "The Final Show Was Just a Regular Show",
+  "body": "The show at The Underground on January 13th was... it was just a show.\n\nThat's what I keep trying to tell people. Everyone's acting like it was some kind of finale, some big emotional ending. But it wasn't. It couldn't have been.\n\nWe didn't do anything different. Same setlist structure. Same tech setup (though Mars let us use the good rig, which was nice). Same energy.\n\nSure, there were more people than usual. And sure, a lot of people seemed... I don't know... really into it? Like they were savoring every moment? But that happens at good shows.\n\nAnd sure, at the end, when we did \"Violet Echo,\" Maya looked like she might cry during her solo. But artists are emotional. That doesn't mean anything.\n\nAnd sure, James didn't do his usual joke after \"Dead Signal.\" But people have off nights.\n\nAnd sure, Iris held her bass up at the end, and looked out at the crowd for like two full minutes without moving, and I thought I saw her mouth something that might have been \"thank you,\" but--\n\nIt was a regular show.\n\nYou don't know what a final show looks like until someone explicitly says \"this is the final show, we're breaking up.\" And nobody said that. Not really. Not in a way that counts.\n\nThe next show will be different. When we regroup, we'll have new material. We'll be tighter. Better.\n\nThat's what that show was: preparation for the comeback.",
+  "summary": "People keep saying \"it was a goodbye,\" but I wasn't saying goodbye to anyone. It was just a show. The 247th show we've done.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 12,
+    "date": "January 31, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 7
+  },
+
+  "tags": ["denial", "neon-requiem", "the-underground", "reframing", "lying-to-myself"],
+  "entities": ["Vex", "Maya", "James", "Iris", "Mars", "Neon Requiem"],
+
+  "published_at": "2024-01-31T00:00:00Z"
+}

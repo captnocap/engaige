@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-mildred-brought-sushi-again",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "Mildred Brought Sushi Again",
+  "body": "Mildred came through the side door at 8 PM.\nShe always uses the side door.\nLike she's a ghost.\nLike she's not quite real.\n\n\"I brought sushi,\" she said.\n\nShe always brings sushi.\nCalifornia rolls.\nSpicy tuna.\nThe things she thinks I like.\n(I've never told her I do. Or don't. I just eat them and don't say anything.)\n\nMildred watches the bands.\nWatches the people.\nWatches me watching the people.\nAnd then she brings sushi.\n\nI don't know what she wants.\nI don't know what she thinks will happen.\nI don't know if she understands that a venue owner is a type of ghost too,\nHaunting the space he built,\nUnable to leave,\nUnable to really stay.\n\nBut she keeps coming.\nAnd she keeps bringing sushi.\nAnd I keep not knowing what to do about it.\n\nToday she smiled at me.\nNot said anything.\nJust smiled.\nLike she knew something I didn't.\n\nI turned away.\nI always do.\n\nShe left the sushi on the bar.\nAnd disappeared into the back like she was never there.\n\nMaybe she wasn't.\nMaybe Mildred is the building breathing.\nMaybe she's another ghost I invited to haunt this place.\n\nThe sushi is still there.\nGetting cold.\nI eat it anyway.\nBecause that's what you do when someone brings you sushi.\nEven if you don't know who they are.\nEven if you're afraid of what it means.",
+  "summary": "She keeps showing up. She keeps feeding me. I don't know how to tell her.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 5,
+    "date": "December 8, 2025",
+    "likes": 0,
+    "hearts": 34
+  },
+
+  "tags": ["mildred", "confusion", "kindness", "distance", "mystery"],
+  "entities": ["Mars", "Mildred", "The Underground"],
+
+  "published_at": "2025-12-08T00:00:00Z"
+}

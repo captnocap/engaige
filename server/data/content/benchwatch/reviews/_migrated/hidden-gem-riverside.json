@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "hidden-gem-riverside",
+
+  "category": "Bench Review",
+
+  "title": "The Riverside Hidden Gem: A Perfect 94 and Why the City is Hiding It",
+  "body": "At mile marker 2.3 on the Riverside Trail, hidden behind an overgrown lilac bush, sits the finest public seating apparatus I have encountered in my career.\n\nThe slat width is 4.7 inches\u2014nearly half an inch wider than standard. The back angle is 98.2 degrees, placing lumbar support in what I call the \"golden zone.\" The wood grain indicates old-growth cedar, pre-1990 harvest. They do not make benches like this anymore.\n\nI contacted the Parks Department for installation records. They claim the bench \"does not exist in their inventory.\" I sent photographs. They said the photographs \"must be of private property.\" I sent GPS coordinates. They stopped responding.\n\nI believe this bench was installed during the 1987 municipal renovation and somehow escaped the Great Bench Purge of 2003, when the city replaced all wooden benches with the composite monstrosities we suffer today.\n\nI have been visiting this bench every Tuesday and Thursday at 7 AM for six months. I bring a blanket in winter. The homeless community has started calling me \"Bench Greg.\" This is the closest I have felt to acceptance since Janet left.\n\nI will NOT disclose the exact location publicly. The Phantom Sitter is always watching.",
+  "summary": "In 23 years of bench assessment, I have found ONE bench that approaches perfection. Naturally, it's unmarked and the city denies its existence.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "Riverside Trail, Mile Marker 2.3",
+    "mci_score": 94,
+    "measurements": {
+      "slat_width": "4.7 inches (exceptional)",
+      "back_angle": "98.2 degrees (golden zone)",
+      "seat_height": "17.8 inches (ideal)",
+      "armrest_present": true,
+      "material_grade": "Old-growth cedar (pre-1990)"
+    },
+    "phantom_sitter_alert": false,
+    "fraud_alert": false
+  },
+
+  "tags": ["hidden-gem", "conspiracy", "old-growth-cedar", "phantom-sitter-watching"],
+  "entities": ["Greg Mantooth", "Janet", "Phantom Sitter", "Parks Department"],
+
+  "published_at": "2025-12-28T00:00:00Z",
+
+  "comments": []
+}

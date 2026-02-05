@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "forchan",
+  "content_type": "thread",
+  "slug": "martinez-study-physicist-breakdown",
+
+  "parent_slug": "sci-science-math",
+  "category": "Science & Math",
+
+  "title": "The Martinez Study - Actual Physicist Breakdown",
+  "body": "PhD in physics here. Since you retards keep citing the Martinez study wrong, let me break it down:\n\n>study was about subatomic particle behavior under specific electromagnetic conditions\n>nowhere does it mention coffee\n>the \"quantum extraction\" coffee people cite is from a BLOG POST that misunderstood the abstract\n>Martinez herself has clarified multiple times she's never even tried quantum coffee\n\nThe absolute state of scientific literacy in this country",
+  "summary": null,
+
+  "thumbnail_emoji": "🔬📖",
+
+  "metadata": {
+    "author": "Anonymous",
+    "post_number": 94806123,
+    "replies_count": 3,
+    "images_count": 1,
+    "sticky": false,
+    "locked": false,
+    "board": "/sci/"
+  },
+
+  "tags": ["martinez-study", "quantum-coffee", "science", "debunk"],
+  "entities": ["Martinez"],
+
+  "published_at": "2024-11-22T10:15:22Z",
+
+  "comments": [
+    {
+      "author_name": "Anonymous",
+      "content": ">>94806123\n>PhD\n>on /sci/\ndoubt",
+      "like_count": 0,
+      "published_at": "2024-11-22T10:18:33Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94806123\nok but have you actually TRIED quantum coffee? I've read the study (the abstract anyway) and it makes sense to me",
+      "like_count": 0,
+      "published_at": "2024-11-22T10:21:47Z",
+      "replies": []
+    },
+    {
+      "author_name": "Anonymous",
+      "content": ">>94806189\n>read the abstract\n>thinks he understands quantum mechanics\nevery single time",
+      "like_count": 0,
+      "published_at": "2024-11-22T10:24:58Z",
+      "replies": []
+    }
+  ]
+}

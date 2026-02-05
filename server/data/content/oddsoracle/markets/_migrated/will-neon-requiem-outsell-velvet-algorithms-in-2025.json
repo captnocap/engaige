@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-neon-requiem-outsell-velvet-algorithms-in-2025",
+  "category": "Entertainment",
+  "title": "Will Neon Requiem outsell Velvet Algorithms in 2025?",
+  "body": "Resolves YES if Neon Requiem has more total streaming plays than The Velvet Algorithms in calendar year 2025 across major platforms (Spotify, Apple Music, YouTube Music).\n\nCurrently VA leads but NR has been gaining momentum since the existential crisis incident.",
+  "summary": "Whether Neon Requiem will surpass The Velvet Algorithms in total streaming plays during 2025.",
+  "thumbnail_emoji": "🎸",
+  "metadata": {
+    "probability": 0.41,
+    "volume": 34200,
+    "volume_display": "$34.2K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 41,
+    "no_price": 59,
+    "resolved": null
+  },
+  "tags": ["neon-requiem", "velvet-algorithms", "entertainment", "music", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "NeonRequiemFan",
+      "content": "NR has been grinding while VA was having breakdowns. Their time is NOW.",
+      "like_count": 67,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "AlgorithmFan1",
+      "content": "VA has way more dedicated fans. One good release and they'll crush the competition.",
+      "like_count": 45,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}

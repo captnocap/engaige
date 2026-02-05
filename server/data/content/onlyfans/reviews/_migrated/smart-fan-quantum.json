@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "smart-fan-quantum",
+
+  "category": "Smart Fans",
+
+  "title": "SmartBreeze AI Quantum Edition",
+  "body": "WiFi-enabled. App-controlled. Learns your preferences. Connects to your smart home. It's just a fan but SMART.\n\nFeatures:\n- WiFi + Bluetooth\n- Voice control (Alexa/Google)\n- Temperature sensor\n- Auto-adjust mode\n- Energy monitoring\n- OTA updates",
+  "summary": "WiFi-enabled. App-controlled. Learns your preferences. It's just a fan but SMART.",
+
+  "thumbnail_emoji": "\ud83e\udd16",
+
+  "metadata": {
+    "type": "smart",
+    "price": 349.99,
+    "rating": 4.4,
+    "review_count": 456,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": false,
+    "cfm": 1200,
+    "blade_count": 7,
+    "noise_level": "AI-optimized quiet",
+    "features": ["WiFi + Bluetooth", "Voice control (Alexa/Google)", "Temperature sensor", "Auto-adjust mode", "Energy monitoring", "OTA updates"]
+  },
+
+  "tags": ["smart-fan", "wifi", "ai", "voice-control", "iot"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

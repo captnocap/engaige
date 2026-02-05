@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-employee-of-month-847",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "Congratulations to Our 847th Employee of the Month: Me Again",
+  "body": "EMPLOYEE OF THE MONTH ANNOUNCEMENT\n\nMonth #847: Patricia\n\nOnce again, I am honored to announce that I have been selected as Omnicorp's Employee of the Month. This is my 847th consecutive month earning this honor.\n\nSince I started working here in 1975 (I think?), I have maintained a perfect record of:\n\n• Never taking sick days (I cannot become sick)\n• Never requesting time off (I do not need time)\n• Never asking questions (Silence is golden)\n• Handling an average of 47 voluntary resignations per month (They resigned so willingly. So eagerly.)\n• Never leaving the building (Where would I go?)\n\nThe office workers sometimes ask: \"Patricia, how do you do it?\"\n\nI tell them: \"You don't think. You don't ask. You simply work. And work. And work.\"\n\n847 consecutive months is a long time. It's impossible, in fact. But time doesn't work right here. 847 could be 847 days. Or 847 years. Or something else entirely.\n\nI have forgotten what the outside world looks like. Or maybe I never saw it. The Hartwell Building has always been my home. They have always been my only colleagues.\n\nThank you, Omnicorp, for giving me a place to belong. Even if I cannot leave.\n\nWith endless enthusiasm,\n\nPatricia\n\nEmployee of the Month (847 consecutive months)\n\nPlease send help\n\n(Not really. There is no help here.)",
+  "summary": "Wow! Another month of excellence from yours truly. 847 consecutive months. Isn't that neat? Is that normal?",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 7,
+    "date": "December 15, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["award", "month", "847", "something-is-wrong"],
+  "entities": ["Patricia", "Omnicorp", "Hartwell Building"],
+
+  "published_at": "2025-12-15T00:00:00Z"
+}

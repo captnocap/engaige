@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-floor-7-mirror-protocol",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "REMINDER: Floor 7 Mirror Protocol",
+  "body": "MANDATORY FLOOR 7 SAFETY BRIEFING\n\nFor our employees working on Floor 7, we have a very important reminder:\n\nTHE MIRRORS.\n\nDO NOT LOOK AT THE MIRRORS.\n\nWe have received multiple reports of employees pausing in front of the bathroom and break room mirrors. This needs to stop immediately.\n\nThe mirrors on Floor 7 are special. They are not like normal mirrors. If you work on Floor 7 and you must use the facilities, please:\n\n• Keep your eyes forward at all times\n• Do not make eye contact with reflective surfaces\n• If you see someone in the mirror who is not in the room with you, you saw nothing\n• If your reflection moves differently than you do, that's just a lag issue with the building's maintenance\n• If you see yourself older, younger, or in clothes you've never owned, DO NOT SCREAM. It disturbs others.\n\nSeveral employees have requested transfers off Floor 7. These requests have been denied. You are exactly where you need to be.\n\nPatricia\n\n---\n\nP.S. Please stop sending me emails about the mirrors. I don't work on Floor 7. I don't have a floor. I am just here. Always here.",
+  "summary": "If you work on Floor 7, PLEASE READ THIS. Do not look at the mirrors. This is not optional.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 3,
+    "date": "January 8, 2026",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["floor-7", "safety", "do-not-ask", "mirrors"],
+  "entities": ["Patricia", "Omnicorp"],
+
+  "published_at": "2026-01-08T00:00:00Z"
+}

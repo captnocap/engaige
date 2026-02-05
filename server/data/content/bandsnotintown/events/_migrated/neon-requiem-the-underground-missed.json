@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "neon-requiem-the-underground-missed",
+
+  "category": "Just Missed",
+
+  "title": "Neon Requiem at The Underground (Missed)",
+  "body": "Neon Requiem played at The Underground in Your City last month. Tickets were $30 and the show was sold out.\n\nYou missed it: You didn't check your email.",
+  "summary": "Neon Requiem played The Underground last month. You didn't check your email.",
+
+  "thumbnail_emoji": "\ud83d\udc80",
+
+  "metadata": {
+    "band": "Neon Requiem",
+    "venue": "The Underground",
+    "city": "Your City",
+    "date": "Last month",
+    "time": "9:00 PM",
+    "price": "$30",
+    "sold_out": true,
+    "distance": "0 miles",
+    "reason_you_cant_go": "You didn't check your email"
+  },
+
+  "tags": ["neon-requiem", "the-underground", "missed", "email"],
+  "entities": ["Neon Requiem", "The Underground"],
+
+  "published_at": "2025-12-20T00:00:00Z",
+
+  "comments": []
+}

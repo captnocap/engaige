@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "jennifer-therapist-says-stop-googling-him",
+
+  "channel_slug": "jennifer",
+  "category": "Jennifer Heals",
+
+  "title": "My Therapist Says I Need to Stop Googling Him",
+  "body": "During therapy last week, Dr. Kim asked, \"Have you thought about Derek this week?\"\n\nI said no.\n\nShe said, \"Are you sure? Because your search history suggests otherwise.\"\n\nI don't know how she sees my search history. Confidentiality, Jennifer, confidentiality.\n\nOkay, yes, I googled Derek. Twice. Three times. Maybe more. It's not because I want him back. It's because... I need to know he's okay? That's not obsessive. That's called having compassion.\n\nI found his blog post about our marriage. He said, and I quote, \"Jennifer couldn't understand the nexus between quantum mechanics and coffee. She was threatened by my passion.\"\n\nTHREATENED? I said \"I don't understand quantum mechanics and also I'm concerned about our finances.\" Those are not the same thing!\n\nDr. Kim says, \"The goal is to stop checking on him. He's not your responsibility.\"\n\nI know that intellectually. But what if he's spiraling? What if his next blog post is worse? What if he publishes something that reveals details about our private life?\n\nSo I check. Once a week. Sometimes twice. It's not obsession. It's vigilance.\n\nShe says I need to set boundaries. To accept that I can't control his choices. To focus on my own healing.\n\nFine. I'll stop googling him.\n\n(I won't stop. But I'll feel guilty about it while I'm doing it, which is basically the same as stopping.)\n\nProgress, Jennifer. That's progress.",
+  "summary": "She doesn't understand that maintaining awareness of his online presence is self-protection, not obsession.",
+
+  "thumbnail_emoji": "💗",
+
+  "metadata": {
+    "author": "Jennifer Observerson",
+    "blog_name": "Jennifer Heals",
+    "reading_time_minutes": 8,
+    "date": "December 12, 2025",
+    "likes": 0,
+    "comments_count": 745
+  },
+
+  "tags": ["therapy", "personal-growth", "totally-not-obsessing", "its-called-research", "dr-kim-you-dont-understand"],
+  "entities": ["Jennifer", "Derek", "Dr. Kim"],
+
+  "published_at": "2025-12-12T00:00:00Z"
+}

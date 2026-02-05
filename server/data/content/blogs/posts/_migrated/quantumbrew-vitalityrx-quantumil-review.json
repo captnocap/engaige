@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-vitalityrx-quantumil-review",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "I Tried QUANTUMIL (The Quantum Coffee Intolerance Drug) So You Don't Have To",
+  "body": "When I saw the VitalityRx ad for QUANTUMIL, I knew I had to investigate. Could a pill really help the quantum-coffee-intolerant?\n\nDay 1: Took the recommended dose. Nothing unusual. Coffee tasted normal (which is to say, existing in multiple flavor states simultaneously).\n\nDay 2: Mild temporal displacement. Felt like Tuesday was both happening and had already happened. Coffee tasted like potential.\n\nDay 3: I can taste colors. My coffee was purple and slightly resentful. I called Jennifer to tell her. She hung up.\n\nDay 4: Side effect kicked in\u2014\"Spontaneous quantum entanglement with household pets.\" Mr. Whiskers and I now know each other's thoughts. He judges me.\n\nDay 5: Stopped taking it. I prefer my coffee mysterious, not medically regulated.\n\nFinal verdict: 3/5 stars. Effective but I miss not knowing my cat's opinions of me.",
+  "summary": "VitalityRx claims their new drug helps with \"Quantum Coffee Intolerance Syndrome.\" I volunteered as tribute. Day 3: I can taste colors.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 12,
+    "date": "November 30, 2025",
+    "likes": 0,
+    "comments_count": 567
+  },
+
+  "tags": ["vitalityrx", "quantumil", "drug-review", "mr-whiskers-judges-me", "synesthesia"],
+  "entities": ["Derek", "Jennifer", "Mr. Whiskers", "VitalityRx"],
+
+  "published_at": "2025-11-30T00:00:00Z"
+}

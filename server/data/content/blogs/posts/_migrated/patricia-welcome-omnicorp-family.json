@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-welcome-omnicorp-family",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "Welcome to the Omnicorp Family!",
+  "body": "Dear New Omnicorp Employee,\n\nWelcome to the Omnicorp Holdings family! We are thrilled you have chosen to spend your time here with us.\n\nYou will find that Omnicorp is like no other company in the world. We offer:\n\n• Competitive salaries (Market rate - 1995 adjustments)\n• Health insurance (Covers non-temporal issues)\n• Dental plan (Teeth are important)\n• Paid time off (9 minutes per quarter)\n• Free parking (Spots are assigned by Floor. Try not to think about what Floor 7 parking means)\n\nDuring your first week, you will attend orientation in Conference Room B (NOT Conference Room 7). You will meet with HR (me) and receive your orientation packet, which includes:\n\n• 100-page employee handbook (Page 47 is blank. This is normal.)\n• Your access badge (If it doesn't work on certain elevators, please do not investigate)\n• Your desk assignment (Not Floor 13. Floor 13 doesn't exist)\n• A firm handshake from someone who may or may not have been here before\n\nWe are so glad you're here. I can tell you're going to fit in perfectly. We all do.\n\nSincerely,\n\nPatricia\n\nHR Manager, Omnicorp Holdings\n\nEmployee of the Month (847 consecutive months)",
+  "summary": "New hire? Congratulations on joining our wonderful company. Everything here is normal and great. Please sign the waivers.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 5,
+    "date": "January 10, 2026",
+    "likes": 0,
+    "comments_count": 0
+  },
+
+  "tags": ["onboarding", "welcome", "everything-is-fine"],
+  "entities": ["Patricia", "Omnicorp"],
+
+  "published_at": "2026-01-10T00:00:00Z"
+}

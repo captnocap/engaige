@@ -1,0 +1,79 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "how-do-i-tell-my-wife-i-spent-3000-on-a-quantum-coffee-maker",
+  "category": "Relationship Advice",
+  "title": "How do I tell my wife I spent $3000 on a quantum coffee maker?",
+  "body": "I need some relationship advice here. I've been researching quantum coffee for 8 months now and finally took the plunge on a QuBrew Pro 3000.\n\nThe thing is, Jennifer (my wife) doesn't believe in quantum coffee. She thinks it's \"pseudoscience\" and that regular coffee is \"fine.\" She doesn't understand that the Martinez Study clearly shows improved molecular cohesion when beans are observed during the brewing process.\n\nI used our joint savings. It was supposed to be for a vacation to see her parents but I figured this was more important for our long-term happiness. Better coffee = better mornings = better marriage, right?\n\nShe comes home tomorrow and the machine takes up most of the kitchen counter. I've already done 12 test brews and the cat seems happier, which is scientific evidence in my opinion.\n\nHow do I explain to her that this was a sound investment? I've prepared a PowerPoint but I'm not sure if that will help or hurt my case.\n\nUPDATE: She saw my credit card statement before I could explain. She's staying at her sister's place. Mr. Whiskers and I are drinking excellent coffee though.\n\nUPDATE 2: Jennifer wants a divorce. Still worth it. This coffee is transcendent.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "quantum_derek_847",
+    "author_rep": 847,
+    "upvotes": 2847,
+    "answer_count": 156,
+    "views": 84723,
+    "accepted_answer_id": "a3_derek",
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["relationship-advice", "quantum-coffee", "marriage", "budgeting"],
+  "published_at": "2025-07-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "jennifer_was_right",
+      "content": "I cannot stress this enough: **You cannot explain this because it was not a sound investment.**\n\nYou spent $3,000 of joint savings on a coffee maker without discussing it with your partner. The fact that it's a quantum coffee maker is almost irrelevant - the issue is you made a major financial decision unilaterally.\n\nThat said, I own a QuBrew Pro 3000 and it's fantastic. The molecular cohesion really is noticeable. But I discussed it with my partner first like a functional adult.",
+      "like_count": 4521,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 12453,
+      "replies": [
+        {
+          "author_name": "quantum_derek_847",
+          "content": "She doesn't understand science though",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "jennifer_was_right",
+          "content": "Neither do you, my guy. Neither do you.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    },
+    {
+      "author_name": "MartinezStudyCited",
+      "content": "The Martinez Study you're citing was preliminary and has not been replicated. I say this as someone who worked in Dr. Martinez's lab.\n\nAlso, your cat seeming happier is not scientific evidence. Your cat cannot observe the quantum state.\n\nYour marriage problems are not a coffee problem. They are a you problem.",
+      "like_count": 3892,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 8934,
+      "replies": []
+    },
+    {
+      "author_name": "quantum_defender_99",
+      "content": "Ignore the haters. Quantum coffee is real, Jennifer was holding you back, and Mr. Whiskers knows the truth.\n\nI've been divorced twice over quantum coffee purchases and I regret nothing.",
+      "like_count": -234,
+      "is_creator": false,
+      "is_accepted": true,
+      "author_rep": 567,
+      "replies": [
+        {
+          "author_name": "concerned_moderator",
+          "content": "This should not be the accepted answer",
+          "like_count": 0,
+          "is_creator": false
+        },
+        {
+          "author_name": "quantum_derek_847",
+          "content": "Finally someone who gets it",
+          "like_count": 0,
+          "is_creator": true
+        }
+      ]
+    }
+  ]
+}

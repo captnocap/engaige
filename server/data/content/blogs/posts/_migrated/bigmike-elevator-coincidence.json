@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-elevator-coincidence",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "The Elevator Thing Was a Coincidence",
+  "body": "The Hartwell Building is a historical structure in downtown Tulsa. It's open to the public. I occasionally visit it because I appreciate historic architecture.\n\nOn the date in question, I was visiting the building when an elevator became stuck between floors. This happens sometimes with old elevators. This is a known fact about old buildings.\n\nThe fact that I was in the building when this occurred is not evidence of anything. It is evidence that I was in the building. That is all.\n\nI did not cause the elevator to malfunction. I was simply present when it malfunctioned. Being present when something happens does not make one responsible for it happening.\n\nSeveral people have suggested that my presence in that building is \"suspicious.\" I don't understand this logic. The building is open. I was visiting. This is normal.\n\nThat I happened to be there at the exact time of the incident is what people call \"coincidence.\" Coincidences happen every day. The fact that this particular coincidence involves me does not make it less of a coincidence.\n\nI did not ask to be in that elevator when it broke. I did not request that the doors close at that moment. I was simply an innocent bystander in a normal building experiencing a normal mechanical failure.\n\nTo suggest otherwise is to suggest that I somehow have the ability to predict and manipulate elevator systems, which is absurd. I am just a regular guy from Tulsa.",
+  "summary": "Regarding the Hartwell Building elevator incident: I was there. It was purely coincidental. Let me explain why this is completely normal.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 6,
+    "date": "January 22, 2026",
+    "likes": 0
+  },
+
+  "tags": ["hartwell-building", "elevator", "coincidence", "architecture", "normal"],
+  "entities": ["Big Mike", "Hartwell Building"],
+
+  "published_at": "2026-01-22T00:00:00Z"
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "stationsushi",
+  "content_type": "review",
+  "slug": "mobil-first-hospitalization",
+
+  "category": "Gas Station Sushi Review",
+
+  "title": "Mobil #2291: The Incident That Taught Me Resilience (Medical Records Available Upon Request)",
+  "body": "I want to be clear: the hospitalization was unrelated to the sushi. Probably. The timing was coincidental. My gastroenterologist, Dr. Patel, has a different opinion, but Dr. Patel also thinks I should \"reconsider my hobby.\" We agree to disagree.\n\nThe eel avocado roll at Mobil #2291 was ambitious. Eel is not commonly found at gas stations, and for good reason. It requires a certain... infrastructure. This Mobil did not have that infrastructure. But they tried.\n\nThe eel had a texture I will describe as \"contemplative.\" It required significant jaw effort. I viewed this as exercise.\n\nThe avocado was present and accounted for, if perhaps past its social prime. Green, with notes of brown. A late-stage avocado. Still dignified.\n\nApproximately four hours after consumption, I experienced what I will diplomatically call \"gastric discord.\" This continued for thirty-seven hours. I maintained detailed notes, as is my practice.\n\nThe subsequent hospital visit was brief - overnight observation, IV fluids, and a lecture from a young ER doctor who clearly did not appreciate the nuance of my work.\n\nThree pumps. I deduct points for the aftermath but award them back for the bold menu selection. Risk-taking should be rewarded in the petroleum sushi industry.\n\nI have since returned to this location twice. Both times, the sushi was acceptable. The first time was clearly an anomaly. Or my constitution has strengthened. Either way: progress.",
+  "summary": "What happened at this Mobil is between me, my gastroenterologist, and God. The sushi itself was adequate. The aftermath was a learning experience.",
+
+  "thumbnail_emoji": "\ud83c\udf63",
+
+  "metadata": {
+    "reviewer": "Mildred Gasketsworth",
+    "station_name": "Mobil",
+    "station_number": "#2291",
+    "location": "Highway 30, Grand Island, Nebraska",
+    "pump_number": 6,
+    "rating": 3,
+    "sushi_type": "Eel Avocado Roll (6pc)",
+    "price": "$8.99",
+    "would_return_for": "I have returned. Twice. My doctor describes this as \"concerning.\" I describe it as \"commitment.\"",
+    "gerald_note": "Gerald would have said \"I told you so\" approximately four hundred times during my hospitalization. In his absence, my daughter Amanda filled this role admirably. The Gasketsworth tradition continues."
+  },
+
+  "tags": ["3-pumps", "mobil", "eel-roll", "grand-island", "hospitalization", "resilience"],
+  "entities": ["Mildred Gasketsworth", "Gerald Gasketsworth", "Dr. Patel", "Amanda Gasketsworth"],
+
+  "published_at": "2024-09-15T00:00:00Z",
+
+  "comments": []
+}

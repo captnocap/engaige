@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-just-wanted-to-study-thermodynamics",
+
+  "channel_slug": "drmartinez",
+  "category": "Regret",
+
+  "title": "I Just Wanted to Study Thermodynamics",
+  "body": "I published my first paper in 2009. It was about crystalline structures in ice. Nobody read it. Nobody quoted it. Nobody contacted me about it.\n\nIt was beautiful.\n\nFor 12 years I published papers. I attended conferences. I collaborated with colleagues. My research was solid, incremental, and blessedly ignored by the general public.\n\nThen, in 2021, I published a paper using slightly more poetic language to explain emergent complexity in phase transitions. I used the word \"consciousness\" exactly once, in a metaphorical context.\n\nOne person read that paper.\n\nHis name was Derek Observerson.\n\nHe read it wrong.\n\nEverything after that was inevitable. Derek misread it \u2192 Derek built a coffee maker in my name \u2192 Derek became obsessed \u2192 Derek emailed me 847 times \u2192 A company noticed Derek's obsession \u2192 They created the \"Elena\" brand \u2192 Consumer fraud allegations \u2192 Lawsuits \u2192 My face on court documents.\n\nI am now the person famous for something I specifically tried NOT to say.\n\nThe saddest part? My actual research is good. My data is solid. My findings about thermal phase transitions are genuinely interesting. But nobody cares about that. They care about whether a coffee maker can think.\n\nI gave a seminar last month. The title was \"Advanced Topics in Quantum Phase Dynamics.\" The first question from the audience: \"But can your research make coffee more conscious?\"\n\nI said: \"No.\"\n\nThey looked disappointed.\n\nThat is when I realized: My career is over. Not because I did anything wrong, but because people would rather believe in quantum coffee than in boring, actual physics.\n\nI am considering a job at a small college in a remote area where no one has internet access.\n\nI will teach thermodynamics to students who have never heard of Derek Observerson.\n\nI will be happy.",
+  "summary": "A meditation on how one research paper can destroy a person's entire career trajectory.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 11,
+    "date": "August 1, 2025",
+    "likes": 0,
+    "category": "Regret"
+  },
+
+  "tags": ["career", "regret", "academia", "derek", "thermodynamics"],
+  "entities": ["Dr. Elena Martinez", "Derek"],
+
+  "published_at": "2025-08-01T00:00:00Z"
+}

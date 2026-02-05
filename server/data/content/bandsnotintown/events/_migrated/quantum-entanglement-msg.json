@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "quantum-entanglement-msg",
+
+  "category": "Upcoming (Not Here)",
+
+  "title": "Quantum Entanglement at Madison Square Garden",
+  "body": "Quantum Entanglement are performing at Madison Square Garden in New York, NY on March 15, 2026. Tickets are $450 with only 3 tickets remaining.\n\nWhy you can't go: Tickets are $450 and it's across the country.",
+  "summary": "Quantum Entanglement at MSG. $450 tickets. 2,847 miles away.",
+
+  "thumbnail_emoji": "\u269b\ufe0f",
+
+  "metadata": {
+    "band": "Quantum Entanglement",
+    "venue": "Madison Square Garden",
+    "city": "New York, NY",
+    "date": "March 15, 2026",
+    "time": "7:30 PM",
+    "price": "$450",
+    "sold_out": false,
+    "distance": "2,847 miles away",
+    "reason_you_cant_go": "Tickets are $450 and it's across the country",
+    "tickets_left": 3
+  },
+
+  "tags": ["quantum-entanglement", "msg", "expensive", "fomo"],
+  "entities": ["Quantum Entanglement", "Madison Square Garden"],
+
+  "published_at": "2026-01-20T00:00:00Z",
+
+  "comments": []
+}

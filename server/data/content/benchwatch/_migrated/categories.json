@@ -1,0 +1,7 @@
+{
+  "$schema": "category",
+  "site_id": "benchwatch",
+  "categories": [
+    { "slug": "bench-review", "name": "Bench Review", "icon_emoji": "\ud83e\ude91", "sort_order": 0 }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "patricia-exit-interviews",
+
+  "channel_slug": "patricia",
+  "category": "Patricia's Workplace Blog",
+
+  "title": "Exit Interviews: Where Do They Go?",
+  "body": "INTERNAL HR MEMO\n\nFrom: Patricia\n\nTo: Omnicorp Management\n\nSubject: Discrepancies in Exit Interview Records\n\nI am writing with some concern. Our employee database shows that we have processed 847 voluntary resignations in the past... however long I've been here... but I have a problem.\n\nI don't remember any of them.\n\nNot one.\n\nI have their exit interview forms in my filing cabinet. They all resigned. They all had signatures. They all said they were leaving.\n\nBut I don't remember these people.\n\nI go back through employee photos from last year and I see faces I don't recognize. When I ask other employees if they remember these people, they look confused. Then they look scared. Then they stop responding to emails.\n\nSome of them have been marked as \"rehired\" without any records of their hiring process. They sit at desks I don't remember being there.\n\nAre we hiring the same people repeatedly? Are we cloning employees? Are they even real?\n\nI need to know what is happening. But I am afraid to ask. The building watches those who ask too many questions.\n\nIt watches. I think it watches me most of all.\n\nPatricia\n\nEmployee of the Month (847 consecutive months)\n\nStill here. Always here.",
+  "summary": "We conduct exit interviews with departing employees. But I have a strange problem. I don't remember them leaving.",
+
+  "thumbnail_emoji": "👔",
+
+  "metadata": {
+    "author": "Patricia",
+    "blog_name": "Patricia's Workplace Blog",
+    "reading_time_minutes": 5,
+    "date": "December 8, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "isSinister": true
+  },
+
+  "tags": ["hr", "employees", "missing", "sanity-check"],
+  "entities": ["Patricia", "Omnicorp"],
+
+  "published_at": "2025-12-08T00:00:00Z"
+}

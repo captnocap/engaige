@@ -1,0 +1,70 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "is-it-normal-for-my-roommate-to-practice-trust-falls-alone",
+  "category": "Lifestyle",
+  "title": "Is it normal for my roommate to practice trust falls alone?",
+  "body": "My roommate (let's call him \"Tim\") has been doing this thing for the past 3 months where he stands in the living room, announces \"TRUST FALL,\" and then just... falls backwards.\n\nHe does this whether anyone is there to catch him or not. I've seen him do it at least 2,847 times now. Sometimes I catch him, sometimes I don't. He seems equally happy either way.\n\nHe's started doing it at parties too. He just walks up to strangers, yells \"TRUST FALL,\" and falls. Some people catch him, some don't. He has a spreadsheet tracking his \"catch rate\" (currently 78.5%).\n\nLast week he fell at a concert (at The Underground) and the venue owner caught him one-handed while holding a beer. Tim said it was \"the best fall of his life.\"\n\nIs this normal? Should I be concerned? He seems really happy but also has a lot of bruises.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "concerned_roommate_24",
+    "author_rep": 567,
+    "upvotes": 5621,
+    "answer_count": 342,
+    "views": 847291,
+    "accepted_answer_id": "a1_trustfall",
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["trust-falls", "roommates", "lifestyle", "the-underground"],
+  "published_at": "2025-05-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "TrustFallTim",
+      "content": "Hey, it's me! Your roommate! I found your post!\n\nFirst off, I'm not \"practicing\" - I'm LIVING. Every fall is an authentic expression of human vulnerability and connection.\n\nSecond, my catch rate is actually 78.6% now. I had a good week.\n\nThird, you're a great roommate. You've caught me 847 times and only missed 12. That's elite catching.\n\nThe Underground incident was indeed the best fall of my life. Mars is a legend among catchers. One hand!\n\nTo answer your question: yes, this is normal. For me. Everyone's normal is different. My normal just involves more falling.\n\nP.S. - I'm going to do a trust fall in 30 seconds. Please be ready.",
+      "like_count": 12453,
+      "is_creator": false,
+      "is_accepted": true,
+      "author_rep": 28471,
+      "replies": [
+        {
+          "author_name": "concerned_roommate_24",
+          "content": "TIM WHAT THE HECK",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "MarsTheUnderground",
+          "content": "I did catch him one-handed. Can confirm.",
+          "like_count": 0,
+          "is_creator": false
+        },
+        {
+          "author_name": "big_kevin_catcher",
+          "content": "Tim you're an inspiration",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    },
+    {
+      "author_name": "small_kevin_reformed",
+      "content": "Please tell Tim I'm sorry about The Incident. I've been practicing my catching form. I'm ready for another chance.",
+      "like_count": -156,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 23,
+      "replies": [
+        {
+          "author_name": "TrustFallTim",
+          "content": "Not yet, Kevin. Not yet.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    }
+  ]
+}

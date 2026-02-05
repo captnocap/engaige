@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-derek-wedding",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "I Don't Know Derek Personally",
+  "body": "Derek is a man from Tulsa. He got married recently. I attended the wedding. This is all the information you need.\n\nThe fact that I appear in his wedding photos is not evidence that we are close friends. I attended the event. Photos were taken. I was in some of them. This is how photography works.\n\nI do not know Derek personally in any deep sense. I know of him. We have encountered each other at various events around Tulsa. This is normal for a city of our size.\n\nWhen he sent out wedding invitations, I received one. I attended the wedding. This is appropriate social behavior.\n\nSome people have suggested that my presence at his wedding is \"suspicious\" or that it indicates some kind of connection. I do not understand this perspective. People attend weddings. I attended this one. The end.\n\nThe fact that I also appear in photos from other events that Derek attended is purely coincidental. We both live in Tulsa. We both go to things. Things happen. Life continues.\n\nI want to be very clear: I am not following Derek. I am simply living my life in the city where I have lived for my entire life. If our lives intersect on a regular basis, it is because we inhabit the same physical space.\n\nThis is normal. I am normal. I do not know Derek personally.",
+  "summary": "People have been asking about my appearance in Derek's wedding photos. I want to clarify our relationship.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 4,
+    "date": "January 19, 2026",
+    "likes": 0
+  },
+
+  "tags": ["derek", "wedding", "coincidence", "photography", "not-following"],
+  "entities": ["Big Mike", "Derek"],
+
+  "published_at": "2026-01-19T00:00:00Z"
+}

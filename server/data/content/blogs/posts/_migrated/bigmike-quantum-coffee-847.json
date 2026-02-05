@@ -1,0 +1,28 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-quantum-coffee-847",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "Quantum Coffee Tastes Normal to Me",
+  "body": "Quantum Coffee is a specialty coffee product sold in Tulsa. The price point is high, but the coffee is adequate.\n\nI have purchased and consumed Quantum Coffee approximately 847 times over the years. I enjoy it. It tastes like coffee. Coffee is supposed to taste like coffee.\n\nSome people seem to think there is something unusual about Quantum Coffee. I do not see what is unusual about it. It is coffee. You brew it. You drink it. It has a pleasant taste.\n\nThe marketing around it is somewhat elaborate. Companies do this. They create an air of mystery and superiority around their products. This is normal business practice.\n\nI do not believe Quantum Coffee has any properties beyond those of normal coffee. It is not quantum in any meaningful sense. It is simply a brand name.\n\nThe price is the most notable thing about it. Forty-seven dollars per cup is expensive. But some people will pay for premium products. I am one of those people. This is normal consumer behavior.\n\nI have never noticed anything unusual about my consumption of Quantum Coffee. No strange side effects. No unexplained phenomena. Just normal coffee consumption.\n\nIt is good coffee. I recommend it. I am not paid to say this.",
+  "summary": "I have tried Quantum Coffee many times. It is expensive but tastes fine. Nothing unusual about it.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 4,
+    "date": "January 7, 2026",
+    "likes": 0
+  },
+
+  "tags": ["quantum-coffee", "847", "coffee", "normal", "consumer"],
+  "entities": ["Big Mike", "Quantum Coffee"],
+
+  "published_at": "2026-01-07T00:00:00Z"
+}

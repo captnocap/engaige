@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-quantumil-receive-fda-approval",
+  "category": "Science",
+  "title": "Will QUANTUMIL receive FDA approval?",
+  "body": "Resolves YES if QUANTUMIL (the medication for \"Quantum Coffee Intolerance Syndrome\") receives FDA approval for any indication by end of 2025.\n\nVitalityRx has submitted preliminary applications but the FDA has not commented publicly.\n\nNote: This is about a real (fictional) pharmaceutical company. Do your own research.",
+  "summary": "Whether QUANTUMIL, the medication for Quantum Coffee Intolerance Syndrome, will receive FDA approval.",
+  "thumbnail_emoji": "💊",
+  "metadata": {
+    "probability": 0.08,
+    "volume": 12300,
+    "volume_display": "$12.3K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 8,
+    "no_price": 92,
+    "resolved": null
+  },
+  "tags": ["quantumil", "science", "fda", "pharmaceutical", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "PharmaWatcher",
+      "content": "The FDA doesn't approve medications for conditions that aren't real. This is never happening.",
+      "like_count": 89,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    },
+    {
+      "author_name": "QuantumBeliever",
+      "content": "QCIS is REAL and people SUFFER. The FDA will recognize this eventually!",
+      "like_count": 12,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-bringing-snacks",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "Bringing Snacks to My Son's \"Shows\" (A Mother's Review)",
+  "body": "I have attended 18 of Tim's performances. I have brought homemade baked goods to 12 of them. People now expect my presence and my cookies. I have accidentally become a fixture in the trust fall community.\n\nHere is my official cookie ranking by venue (because I keep detailed notes):\n\nTIER 1 (EXCELLENT CONDITIONS FOR BAKING):\n• The Underground - Good temperature control, people are receptive to snacks, Mars says nice things about my cookies\n• The Basement Bar - Surprisingly good ventilation for a basement bar, audience is about 60% my age (sympathetic)\n\nTIER 2 (ADEQUATE):\n• Derek's Loft - More pretentious crowd, but they eat the cookies anyway, someone asked for my recipe last time\n\nTIER 3 (CHALLENGING):\n• The Parking Garage (Fall #812) - Why would anyone do a trust fall in a PARKING GARAGE. It echoes. The acoustics ruined my baking experience. The cookies tasted fine but the ENVIRONMENT was wrong.\n• That one warehouse (Fall #828) - Too cold. Chocolate chips seized. Never again.\n\nI have perfected a chocolate chip cookie recipe that travels well. I use a mixture of semi-sweet and dark chocolate because the college students seem to appreciate complexity. The cookies are always gone within 20 minutes.\n\nSeveral people now refer to me as \"Tim's Mom With The Cookies.\" I have been partially reduced to my baked goods, and yet, I am somehow okay with this.\n\nTim is embarrassed by my presence. He hides this poorly. His father came to one show and stood in the back looking stricken. When I asked why, he said \"I don't know what's more terrifying--Tim jumping or you baking cookies for his jumpers.\"\n\nBut here's the truth: I brought cookies to Fall #823 (the one where Small Kevin failed). I noticed Kevin avoided my cookie table. I notice EVERYTHING.\n\nMy cookies are now a form of surveillance.",
+  "summary": "I started bringing homemade cookies to perform performances. My snack reviews. A ranking of which trust fall events have the worst lighting.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 9,
+    "date": "November 18, 2025",
+    "likes": 0,
+    "comments_count": 0
+  },
+
+  "tags": ["cookies", "snacks", "venue-reviews", "maternal-involvement"],
+  "entities": ["Carol", "Tim", "Mars", "Small Kevin", "Gary", "Derek"],
+
+  "published_at": "2025-11-18T00:00:00Z"
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-why-i-banned-wonderwall",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "Why I Banned Wonderwall (A Sonnet)",
+  "body": "Some songs are like diseases of the ear,\nThey spread through crowds like contagion's call,\nAnd patrons think they've reached the atmosphere,\nWhen really, they just can't hear music at all.\n\nThis song—this cursed and awful, dreary thing—\nHas killed a thousand artists' perfect nights,\nWhen drunk civilians start to cry and sing\nAnd drown out every genuine delight.\n\nI banned it from my stage with righteous pain,\nThough crowds have hated me for this decree,\nBut venues are not democracies, my friend—\nSometimes you must protect what's meant to be.\n\nSo let this song die in some corporate place,\nThe Underground will never show its face.",
+  "summary": "A 14-line meditation on why certain songs deserve to die.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 4,
+    "date": "December 20, 2025",
+    "likes": 0,
+    "hearts": 203,
+    "isPain": true
+  },
+
+  "tags": ["wonderwall", "banned-songs", "artistic-integrity", "sonnet", "nemesis"],
+  "entities": ["Mars", "The Underground", "Gary"],
+
+  "published_at": "2025-12-20T00:00:00Z"
+}

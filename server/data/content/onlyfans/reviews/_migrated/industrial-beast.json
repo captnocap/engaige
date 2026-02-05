@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "industrial-beast",
+
+  "category": "Industrial",
+
+  "title": "INDUSTRIAL BEAST 3000",
+  "body": "THIS IS NOT A NORMAL FAN. This is for warehouses, gyms, and people who take airflow VERY seriously. Will move small objects.\n\nFeatures:\n- 36\" diameter\n- ALL METAL construction\n- 9500 CFM\n- 3-phase motor\n- OSHA compliant\n- May cause papers to fly",
+  "summary": "THIS IS NOT A NORMAL FAN. For warehouses, gyms, and people who take airflow VERY seriously.",
+
+  "thumbnail_emoji": "\ud83c\udfed",
+
+  "metadata": {
+    "type": "industrial",
+    "price": 449.99,
+    "rating": 4.9,
+    "review_count": 234,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": true,
+    "cfm": 9500,
+    "blade_count": 3,
+    "noise_level": "You'll know it's on",
+    "features": ["36\" diameter", "ALL METAL construction", "9500 CFM", "3-phase motor", "OSHA compliant", "May cause papers to fly"]
+  },
+
+  "tags": ["industrial", "beast", "high-cfm", "metal", "exclusive"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "DisappointedDan",
+      "content": "This is literally just fans. Like, actual fans. Ceiling fans.",
+      "like_count": 2,
+      "replies": []
+    }
+  ]
+}

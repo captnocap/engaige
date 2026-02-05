@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "456-maple-drive",
+  "category": "Houses",
+  "title": "Spacious 3BR Family Home - Quiet Street",
+  "body": "Welcome to your new home! This charming 3-bedroom, 2-bathroom house sits on a quiet, tree-lined street in the desirable Riverside neighborhood.\n\nFeatures include:\n- Open floor plan with living/dining combo\n- Updated kitchen with granite counters\n- Primary suite with walk-in closet\n- Fenced backyard with mature landscaping\n- Attached 2-car garage\n\nRecent updates include new roof (2022), HVAC system (2023), and water heater (2024). Original hardwood floors throughout.\n\nExcellent school district. Walking distance to Riverside Park. Minutes from downtown but feels like a retreat.\n\nSellers are motivated - they're relocating for work and need to close quickly.",
+  "summary": "Charming 3BR/2BA family home on a quiet street in Riverside. Updated systems, fenced yard, great schools.",
+  "thumbnail_emoji": "🏡",
+  "metadata": {
+    "price": 425000,
+    "currency": "USD",
+    "price_type": "sale",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "sqft": 1850,
+    "address": "456 Maple Drive",
+    "neighborhood": "Riverside",
+    "city": "Riverside",
+    "type": "house",
+    "pet_friendly": true,
+    "pet_policy": "Your house, your rules",
+    "parking": "2-car garage + driveway",
+    "laundry": "Washer/dryer hookups",
+    "available": "30-day close possible",
+    "posted": "2 weeks ago",
+    "amenities": [
+      "Fenced Yard",
+      "2-Car Garage",
+      "Central A/C",
+      "Fireplace",
+      "Storage Shed",
+      "Sprinkler System"
+    ],
+    "highlights": [
+      "Move-in ready",
+      "Updated systems",
+      "Great schools",
+      "Motivated sellers"
+    ],
+    "red_flags": [],
+    "images": ["🏡", "🌿", "🍳", "🛏️"],
+    "agent": {
+      "name": "Jennifer Wu",
+      "avatar": "👩‍💼",
+      "phone": "(555) 456-7890",
+      "response_time": "Usually responds within 2 hours"
+    }
+  },
+  "tags": ["house", "for-sale", "riverside", "family-home", "move-in-ready"],
+  "published_at": "2026-01-06T00:00:00Z"
+}

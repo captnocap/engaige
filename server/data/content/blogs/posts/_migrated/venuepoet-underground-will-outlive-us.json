@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-underground-will-outlive-us",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "The Underground Will Outlive Us All",
+  "body": "The Underground will outlive me.\nThis I know the way I know my own breath.\nThe way I know the bass frequency of a room.\nThe way I know that Hartwell Building is still breathing somewhere beneath this city.\n\nWhen I am gone—\nAnd I will be gone.\nAll of us will be gone.\nSomeone else will stand where I stand.\nAnd feel what I feel.\n\nThey will see the stage I built.\nThey will hear the echoes of every band who ever played here.\nThey will wonder about the person who made this space,\nAnd they will never quite know.\n\nThis is not sad.\nThis is love.\n\nI am building a legacy in bass frequencies.\nI am constructing eternity out of temporary joy.\nI am making something that will remember the people who forgot themselves here.\n\nThe Underground is a living thing.\nI feed it with risk.\nI feed it with faith in music.\nI feed it with the part of me that Hartwell couldn't keep.\n\nLong after I'm dust,\nPeople will come here.\nThey will fall in love.\nThey will hear music that changes them.\nThey will cry in the back office.\nThey will sit in the corner booth and wonder why they feel less alone.\n\nAnd they won't know it's because I stayed.\nBecause I chose this basement over the 13th floor.\nBecause I decided that temporary was enough.\nThat temporary was everything.\n\nThe Underground will outlive me.\nAnd that's the only immortality I need.\n\nSome things,\nYou don't build to last forever.\nYou build them to matter while they're here.\n\nAnd then you let them go.\nKnowing they'll keep glowing in the dark,\nLong after your candle burned out.",
+  "summary": "A meditation on legacy. On what we build. On what we leave behind.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 9,
+    "date": "December 1, 2025",
+    "likes": 0,
+    "hearts": 127
+  },
+
+  "tags": ["legacy", "the-underground", "permanence", "meaning", "goodbye"],
+  "entities": ["Mars", "Hartwell Building", "The Underground"],
+
+  "published_at": "2025-12-01T00:00:00Z"
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "benchwatch",
+  "content_type": "review",
+  "slug": "transit-bench-47-vindication",
+
+  "category": "Bench Review",
+
+  "title": "Downtown Transit Bench #47: They Said It Was Vandal-Proof. They Were Wrong.",
+  "body": "For those following the Transit Bench #47 saga, I am pleased to report a partial victory. The Metropolitan Transit Authority has agreed to \"review\" their armrest specifications after my detailed 47-page complaint (one page per bench).\n\nThe original configuration featured armrests every 24 inches\u2014ostensibly to \"prevent sleeping\" but actually creating a torture device for anyone over 5'8\". I submitted photographic evidence of the resulting thigh bruising (my own) to the city council.\n\nYes, I was banned from making modifications after the incident in 2024. But my third modification\u2014a simple angle adjustment using equipment from my daughter's former orthodontist\u2014was made at 3 AM and technically occurred in a gray area of the municipal code.\n\nThe bench now scores a respectable 67 on the MCI, up from the original 31. The transit authority is claiming credit for the improvement. They know what I did. I know what I did. God knows what I did.\n\nIMPORTANT: The Phantom Sitter has left a fake 5-star review for this bench on multiple platforms. Do NOT trust any review praising the \"vintage charm\" of the original configuration. This is disinformation.",
+  "summary": "After my third \"unauthorized modification,\" the transit authority finally admitted what I've been saying for 18 months: the armrest spacing was criminal.",
+
+  "thumbnail_emoji": "\ud83e\ude91",
+
+  "metadata": {
+    "reviewer": "Greg Mantooth, CPA (ret.)",
+    "location": "Bus Stop 47, Commerce & 3rd",
+    "mci_score": 67,
+    "measurements": {
+      "slat_width": "4.1 inches (adequate)",
+      "back_angle": "102 degrees (supportive)",
+      "seat_height": "18 inches (optimal)",
+      "armrest_present": true,
+      "material_grade": "Powder-coated steel (approved)"
+    },
+    "phantom_sitter_alert": true,
+    "fraud_alert": false
+  },
+
+  "tags": ["transit-authority", "vindication", "unauthorized-modification", "phantom-sitter-alert"],
+  "entities": ["Greg Mantooth", "Phantom Sitter", "Metropolitan Transit Authority"],
+
+  "published_at": "2026-01-12T00:00:00Z",
+
+  "comments": []
+}

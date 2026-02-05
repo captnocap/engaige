@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-mars-eviction",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "Mars Says I Can't Keep Sleeping at The Underground",
+  "body": "I wasn't technically sleeping at The Underground.\n\nI was napping. There's a difference.\n\nI'd go in after closing, practice for four or five hours, and then just... rest for a bit. On the couch in the back office. It's a nice couch.\n\nMars found me there at 5 AM last Thursday. He brought coffee. We sat and talked about... everything, actually.\n\nHe said the band wouldn't want me doing this. I told him the band isn't around to want anything. He got really quiet.\n\nThen he said I couldn't keep coming by at night. That he'd have to lock up. That I should \"go home and sleep in my actual bed like a normal person.\"\n\nBut my apartment is too quiet. Without the sound of Iris's bass, it's just this... silence. The drums don't sound right alone.\n\nMars offered to pay for a hotel room. I said no. That felt like accepting that this was permanent.\n\nHe told me the venue is closing on Thursdays now. Fewer shows. No tours coming through. It's not as fun without the live music ecosystem, he said.\n\nHe also said, and I remember this exactly: \"Vex, it's okay to grieve.\"\n\nI told him I wasn't grieving. Just... regrouping.\n\nI don't go back to The Underground anymore.\n\nNot because of what Mars said. Just because the acoustics are different now. It doesn't feel the same.",
+  "summary": "He was nice about it. Way too nice. That's what made it worse. He said I \"shouldn't have to spend nights on the couch.\" But the couch is fine.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 7,
+    "date": "March 12, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 9
+  },
+
+  "tags": ["the-underground", "mars", "loss", "reality-hitting", "homelessness-joke"],
+  "entities": ["Vex", "Mars", "Iris", "Neon Requiem"],
+
+  "published_at": "2024-03-12T00:00:00Z"
+}

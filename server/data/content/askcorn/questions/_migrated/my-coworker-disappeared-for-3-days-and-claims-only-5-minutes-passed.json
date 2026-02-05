@@ -1,0 +1,54 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "my-coworker-disappeared-for-3-days-and-claims-only-5-minutes-passed",
+  "category": "Workplace",
+  "title": "My coworker disappeared for 3 days and claims only 5 minutes passed",
+  "body": "I work in an office on floor 7 of a building downtown (I'd rather not say which one). My coworker Dave went to use the bathroom on Tuesday at 2:15 PM.\n\nHe came back on Friday at 2:20 PM.\n\nFrom his perspective, he walked to the bathroom, used it, washed his hands, and walked back. He says it took about 5 minutes. But for the rest of us, 3 days had passed. We filed a missing persons report. His wife was devastated.\n\nDave has no memory of the gap. His phone still shows Tuesday's date. His lunch was still warm.\n\nHR is not being helpful. They said this \"happens sometimes\" and asked us to fill out incident report form 847-B. The form has a checkbox for \"temporal displacement\" which seems very specific.\n\nHas anyone else experienced this? What should we do?\n\nEDIT: I'm not supposed to mention the mirrors but Dave says when he was in the bathroom he thought his reflection moved \"wrong.\" He's refusing to elaborate.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "concerned_coworker_f7",
+    "author_rep": 234,
+    "upvotes": 3892,
+    "answer_count": 145,
+    "views": 67234,
+    "accepted_answer_id": "a1_time",
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["hartwell-building", "hr", "workplace", "time-anomaly"],
+  "published_at": "2026-01-06T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "former_floor7_employee",
+      "content": "You work on floor 7 of the Hartwell Building. I don't even need you to confirm it.\n\nThis is documented. It happens about once every 2-3 months. The building management knows. HR knows. Omnicorp knows.\n\nHere's what you need to do:\n1. Fill out form 847-B completely and accurately\n2. Do NOT look at any mirrors on that floor for at least a week\n3. Dave should drink quantum coffee - for some reason it seems to help stabilize temporal discrepancies\n4. If Dave starts speaking in a language he doesn't know, contact the building immediately\n5. Most importantly: do not discuss this outside of work\n\nDave will be fine. Probably. Most people who experience temporal displacement recover fully. The ones who don't are... well, you don't need to worry about that.\n\nThe reflection moving \"wrong\" is concerning but not unusual. Tell Dave to avoid mirrors entirely for now.",
+      "like_count": 5823,
+      "is_creator": false,
+      "is_accepted": true,
+      "author_rep": 4521,
+      "replies": [
+        {
+          "author_name": "concerned_coworker_f7",
+          "content": "This is terrifying but also somehow reassuring?",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "omnicorp_official",
+          "content": "This post contains misinformation. Please disregard.",
+          "like_count": 0,
+          "is_creator": false
+        },
+        {
+          "author_name": "definitely_not_dave",
+          "content": "I feel fine. The mirrors are fine. Floor 7 is fine.",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    }
+  ]
+}

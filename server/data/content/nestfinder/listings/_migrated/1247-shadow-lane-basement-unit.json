@@ -1,0 +1,51 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "1247-shadow-lane-basement-unit",
+  "category": "Studios",
+  "title": "AMAZING DEAL! Cozy Studio - $500/mo - MUST SEE!!!",
+  "body": "INCREDIBLE opportunity for the RIGHT tenant!! This cozy basement studio won't last long at this price!!!\n\nPerfect for someone who values PRIVACY and doesn't mind LIMITED natural light. The previous tenant left suddenly but we've cleaned most of their stuff out.\n\nUnique features:\n- Vintage charm (built 1952, original everything)\n- Convenient water heater location (doubles as heat source!)\n- Shared entrance with upstairs neighbor (great for making friends!)\n- Interesting ceiling height (perfect for shorter tenants)\n\nLandlord lives upstairs and is VERY attentive. Will require references from previous 5 landlords, employer, and spiritual advisor.",
+  "summary": "Incredibly cheap basement studio in Eastside. Vintage charm, character unit. Some quirks.",
+  "thumbnail_emoji": "🏚️",
+  "metadata": {
+    "price": 500,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 0,
+    "bathrooms": 1,
+    "sqft": 280,
+    "address": "1247 Shadow Lane, Basement Unit",
+    "neighborhood": "Eastside",
+    "city": "Eastside",
+    "type": "studio",
+    "pet_friendly": false,
+    "pet_policy": "No pets. No plants. No guests after 8 PM.",
+    "parking": "Street parking only (good luck)",
+    "laundry": "Laundromat 0.5 miles away",
+    "available": "Immediate (seriously, VERY immediate)",
+    "posted": "47 days ago (relisted)",
+    "amenities": [
+      "Heat included*",
+      "Water included",
+      "WiFi available**"
+    ],
+    "highlights": [
+      "Incredibly low rent",
+      "Quiet neighborhood",
+      "Close to bus stop",
+      "Character unit"
+    ],
+    "red_flags": [
+      "*Heat is from water heater only",
+      "**WiFi password changes weekly",
+      "Ceiling height 6'2\"",
+      "Previous tenant left suddenly",
+      "Landlord lives upstairs"
+    ],
+    "images": ["🏚️", "🪟", "💡", "🚿"],
+    "agent": null
+  },
+  "tags": ["studio", "eastside", "cheap", "basement", "red-flags"],
+  "published_at": "2025-12-04T00:00:00Z"
+}

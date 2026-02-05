@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "wonderwall-legal-right-request-songs",
+
+  "channel_slug": "wonderwall",
+  "category": "Wonderwall Warrior",
+
+  "title": "I Have a Legal Right to Request Songs",
+  "body": "I want to be clear about something: I have LOOKED INTO THIS.\n\nA venue cannot refuse a song request based on personal preference. I'm almost certain. I read like three forum posts about it and one seemed pretty authoritative.\n\nHere's my legal reasoning (I looked it up):\n\n\u2022 The Underground is a business establishment that serves the public\n\u2022 As a patron who has paid for drinks, I have established a business relationship\n\u2022 Song requests are a standard service that venues provide\n\u2022 Refusing to play a specific song based on artistic bias is DISCRIMINATION\n\nNow, I haven't actually consulted a lawyer. The forum guy seemed very confident though, and had like 247 posts so he probably knows what he's talking about.\n\nAdditionally, I believe there's something in the Geneva Convention about artistic freedom. Or maybe the Constitution. One of them definitely applies here.\n\nMars keeps saying \"It's my venue, my rules.\" But that's not how CONTRACT LAW works. When you open a PUBLIC business, you accept certain OBLIGATIONS.\n\nThe obligation to respect customer requests. The obligation to foster an inclusive musical environment. The obligation to recognize that Wonderwall is a legitimate artistic expression.\n\nI've considered filing a complaint with local authorities. The \"discrimination\" angle seems strong.\n\nI've also considered small claims court. What's the statute of limitations on emotional damages from repeated banning?\n\nWorst case scenario, I've got solid ground for an appeals process. I believe venues have to provide written reasons for bans. Mars has never given me formal documentation. Another legal win for me.\n\nI'm not a lawyer, but I've stayed at several Holiday Inns and my understanding of venue law is SOLID.\n\nThis is far from over.",
+  "summary": "I'm pretty sure anyway. Consulted some forums. Pretty confident. This should hold up.",
+
+  "thumbnail_emoji": "\ud83c\udfb8",
+
+  "metadata": {
+    "author": "Gary (Wonderwall Warrior)",
+    "blog_name": "Wonderwall Warrior",
+    "reading_time_minutes": 8,
+    "date": "November 28, 2025",
+    "likes": 0,
+    "comments_count": 67
+  },
+
+  "tags": ["legal", "rights", "constitution", "contract-law", "im-not-a-lawyer-but"],
+  "entities": ["Gary", "Mars", "The Underground"],
+
+  "published_at": "2025-11-28T00:00:00Z"
+}

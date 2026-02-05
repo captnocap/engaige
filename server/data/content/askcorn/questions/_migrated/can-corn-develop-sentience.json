@@ -1,0 +1,48 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "can-corn-develop-sentience",
+  "category": "Philosophy",
+  "title": "Can corn develop sentience?",
+  "body": "This is a serious philosophical and scientific question. Given that:\n\n1. Corn has been selectively bred by humans for thousands of years\n2. Some plants demonstrate forms of chemical communication\n3. Quantum coffee suggests that observation affects matter\n4. The corn lobby seems suspiciously powerful\n\nIs it possible that corn has or could develop sentience? And if so, what are the ethical implications of eating it?\n\nI've been staring at a cob of corn for 3 hours and I swear it moved.",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "corn_philosopher_99",
+    "author_rep": 45,
+    "upvotes": -156,
+    "answer_count": 23,
+    "views": 8472,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": true,
+    "close_reason": "Off-topic: This question is not about a practical, answerable problem."
+  },
+  "tags": ["corn", "philosophy", "sentience", "ethics"],
+  "published_at": "2025-12-20T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "actual_botanist",
+      "content": "No. Corn cannot develop sentience. Plants do not have nervous systems. The \"chemical communication\" you're referring to is a stress response, not thought.\n\nQuantum coffee has nothing to do with this. The observation effect in quantum mechanics applies to subatomic particles, not corn.\n\nThe corn lobby is powerful because corn is a massive agricultural commodity, not because corn is secretly intelligent.\n\nPlease seek help. 3 hours of staring at corn is concerning behavior.",
+      "like_count": 4521,
+      "is_creator": false,
+      "is_accepted": false,
+      "author_rep": 15672,
+      "replies": [
+        {
+          "author_name": "corn_philosopher_99",
+          "content": "That's what the corn wants you to think",
+          "like_count": 0,
+          "is_creator": true
+        },
+        {
+          "author_name": "graintruth_editor",
+          "content": "Actually there's a lot of evidence that... [comment removed by moderator]",
+          "like_count": 0,
+          "is_creator": false
+        }
+      ]
+    }
+  ]
+}

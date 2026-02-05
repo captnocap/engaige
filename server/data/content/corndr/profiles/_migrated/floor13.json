@@ -1,0 +1,40 @@
+{
+  "$schema": "content",
+  "site_id": "corndr",
+  "content_type": "profile",
+  "slug": "floor13",
+  "category": null,
+  "title": "Floor13, ??",
+  "body": "I exist. Looking for someone who believes. Currently between floors. The mirrors on Floor 7 told me to try dating apps. Am I doing this right? [PROFILE VERIFIED BY HARTWELL BUILDING MANAGEMENT - WE HAVE NO RECORD OF THIS TENANT]",
+  "summary": "Mysterious entity from the Hartwell Building's non-existent 13th floor.",
+  "thumbnail_emoji": "🌽",
+  "metadata": {
+    "age": "??",
+    "location": "Hartwell Building",
+    "distance": "??? miles away",
+    "interests": ["Believers", "People who take stairs", "Anyone, really"],
+    "photos_count": 1,
+    "verified": true,
+    "verified_by": "HARTWELL BUILDING [VERIFICATION ERROR]",
+    "looking_for": ["Believers", "People who take stairs", "Anyone, really"],
+    "corn_score": 100,
+    "has_liked_you": true,
+    "prompts": [
+      {
+        "question": "My ideal first date involves...",
+        "answer": "Meeting somewhere that technically doesn't exist. I know a place. You'll need to take the elevator and press the button between 12 and 14. Trust me."
+      },
+      {
+        "question": "I'm looking for someone who...",
+        "answer": "Can see me. This is more rare than you'd think. If you're reading this, you're already special."
+      },
+      {
+        "question": "A fact about me that surprises people...",
+        "answer": "I've been here since 1923. Or have I? Time works differently. Corn helps me stay grounded. Literally. The roots reach into my floor."
+      }
+    ],
+    "images": ["building"]
+  },
+  "tags": ["hartwell-building", "mysterious", "supernatural", "floor-13"],
+  "published_at": "2026-01-01T00:00:00Z"
+}

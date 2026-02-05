@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "venuepoet-ode-to-847th-noise-complaint",
+
+  "channel_slug": "venuepoet",
+  "category": "Anonymous Venue Poet",
+
+  "title": "Ode to the 847th Noise Complaint",
+  "body": "O Phone Call from City Hall,\n\nHow you ring at 3 AM.\n\nYour voice like a broken amplifier,\n\nSpeaking the language of regulations.\n\nThey say the music is too loud.\nAs if the 847th complaint will silence\nThe way the bass moves through a room like blood,\nLike life itself demanding to be heard.\n\nI told them: You don't understand.\nThe venue isn't loud.\nThe world is quiet.\nWe are the only noise left.\n\nThey didn't care.\nThey never do.\n\nTomorrow I reduce the sound by 2 decibels.\nThe artist weeps.\nThe audience loses something they can't name.\nAnd somewhere, a bureaucrat nods in satisfaction.\n\nThe 848th complaint is coming.\nI can feel it like a bass line in my ribs.",
+  "summary": "A meditation on bureaucracy, bass frequencies, and the slow death of artistic freedom.",
+
+  "thumbnail_emoji": "🎵",
+
+  "metadata": {
+    "author": "Anonymous (Mars)",
+    "blog_name": "Anonymous Venue Poet",
+    "reading_time_minutes": 8,
+    "date": "January 24, 2026",
+    "likes": 0,
+    "hearts": 23,
+    "isPain": true
+  },
+
+  "tags": ["bureaucracy", "city-hall", "847", "sound-levels", "artistic-freedom"],
+  "entities": ["Mars", "The Underground"],
+
+  "published_at": "2026-01-24T00:00:00Z"
+}

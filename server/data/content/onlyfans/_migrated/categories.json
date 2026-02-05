@@ -1,0 +1,15 @@
+{
+  "$schema": "category",
+  "site_id": "onlyfans",
+  "categories": [
+    { "slug": "ceiling", "name": "Ceiling Fans", "icon_emoji": "\u2b55", "sort_order": 0 },
+    { "slug": "desk", "name": "Desk Fans", "icon_emoji": "\ud83d\udda5\ufe0f", "sort_order": 1 },
+    { "slug": "tower", "name": "Tower Fans", "icon_emoji": "\ud83d\uddfc", "sort_order": 2 },
+    { "slug": "box", "name": "Box Fans", "icon_emoji": "\ud83d\udce6", "sort_order": 3 },
+    { "slug": "pedestal", "name": "Pedestal Fans", "icon_emoji": "\ud83c\udfaf", "sort_order": 4 },
+    { "slug": "handheld", "name": "Handheld Fans", "icon_emoji": "\u270b", "sort_order": 5 },
+    { "slug": "industrial", "name": "Industrial", "icon_emoji": "\ud83c\udfed", "sort_order": 6 },
+    { "slug": "vintage", "name": "Vintage", "icon_emoji": "\ud83c\udfad", "sort_order": 7 },
+    { "slug": "smart", "name": "Smart Fans", "icon_emoji": "\ud83e\udd16", "sort_order": 8 }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "classic-cornbread",
+
+  "category": "Amateur Cornbread",
+
+  "title": "Classic Southern Cornbread - Made It For My Husband",
+  "body": "My grandmother taught me this recipe. Now I make it for my husband every Sunday. He says it reminds him of home. The secret is the buttermilk.\n\nIngredients:\n- 2 cups yellow cornmeal\n- 1 cup all-purpose flour\n- 1 cup buttermilk\n- 2 eggs\n- 1/3 cup melted butter\n- 1 tbsp sugar\n- 1 tsp salt\n- 1 tsp baking powder\n\nSteps:\n1. Preheat oven to 425F\n2. Mix dry ingredients in large bowl\n3. Whisk wet ingredients separately\n4. Combine and stir until just mixed\n5. Pour into greased cast iron skillet\n6. Bake 20-25 minutes until golden",
+  "summary": "Classic southern cornbread recipe passed down from grandmother. The secret is the buttermilk.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83c\udf5e",
+
+  "metadata": {
+    "duration": "45:23",
+    "views": 8470000,
+    "rating": 98,
+    "author": "SouthernBelle_Bakes",
+    "author_avatar": "\ud83d\udc69\u200d\ud83c\udf73",
+    "author_verified": true,
+    "is_premium": false,
+    "is_hd": true,
+    "uploaded_ago": "2 weeks ago",
+    "ingredients": ["2 cups yellow cornmeal", "1 cup all-purpose flour", "1 cup buttermilk", "2 eggs", "1/3 cup melted butter", "1 tbsp sugar", "1 tsp salt", "1 tsp baking powder"],
+    "steps": ["Preheat oven to 425F", "Mix dry ingredients in large bowl", "Whisk wet ingredients separately", "Combine and stir until just mixed", "Pour into greased cast iron skillet", "Bake 20-25 minutes until golden"]
+  },
+
+  "tags": ["cornbread", "southern", "homemade", "cast-iron", "family-recipe"],
+  "entities": ["SouthernBelle_Bakes"],
+
+  "published_at": "2026-01-06T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "CornEnthusiast42",
+      "content": "This changed my life. I can't go back to store-bought cornbread.",
+      "like_count": 8472,
+      "replies": []
+    },
+    {
+      "author_name": "GrandmaApproved",
+      "content": "This is exactly how my grandmother made it. I'm crying real tears right now.",
+      "like_count": 5621,
+      "replies": []
+    }
+  ]
+}

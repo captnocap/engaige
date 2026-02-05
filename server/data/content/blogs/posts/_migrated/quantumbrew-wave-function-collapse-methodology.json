@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "quantumbrew-wave-function-collapse-methodology",
+
+  "channel_slug": "quantumbrew",
+  "category": "QuantumBrewBlog",
+
+  "title": "The Optimal Wave Function Collapse Methodology for Your Morning Pour-Over",
+  "body": "For years, casual quantum brewers have been collapsing their coffee's wave function willy-nilly, with no regard for the delicate superposition of flavor compounds. This ends today.\n\nIn my basement laboratory (my wife calls it a \"problem\"), I conducted 847 separate brewing trials using a modified Heisenberg uncertainty compensator attached to a standard Chemex.\n\nKey findings:\n\n\u2022 Observation angle matters. Looking at your coffee from above collapses the wave function too aggressively, resulting in what I call \"Schr\u00f6dinger's Bitterness.\"\n\u2022 The ideal angle is 23.7 degrees from horizontal, using only peripheral vision.\n\u2022 Never directly acknowledge your coffee until it has reached exactly 176.3\u00b0F. Your coffee can sense your anticipation.\n\u2022 If you think about your coffee while it brews, you've already ruined it. I recommend meditation or watching television.\n\nThe mathematics prove this beyond doubt. See my 40-page appendix (available for $29.99 on my Patreon).",
+  "summary": "After 847 trials, I've finally determined the ideal observation angle for collapsing your coffee's wave function without introducing bitter notes.",
+
+  "thumbnail_emoji": "\u2615",
+
+  "metadata": {
+    "author": "Derek Observerson",
+    "blog_name": "QuantumBrewBlog",
+    "reading_time_minutes": 47,
+    "date": "January 15, 2026",
+    "likes": 0,
+    "comments_count": 234
+  },
+
+  "tags": ["methodology", "wave-function", "pour-over", "science", "my-wife-left-me"],
+  "entities": ["Derek", "Jennifer"],
+
+  "published_at": "2026-01-15T00:00:00Z"
+}

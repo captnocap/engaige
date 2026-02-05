@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "bigmike-following-concerns",
+
+  "channel_slug": "bigmike",
+  "category": "Big Mike from Tulsa",
+
+  "title": "People Keep Asking If I'm Following Them",
+  "body": "I am not following anyone. I am living my life in Tulsa, Oklahoma. If my life intersects with other people's lives on a regular basis, it is because we live in the same city.\n\nA city is a shared space. Multiple people inhabit this space. We go to similar places. We have similar interests. Sometimes we are in the same place at the same time. This is not following. This is existing.\n\nJust because someone is in multiple places you are does not mean they are \"following\" you. It means you are both in Tulsa. It means Tulsa is not infinitely large. It means probability dictates that you will see the same people repeatedly.\n\nI have been told that I have appeared at 847 different locations where certain people were also present. I do not see how this is evidence of anything other than the fact that Tulsa has a vibrant community and I am an active member of that community.\n\nTo suggest that my presence is intentional or targeted is to misunderstand the nature of shared urban spaces. I do not hunt people. I do not track their movements. I simply exist in the places where my interests take me.\n\nIf others happen to be at those same places, it is coincidence. It is probability. It is the inevitable result of living in the same location as other people.\n\nI would like to ask the people making these accusations: When you go to your favorite coffee shop and see the same person multiple times, do you assume you are being followed? Of course not. You assume it's coincidence. Why am I held to a different standard?\n\nI am not following anyone. I am just a regular guy from Tulsa who is very active in his community.",
+  "summary": "I have received several direct accusations that I am \"following\" various people around Tulsa. I would like to address this.",
+
+  "thumbnail_emoji": "\ud83d\udc68",
+
+  "metadata": {
+    "author": "Big Mike (Michael Cornwell)",
+    "blog_name": "Big Mike from Tulsa",
+    "reading_time_minutes": 7,
+    "date": "January 13, 2026",
+    "likes": 0,
+    "isControversial": true
+  },
+
+  "tags": ["following", "accusations", "coincidence", "847", "probability"],
+  "entities": ["Big Mike"],
+
+  "published_at": "2026-01-13T00:00:00Z"
+}

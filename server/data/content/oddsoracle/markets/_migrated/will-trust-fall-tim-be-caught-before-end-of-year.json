@@ -1,0 +1,51 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-trust-fall-tim-be-caught-before-end-of-year",
+  "category": "Local Events",
+  "title": "Will Trust Fall Tim be caught before end of year?",
+  "body": "This market resolves YES if Trust Fall Tim (the guy who attempts trust falls at local venues) is successfully caught by the crowd at least once before December 31st, 2024.\n\nResolution criteria:\n- Must be caught by at least 2 people\n- Must be at a public venue\n- Video evidence required\n- Tim must confirm it counts\n\nCurrent streak: 47 consecutive failures.",
+  "summary": "Prediction on whether Trust Fall Tim will be successfully caught at a public venue before year end.",
+  "thumbnail_emoji": "🤸",
+  "metadata": {
+    "probability": 0.12,
+    "volume": 47200,
+    "volume_display": "$47.2K",
+    "traders": null,
+    "closes_at": "2024-12-31T00:00:00Z",
+    "hot": false,
+    "trending": true,
+    "yes_price": 12,
+    "no_price": 88,
+    "resolved": null
+  },
+  "tags": ["trust-fall-tim", "local-events", "the-underground", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "VenueRegular",
+      "content": "I've been going to The Underground for 2 years. Nobody is EVER going to catch this man. Free money on NO.",
+      "like_count": 45,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    },
+    {
+      "author_name": "OptimistOllie",
+      "content": "Someone on Threadit is organizing a flash mob to catch him. This could be the one!",
+      "like_count": 23,
+      "is_creator": false,
+      "position": "yes",
+      "replies": []
+    },
+    {
+      "author_name": "MarsTheOwner",
+      "content": "As the owner of The Underground, I can confirm we have no plans to help him. But also please stop betting on things that happen at my venue.",
+      "like_count": 189,
+      "is_creator": false,
+      "position": "none",
+      "replies": []
+    }
+  ]
+}

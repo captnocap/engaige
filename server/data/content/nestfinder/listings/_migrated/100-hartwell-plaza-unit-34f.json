@@ -1,0 +1,53 @@
+{
+  "$schema": "content",
+  "site_id": "nestfinder",
+  "content_type": "listing",
+  "slug": "100-hartwell-plaza-unit-34f",
+  "category": "Condos",
+  "title": "Luxury 1BR in The Hartwell Building - High Floor",
+  "body": "Experience luxury living in the iconic Hartwell Building! This stunning 1-bedroom condo offers breathtaking city views from the 34th floor.\n\nFeatures include:\n- Floor-to-ceiling windows\n- Premium finishes throughout\n- Spa-like bathroom with soaking tub\n- Chef's kitchen with premium appliances\n\nBuilding amenities include 24/7 concierge, fitness center, resident lounge, and rooftop pool.\n\nNote: Unit was recently renovated following the 2018 incident. All inspections passed. Building is completely safe now. Probably.",
+  "summary": "Luxury 1BR condo on the 34th floor of the iconic Hartwell Building. Premium finishes, full-service amenities.",
+  "thumbnail_emoji": "🌆",
+  "metadata": {
+    "price": 3200,
+    "currency": "USD",
+    "price_type": "rent",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 750,
+    "address": "100 Hartwell Plaza, Unit 34F",
+    "neighborhood": "Financial District",
+    "city": "Financial District",
+    "type": "condo",
+    "pet_friendly": true,
+    "pet_policy": "Dogs OK (building has dog spa!)",
+    "parking": "Valet parking included",
+    "laundry": "In-unit",
+    "available": "December 1st",
+    "posted": "1 week ago",
+    "amenities": [
+      "24/7 Concierge",
+      "Fitness Center",
+      "Rooftop Pool",
+      "Resident Lounge",
+      "Valet Parking",
+      "Dog Spa"
+    ],
+    "highlights": [
+      "34th floor views",
+      "Luxury finishes",
+      "Full-service building",
+      "Walking distance to everything"
+    ],
+    "red_flags": [],
+    "images": ["🌆", "✨", "🛁", "🌃"],
+    "agent": {
+      "name": "Marcus Chen",
+      "avatar": "👨‍💼",
+      "phone": "(555) 789-0123",
+      "response_time": "Usually responds within 30 minutes"
+    }
+  },
+  "tags": ["condo", "luxury", "hartwell-building", "financial-district", "high-floor"],
+  "published_at": "2026-01-13T00:00:00Z"
+}

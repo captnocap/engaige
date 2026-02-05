@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-the-medical-bills",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "The Medical Bills (Why I Started the CobFundMe)",
+  "body": "I did not want to write this post. I wanted to keep our medical situation private.\n\nBut I also wanted to keep Tim's career private. That didn't work out.\n\nThree months ago, I asked Tim casually about his health insurance. He said he had \"basic coverage through an independent contractor's plan.\" I moved on. I should not have moved on.\n\nLast month, I got a bill forwarded to his apartment. It was addressed to me (I'm still on his emergency contact). It was for $47,000. From County Hospital. From an ER visit in June.\n\nI called Tim. He claimed not to remember it. I said \"A FORTY-SEVEN THOUSAND DOLLAR ER VISIT?\" and he was like \"oh yeah, that one.\"\n\n\"THAT ONE,\" Timothy, suggests there have been MULTIPLE.\n\nIt turns out he's had SIX ER visits in the last two years. Sprains, contusions, one concussion. He paid for most of them out of pocket because his insurance deductible is $5,000 per visit.\n\nHis deductible is $5,000.\n\nHis salary from trust falls is approximately $2,400 per month.\n\nI cannot do math. I refuse to do this math. His father did it for me and now he just sits very still and stares at the wall.\n\nSo I did what any rational mother would do. I created a CobFundMe campaign. The title is \"Help Tim's Mom Help Tim (Medical Bills From His Dangerous Art).\"\n\nI set a goal of $15,000, which would cover his past ER visits plus emergency savings for future falls. It felt absurd to type that. \"Future falls.\" Like they're inevitable. Which they are. Because he's going to keep jumping.\n\nI have raised $3,200 so far, mostly from the trust fall community. A few of his regular catchers donated. Mars donated $500 and a message saying \"He's important.\" Several people from The Underground pitched in.\n\nEven Small Kevin donated $25.\n\nI was not expecting Small Kevin to donate. This complicates my feelings about Small Kevin.\n\nI still did not give him extra cookies, though. Standards.",
+  "summary": "Tim \"didn't want to worry me\" about his ER visits. That's where the $47,000 in bills came from. This is why I have a crowdfunding campaign.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 10,
+    "date": "October 25, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "concerns": ["Ongoing injury risk", "Financial instability", "Healthcare access"]
+  },
+
+  "tags": ["medical-bills", "cobfundme", "insurance-crisis", "desperate-times"],
+  "entities": ["Carol", "Tim", "Mars", "Small Kevin", "Gary"],
+
+  "published_at": "2025-10-25T00:00:00Z"
+}

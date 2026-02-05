@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-open-letter-tim",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "An Open Letter to Trust Fall Tim",
+  "body": "Tim,\n\nTomorrow is March 15th. One year to the day since The Incident.\n\nI don't expect you to read this. I don't expect you to care. But I'm writing it anyway.\n\nI've been thinking about what I want to say to you. I've written 847 different versions of this letter in my head. Deleted them all.\n\nHere's what I know:\n\nI failed you. Not just as a catcher, but as a person who claims to be part of the trust fall community. You trusted me\u2014literally\u2014and I let you down in the most public, humiliating way possible.\n\nI have thought about that moment every single day for 365 days. Sometimes multiple times per hour. Sometimes I wake up from dreams where I'm reaching for you, trying to catch you, always too slow.\n\nI lost my best friend because of what I did to you. I lost my place in the community. I lost my savings to a panic sell fueled by anxiety about what everyone thinks of me.\n\nI don't expect forgiveness. I don't deserve it.\n\nBut I wanted you to know: I'm trying. I'm practicing alone in a gym. I'm reading about biomechanics and reaction time. I'm working on being better, even though no one will ever let me prove it.\n\nI wanted you to know that I'm sorry. Not the \"sorry I got caught\" kind. The \"sorry I fundamentally damaged something you care about\" kind.\n\nYou've done 847 trust falls since The Incident. (I know because I follow your ForChan threads religiously, which is probably creepy, and I'm sorry about that too.)\n\n847 times you've fallen again. 847 times you've trusted people. That takes courage after what happened.\n\nI will spend the rest of my life wishing I could take back that moment. Wishing I had put my phone down. Wishing I had been present. Wishing I was the person you thought I was when you fell backwards into my arms that day.\n\nI'm sorry, Tim. I mean it. I mean it so much it hurts.\n\nSincerely,\n\nSmall Kevin (Kevin Smallwood)\n\nP.S. - I'm still training. I'm still trying. I don't know why. Maybe one day it will matter.",
+  "summary": "One year after. Everything I need to say, and nothing that will fix it.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 11,
+    "date": "March 14, 2024",
+    "likes": 0,
+    "comments_count": 576
+  },
+
+  "tags": ["tim", "apology", "anniversary", "letter", "heartfelt"],
+  "entities": ["Small Kevin", "Trust Fall Tim", "Big Kevin"],
+
+  "published_at": "2024-03-14T00:00:00Z"
+}

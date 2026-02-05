@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "vex-velvet-algorithms-hiatus",
+
+  "channel_slug": "vex",
+  "category": "Vex Drums",
+
+  "title": "The Velvet Algorithms Are Also on Hiatus, Right?",
+  "body": "Just checking in on the other local band situation.\n\nVelvet Algorithms announced a \"hiatus for meditation and existential exploration.\"\n\nThat's basically what Neon Requiem is doing. Just with less public announcement.\n\nSo we're not alone in this. Other bands pause. Other artists step back. It's healthy, actually.\n\nI bet Velvet Algorithms will reunite. I bet in two years we'll see both bands back on The Underground's stage, playing some kind of collaborative show.\n\nThat could be really cool actually. Neon Requiem opening, Velvet Algorithms closing. Late night crowd. All our friends there.\n\nI should reach out to Velvet Algorithms. Ask if they want to collaborate when they're ready. Show solidarity in the hiatus community.\n\nWe're not broken. We're just... paused.\n\nLike everyone else.",
+  "summary": "Saw an interview where they said \"we're taking some time apart.\" So they're not broken up. Everyone takes hiatuses. That's normal.",
+
+  "thumbnail_emoji": "🥁",
+
+  "metadata": {
+    "author": "Vex (Vernon Graves)",
+    "blog_name": "Vex Drums",
+    "reading_time_minutes": 4,
+    "date": "May 10, 2024",
+    "likes": 0,
+    "comments_count": 0,
+    "desperation": 6
+  },
+
+  "tags": ["velvet-algorithms", "hiatus-solidarity", "comparison", "seeking-validation", "grasping"],
+  "entities": ["Vex", "Neon Requiem", "Velvet Algorithms"],
+
+  "published_at": "2024-05-10T00:00:00Z"
+}

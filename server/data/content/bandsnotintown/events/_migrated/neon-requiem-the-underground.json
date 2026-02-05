@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bandsnotintown",
+  "content_type": "event",
+  "slug": "neon-requiem-the-underground",
+
+  "category": "Just Missed",
+
+  "title": "Neon Requiem at The Underground",
+  "body": "Neon Requiem performed at The Underground in Your City last week. Tickets were $30 and the show was sold out.\n\nYou missed it. It was last week. Everyone said it was amazing.",
+  "summary": "Neon Requiem played The Underground last week. You weren't there.",
+
+  "thumbnail_emoji": "\ud83d\udc80",
+
+  "metadata": {
+    "band": "Neon Requiem",
+    "venue": "The Underground",
+    "city": "Your City",
+    "date": "Last Week",
+    "time": "9:00 PM",
+    "price": "$30",
+    "sold_out": true,
+    "distance": "0 miles",
+    "reason_you_cant_go": "You missed it. It was last week. Everyone said it was amazing."
+  },
+
+  "tags": ["neon-requiem", "post-punk", "the-underground", "missed"],
+  "entities": ["Neon Requiem", "The Underground"],
+
+  "published_at": "2026-01-13T00:00:00Z",
+
+  "comments": []
+}

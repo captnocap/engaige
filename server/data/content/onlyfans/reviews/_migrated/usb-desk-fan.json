@@ -1,0 +1,35 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "usb-desk-fan",
+
+  "category": "Desk Fans",
+
+  "title": "USB Desktop Breeze Machine",
+  "body": "Perfect for your desk at work. Plugs into USB. Your coworkers will be jealous of your personal breeze.\n\nFeatures:\n- USB powered\n- 2 speeds\n- 360\u00b0 rotation\n- Near-silent operation\n- Cute AND functional",
+  "summary": "Perfect for your desk at work. Plugs into USB. Your coworkers will be jealous of your personal breeze.",
+
+  "thumbnail_emoji": "\ud83d\udca8",
+
+  "metadata": {
+    "type": "desk",
+    "price": 24.99,
+    "rating": 4.5,
+    "review_count": 1293,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": false,
+    "cfm": 150,
+    "blade_count": 3,
+    "noise_level": "Library quiet",
+    "features": ["USB powered", "2 speeds", "360\u00b0 rotation", "Near-silent operation", "Cute AND functional"]
+  },
+
+  "tags": ["desk-fan", "usb", "office", "quiet"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

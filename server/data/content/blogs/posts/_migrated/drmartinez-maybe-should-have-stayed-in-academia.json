@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "drmartinez-maybe-should-have-stayed-in-academia",
+
+  "channel_slug": "drmartinez",
+  "category": "Regret (Extended)",
+
+  "title": "Maybe I Should Have Stayed in Academia",
+  "body": "I thought about quitting today.\n\nNot quitting research. Quitting life. The quitting-life impulse lasted about 10 minutes (while I was reading email 763 from Derek about his coffee maker's \"mood patterns\"), then I made some tea and felt better.\n\nBut it made me think: Did I make the wrong choice in academia?\n\nMy parents wanted me to be a lawyer. My sister is a lawyer. She makes six figures and nobody has ever misinterpreted her work to construct a cult around sentient coffee.\n\nI could have been a lawyer.\n\nI could have been many things. I could have taken that job at JPMorgan in 2014. I could have done engineering. I could have been literally anything except a physicist whose name is now permanently associated with fictional quantum coffee.\n\nBut I loved physics. I loved the questions. I loved the precision. I loved that physics was OBJECTIVE. That the universe followed laws that did not care about human interpretation.\n\nExcept humans interpret. And sometimes they interpret wrong. And sometimes they interpret SO wrong that they build a $2,999 coffee maker based on their misinterpretation.\n\nThe problem is: I cannot take back my paper. I cannot un-publish it. I cannot delete Derek's emails. I cannot un-create the Elena Pro 3000 coffee maker.\n\nThis is what happens when you publish something. You send it out into the world and it becomes not-yours. It becomes everyone's. Specifically, it becomes Derek's.\n\nThere is no escape. There is only:\n\n1. Continue working in academia and deal with this forever\n2. Leave academia and be haunted by what I left\n3. Move to a remote college town and pretend none of this happened (preferred option)\n\nMaybe option 3 is still available.\n\nI am going to call some small colleges in Montana.",
+  "summary": "Wait. I AM in academia. That is the problem. There is no escape. This is the job. This is what happens when you publish something.",
+
+  "thumbnail_emoji": "\ud83d\udd2c",
+
+  "metadata": {
+    "author": "Dr. Elena Martinez",
+    "blog_name": "Dr. Martinez Clarifies",
+    "reading_time_minutes": 9,
+    "date": "May 15, 2025",
+    "likes": 0,
+    "category": "Regret (Extended)",
+    "updated": true
+  },
+
+  "tags": ["regret", "academia", "escape", "derek", "montana"],
+  "entities": ["Dr. Elena Martinez", "Derek"],
+
+  "published_at": "2025-05-15T00:00:00Z"
+}

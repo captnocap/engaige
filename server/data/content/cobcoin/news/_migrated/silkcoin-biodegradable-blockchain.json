@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "cobcoin",
+  "content_type": "article",
+  "slug": "silkcoin-biodegradable-blockchain",
+
+  "category": "Crypto News",
+
+  "title": "SilkCoin Developers Announce \"Biodegradable Blockchain\" - Network Already Decomposing",
+  "body": "The eco-friendly blockchain is working as intended, say developers. Users report transactions \"composting\" before confirmation.",
+  "summary": "SilkCoin's green blockchain initiative is working too well -- transactions are disappearing.",
+
+  "thumbnail_emoji": "\ud83e\uddf5",
+
+  "metadata": {
+    "source": "CornCrypto Daily",
+    "sentiment": "bearish",
+    "timestamp_relative": "1 day ago"
+  },
+
+  "tags": ["silk", "biodegradable", "blockchain", "eco-friendly", "decomposing"],
+  "entities": ["SilkCoin"],
+
+  "published_at": "2026-01-19T12:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "PaperHandsPatricia",
+      "content": "Sold all my COB at -94% to buy savings bonds. My husband says I have no vision but at least I can afford socks now.",
+      "like_count": -23,
+      "replies": []
+    }
+  ]
+}

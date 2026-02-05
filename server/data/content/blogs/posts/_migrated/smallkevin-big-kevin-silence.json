@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "smallkevin-big-kevin-silence",
+
+  "channel_slug": "smallkevin",
+  "category": "SmallKevinRedemption",
+
+  "title": "Big Kevin Won't Talk to Me Anymore",
+  "body": "Big Kevin was my best friend. We met in high school. We did everything together.\n\nAfter The Incident, he sent one text: \"We need some space right now.\"\n\nThat was 4 months ago.\n\nI've called 47 times. I've texted 847 times (I counted). I emailed. I showed up at his house twice. He has a restraining order preventing me from coming within 100 feet of his residence.\n\nHis mom still talks to me sometimes at the grocery store. She says he's \"processing.\" She says he'll come around. She's being nice to me, which makes it worse.\n\nBig Kevin was the one person who believed in me. When nobody else in the trust fall community would work with me anymore, he said \"hey, we're still friends, right?\" I said yes. He believed me.\n\nAnd then I destroyed that trust by literally failing to catch his best friend.\n\nI understand why he's angry. I understand why he doesn't want to see me. I just wish he would take one of my calls. Just once.\n\nI saw him at the grocery store last week. He looked different\u2014older, somehow. We made eye contact for about 3 seconds. He walked away.\n\nThat 3 seconds of eye contact is the longest conversation we've had in 4 months.\n\nI miss my best friend.",
+  "summary": "My only friend has cut me off. And I deserve it.",
+
+  "thumbnail_emoji": "\ud83d\ude14",
+
+  "metadata": {
+    "author": "Small Kevin (Kevin Smallwood)",
+    "blog_name": "SmallKevinRedemption",
+    "reading_time_minutes": 12,
+    "date": "July 22, 2022",
+    "likes": 0,
+    "comments_count": 426
+  },
+
+  "tags": ["big-kevin", "friendship", "loss", "isolation", "betrayal"],
+  "entities": ["Small Kevin", "Big Kevin", "Trust Fall Tim"],
+
+  "published_at": "2022-07-22T00:00:00Z"
+}

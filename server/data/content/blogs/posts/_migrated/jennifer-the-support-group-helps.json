@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "jennifer-the-support-group-helps",
+
+  "channel_slug": "jennifer",
+  "category": "Jennifer Heals",
+
+  "title": "The Support Group Helps",
+  "body": "I found \"Quantum Widows Anonymous\" on a Threadit thread. The description said, \"For women whose marriages ended due to obsessive partner behavior that society calls a 'hobby.'\"\n\nI cried when I read that. I wasn't alone.\n\nThe first meeting was Zoom (appropriate, given we're all avoiding leaving our houses). There were 12 of us. One woman, Patricia, had a husband who spent $2,400/month on specialty beans. Another, Sarah, found her partner hiding coffee receipts in a separate bank account.\n\nBut the worst story came from Marcus—yes, there are men there too—whose husband came home one day and said, \"I've decided coffee is more important than our marriage.\" Just like that. No therapy, no discussion. Just a full pivot to coffee.\n\nWe all nodded. We understood.\n\nThe group facilitator, Dr. Kim, explained it as a form of addiction displacement. Partners with unresolved trauma sometimes latch onto something they can control—like brewing methods—to avoid intimate human connection.\n\nIt made sense. Derek never wanted to talk about his feelings. But he could talk for HOURS about the exact temperature of water and how it affected the bean's quantum state.\n\nDuring group, I realized: it was never about me not being enough. It was about him not being available. And that's his issue to work through, not mine.\n\nOr so the therapist says. I still googled him twice last week, so I'm \"processing at my own pace.\"\n\nAnyway, if anyone reading this is in a similar situation: there's a support group for you. You're not crazy. Your partner's obsession with pseudoscientific coffee theory IS actually a sign of deeper issues.\n\nAlso, we have a group chat. Jessica from Colorado made brownies last week and we all pretended they didn't taste like sadness.",
+  "summary": "Meeting other women who lost their husbands to quantum coffee has been... healing? Is validation a healing process?",
+
+  "thumbnail_emoji": "💗",
+
+  "metadata": {
+    "author": "Jennifer Observerson",
+    "blog_name": "Jennifer Heals",
+    "reading_time_minutes": 10,
+    "date": "January 15, 2026",
+    "likes": 0,
+    "comments_count": 589
+  },
+
+  "tags": ["support-group", "healing", "im-not-alone", "coffee-widows"],
+  "entities": ["Jennifer", "Derek", "Dr. Kim", "Patricia", "Sarah", "Marcus", "Jessica"],
+
+  "published_at": "2026-01-15T00:00:00Z"
+}

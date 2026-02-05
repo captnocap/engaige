@@ -1,0 +1,55 @@
+{
+  "$schema": "category",
+  "site_id": "wikiknow",
+  "categories": [
+    {
+      "slug": "technology",
+      "name": "Technology",
+      "description": "Articles about technology, inventions, and scientific discoveries",
+      "icon_emoji": "💻",
+      "sort_order": 0
+    },
+    {
+      "slug": "internet-history",
+      "name": "Internet History",
+      "description": "Articles about notable events and phenomena in internet culture",
+      "icon_emoji": "🌐",
+      "sort_order": 1
+    },
+    {
+      "slug": "music-venues",
+      "name": "Music Venues",
+      "description": "Articles about music venues and performance spaces",
+      "icon_emoji": "🎵",
+      "sort_order": 2
+    },
+    {
+      "slug": "people",
+      "name": "People",
+      "description": "Biographical articles about notable individuals",
+      "icon_emoji": "👤",
+      "sort_order": 3
+    },
+    {
+      "slug": "buildings",
+      "name": "Buildings",
+      "description": "Articles about notable buildings and architectural structures",
+      "icon_emoji": "🏢",
+      "sort_order": 4
+    },
+    {
+      "slug": "pseudoscience",
+      "name": "Pseudoscience",
+      "description": "Articles about pseudoscientific concepts and practices",
+      "icon_emoji": "⚛️",
+      "sort_order": 5
+    },
+    {
+      "slug": "companies",
+      "name": "Companies",
+      "description": "Articles about companies and corporate entities",
+      "icon_emoji": "🏛️",
+      "sort_order": 6
+    }
+  ]
+}

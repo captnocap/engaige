@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-catch-rate-78-point-5",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "Tim Got His Catch Rate Up to 78.5%! (But What About the OTHER 21.5%???)",
+  "body": "Tim told me his \"catch rate\" has improved to 78.5%. I am supposed to be proud. I am trying to be proud. But let me do the math here.\n\n847 falls total. 78.5% successful = 664 successful catches. Which means... 183 FALLS WHERE SOMETHING WENT WRONG.\n\nONE HUNDRED AND EIGHTY THREE.\n\nHis father asked me to stop doing the math. He said it's \"not helpful.\" I said KNOWLEDGE is always helpful.\n\nTim explained that a 78.5% catch rate is actually \"extremely good\" for someone who's been doing this for 3 years. He said most trust fall performers don't track stats this carefully. Which is PROBABLY because they would have nervous breakdowns if they did.\n\nI asked him what happens in the 21.5%. He said \"people have good days and bad days\" and \"some falls are just harder than others--maybe the crowd is smaller, or there's bad positioning.\"\n\nSo you're telling me that 183 TIMES, the conditions were suboptimal for falling on people.\n\nI should not be proud of this statistic. And yet, my mother's heart is proud. 78.5% is objectively better than 77.2% (his rate last month). So I am proud AND terrified. Schrodinger's mother.\n\nI made him a pie to celebrate. It has 78.5% filling and 21.5% less filling to represent the risk ratio. He didn't get the joke. He just ate the pie.\n\nHis father got it. He laughed very hard and then looked sad.",
+  "summary": "This is supposed to be good news. A mother should be happy. But all I can think about is 847 multiplied by 0.215. That's a LOT of falls.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 7,
+    "date": "December 15, 2025",
+    "likes": 0,
+    "comments_count": 0,
+    "concerns": ["That other 21.5%", "Crowd incompetence", "Long-term injury risk"]
+  },
+
+  "tags": ["statistics", "proud-but-terrified", "math", "catch-rates"],
+  "entities": ["Carol", "Tim", "Gary"],
+
+  "published_at": "2025-12-15T00:00:00Z"
+}

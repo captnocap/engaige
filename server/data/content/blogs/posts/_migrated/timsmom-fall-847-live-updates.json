@@ -1,0 +1,31 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-fall-847-live-updates",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "I Watched Fall #847 (Live Updates - Mild Heart Attack Included)",
+  "body": "4:00 PM - I'm here at The Underground (the venue - it's a converted basement bar, very dark, smells like beer). Tim is warming up. He's doing stretches. Why is he stretching? Does that help?\n\n4:08 PM - The crowd is gathering. Probably 40-50 people. I count 7 older women in the audience. I am not alone in my concerns. Several of them nod sympathetically at me. We form an unspoken alliance of worried mothers.\n\n4:14 PM - This is it. Tim takes his position. He's on a platform that's about 6 feet high. That seems low? Or is 6 feet high?? Why am I not good at measurements. He's going to fall 6 feet onto the heads of college students who are NOT his mother and have NOT been trained in emergency first aid.\n\n4:16 PM - \"Ladies and gentlemen, this is Trust Fall Tiiiiim!\" the announcer yells. I die a little inside.\n\n4:17 PM - HE JUMPS. TIME STOPS. THE WORLD IS SLOW MOTION. A THOUSAND ARMS REACH UP. THEY CATCH HIM. HE LANDS SAFELY ON 12 RANDOM MEN.\n\n4:18 PM - I need to sit down. There is no chair. I sit on the floor. A young man asks if I'm okay. I say \"my son is a professional faller.\" He seems confused.\n\n4:20 PM - Tim comes over, sweaty, energized, talking about \"the energy of the room\" and \"how safe and connected he felt.\" He did not feel as safe as I felt unsafe.\n\n4:25 PM - He's already talking about Fall #848. I brought Tums in my purse. I eat three of them dry.\n\nUPDATE: He's fine. He's always fine. Statistically speaking, at some point he will not be fine. This is the problem with statistics and probability. Eventually someone loses.",
+  "summary": "4:15 PM: He's about to jump. I can't watch. I'm watching. My hands are shaking. Update: He's alive.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 12,
+    "date": "January 10, 2026",
+    "likes": 0,
+    "comments_count": 0,
+    "isLiveUpdate": true,
+    "concerns": ["Fall landing safety", "Crowd competence", "His career trajectory"]
+  },
+
+  "tags": ["fall-847", "live-blog", "heart-attack", "i-brought-tums"],
+  "entities": ["Carol", "Tim"],
+
+  "published_at": "2026-01-10T00:00:00Z"
+}

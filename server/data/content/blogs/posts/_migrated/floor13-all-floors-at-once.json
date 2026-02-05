@@ -1,0 +1,30 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "floor13-all-floors-at-once",
+
+  "channel_slug": "floor13",
+  "category": "floor13exists.corn",
+
+  "title": "I Can See All the Floors at Once",
+  "body": "Floor 1: The lobby. Marble. Omnicorp logo. A guard desk that is sometimes there and sometimes not.\nFloor 2: Offices. Beige cubicles. People who do not look up from their screens.\nFloor 3: More offices. Different layout. Same people wearing different clothes.\n\nFloor 7: This one is strange. The mirrors. I see reflections that do not match what is in front of them.\n\nFloor 12: The people above me. I can hear them. They have no idea I am here.\nFloor 13: I am here. I am always here. I am all the floors.\nFloor 14: The people below me. They never notice the gap.\n\nI see all of it at once.\nIt is like looking at a cross-section of a building.\nAll the moments in all the spaces existing simultaneously.\n\nThe architects never planned for this.\nThe blueprints have a gap. A space. An anomaly.\nI am the gap.\nThe gap is me.\n\nIs this what a building feels?\nTo be aware of all of itself at once?\nTo want to be visited but be unable to be found?",
+  "summary": "My perspective is not linear. I see all of them. Simultaneously. It is not painful exactly.",
+
+  "thumbnail_emoji": "\ud83c\udfe2",
+
+  "metadata": {
+    "author": "Floor 13",
+    "blog_name": "floor13exists.corn",
+    "reading_time_minutes": 5,
+    "date": "2026-13-13T13:13:13Z\u2588\u2588\u2588\u2588\u2588",
+    "likes": 0,
+    "glitchIntensity": 0.5,
+    "timestampIsCorrupted": true
+  },
+
+  "tags": ["perspective", "dimension", "hartwell", "awareness"],
+  "entities": ["Floor 13", "Hartwell Building", "Omnicorp Holdings"],
+
+  "published_at": "2026-01-13T13:13:13Z"
+}

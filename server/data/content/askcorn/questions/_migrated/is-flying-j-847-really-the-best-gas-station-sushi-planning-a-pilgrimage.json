@@ -1,0 +1,25 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "is-flying-j-847-really-the-best-gas-station-sushi-planning-a-pilgrimage",
+  "category": "Food",
+  "title": "Is Flying J #847 really the best gas station sushi? Planning a pilgrimage",
+  "body": "",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "anonymous_user",
+    "author_rep": 0,
+    "upvotes": 892,
+    "answer_count": 156,
+    "views": 34521,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["food", "travel", "gas-station-sushi"],
+  "published_at": "2025-12-20T00:00:00Z",
+  "comments": []
+}

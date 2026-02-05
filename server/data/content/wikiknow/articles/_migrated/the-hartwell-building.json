@@ -1,0 +1,73 @@
+{
+  "$schema": "content",
+  "site_id": "wikiknow",
+  "content_type": "article",
+  "slug": "the-hartwell-building",
+
+  "category": "Buildings",
+
+  "title": "The Hartwell Building",
+  "subtitle": null,
+  "body": "**This article has multiple issues.** Please help improve it or discuss these issues on the talk page.\n- This article's neutrality is disputed. (December 2024)\n- This article may contain original research. (January 2025)\n- Some of this article's claims require citations from reliable sources. (Ongoing)\n\n## History\n\nThe Hartwell Building was commissioned by Magnus Hartwell, a railroad industrialist whose fortune was made during the expansion of the Pacific Northwest rail network. Construction began in 1922 and was completed in 1923 at a cost of $2.3 million (equivalent to approximately $42 million in 2024 dollars).\n\nMagnus Hartwell maintained an office on what was then designated as the 13th floor until his disappearance on October 15, 1931. He was last seen entering the building at 9:47 PM. His body was never recovered, and the case remains officially unsolved.[1]\n\nFollowing Hartwell's disappearance, the building passed through several owners:\n- 1932-1958: Hartwell Estate Trust\n- 1958-1984: Pacific Commerce Holdings\n- 1984-present: Omnicorp Holdings\n\nThe building underwent major \"renovations\" in 1984, after which it was listed as having 12 floors. The basement has been continuously \"under renovation\" since this time.[2]\n\n## Architecture\n\nThe Hartwell Building is a 12-story [disputed - discuss] structure designed in the Art Deco style with Gothic Revival influences. The architect's identity is unknown, as the original blueprints were destroyed in a fire at the city records office in 1952--the same year photographs emerged showing the building with 13 visible floors.\n\n**Architectural Features:**\n- Limestone and granite facade\n- Brass elevator doors with geometric patterns\n- Original terrazzo flooring in the lobby\n- Extensive use of mirrors on Floor 7\n- Gargoyles on corners (added 1928, removed 1984, reinstalled 2019)\n\nThe building is notable for having two sets of elevator buttons: the modern set shows floors 1-12, while a older set behind a maintenance panel shows floors 1-14 with floor 13 scratched out.[citation needed]\n\n### Floor 7\n\nFloor 7 is the building's most architecturally unusual level, featuring an extensive installation of mirrors that predates the 1984 renovation. Current tenants report that the floor plan does not match building records, with some offices appearing to have no windows despite their supposed exterior location.\n\nThe mirrors have been the subject of numerous complaints. A 2019 building inspection report noted that \"mirror placement creates disorienting spatial effects\" but found no code violations. Several tenants have requested mirror removal, which Omnicorp Holdings has declined, citing \"historical preservation requirements.\"[3]\n\nA NestFinder listing for Floor 7 appeared briefly in January 2025 before being removed within 6 hours. Cached versions of the listing describe \"a unique opportunity to experience living in the space between spaces.\"[citation needed]\n\n## The Missing Floor Controversy\n\nThe most persistent controversy surrounding the Hartwell Building involves claims that the building originally had 13 floors rather than the current 12.\n\n**Evidence cited by proponents:**\n- A 1952 photograph showing 13 visible floor levels (authentication disputed)\n- Elevator button panels with floor 13 scratched out\n- Inconsistencies in floor height measurements\n- Eyewitness accounts of \"arriving at a floor that doesn't exist\"[4]\n\n**Skeptical explanations:**\n- The 1952 photograph may show a mechanical floor or decorative element\n- Elevator irregularities are common in buildings of this age\n- Height inconsistencies result from varying ceiling heights\n- Eyewitness accounts may be influenced by suggestion\n\nThe building management does not comment on these claims. A 2020 request for floor plans under the Freedom of Information Act was denied on the grounds that the building is privately owned. Omnicorp Holdings did not respond to inquiries.\n\n## Temporal Anomalies (reported)\n\nBeginning in 1999, various tenants and visitors have reported temporal anomalies within the building. These accounts are not verified by any scientific measurement.\n\n**Reported phenomena:**\n- Clocks running at different speeds on different floors\n- Time discrepancies between entering and exiting the building\n- Phone timestamps that don't match building security logs\n- A 2019 incident where security footage showed a figure that appeared on no other cameras[5]\n\nDr. Helena Vance, a physicist at the local university, has stated that \"there is no scientific basis for temporal anomalies in commercial real estate. If there were, physicists would be buying property, not publishing papers.\"[6]\n\nDespite skepticism from the scientific community, online forums dedicated to the Hartwell Building (particularly r/HartwellFiles and the HartwellFiles.net archive) continue to document and investigate reported incidents. The subreddit has 847 active members as of January 2025.\n\n## Notable Tenants\n\n**Current:**\n- Floors 1-2: Retail (various, high turnover)\n- Floor 3: Vacant since 2018\n- Floor 4: Legal offices (Hendricks & Associates)\n- Floor 5-6: Tech startup (name changes annually)\n- Floor 7: \"Mixed use\" (tenant list unavailable)\n- Floors 8-10: Omnicorp Holdings offices\n- Floors 11-12: Vacant (listed as \"under renovation\")\n\n**Historical:**\n- Magnus Hartwell's personal office (Floor 13, 1923-1931)\n- The Underground music venue (basement, 2008-2020) - relocated due to \"acoustic concerns\"\n- Quantum Coffee Co. flagship cafe (Floor 1, 2022-2023) - closed after 47 complaints about \"observation protocols\"\n\nThe Underground's relocation in 2020 notably occurred after owner Marcus \"Mars\" Chen reported \"increasingly weird vibes in the basement, like the walls were listening.\"[7]",
+  "summary": "The Hartwell Building is a commercial building located in downtown, constructed in 1923 by industrialist Magnus Hartwell. The building has been the subject of persistent urban legends and conspiracy theories regarding a \"missing floor,\" temporal anomalies, and the unexplained disappearance of its founder in 1931. Currently owned by Omnicorp Holdings, the building remains partially occupied despite decades of incomplete renovations.",
+
+  "thumbnail_emoji": "🏢",
+
+  "metadata": {
+    "author": "Various Contributors",
+    "last_edited": "2026-01-28",
+    "reading_time_minutes": 10,
+    "references": 7,
+    "is_disputed": true,
+    "views": 89234,
+    "infobox": {
+      "image": "🏢",
+      "image_caption": "The Hartwell Building (2024). Note: Floor count disputed.",
+      "facts": {
+        "Built": "1923",
+        "Floors": "12 (disputed)",
+        "Original floors": "13 or 14 (unverified)",
+        "Architect": "Unknown (records lost)",
+        "Owner": "Omnicorp Holdings",
+        "Builder": "Magnus Hartwell",
+        "Style": "Art Deco/Gothic Revival",
+        "Basement status": "Under renovation (since 1984)"
+      }
+    },
+    "sections": [
+      { "id": "disputed_tag", "heading": "" },
+      { "id": "history", "heading": "History" },
+      {
+        "id": "architecture",
+        "heading": "Architecture",
+        "subsections": [
+          { "id": "floor_7", "heading": "Floor 7" }
+        ]
+      },
+      { "id": "missing_floor", "heading": "The Missing Floor Controversy" },
+      { "id": "temporal_anomalies", "heading": "Temporal Anomalies (reported)" },
+      { "id": "notable_tenants", "heading": "Notable Tenants" }
+    ],
+    "related_articles": [
+      "Magnus Hartwell",
+      "Omnicorp Holdings",
+      "The Underground (venue)",
+      "Art Deco architecture",
+      "Urban legends"
+    ],
+    "references_list": [
+      "City Police Archives. (1931). \"Hartwell, Magnus - Missing Person Report #1931-847.\"",
+      "Building Permits Office. (1984). \"Hartwell Building Renovation Permit #84-1213.\"",
+      "Hendricks & Associates v. Omnicorp Holdings. (2019). \"Motion for Mirror Removal.\" Denied.",
+      "Various contributors. (2024). r/HartwellFiles wiki. \"Eyewitness Testimony Archive.\"",
+      "Building Security Report. (2019). \"Incident #2019-1031.\" Unredacted version unavailable.",
+      "Vance, H. (2023). Interview with Local News 7.",
+      "Chen, M. (2020). Interview with Rolling Stone Digital."
+    ]
+  },
+
+  "tags": ["Hartwell Building", "missing floor", "urban legends", "temporal anomalies", "Omnicorp Holdings", "Magnus Hartwell", "architecture"],
+  "entities": ["Magnus Hartwell", "Omnicorp Holdings", "Pacific Commerce Holdings", "Hartwell Estate Trust", "Hendricks & Associates", "Dr. Helena Vance", "Marcus \"Mars\" Chen", "The Underground", "Quantum Coffee Co."],
+
+  "published_at": "2024-06-15T00:00:00Z"
+}

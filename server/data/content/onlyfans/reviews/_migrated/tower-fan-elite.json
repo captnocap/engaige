@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "tower-fan-elite",
+
+  "category": "Tower Fans",
+
+  "title": "Tower Fan Elite 9000",
+  "body": "Sleek. Modern. Powerful. This tower fan doesn't just move air - it makes a statement about who you are as a person.\n\nFeatures:\n- 42\" tall\n- 12 speed settings\n- Remote control\n- Sleep timer\n- Bladeless design\n- LED display",
+  "summary": "Sleek. Modern. Powerful. This tower fan makes a statement about who you are as a person.",
+
+  "thumbnail_emoji": "\ud83d\uddfc",
+
+  "metadata": {
+    "type": "tower",
+    "price": 149.99,
+    "rating": 4.7,
+    "review_count": 892,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": true,
+    "cfm": 800,
+    "noise_level": "Gentle hum",
+    "features": ["42\" tall", "12 speed settings", "Remote control", "Sleep timer", "Bladeless design", "LED display"]
+  },
+
+  "tags": ["tower-fan", "modern", "bladeless", "exclusive"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "category",
+  "site_id": "cornhub",
+  "categories": [
+    { "slug": "amateur-cornbread", "name": "Amateur Cornbread", "icon_emoji": "\ud83c\udf3d", "sort_order": 0 },
+    { "slug": "professional-chefs", "name": "Professional Chefs", "icon_emoji": "\ud83d\udc68\u200d\ud83c\udf73", "sort_order": 1 },
+    { "slug": "homemade", "name": "Homemade", "icon_emoji": "\ud83c\udfe0", "sort_order": 2 },
+    { "slug": "experimental", "name": "Experimental", "icon_emoji": "\ud83e\uddea", "sort_order": 3 },
+    { "slug": "grilled", "name": "Grilled", "icon_emoji": "\ud83d\udd25", "sort_order": 4 },
+    { "slug": "creamy", "name": "Creamy", "icon_emoji": "\ud83e\udd5b", "sort_order": 5 },
+    { "slug": "spicy", "name": "Spicy", "icon_emoji": "\ud83c\udf36\ufe0f", "sort_order": 6 }
+  ]
+}

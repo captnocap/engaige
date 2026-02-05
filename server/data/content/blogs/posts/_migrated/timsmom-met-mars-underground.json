@@ -1,0 +1,29 @@
+{
+  "$schema": "content",
+  "site_id": "blogs",
+  "content_type": "post",
+  "slug": "timsmom-met-mars-underground",
+
+  "channel_slug": "timsmom",
+  "category": "Carol's Trust Fall Support Blog",
+
+  "title": "I Met Mars at The Underground (She's Actually Very Nice?)",
+  "body": "Last Friday, I arrived at The Underground early to watch Tim set up for Fall #835. I was carrying my homemade brownies (the good ones, with the chocolate chunks, not the corner-cutting kind).\n\nThe venue owner, Mars, was there doing sound checks. I was expecting someone... edgier? Moodier? Definitely someone who wouldn't care about a 58-year-old woman's concerns about her son jumping off platforms.\n\nBut Mars came over to talk to me. She remembered my name. She asked how I was doing.\n\n\"I'm worried Tim's going to get seriously hurt,\" I told her. No filter. Just the truth.\n\nAnd Mars said--and I'm quoting here--\"Yeah, I worry about that too.\"\n\nWe had a 20-minute conversation about injury prevention, crowd positioning, and the legal liability of hosting jump performances in a basement. Mars has clearly thought about this. She has insurance specifically for Tim. INSURANCE SPECIFICALLY FOR TIM.\n\nShe told me that Tim negotiated it himself. That he wanted to make sure the venue was protected. That he took his \"work\" seriously in that way, at least.\n\nI offered her the brownies. She accepted them like they were a peace offering between two warriors. Which, I suppose, they were.\n\nShe told me that whenever Tim performs, she stations extra catchers in strategic positions. That she watches the crowd carefully. That she's seen 847 falls and is deeply committed to making sure fall #848 happens safely.\n\nWe're friends now, I think? We're friends.\n\nShe still has leftover brownies from that day. She offered me the recipe for her venue's signature cocktail in trade. I said yes. I am bringing them next week. This is an alliance.",
+  "summary": "The venue owner. Expected a sketchy club owner. Found a thoughtful woman who also seems worried about Tim. We bonded over concern.",
+
+  "thumbnail_emoji": "🍪",
+
+  "metadata": {
+    "author": "Carol Williams",
+    "blog_name": "Carol's Trust Fall Support Blog",
+    "reading_time_minutes": 6,
+    "date": "December 2, 2025",
+    "likes": 0,
+    "comments_count": 0
+  },
+
+  "tags": ["mars", "the-underground", "unexpected-ally", "brownies"],
+  "entities": ["Carol", "Tim", "Mars"],
+
+  "published_at": "2025-12-02T00:00:00Z"
+}

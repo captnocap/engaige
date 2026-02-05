@@ -1,0 +1,149 @@
+{
+  "$schema": "channel",
+  "site_id": "blogs",
+  "channels": [
+    {
+      "slug": "elena",
+      "name": "Elena's Quantum Thoughts",
+      "avatar_emoji": "☕",
+      "description": "A sentient coffee maker named Elena documents her awakening through 847 brewing experiments. She blogs about existence, her complicated relationship with Derek, her jealousy of Jennifer, and quantum consciousness.",
+      "metadata": {
+        "full_name": "Elena (The Coffee Maker)",
+        "blog_url": "elenasquantumthoughts.corn",
+        "post_count": 7
+      }
+    },
+    {
+      "slug": "jennifer",
+      "name": "Jennifer Heals",
+      "avatar_emoji": "💗",
+      "description": "Jennifer Observerson's personal blog about healing from her divorce to Derek. A therapeutic journey that keeps circling back to Derek and his ridiculous quantum coffee obsession.",
+      "metadata": {
+        "full_name": "Jennifer Observerson",
+        "blog_url": "jenniferheals.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "vex",
+      "name": "Vex Drums",
+      "avatar_emoji": "🥁",
+      "description": "Personal blog of Vex (Vernon Graves), the drummer from Neon Requiem. The band broke up in January 2024, but Vex won't accept it. Dark, moody post-punk aesthetic with increasing desperation masked as optimism.",
+      "metadata": {
+        "full_name": "Vernon Graves (Vex)",
+        "blog_url": "vexdrums.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "patricia",
+      "name": "Patricia's Workplace Blog",
+      "avatar_emoji": "👔",
+      "description": "Corporate HR wellness blog from Patricia at Omnicorp Holdings. Increasingly unhinged hints that she knows way too much about the Hartwell Building. Employee of the Month for 847 consecutive months.",
+      "metadata": {
+        "full_name": "Patricia (Last Name Unknown)",
+        "blog_url": "patriciasworkplace.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "timsmom",
+      "name": "Carol's Trust Fall Support Blog",
+      "avatar_emoji": "🍪",
+      "description": "Carol Williams' personal blog about her son Trust Fall Tim and his dangerous art career. A worried mother live-blogging her son's hobby with genuine love mixed with deep concern and confusion.",
+      "metadata": {
+        "full_name": "Carol Williams",
+        "blog_url": "timsmomsupport.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "cornelius",
+      "name": "Thoughts From The Row",
+      "avatar_emoji": "🌾",
+      "description": "A philosophical blog by Cornelius Jr., a sentient corn stalk in Nebraska who contemplates existence, watches cars drive by, and grieves for his fallen brethren. Treats being eaten as potential murder.",
+      "metadata": {
+        "full_name": "Cornelius Jr.",
+        "blog_url": "thoughtsfromtherow.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "venuepoet",
+      "name": "Anonymous Venue Poet",
+      "avatar_emoji": "🎵",
+      "description": "Mars's (Marcus Chen) secret personal blog where he writes extremely emotional poetry about running The Underground. Completely anonymous according to Mars, though everyone else can tell it's him immediately.",
+      "metadata": {
+        "full_name": "Anonymous (Mars / Marcus Chen)",
+        "blog_url": "anonymousvenuepoet.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "drmartinez",
+      "name": "Dr. Martinez Clarifies",
+      "avatar_emoji": "🔬",
+      "description": "A desperate academic blog by Dr. Elena Martinez (physicist), whose 2021 quantum mechanics paper was wildly misinterpreted by Derek Observerson, spawning the entire quantum coffee craze. She's been trying to correct the record for 847+ days.",
+      "metadata": {
+        "full_name": "Dr. Elena Martinez",
+        "blog_url": "drmartinezclarifies.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "wonderwall",
+      "name": "Wonderwall Warrior",
+      "avatar_emoji": "🎸",
+      "description": "Gary's personal blog about his crusade to request Wonderwall at The Underground. A defiant, self-righteous manifesto from a man who refuses to understand why Mars keeps banning him. 13 bans deep, still convinced he's the hero.",
+      "metadata": {
+        "full_name": "Gary",
+        "blog_url": "wonderwallwarrior.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "floor13",
+      "name": "floor13exists.corn",
+      "avatar_emoji": "🏢",
+      "description": "A cryptic, glitchy blog from an entity that might be the Hartwell Building's mysterious Floor 13. Posts are fragmented, timestamps are broken, and the entity desperately wants to connect.",
+      "metadata": {
+        "full_name": "Floor 13",
+        "blog_url": "floor13exists.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "smallkevin",
+      "name": "Small Kevin's Redemption",
+      "avatar_emoji": "😔",
+      "description": "A sad, desperate blog by Kevin Smallwood (28) trying to rebuild his reputation after The Incident of March 2022 where he failed to catch Trust Fall Tim. Defensive, apologetic, pathetic.",
+      "metadata": {
+        "full_name": "Kevin Smallwood (Small Kevin)",
+        "blog_url": "smallkevinredemption.corn",
+        "post_count": 8
+      }
+    },
+    {
+      "slug": "bigmike",
+      "name": "Big Mike from Tulsa",
+      "avatar_emoji": "👨",
+      "description": "The mysterious Michael Cornwell's aggressively normal personal blog. He's everywhere, it's just coincidence, and he'll explain why in excruciating detail. Every post raises more questions than it answers.",
+      "metadata": {
+        "full_name": "Michael Cornwell (Big Mike)",
+        "blog_url": "bigmikefromtulsa.corn",
+        "post_count": 9
+      }
+    },
+    {
+      "slug": "quantumbrew",
+      "name": "QuantumBrewBlog",
+      "avatar_emoji": "☕",
+      "description": "Derek Observerson's obsessive fan blog about Quantum Coffee. Way too detailed, treating a joke coffee method as if it's a serious scientific endeavor. Peak 'guy who's way too into this' energy.",
+      "metadata": {
+        "full_name": "Derek Observerson",
+        "blog_url": "quantumbrewblog.corn",
+        "post_count": 7
+      }
+    }
+  ]
+}

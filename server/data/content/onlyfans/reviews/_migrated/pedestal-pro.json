@@ -1,0 +1,36 @@
+{
+  "$schema": "content",
+  "site_id": "onlyfans",
+  "content_type": "product",
+  "slug": "pedestal-pro",
+
+  "category": "Pedestal Fans",
+
+  "title": "Pedestal Pro Oscillator",
+  "body": "Adjustable height. Oscillating head. The fan that follows you around the room (not literally, that would be creepy).\n\nFeatures:\n- Adjustable height 36\"-54\"\n- 90\u00b0 oscillation\n- 3 speeds\n- Tilt-adjustable head\n- Weighted base",
+  "summary": "Adjustable height. Oscillating head. The fan that follows you around the room (not literally).",
+
+  "thumbnail_emoji": "\ud83c\udfaf",
+
+  "metadata": {
+    "type": "pedestal",
+    "price": 79.99,
+    "original_price": 99.99,
+    "rating": 4.6,
+    "review_count": 743,
+    "in_stock": true,
+    "is_hot": false,
+    "is_exclusive": false,
+    "cfm": 1800,
+    "blade_count": 3,
+    "noise_level": "Moderate",
+    "features": ["Adjustable height 36\"-54\"", "90\u00b0 oscillation", "3 speeds", "Tilt-adjustable head", "Weighted base"]
+  },
+
+  "tags": ["pedestal-fan", "oscillating", "adjustable", "on-sale"],
+  "entities": ["OnlyFans"],
+
+  "published_at": "2026-01-15T00:00:00Z",
+
+  "comments": []
+}

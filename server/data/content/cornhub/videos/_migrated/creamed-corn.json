@@ -1,0 +1,42 @@
+{
+  "$schema": "content",
+  "site_id": "cornhub",
+  "content_type": "video",
+  "slug": "creamed-corn",
+
+  "category": "Homemade",
+
+  "title": "Thick Creamy Corn - My First Time Making It",
+  "body": "I have never made creamed corn before. My hands were shaking the whole time. Please be gentle in the comments.\n\nIngredients:\n- 4 cups fresh corn kernels\n- 1 cup heavy cream\n- 2 tbsp butter\n- 1 tbsp flour\n- Salt and pepper\n- Pinch of sugar\n\nSteps:\n1. Cut corn from cob\n2. Melt butter in saucepan\n3. Add flour, stir 1 minute\n4. Pour in cream slowly\n5. Add corn, simmer 10 minutes\n6. Season to taste",
+  "summary": "First time making creamed corn. Hands were shaking. Please be gentle in the comments.",
+
+  "thumbnail_emoji": "\ud83c\udf3d\ud83e\udd5b",
+
+  "metadata": {
+    "duration": "18:34",
+    "views": 4300000,
+    "rating": 94,
+    "author": "NervousNewbie_Cooks",
+    "author_avatar": "\ud83e\uddd1\u200d\ud83c\udf73",
+    "author_verified": false,
+    "is_premium": false,
+    "is_hd": false,
+    "uploaded_ago": "1 month ago",
+    "ingredients": ["4 cups fresh corn kernels", "1 cup heavy cream", "2 tbsp butter", "1 tbsp flour", "Salt and pepper", "Pinch of sugar"],
+    "steps": ["Cut corn from cob", "Melt butter in saucepan", "Add flour, stir 1 minute", "Pour in cream slowly", "Add corn, simmer 10 minutes", "Season to taste"]
+  },
+
+  "tags": ["creamed-corn", "beginner", "comfort-food", "creamy"],
+  "entities": ["NervousNewbie_Cooks"],
+
+  "published_at": "2025-12-20T00:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "SecretChef",
+      "content": "My wife doesn't know I'm here... learning to cook. She thinks I can only make cereal.",
+      "like_count": 15234,
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "content",
+  "site_id": "cobcoin",
+  "content_type": "article",
+  "slug": "trust-token-crashes",
+
+  "category": "Crypto News",
+
+  "title": "Trust Fall Tim's TRUST Token Crashes 99.97% - \"I Didn't Expect Anyone to Catch Me\"",
+  "body": "In an exclusive interview, Tim explained that the token was meant to be \"a metaphor for trust in financial systems.\" It was not.",
+  "summary": "TRUST token collapses as creator Trust Fall Tim offers metaphysical excuses.",
+
+  "thumbnail_emoji": "\ud83d\ude4c",
+
+  "metadata": {
+    "source": "CobCoin News",
+    "sentiment": "scam",
+    "timestamp_relative": "4 hours ago"
+  },
+
+  "tags": ["trust", "rug-pull", "trust-fall-tim", "crash"],
+  "entities": ["Trust Fall Tim", "TrustToken"],
+
+  "published_at": "2026-01-20T08:00:00Z",
+
+  "comments": [
+    {
+      "author_name": "TrustMeBro",
+      "content": "TRUST is still a buy at these levels! Tim just needs to practice his falls more. The fundamentals are STRONG. Also I may or may not be Tim using a burner account.",
+      "like_count": 12,
+      "replies": []
+    }
+  ]
+}

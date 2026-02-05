@@ -1,0 +1,25 @@
+{
+  "$schema": "content",
+  "site_id": "askcorn",
+  "content_type": "question",
+  "slug": "has-anyone-else-experienced-recursive-existence-anxiety-from-quantumil",
+  "category": "Health",
+  "title": "Has anyone else experienced \"recursive existence anxiety\" from QUANTUMIL?",
+  "body": "",
+  "summary": null,
+  "thumbnail_emoji": "❓",
+  "metadata": {
+    "author": "anonymous_user",
+    "author_rep": 0,
+    "upvotes": 567,
+    "answer_count": 89,
+    "views": 23451,
+    "accepted_answer_id": null,
+    "is_answered": true,
+    "is_closed": false,
+    "close_reason": null
+  },
+  "tags": ["quantum-coffee", "medication", "side-effects"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": []
+}

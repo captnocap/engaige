@@ -1,0 +1,43 @@
+{
+  "$schema": "content",
+  "site_id": "oddsoracle",
+  "content_type": "market",
+  "slug": "will-the-underground-close-permanently-in-2025",
+  "category": "Local Events",
+  "title": "Will The Underground close permanently in 2025?",
+  "body": "Resolves YES if The Underground music venue permanently closes its doors in 2025.\n\nMars (the owner) has mentioned financial struggles but the venue has survived for 15 years. Recent shows have been well-attended.\n\nTemporary closures for renovation do not count.",
+  "summary": "Whether The Underground music venue will permanently close its doors in 2025.",
+  "thumbnail_emoji": "🎸",
+  "metadata": {
+    "probability": 0.15,
+    "volume": 67800,
+    "volume_display": "$67.8K",
+    "traders": null,
+    "closes_at": "2025-12-31T00:00:00Z",
+    "hot": false,
+    "trending": false,
+    "yes_price": 15,
+    "no_price": 85,
+    "resolved": null
+  },
+  "tags": ["the-underground", "local-events", "music-venue", "prediction"],
+  "published_at": "2026-01-15T00:00:00Z",
+  "comments": [
+    {
+      "author_name": "MarsTheOwner",
+      "content": "We're not going anywhere. Stop betting on my venue's death. Buy a drink instead.",
+      "like_count": 456,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    },
+    {
+      "author_name": "UndergroundRegular",
+      "content": "This venue has survived worse. Remember 2020? They'll be fine.",
+      "like_count": 78,
+      "is_creator": false,
+      "position": "no",
+      "replies": []
+    }
+  ]
+}
