@@ -63,8 +63,11 @@ interface RenderConfig {
   duration: number;        // seconds (0 for static)
   loop: boolean;
 
-  // Aspect ratio
-  aspect: '1:1' | '9:16' | '16:9' | '4:3';
+  // ==========================================================================
+  // VIEWPORT / FRAME CONSTRAINTS
+  // Locks content to platform-appropriate dimensions
+  // ==========================================================================
+  viewport: ViewportConfig;
 
   // Layers (rendered bottom to top)
   layers: {
@@ -79,6 +82,64 @@ interface RenderConfig {
     volume: number;
   };
 }
+
+// ============================================================================
+// VIEWPORT / FRAME CONSTRAINTS
+// ============================================================================
+
+interface ViewportConfig {
+  // Aspect ratio - determines frame shape
+  aspect: AspectRatio;
+
+  // Platform hint - helps renderer optimize
+  platform_hint?: PlatformHint;
+
+  // Safe zone - where text should stay (percentage from edges)
+  safe_zone?: {
+    top: number;      // % from top
+    bottom: number;   // % from bottom
+    left: number;     // % from left
+    right: number;    // % from right
+  };
+
+  // Letterboxing behavior when container doesn't match
+  fit: 'contain' | 'cover' | 'fill';
+
+  // Background color for letterboxing
+  letterbox_color?: string;
+}
+
+type AspectRatio =
+  | '1:1'      // Square - Instagram posts, some stories
+  | '4:5'      // Portrait - Instagram feed optimal
+  | '9:16'     // Vertical - Stories, TikTok, Reels, Shorts
+  | '16:9'     // Landscape - YouTube, desktop video
+  | '4:3'      // Classic - older format
+  | '21:9';    // Ultrawide - cinematic
+
+type PlatformHint =
+  | 'instasnap_story'    // 9:16, full bleed, safe zones for UI
+  | 'instasnap_post'     // 1:1 or 4:5, visible in feed
+  | 'instasnap_reel'     // 9:16, sound expected
+  | 'vidtube_video'      // 16:9, landscape primary
+  | 'vidtube_short'      // 9:16, vertical video
+  | 'myface_post'        // 1:1 preferred, inline in feed
+  | 'myface_story'       // 9:16, ephemeral
+  | 'threadit_embed'     // 16:9, inline player
+  | 'thumbnail';         // Static preview, any ratio
+
+// Platform-specific safe zones (UI overlay areas to avoid)
+const PLATFORM_SAFE_ZONES: Record<PlatformHint, ViewportConfig['safe_zone']> = {
+  'instasnap_story': { top: 12, bottom: 20, left: 5, right: 5 },   // Username top, reactions bottom
+  'instasnap_reel': { top: 10, bottom: 25, left: 5, right: 15 },   // Heavy bottom UI, side buttons
+  'vidtube_short': { top: 8, bottom: 20, left: 5, right: 12 },     // Similar to reels
+  'vidtube_video': { top: 5, bottom: 15, left: 5, right: 5 },      // Progress bar, controls
+  'myface_story': { top: 10, bottom: 15, left: 5, right: 5 },
+  'myface_post': { top: 0, bottom: 0, left: 0, right: 0 },         // No overlay
+  'instasnap_post': { top: 0, bottom: 0, left: 0, right: 0 },
+  'threadit_embed': { top: 0, bottom: 10, left: 0, right: 0 },
+  'thumbnail': { top: 0, bottom: 0, left: 0, right: 0 },
+};
 
 // ============================================================================
 // CREATOR INTENT
@@ -361,6 +422,19 @@ NPCs have tendencies toward certain intents:
 
 ## Platform Integration
 
+### Platform → Viewport Mapping
+
+| Platform | Format | Aspect | Safe Zones | Typical Duration | Loop |
+|----------|--------|--------|------------|------------------|------|
+| **VidTube Video** | Landscape | 16:9 | Bottom 15% (controls) | 30s - 10min | No |
+| **VidTube Short** | Vertical | 9:16 | Top 8%, Bottom 20%, Right 12% | 15-60s | Yes |
+| **InstaSnap Story** | Vertical | 9:16 | Top 12% (username), Bottom 20% (reply) | 5-15s | Yes |
+| **InstaSnap Reel** | Vertical | 9:16 | Heavy bottom 25%, right sidebar | 15-90s | Yes |
+| **InstaSnap Post** | Square/Portrait | 1:1 or 4:5 | None | 3-60s | Yes |
+| **MyFace Post** | Square | 1:1 | None | 3-15s | Yes |
+| **MyFace Story** | Vertical | 9:16 | Top 10%, Bottom 15% | 5-15s | Yes |
+| **Threadit Embed** | Landscape | 16:9 | Bottom 10% | Any | Optional |
+
 ### VidTube Videos
 Full "video" content with longer durations and complex compositions.
 
@@ -374,7 +448,12 @@ Full "video" content with longer durations and complex compositions.
       "render_type": "video",
       "duration": 225,
       "loop": false,
-      "aspect": "16:9",
+      "viewport": {
+        "aspect": "16:9",
+        "platform_hint": "vidtube_video",
+        "fit": "contain",
+        "letterbox_color": "#000000"
+      },
       "layers": {
         "base": { "type": "effect", "effect": "gradient_flow" },
         "overlay": { "effects": [{ "type": "film_grain", "intensity": 0.2 }] },
@@ -391,14 +470,18 @@ Full "video" content with longer durations and complex compositions.
 ```
 
 ### InstaSnap Stories
-Short, looping, vertical content.
+Short, looping, vertical content. Note safe zones for platform UI.
 
 ```json
 {
   "render_type": "video",
   "duration": 15,
   "loop": true,
-  "aspect": "9:16",
+  "viewport": {
+    "aspect": "9:16",
+    "platform_hint": "instasnap_story",
+    "fit": "cover"
+  },
   "layers": {
     "base": { "type": "image", "image_id": "generated_selfie_123" },
     "overlay": { "effects": [{ "type": "light_leak" }] },
@@ -411,6 +494,8 @@ Short, looping, vertical content.
 }
 ```
 
+Text at `position: "bottom"` auto-adjusts to respect the 20% safe zone.
+
 ### MyFace Animated Posts
 Square format, shorter, social content.
 
@@ -419,7 +504,11 @@ Square format, shorter, social content.
   "render_type": "animated",
   "duration": 5,
   "loop": true,
-  "aspect": "1:1",
+  "viewport": {
+    "aspect": "1:1",
+    "platform_hint": "myface_post",
+    "fit": "cover"
+  },
   "layers": {
     "base": { "type": "gradient", "colors": ["#ff6b6b", "#4ecdc4"], "animated": true },
     "text": {
@@ -429,6 +518,29 @@ Square format, shorter, social content.
     }
   }
 }
+```
+
+### Viewport Rendering Behavior
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ Container (e.g., phone screen, feed card, fullscreen)               │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │ Letterbox area (if fit: 'contain' and aspect doesn't match)   │  │
+│  │  ┌─────────────────────────────────────────────────────────┐  │  │
+│  │  │                    RENDERED CONTENT                      │  │  │
+│  │  │  ┌─────────────────────────────────────────────────┐    │  │  │
+│  │  │  │              SAFE ZONE                          │    │  │  │
+│  │  │  │  (text/UI should stay within this area)         │    │  │  │
+│  │  │  │                                                 │    │  │  │
+│  │  │  └─────────────────────────────────────────────────┘    │  │  │
+│  │  └─────────────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+
+fit: 'contain' → Entire content visible, letterboxed if needed
+fit: 'cover'   → Content fills container, edges cropped
+fit: 'fill'    → Content stretched to fill (may distort)
 ```
 
 ---
