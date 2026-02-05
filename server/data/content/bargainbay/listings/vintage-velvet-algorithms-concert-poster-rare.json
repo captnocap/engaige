@@ -1,0 +1,32 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "vintage-velvet-algorithms-concert-poster-rare",
+
+  "category": "Collectibles",
+
+  "title": "Vintage Velvet Algorithms Concert Poster - RARE",
+  "body": "RARE original concert poster from The Velvet Algorithms' first show at The Underground in 2019!\n\nThis was before they got famous (well, semi-famous) (well, popular in our town at least).\n\nPoster is in good condition with some minor edge wear. Frame not included but can recommend a good framing shop in the Arts District.\n\nFun fact: I was at this show. There were maybe 30 people there. They played for 2 hours straight and then had an existential crisis about whether music could truly express human emotion. Some things never change lol.\n\nWill trade for:\n- Other rare local music memorabilia\n- Neon Requiem posters\n- Tickets to upcoming shows (I know they cancelled the last one but eventually they'll be back)",
+  "summary": "Rare original concert poster from The Velvet Algorithms' first show at The Underground, 2019. Good condition.",
+
+  "thumbnail_emoji": "🎹🖼️",
+
+  "metadata": {
+    "price": 250,
+    "currency": "USD",
+    "condition": "Good",
+    "location": "Arts District",
+    "seller": "LocalSceneCollector",
+    "seller_avatar": "🎸",
+    "seller_joined": "Member since 2018",
+    "seller_rating": 4.9,
+    "seller_response_rate": "Usually responds same day",
+    "posted_date": "1 day ago",
+    "suspicious": false
+  },
+
+  "tags": ["velvet algorithms", "music", "poster", "rare", "collectible"],
+
+  "published_at": "2026-02-04T10:00:00Z"
+}

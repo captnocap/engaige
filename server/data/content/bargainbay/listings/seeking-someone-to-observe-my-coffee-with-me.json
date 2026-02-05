@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "seeking-someone-to-observe-my-coffee-with-me",
+
+  "category": "Services",
+
+  "title": "SEEKING: Someone to observe my coffee with me",
+  "body": "This is not a joke post. I am genuinely seeking another person to help me observe my quantum coffee in the mornings.\n\nBackground: I recently purchased a Q-3000 quantum coffee maker and the manual clearly states that \"multiple observers may enhance the wave function collapse for optimal flavor profiles.\"\n\nMy roommate refuses to participate (she calls it \"pseudoscience\" and \"a waste of 45 minutes every morning\"). My friends have stopped answering my texts about it.\n\nWhat I'm offering:\n- Free quantum coffee (worth like $47 per cup if you calculate the machine cost)\n- Stimulating conversation about particle physics (optional)\n- A chance to be part of cutting-edge beverage science\n\nWhat I need from you:\n- 45-60 minutes of your time each morning (7:00-8:00 AM, flexible)\n- An open mind\n- The ability to focus your observation on the brewing chamber\n- NO SKEPTICISM (the coffee can sense it)\n\nWill pay reasonable hourly rate OR trade for goods/services. Serious inquiries only.",
+  "summary": "Seeking a morning coffee observation partner for Q-3000 quantum coffee maker. Free coffee included. No skeptics.",
+
+  "thumbnail_emoji": "☕👀",
+
+  "metadata": {
+    "price": null,
+    "price_display": "Make Offer",
+    "currency": "USD",
+    "condition": "New",
+    "location": "Midtown",
+    "seller": "QuantumBrewer2024",
+    "seller_avatar": "🔬",
+    "seller_joined": "Member since 2024",
+    "seller_rating": null,
+    "seller_response_rate": "Responds immediately (he's very eager)",
+    "posted_date": "6 hours ago",
+    "suspicious": true
+  },
+
+  "tags": ["services", "coffee", "quantum", "seeking"],
+
+  "published_at": "2026-02-05T04:00:00Z"
+}

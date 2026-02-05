@@ -1,0 +1,46 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "omnicorp-badge",
+
+  "channel_slug": null,
+  "category": "Collectibles",
+
+  "title": "Omnicorp Holdings Employee Badge (Vintage) - Authentic - Ships in 3-5 Business Days or Years",
+  "subtitle": "Authentic - Ships in 3-5 Business Days or Years",
+  "body": "Authentic employee badge from Omnicorp Holdings, circa [YEAR REDACTED]. Badge grants access to floors 1-12 and 14+. We do not discuss Floor 13. Previous owner disappeared under normal circumstances.",
+  "summary": "Vintage Omnicorp Holdings employee badge. Access to all floors except Floor 13. Previous owner [REDACTED].",
+
+  "thumbnail_emoji": "🏢",
+
+  "metadata": {
+    "price": null,
+    "price_display": "???",
+    "currency": "USD",
+    "original_price": null,
+    "rating": 0,
+    "review_count": 0,
+    "in_stock": true,
+    "prime_eligible": false,
+    "seller": "Anonymous",
+    "seller_verified": false,
+    "ships_from": "Shipping time depends on which floor you're on",
+    "stock_note": null,
+    "features": [
+      "Authentic Omnicorp Holdings branding",
+      "Works on all floors (except one)",
+      "Previous owner: [REDACTED]",
+      "Slight static charge (normal)",
+      "Sometimes vibrates near mirrors",
+      "Price varies based on observation"
+    ],
+    "frequently_bought_with": ["floor-13-detector", "corn-headphones"]
+  },
+
+  "tags": ["omnicorp", "badge", "vintage", "collectible", "hartwell", "floor 13"],
+
+  "published_at": "2025-12-20T00:00:00Z",
+
+  "comments": []
+}

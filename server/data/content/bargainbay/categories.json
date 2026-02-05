@@ -1,0 +1,56 @@
+{
+  "$schema": "categories",
+  "site_id": "bargainbay",
+  "categories": [
+    {
+      "slug": "electronics",
+      "name": "Electronics",
+      "listing_count": 1
+    },
+    {
+      "slug": "furniture",
+      "name": "Furniture",
+      "listing_count": 1
+    },
+    {
+      "slug": "vehicles",
+      "name": "Vehicles",
+      "listing_count": 1
+    },
+    {
+      "slug": "free-stuff",
+      "name": "Free Stuff",
+      "listing_count": 1
+    },
+    {
+      "slug": "musical-instruments",
+      "name": "Musical Instruments",
+      "listing_count": 1
+    },
+    {
+      "slug": "home-and-garden",
+      "name": "Home & Garden",
+      "listing_count": 1
+    },
+    {
+      "slug": "clothing",
+      "name": "Clothing",
+      "listing_count": 0
+    },
+    {
+      "slug": "collectibles",
+      "name": "Collectibles",
+      "listing_count": 1
+    },
+    {
+      "slug": "services",
+      "name": "Services",
+      "listing_count": 2
+    },
+    {
+      "slug": "missed-connections",
+      "name": "Missed Connections",
+      "listing_count": 1
+    }
+  ]
+}

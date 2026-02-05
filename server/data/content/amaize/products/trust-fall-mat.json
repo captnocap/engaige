@@ -1,0 +1,85 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "trust-fall-mat",
+
+  "channel_slug": "trustfallsupplies",
+  "category": "Sports & Outdoors",
+
+  "title": "Professional Trust Fall Mat - Industrial Grade - Rated for 2,847 Falls",
+  "subtitle": "Industrial Grade - Rated for 2,847 Falls",
+  "body": "The official mat used by Trust Fall Tim himself. Whether you're practicing trust falls for team building or just falling repeatedly because no one catches you, this mat has your back. Literally.",
+  "summary": "Industrial-grade trust fall mat rated for 2,847 consecutive falls. Used by Trust Fall Tim.",
+
+  "thumbnail_emoji": "🙆‍♂️",
+
+  "metadata": {
+    "price": 84.70,
+    "currency": "USD",
+    "original_price": null,
+    "rating": 4.2,
+    "review_count": 156,
+    "in_stock": true,
+    "prime_eligible": true,
+    "seller": "TrustFallSupplies",
+    "seller_verified": false,
+    "ships_from": null,
+    "stock_note": "Only 8 left in stock - order soon!",
+    "features": [
+      "Memory foam construction - remembers every fall",
+      "Rated for up to 2,847 consecutive falls",
+      "Water-resistant surface (tears roll right off)",
+      "Includes motivational poster: \"One day, someone will catch you\"",
+      "Non-slip bottom (unlike your coworkers)",
+      "Easy to clean (you'll need to)"
+    ],
+    "frequently_bought_with": ["quantum-coffee-maker", "sushi-kit"]
+  },
+
+  "tags": ["trust fall", "mat", "sports", "team building", "industrial grade"],
+
+  "published_at": "2025-11-05T00:00:00Z",
+
+  "comments": [
+    {
+      "id": "tf1",
+      "author_name": "TrustFallTim",
+      "content": "My side hustle is finally paying off\n\nAfter 2,847 trust falls and exactly 0 catches, I decided to monetize my expertise. This mat is rated for exactly that many falls because I tested it myself. Every. Single. One. My back thanks this mat.",
+      "like_count": 456,
+      "dislike_count": 0,
+      "published_at": "6 months ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "My side hustle is finally paying off"
+      }
+    },
+    {
+      "id": "tf2",
+      "author_name": "SmallKevin_HR",
+      "content": "Mat worked but Small Kevin still missed\n\nWe bought this for our team building exercise. Tim fell. Small Kevin was supposed to catch him. Small Kevin stepped aside. Tim hit the mat. The mat worked perfectly. Our team, however, did not.",
+      "like_count": 234,
+      "dislike_count": 12,
+      "published_at": "3 months ago",
+      "metadata": {
+        "rating": 2,
+        "verified_purchase": true,
+        "review_title": "Mat worked but Small Kevin still missed"
+      }
+    },
+    {
+      "id": "tf3",
+      "author_name": "Mars_Underground",
+      "content": "We use these at The Underground now\n\nAfter Tim's 47th trust fall at the venue, we invested in these mats. Now he can fall as much as he wants without worrying about the concrete. The crying is still audible though.",
+      "like_count": 189,
+      "dislike_count": 3,
+      "published_at": "2 months ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "We use these at The Underground now"
+      }
+    }
+  ]
+}

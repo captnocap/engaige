@@ -1,0 +1,45 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "floor-13-detector",
+
+  "channel_slug": null,
+  "category": "Tools & Home Improvement",
+
+  "title": "Floor 13 Detector (Does It Exist?) - Handheld Anomaly Scanner",
+  "subtitle": "Handheld Anomaly Scanner",
+  "body": "[CONTENT REMOVED BY OMNICORP HOLDINGS]\n\nThis device [REDACTED] the presence of [REDACTED] floors in buildings. Perfect for [CONTENT REMOVED]. Battery included but may [REDACTED].\n\nNOTE: Previous owners have [CONTENT REMOVED BY OMNICORP HOLDINGS]",
+  "summary": "Handheld anomaly scanner for detecting [REDACTED] floors. [CONTENT REMOVED BY OMNICORP HOLDINGS]",
+
+  "thumbnail_emoji": "🔍",
+
+  "metadata": {
+    "price": 13.13,
+    "currency": "USD",
+    "original_price": null,
+    "rating": 0,
+    "review_count": 0,
+    "in_stock": true,
+    "prime_eligible": false,
+    "seller": "Anonymous",
+    "seller_verified": false,
+    "ships_from": "REDACTED",
+    "stock_note": null,
+    "features": [
+      "[REDACTED]",
+      "Detects floor anomalies within [REDACTED] meters",
+      "Built-in [CONTENT REMOVED] sensor",
+      "Do NOT use near Hartwell Building",
+      "Do NOT use on Floor 7",
+      "[CONTENT REMOVED BY OMNICORP HOLDINGS]"
+    ],
+    "frequently_bought_with": ["omnicorp-badge", "quantum-coffee-maker"]
+  },
+
+  "tags": ["floor 13", "anomaly", "detector", "hartwell", "omnicorp", "redacted"],
+
+  "published_at": "2025-11-10T00:00:00Z",
+
+  "comments": []
+}

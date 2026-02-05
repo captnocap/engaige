@@ -1,0 +1,32 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "trust-fall-training-private-sessions-available",
+
+  "category": "Services",
+
+  "title": "Trust Fall Training - Private Sessions Available",
+  "body": "Yes, it's me. Trust Fall Tim.\n\nAfter 47 consecutive failed trust falls at various local venues, I've decided to monetize my expertise. I may not get caught, but I've learned a LOT about the art of the trust fall.\n\nWhat you'll learn:\n- Proper trust fall technique\n- How to fall safely when no one catches you\n- Reading a crowd (who looks trustworthy vs who will definitely step aside)\n- The philosophy of trust in modern society\n- Recovery stretches for your back and dignity\n\nSessions are 1 hour and can be conducted at a location of your choice (I'm banned from The Underground on Tuesdays so not there on Tuesdays).\n\nGroup rates available for team building events! Nothing builds trust like falling together!\n\nDisclaimer: I am not a licensed instructor of anything. Results may vary. I take no responsibility for injuries, embarrassment, or sudden existential realizations about the nature of trust.\n\n\"One day, Tim. One day.\" - Mars, The Underground",
+  "summary": "Trust fall training by Trust Fall Tim himself. Private and group sessions. Learn technique, crowd-reading, and recovery stretches.",
+
+  "thumbnail_emoji": "🤸💪",
+
+  "metadata": {
+    "price": 50,
+    "currency": "USD",
+    "condition": "New",
+    "location": "Downtown (various venues)",
+    "seller": "TrustFallTim",
+    "seller_avatar": "🤸",
+    "seller_joined": "Member since 2023",
+    "seller_rating": 4.8,
+    "seller_response_rate": "Always responds (no one else is messaging him)",
+    "posted_date": "1 day ago",
+    "suspicious": false
+  },
+
+  "tags": ["services", "training", "trust", "team building"],
+
+  "published_at": "2026-02-04T10:00:00Z"
+}

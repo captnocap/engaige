@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "free-box-of-stuff-my-ex-left",
+
+  "category": "Free Stuff",
+
+  "title": "FREE: Box of stuff my ex left",
+  "body": "Free to whoever wants it. Contents include:\n\n- 3 hoodies (men's L) - they still smell like him but that'll wash out\n- Some video games I don't want to look at anymore\n- A ukulele that he \"was totally going to learn to play\"\n- Several books about quantum physics (ugh)\n- A photo album (I removed our pictures, the rest is his family)\n- Random cables and chargers\n- A plant that I'm NOT going to keep watering\n\nPickup only. I'm leaving it on the porch. Don't knock, don't ring the bell, just take it and go.\n\nIf a guy named Derek asks, you found this on the street.",
+  "summary": "Free box of ex-boyfriend's belongings. Includes hoodies, video games, ukulele, quantum physics books, and a plant.",
+
+  "thumbnail_emoji": "📦💔",
+
+  "metadata": {
+    "price": 0,
+    "price_display": "Free",
+    "currency": "USD",
+    "condition": "Good",
+    "location": "Midtown",
+    "seller": "MovingOnMelissa",
+    "seller_avatar": "👩‍🦰",
+    "seller_joined": "Member since 2024",
+    "seller_rating": null,
+    "seller_response_rate": "Responds instantly (she's got time now)",
+    "posted_date": "4 hours ago",
+    "suspicious": false
+  },
+
+  "tags": ["free stuff", "misc", "moving"],
+
+  "published_at": "2026-02-05T06:00:00Z"
+}

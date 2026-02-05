@@ -1,0 +1,85 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "cobcoin-wallet",
+
+  "channel_slug": null,
+  "category": "Electronics",
+
+  "title": "CobCoin Hardware Wallet - Secure Your Worthless Tokens - 99% Off!",
+  "subtitle": "Secure Your Worthless Tokens - 99% Off!",
+  "body": "Store your CobCoin safely in this hardware wallet! CobCoin is definitely still worth something. The 99% price drop is just a... market correction. Diamond hands! HODL! (Please buy this we have so many)",
+  "summary": "Hardware wallet for CobCoin cryptocurrency. 99% off from original price. Stores up to 847 million CobCoin.",
+
+  "thumbnail_emoji": "💰",
+
+  "metadata": {
+    "price": 8.47,
+    "currency": "USD",
+    "original_price": 847.00,
+    "rating": 1.2,
+    "review_count": 2847,
+    "in_stock": true,
+    "prime_eligible": true,
+    "seller": "CobCoin Official (Definitely Still Operating)",
+    "seller_verified": false,
+    "ships_from": null,
+    "stock_note": "Unlimited stock (nobody is buying these)",
+    "features": [
+      "Stores up to 847 million CobCoin",
+      "Military-grade encryption (for your $0.003)",
+      "Corn-shaped design (our only remaining asset)",
+      "Includes recovery seed phrase (you'll need it)",
+      "Built-in cry button",
+      "Free: Worthless NFT of a sad corn"
+    ],
+    "frequently_bought_with": ["corn-headphones", "floor-13-detector"]
+  },
+
+  "tags": ["cobcoin", "crypto", "wallet", "hardware", "blockchain", "corn"],
+
+  "published_at": "2025-12-15T00:00:00Z",
+
+  "comments": [
+    {
+      "id": "cc1",
+      "author_name": "DiamondHands_2021",
+      "content": "I lost everything\n\nPut my life savings into CobCoin at $847 per token. Now it's worth $0.003. This wallet reminds me of my failures every day. At least the corn shape is cute.",
+      "like_count": 2847,
+      "dislike_count": 3,
+      "published_at": "2 years ago",
+      "metadata": {
+        "rating": 1,
+        "verified_purchase": true,
+        "review_title": "I lost everything"
+      }
+    },
+    {
+      "id": "cc2",
+      "author_name": "StillHodling",
+      "content": "TO THE MOON (eventually)\n\nCobCoin WILL recover. The devs are definitely still working on it. I checked the Discord and... okay the Discord is gone. But my wallet still works! That's something!",
+      "like_count": 12,
+      "dislike_count": 847,
+      "published_at": "1 year ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": false,
+        "review_title": "TO THE MOON (eventually)"
+      }
+    },
+    {
+      "id": "cc3",
+      "author_name": "CobCoinCEO_NotRunning",
+      "content": "Great wallet, great coin, I am not the CEO\n\nThis wallet is excellent for storing CobCoin which is definitely still a viable investment. I am a regular customer and not at all the CEO who is definitely not in a non-extradition country.",
+      "like_count": 2,
+      "dislike_count": 1247,
+      "published_at": "8 months ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": false,
+        "review_title": "Great wallet, great coin, I am not the CEO"
+      }
+    }
+  ]
+}

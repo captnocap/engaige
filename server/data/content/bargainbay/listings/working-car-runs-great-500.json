@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "working-car-runs-great-500",
+
+  "category": "Vehicles",
+
+  "title": "WORKING car - runs great! - $500",
+  "body": "EDIT: Price is $500 NOT $1 - had to put something to get your attention\n\n2008 Honda Civic. It runs. That's about all I can promise.\n\nThe good:\n- Engine works\n- Four wheels (all different tires but they're there)\n- AC blows (something. might be air)\n- Radio works (stuck on one station but it's a good one)\n\nThe less good:\n- Check engine light is on (has been for 3 years, car doesn't seem to mind)\n- Passenger door doesn't open from outside (climb through driver side)\n- Trunk only opens when it's cold outside (???)\n- Previous owner was a smoker. Previous previous owner had a dog. I have neither and it still smells like both.\n- Horn plays La Cucaracha (long story)\n\nPerfect for:\n- First car\n- Backup car\n- Someone who really needs to get to work\n- Art project\n\nClean title. 187,000 miles. First person with cash takes it. I'm tired of looking at it.",
+  "summary": "2008 Honda Civic, 187k miles. Runs but has quirks. Check engine light, La Cucaracha horn, trunk only opens in cold weather.",
+
+  "thumbnail_emoji": "🚗💨",
+
+  "metadata": {
+    "price": 500,
+    "price_display": "$1 (read desc)",
+    "currency": "USD",
+    "condition": "Fair",
+    "location": "Eastside",
+    "seller": "JustWantItGone",
+    "seller_avatar": "😩",
+    "seller_joined": "Member since 2021",
+    "seller_rating": 3.8,
+    "seller_response_rate": null,
+    "posted_date": "3 days ago",
+    "suspicious": true
+  },
+
+  "tags": ["car", "honda", "cheap", "runs"],
+
+  "published_at": "2026-02-02T14:00:00Z"
+}

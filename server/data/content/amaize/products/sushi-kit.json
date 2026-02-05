@@ -1,0 +1,72 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "sushi-kit",
+
+  "channel_slug": "mildredapproved",
+  "category": "Health & Personal Care",
+
+  "title": "Gas Station Sushi Survival Kit - Mildred Approved - As Seen at Flying J #847",
+  "subtitle": "Mildred Approved - As Seen at Flying J #847",
+  "body": "Everything you need to survive your gas station sushi adventure. Curated by Mildred Gasketsworth, the internet's foremost authority on roadside raw fish. Includes her famous 847-point rating guide.",
+  "summary": "Gas station sushi survival kit curated by Mildred Gasketsworth. Includes antacids, sanitizer, and 847-point rating guide.",
+
+  "thumbnail_emoji": "🍣",
+
+  "metadata": {
+    "price": 47.00,
+    "currency": "USD",
+    "original_price": null,
+    "rating": 5.0,
+    "review_count": 234,
+    "in_stock": true,
+    "prime_eligible": true,
+    "seller": "MildredApproved",
+    "seller_verified": true,
+    "ships_from": null,
+    "stock_note": null,
+    "features": [
+      "Industrial-strength antacids (30 count)",
+      "Hospital-grade hand sanitizer (32 oz)",
+      "Detailed sushi rating guide by Mildred",
+      "Emergency contact card (pre-filled)",
+      "\"I Survived Flying J Sushi\" sticker",
+      "Complimentary Pepto-Bismol sample"
+    ],
+    "frequently_bought_with": ["trust-fall-mat", "corn-headphones"]
+  },
+
+  "tags": ["sushi", "gas station", "survival kit", "mildred", "flying j", "health"],
+
+  "published_at": "2025-11-15T00:00:00Z",
+
+  "comments": [
+    {
+      "id": "sk1",
+      "author_name": "MildredGasketsworth",
+      "content": "I curated this kit personally\n\nAfter reviewing 847 gas stations and their sushi offerings, I know exactly what you need to survive. This kit has saved countless lives. The hand sanitizer alone is worth the price.",
+      "like_count": 567,
+      "dislike_count": 2,
+      "published_at": "4 months ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "I curated this kit personally"
+      }
+    },
+    {
+      "id": "sk2",
+      "author_name": "FlyingJ_Survivor",
+      "content": "Used this at Flying J #847 - I'm still alive\n\nMildred knows what she's talking about. The sushi looked questionable (her rating: 2.3/10) but I ate it anyway. The kit got me through the next 48 hours. The sticker was a nice touch.",
+      "like_count": 345,
+      "dislike_count": 1,
+      "published_at": "2 months ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "Used this at Flying J #847 - I'm still alive"
+      }
+    }
+  ]
+}

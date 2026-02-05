@@ -1,0 +1,41 @@
+{
+  "$schema": "categories",
+  "site_id": "amaize",
+  "categories": [
+    {
+      "slug": "kitchen-appliances",
+      "name": "Kitchen Appliances",
+      "product_count": 1
+    },
+    {
+      "slug": "sports-and-outdoors",
+      "name": "Sports & Outdoors",
+      "product_count": 1
+    },
+    {
+      "slug": "electronics",
+      "name": "Electronics",
+      "product_count": 2
+    },
+    {
+      "slug": "health-and-personal-care",
+      "name": "Health & Personal Care",
+      "product_count": 1
+    },
+    {
+      "slug": "movies-and-music",
+      "name": "Movies & Music",
+      "product_count": 1
+    },
+    {
+      "slug": "tools-and-home-improvement",
+      "name": "Tools & Home Improvement",
+      "product_count": 1
+    },
+    {
+      "slug": "collectibles",
+      "name": "Collectibles",
+      "product_count": 1
+    }
+  ]
+}

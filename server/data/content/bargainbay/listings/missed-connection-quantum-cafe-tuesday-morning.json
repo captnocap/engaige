@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "missed-connection-quantum-cafe-tuesday-morning",
+
+  "category": "Missed Connections",
+
+  "title": "MISSED CONNECTION: Quantum Cafe Tuesday Morning",
+  "body": "You: Ordering a Schrodinger's Latte, wearing a vintage Velvet Algorithms t-shirt, reading a book about the Hartwell Building incident.\n\nMe: Waiting for my 45-minute pour-over, pretending to read but actually watching you observe your coffee with what can only be described as reverence.\n\nOur eyes met during the wave function collapse. I felt something. A superposition of emotions. Both attracted and terrified.\n\nYou said something about the foam patterns being \"mathematically beautiful\" and I almost proposed on the spot.\n\nBut then my coffee was ready and by the time I looked up, you were gone. Like a particle that had been measured.\n\nIf this was you, please reach out. I'll be at the cafe again Tuesday. Same time. I'll be the one crying into my quantum espresso if you don't show up.\n\nIf this wasn't you but you also appreciate quantum coffee and existential dread, feel free to message anyway. I'm lonely.",
+  "summary": "Missed connection at Quantum Cafe on Tuesday morning. Seeking person who ordered Schrodinger's Latte in Velvet Algorithms shirt.",
+
+  "thumbnail_emoji": "💕☕",
+
+  "metadata": {
+    "price": 0,
+    "price_display": "Free",
+    "currency": "USD",
+    "condition": "New",
+    "location": "Downtown Quantum Cafe",
+    "seller": "QuantumRomantic",
+    "seller_avatar": "😍",
+    "seller_joined": "Member since 2024",
+    "seller_rating": null,
+    "seller_response_rate": null,
+    "posted_date": "3 days ago",
+    "suspicious": false
+  },
+
+  "tags": ["missed connections", "quantum cafe", "romance"],
+
+  "published_at": "2026-02-02T10:00:00Z"
+}

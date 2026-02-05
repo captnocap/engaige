@@ -1,0 +1,81 @@
+{
+  "$schema": "channel",
+  "site_id": "amaize",
+  "channels": [
+    {
+      "slug": "quantumbrew",
+      "name": "QuantumBrew Official",
+      "avatar_emoji": "☕",
+      "description": "Official retailer of QuantumBrew products. Dr. Martinez approved. We believe coffee should exist in a superposition of all possible states. Our customer service is also in a superposition of helpful and unhelpful until observed.",
+      "metadata": {
+        "rating": 4.2,
+        "review_count": 1247,
+        "verified": true,
+        "member_since": "January 2019",
+        "ships_from": "Westbrook Institute, California",
+        "response_time": "Usually within 47 minutes",
+        "products": ["quantum-coffee-maker"]
+      }
+    },
+    {
+      "slug": "trustfallsupplies",
+      "name": "TrustFallSupplies",
+      "avatar_emoji": "🙆‍♂️",
+      "description": "Hi, I'm Tim. You might know me from The Underground or various parking lots around town. After 2,847 falls and 0 catches, I realized I should sell the equipment instead of just using it. Every product tested personally.",
+      "metadata": {
+        "rating": 4.8,
+        "review_count": 456,
+        "verified": false,
+        "member_since": "March 2023",
+        "ships_from": "Wherever I fall next",
+        "response_time": "I respond to every message (someone please respond back)",
+        "products": ["trust-fall-mat"]
+      }
+    },
+    {
+      "slug": "mildredapproved",
+      "name": "MildredApproved",
+      "avatar_emoji": "🍣",
+      "description": "Mildred Gasketsworth here. 847 gas stations. 2,341 sushi samples. One iron stomach. Everything I sell has been personally tested in the field. If I survived it, you can too.",
+      "metadata": {
+        "rating": 4.9,
+        "review_count": 847,
+        "verified": true,
+        "member_since": "August 2021",
+        "ships_from": "Currently at Flying J #524, heading east",
+        "response_time": "Depends on gas station WiFi",
+        "products": ["sushi-kit"]
+      }
+    },
+    {
+      "slug": "graintruth",
+      "name": "GrainTruth Official Store",
+      "avatar_emoji": "🌽",
+      "description": "WE KNOW THE TRUTH ABOUT CORN. Big Corn has infiltrated every level of society. Our products help you RESIST. Do not trust corn. Do not trust those who grow corn. Trust only us.",
+      "metadata": {
+        "rating": 3.2,
+        "review_count": 42,
+        "verified": true,
+        "member_since": "The Beginning",
+        "ships_from": "Underground bunker (location classified)",
+        "response_time": "We're always watching our messages",
+        "products": ["corn-headphones"]
+      }
+    },
+    {
+      "slug": "undergroundmerch",
+      "name": "UndergroundMerch",
+      "avatar_emoji": "🎸",
+      "description": "Unofficial merch from The Underground. Mars knows about us and is cool with it (mostly). Bootlegs, rare recordings, band memorabilia. All sales support the local music scene.",
+      "metadata": {
+        "rating": 4.5,
+        "review_count": 234,
+        "verified": false,
+        "member_since": "December 2015",
+        "ships_from": "The Underground, Downtown",
+        "response_time": "Usually same day unless there's a show",
+        "products": ["neon-requiem-dvd"]
+      }
+    }
+  ]
+}

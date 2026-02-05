@@ -1,0 +1,32 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "professional-drum-kit-great-for-beginners",
+
+  "category": "Musical Instruments",
+
+  "title": "Professional Drum Kit - Great for Beginners!",
+  "body": "Selling my drum kit because I \"got a real job\" and \"need to sleep at reasonable hours\" (according to my new roommates).\n\nPearl Export Series, 5-piece kit with hardware and cymbals. Some cosmetic wear from years of passionate playing but sounds amazing.\n\nIncludes:\n- 22\" kick drum\n- 14\" snare\n- 12\" and 13\" rack toms\n- 16\" floor tom\n- Hi-hat stand and cymbals\n- Crash and ride cymbals\n- Throne (drum stool)\n- Practice pad\n- Bunch of sticks (various states of broken)\n\nI played drums in a local band (you might have heard of Neon Requiem?) for 3 years. This kit has seen some shows. Treated with love.\n\nGreat starter kit for anyone who wants to learn and doesn't have neighbors who complain easily.\n\nCan include lessons if you want. I have time now that I'm not gigging.",
+  "summary": "Pearl Export Series 5-piece drum kit with hardware and cymbals. Previously used by Neon Requiem drummer. Lessons available.",
+
+  "thumbnail_emoji": "🥁🎶",
+
+  "metadata": {
+    "price": 800,
+    "currency": "USD",
+    "condition": "Good",
+    "location": "Near University",
+    "seller": "ExDrummer_DayJobNow",
+    "seller_avatar": "🧑‍💼",
+    "seller_joined": "Member since 2020",
+    "seller_rating": 5.0,
+    "seller_response_rate": "Responds within hours",
+    "posted_date": "5 hours ago",
+    "suspicious": false
+  },
+
+  "tags": ["drums", "music", "instruments", "pearl"],
+
+  "published_at": "2026-02-05T05:00:00Z"
+}

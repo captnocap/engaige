@@ -1,0 +1,32 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "antique-mirror-definitely-not-haunted",
+
+  "category": "Home & Garden",
+
+  "title": "Antique Mirror - Definitely Not Haunted",
+  "body": "Beautiful antique mirror, approx 100 years old. Ornate gold frame, some patina (adds character!).\n\nI want to be completely transparent: there is NOTHING weird about this mirror. The things I've seen in my peripheral vision are DEFINITELY just tricks of the light. The face that isn't mine that sometimes appears? Probably just my reflection at a weird angle. The whispers? My apartment has old pipes.\n\nThat said, I am selling this mirror because I am \"redecorating\" and \"want something more modern\" and \"have not slept well since I bought it at an estate sale from that house near the old Hartwell Building.\"\n\nPrevious owner's estate sale listed it as \"parlor mirror, 1890s.\" I am NOT going to research what happened in that parlor. I recommend you also don't.\n\nCash only. You must pick up. I will not help you load it into your car. I will not touch it again.\n\nPrice firm. No trades unless you have something that will make me forget this mirror exists.",
+  "summary": "Antique 1890s parlor mirror with ornate gold frame. Seller insists it is NOT haunted. From estate sale near Hartwell Building.",
+
+  "thumbnail_emoji": "🪞👻",
+
+  "metadata": {
+    "price": 75,
+    "currency": "USD",
+    "condition": "Haunted",
+    "location": "Near Hartwell Building",
+    "seller": "TotallyFineImFine",
+    "seller_avatar": "😰",
+    "seller_joined": "Member since 2024",
+    "seller_rating": null,
+    "seller_response_rate": "Responds at 3 AM for some reason",
+    "posted_date": "1 week ago",
+    "suspicious": true
+  },
+
+  "tags": ["antique", "mirror", "vintage", "haunted"],
+
+  "published_at": "2026-01-29T03:00:00Z"
+}

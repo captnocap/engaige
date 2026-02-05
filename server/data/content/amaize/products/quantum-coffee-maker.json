@@ -1,0 +1,124 @@
+{
+  "$schema": "content",
+  "site_id": "amaize",
+  "content_type": "product",
+  "slug": "quantum-coffee-maker",
+
+  "channel_slug": "quantumbrew",
+  "category": "Kitchen Appliances",
+
+  "title": "Quantum Coffee Maker Pro 3000 - Molecular Brewing Technology - Observe Your Coffee Into Existence",
+  "subtitle": "Observe Your Coffee Into Existence",
+  "body": "Experience coffee at the quantum level. The Q-3000 uses patented Schrodinger Brewing Technology to create coffee that exists in a superposition of all possible flavor profiles until observed. Dr. Elena Martinez certified.",
+  "summary": "Patented Schrodinger Brewing Technology coffee maker. Dr. Elena Martinez certified.",
+
+  "thumbnail_emoji": "☕",
+
+  "metadata": {
+    "price": 2999.99,
+    "currency": "USD",
+    "original_price": 3499.99,
+    "rating": 2.5,
+    "review_count": 847,
+    "in_stock": true,
+    "prime_eligible": true,
+    "seller": "QuantumBrew Official",
+    "seller_verified": true,
+    "ships_from": null,
+    "stock_note": null,
+    "features": [
+      "Quantum entanglement coils for perfect temperature uniformity",
+      "47 kW power requirement (adapter not included)",
+      "Observation goggles included (FDA approved)",
+      "Compatible with all standard coffee beans",
+      "3.7 second brew time (45 minutes observation time)",
+      "Certificate of authenticity from Westbrook Institute"
+    ],
+    "frequently_bought_with": ["trust-fall-mat", "floor-13-detector"]
+  },
+
+  "tags": ["quantum coffee", "coffee maker", "kitchen", "premium", "q-3000", "schrodinger"],
+
+  "published_at": "2025-11-01T00:00:00Z",
+
+  "comments": [
+    {
+      "id": "qc1",
+      "author_name": "Derek_Quantum_Coffee",
+      "content": "CHANGED MY LIFE!!! BEST PURCHASE EVER!!!\n\nThis coffee maker is the best thing that has ever happened to me. Every morning I observe my coffee into existence and it tastes like possibility. Jennifer doesn't understand but that's okay. The kids might understand when they're older. Worth every penny of the $2,999.99.",
+      "like_count": 847,
+      "dislike_count": 2,
+      "published_at": "847 days ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "CHANGED MY LIFE!!! BEST PURCHASE EVER!!!"
+      }
+    },
+    {
+      "id": "qc2",
+      "author_name": "Derek_QuantumEnthusiast",
+      "content": "REVOLUTIONARY BREWING TECHNOLOGY\n\nI have been waiting my whole life for this. The quantum entanglement coils work exactly as described. My roommate thinks I'm crazy but he hasn't OBSERVED the coffee. He wouldn't understand.",
+      "like_count": 42,
+      "dislike_count": 15,
+      "published_at": "846 days ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "REVOLUTIONARY BREWING TECHNOLOGY"
+      }
+    },
+    {
+      "id": "qc3",
+      "author_name": "QuantumDerek_Fan",
+      "content": "Better than traditional coffee in every way\n\nThe superposition of flavors is unmatched. I've bought 3 of these for different rooms. My credit card company called to check on me. I told them about quantum coffee. They hung up.",
+      "like_count": 31,
+      "dislike_count": 22,
+      "published_at": "845 days ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "Better than traditional coffee in every way"
+      }
+    },
+    {
+      "id": "qc4",
+      "author_name": "JennifersDivorceLawyer",
+      "content": "DO NOT BUY - Ruined my client's marriage\n\nMy client's husband spent $47,000 on quantum coffee equipment over 2 years. This was Exhibit A in the divorce proceedings. The children cried in court. He brought a thermos of \"quantum espresso\" to the custody hearing.",
+      "like_count": 1247,
+      "dislike_count": 847,
+      "published_at": "3 months ago",
+      "metadata": {
+        "rating": 1,
+        "verified_purchase": false,
+        "review_title": "DO NOT BUY - Ruined my client's marriage"
+      }
+    },
+    {
+      "id": "qc5",
+      "author_name": "Jennifer_Verified",
+      "content": "Returning this was the best decision of my divorce\n\nDerek, if you're reading this: I took the kids, the dog, and returned the third Q-3000 you bought. The refund helped pay for therapy. For me. And the children. Stop leaving quantum coffee reviews under fake accounts. We know it's you.",
+      "like_count": 2847,
+      "dislike_count": 47,
+      "published_at": "2 months ago",
+      "metadata": {
+        "rating": 1,
+        "verified_purchase": true,
+        "review_title": "Returning this was the best decision of my divorce"
+      }
+    },
+    {
+      "id": "qc6",
+      "author_name": "Derek_NotDerek",
+      "content": "Definitely not Derek but this product is amazing\n\nI am a completely different person and also this coffee maker is perfect. The observation goggles fit my head exactly like Derek's head. Which I wouldn't know about. Because I'm not Derek.",
+      "like_count": 3,
+      "dislike_count": 847,
+      "published_at": "1 month ago",
+      "metadata": {
+        "rating": 5,
+        "verified_purchase": true,
+        "review_title": "Definitely not Derek but this product is amazing"
+      }
+    }
+  ]
+}

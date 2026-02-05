@@ -1,0 +1,33 @@
+{
+  "$schema": "content",
+  "site_id": "bargainbay",
+  "content_type": "listing",
+  "slug": "moving-sale-everything-must-go-this-weekend",
+
+  "category": "Furniture",
+
+  "title": "Moving Sale - Everything Must Go This Weekend!",
+  "body": "Moving out of state for work! Everything must go by Sunday!\n\nLiving Room:\n- Gray sectional sofa (IKEA, 2 years old) - $300\n- Coffee table (wood, some water rings) - $50\n- 55\" TV (works great) - $200\n- TV stand - $40\n- Floor lamp - $25\n- Area rug (8x10, blue) - $100\n\nBedroom:\n- Queen bed frame (no mattress, sorry) - $150\n- Dresser (6 drawer) - $100\n- Nightstands (pair) - $60\n- Full length mirror - $30\n\nKitchen:\n- Bar stools (set of 3) - $75\n- Small kitchen table + 2 chairs - $80\n- Various appliances (blender, toaster, etc) - $10-30 each\n- NOT SELLING: my quantum coffee maker (it's coming with me, fight me)\n\nPrices negotiable, especially if you buy multiple items. Cash preferred but can do Venmo.\n\nSerious buyers only. Yes you can test the TV. No you cannot \"hold\" items without a deposit.",
+  "summary": "Full apartment moving sale: furniture, TV, kitchen items. Everything must go by Sunday. Prices negotiable for bundles.",
+
+  "thumbnail_emoji": "🏠📦",
+
+  "metadata": {
+    "price": null,
+    "price_display": "Make Offer",
+    "currency": "USD",
+    "condition": "Good",
+    "location": "Westside",
+    "seller": "MovingMonday",
+    "seller_avatar": "📦",
+    "seller_joined": "Member since 2022",
+    "seller_rating": 4.7,
+    "seller_response_rate": "Responds within minutes",
+    "posted_date": "12 hours ago",
+    "suspicious": false
+  },
+
+  "tags": ["furniture", "moving sale", "tv", "sofa", "bedroom"],
+
+  "published_at": "2026-02-04T22:00:00Z"
+}
