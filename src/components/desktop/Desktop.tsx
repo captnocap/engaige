@@ -18,6 +18,7 @@ import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 import { WorldWindow } from '../world/index.js'
 import { CreativeStudioWindow } from '../studio/index.js'
+import { CobHubIDE } from '../ide/index.js'
 import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
@@ -173,10 +174,17 @@ export function Desktop() {
     },
     {
       id: 'studio',
-      title: 'Creative Studio',
+      title: 'Creative Suite',
       icon: '🎨',
       component: ({ onClose }) => <CreativeStudioWindow onClose={onClose} />,
-      defaultState: { x: 100, y: 50, width: 1100, height: 750 },
+      defaultState: { x: 60, y: 20, width: 1280, height: 800 },
+    },
+    {
+      id: 'cobhub-ide',
+      title: 'CobHub IDE',
+      icon: '🌽',
+      component: ({ onClose }) => <CobHubIDE onClose={onClose} />,
+      defaultState: { x: 50, y: 30, width: 1100, height: 750 },
     },
   ]
 
@@ -188,7 +196,8 @@ export function Desktop() {
     { id: 'world', icon: '🗺️', label: 'World Map', opensWindow: 'world' },
     { id: 'settings', icon: '⚙️', label: 'Settings', opensWindow: 'settings' },
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
-    { id: 'studio', icon: '🎨', label: 'Creative Studio', opensWindow: 'studio' },
+    { id: 'studio', icon: '🎨', label: 'Creative Suite', opensWindow: 'studio' },
+    { id: 'cobhub-ide', icon: '🌽', label: 'CobHub IDE', opensWindow: 'cobhub-ide' },
   ]
 
   // Get icon position from store or use default
