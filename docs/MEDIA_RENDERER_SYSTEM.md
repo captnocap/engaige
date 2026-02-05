@@ -53,6 +53,12 @@ interface RenderConfig {
   // Rendering mode
   render_type: 'static' | 'animated' | 'video';
 
+  // ==========================================================================
+  // CREATOR INTENT
+  // Why is this content being created? Drives drama engine reactions.
+  // ==========================================================================
+  intent: ContentIntent;
+
   // Timing
   duration: number;        // seconds (0 for static)
   loop: boolean;
@@ -73,6 +79,71 @@ interface RenderConfig {
     volume: number;
   };
 }
+
+// ============================================================================
+// CREATOR INTENT
+// The "why" behind content creation - drives style choices and drama reactions
+// ============================================================================
+
+interface ContentIntent {
+  // Primary purpose
+  primary: IntentType;
+
+  // Optional secondary intent (content can have layers)
+  secondary?: IntentType;
+
+  // Target (who is this aimed at?)
+  target?: {
+    type: 'general' | 'specific_npc' | 'specific_group' | 'self';
+    target_id?: string;      // NPC ID if specific
+    target_name?: string;    // For display/context
+  };
+
+  // Emotional energy
+  energy: 'low' | 'medium' | 'high' | 'unhinged';
+
+  // Is the intent obvious or masked?
+  // (rage bait often LOOKS like innocent content)
+  surface_presentation?: IntentType;
+
+  // Additional context for AI/drama engine
+  context?: string;
+}
+
+type IntentType =
+  // Positive/Neutral
+  | 'share_joy'           // Genuine happiness, good news
+  | 'inform'              // Educational, news, updates
+  | 'entertain'           // Comedy, fun, no agenda
+  | 'create_art'          // Artistic expression
+  | 'promote'             // Self-promotion, announcements
+  | 'connect'             // Seeking connection/community
+
+  // Processing/Coping
+  | 'vent'                // Processing frustration
+  | 'cope'                // Coping mechanism, self-soothing
+  | 'confess'             // Admitting something
+  | 'seek_validation'     // Looking for support/agreement
+  | 'seek_advice'         // Asking for help
+
+  // Drama/Conflict
+  | 'subtweet'            // Indirect call-out
+  | 'call_out'            // Direct call-out
+  | 'flex'                // Showing off, making others jealous
+  | 'rage_bait'           // Intentionally provocative
+  | 'humble_brag'         // Bragging disguised as complaint
+  | 'pity_farm'           // Seeking sympathy manipulatively
+  | 'stir_drama'          // Chaos agent behavior
+  | 'defend_self'         // Response to criticism
+  | 'clap_back'           // Retaliatory content
+
+  // Relationship-specific
+  | 'thirst_trap'         // Attracting romantic attention
+  | 'mark_territory'      // "This person is mine" energy
+  | 'make_jealous'        // Targeting ex or rival
+  | 'love_bomb'           // Overwhelming positive attention
+  | 'soft_launch'         // Hinting at new relationship
+  | 'hard_launch';        // Officially announcing relationship
 
 // ============================================================================
 // BASE LAYER
@@ -191,6 +262,100 @@ type TextEffect =
   | 'glitch'              // Glitchy text
   | 'float';              // Gentle floating motion
 ```
+
+---
+
+## Intent System & Drama Engine Integration
+
+The intent system is the bridge between content creation and drama reactions. It answers: **"What was this person REALLY trying to do?"**
+
+### How Intent Drives Reactions
+
+| Intent | Likely Viewer Reactions |
+|--------|------------------------|
+| `share_joy` | Genuine support, "happy for you" |
+| `vent` | Sympathy, advice, or "here we go again" |
+| `cope` | Supportive comments, relatable memes |
+| `confess` | Shock, support, or drama depending on confession |
+| `subtweet` | "Who is this about?", detective mode, sides taken |
+| `call_out` | Pile-on support OR defense of target |
+| `flex` | Jealousy, eye-rolls, or genuine admiration |
+| `rage_bait` | Angry engagement (mission accomplished) |
+| `humble_brag` | Eye-roll reactions, sarcastic "congrats" |
+| `pity_farm` | Initial sympathy → backlash if detected |
+| `thirst_trap` | Thirsty comments, relationship drama |
+| `make_jealous` | Target NPC reacts, mutual friends pick sides |
+
+### Surface vs True Intent
+
+Content often wears a mask:
+
+```typescript
+{
+  intent: {
+    primary: 'make_jealous',           // TRUE intent
+    surface_presentation: 'share_joy', // What it LOOKS like
+    target: {
+      type: 'specific_npc',
+      target_id: 'npc_ex_boyfriend',
+      target_name: 'Jake'
+    },
+    energy: 'high'
+  }
+}
+```
+
+The drama engine can:
+1. **Detect the mask** - Some NPCs see through it ("this is clearly about Jake")
+2. **React to surface** - Naive NPCs take it at face value
+3. **React to true intent** - Target NPC feels the real energy
+
+### Intent Influences Style Choices
+
+| Intent | Suggested Base | Suggested Overlay | Suggested Text |
+|--------|---------------|-------------------|----------------|
+| `share_joy` | `cozy_warmth` | `clean` | Bouncy, colorful |
+| `vent` | `dark_void` | `vhs_retro` | Dramatic, caps |
+| `cope` | `chill_gradient` | `film_classic` | Soft, lowercase |
+| `rage_bait` | `chaos_static` | `glitch_chaos` | CAPS, shake |
+| `thirst_trap` | Generated selfie | `light_leak` | Minimal, aesthetic |
+| `confess` | `dark_void` | `film_grain` | Typewriter, slow |
+
+### Event Bus Integration
+
+When content is created, emit intent metadata:
+
+```typescript
+eventBus.fire(EventTypes.SOCIAL_POST_CREATED, {
+  post_id: id,
+  npc_id: creator.id,
+  platform: 'instasnap',
+  content_type: 'story',
+  intent: {
+    primary: 'subtweet',
+    target: { type: 'specific_npc', target_id: 'npc_123' },
+    energy: 'high'
+  }
+}, { importance: 0.8 });
+```
+
+The drama engine subscribes and processes:
+- Notify target NPC
+- Queue reactions from friends/followers
+- Potentially escalate to drama arc
+
+### NPC Personality × Intent
+
+NPCs have tendencies toward certain intents:
+
+| Personality Trait | Common Intents |
+|-------------------|----------------|
+| `drama_prone` | subtweet, call_out, stir_drama |
+| `attention_seeking` | flex, thirst_trap, pity_farm |
+| `genuine` | share_joy, inform, connect |
+| `chaotic` | rage_bait, stir_drama, unhinged energy |
+| `passive_aggressive` | subtweet, humble_brag, surface masks |
+| `supportive` | seek_validation → give validation |
 
 ---
 
@@ -341,7 +506,17 @@ When an NPC "creates" a video, the AI generates a render config.
 ### System Prompt Addition
 ```
 You can create video content by outputting a render_config JSON object.
-Available presets:
+
+INTENT (required) - Why are you creating this? Be honest with yourself:
+- Positive: share_joy, inform, entertain, create_art, promote, connect
+- Processing: vent, cope, confess, seek_validation, seek_advice
+- Drama: subtweet, call_out, flex, rage_bait, humble_brag, pity_farm, stir_drama
+- Relationship: thirst_trap, mark_territory, make_jealous, soft_launch, hard_launch
+
+If your true intent differs from how it appears, specify surface_presentation.
+Target someone specific? Include their info.
+
+PRESETS:
 - Base: chill_gradient, chaos_static, cozy_warmth, dark_void, retro_plasma
 - Overlay: vhs_retro, film_classic, glitch_chaos, cozy_vintage, clean
 - Text style: meme_impact, tiktok_caption, dramatic, chaotic, aesthetic
@@ -350,11 +525,15 @@ Structure your content with text segments that have timing.
 Keep videos under 30 seconds for social posts, up to 5 minutes for VidTube.
 ```
 
-### Example NPC Output
+### Example NPC Output - Genuine Content
 ```json
 {
   "action": "create_video",
   "platform": "instasnap_story",
+  "intent": {
+    "primary": "promote",
+    "energy": "medium"
+  },
   "render_config": {
     "preset_base": "chill_gradient",
     "preset_overlay": "vhs_retro",
@@ -365,6 +544,62 @@ Keep videos under 30 seconds for social posts, up to 5 minutes for VidTube.
       { "start": 3, "text": "at 3am" },
       { "start": 5, "text": "wondering why I'm like this" },
       { "start": 8, "text": "anyway stream my new track" }
+    ]
+  }
+}
+```
+
+### Example NPC Output - Masked Intent (Subtweet)
+```json
+{
+  "action": "create_video",
+  "platform": "instasnap_story",
+  "intent": {
+    "primary": "make_jealous",
+    "surface_presentation": "share_joy",
+    "target": {
+      "type": "specific_npc",
+      "target_id": "npc_jake_miller",
+      "target_name": "Jake"
+    },
+    "energy": "high",
+    "context": "Posted 2 hours after Jake announced his new relationship"
+  },
+  "render_config": {
+    "preset_base": "cozy_warmth",
+    "preset_overlay": "light_leak",
+    "preset_text_style": "aesthetic",
+    "duration": 8,
+    "background_image_id": "generated_hot_selfie_456",
+    "text_segments": [
+      { "start": 0, "text": "living my best life" },
+      { "start": 3, "text": "some people just aren't ready for this" }
+    ]
+  }
+}
+```
+
+### Example NPC Output - Unhinged Vent
+```json
+{
+  "action": "create_video",
+  "platform": "vidtube_short",
+  "intent": {
+    "primary": "vent",
+    "secondary": "rage_bait",
+    "energy": "unhinged"
+  },
+  "render_config": {
+    "preset_base": "chaos_static",
+    "preset_overlay": "glitch_chaos",
+    "preset_text_style": "chaotic",
+    "duration": 15,
+    "text_segments": [
+      { "start": 0, "text": "OK SO", "effect": "slam" },
+      { "start": 1, "text": "LET ME TELL YOU", "effect": "shake" },
+      { "start": 3, "text": "about quantum coffee", "effect": "glitch" },
+      { "start": 5, "text": "IT RUINED MY LIFE", "effect": "shake" },
+      { "start": 8, "text": "and I'd do it again", "effect": "fade_in" }
     ]
   }
 }
