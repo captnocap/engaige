@@ -54,21 +54,21 @@ interface Subreddit {
 // ============================================================================
 
 const SUBREDDITS: Subreddit[] = [
-  { name: 'r/QuantumCoffee', icon: '☕', members: '847K', description: 'The unofficial subreddit for quantum coffee enthusiasts. Derek is a mod.' },
-  { name: 'r/HartwellBuilding', icon: '🏢', members: '234K', description: 'Theories, sightings, and investigations into the Hartwell Building mystery' },
-  { name: 'r/TrustFallTim', icon: '🤾', members: '89K', description: 'Fan community for Trust Fall Tim. Fall statistics, meet-up planning, and The Incident discussions.' },
-  { name: 'r/LocalMusic', icon: '🎸', members: '156K', description: 'Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.' },
-  { name: 'r/Cornfield', icon: '🌽', members: '412K', description: 'General discussion for Cornfield, KS residents and enthusiasts' },
-  { name: 'r/AskThreadit', icon: '❓', members: '5.2M', description: 'Ask and answer thought-provoking questions' },
+  { name: 't/QuantumCoffee', icon: '☕', members: '847K', description: 'The unofficial threadit for quantum coffee enthusiasts. Derek is a mod.' },
+  { name: 't/HartwellBuilding', icon: '🏢', members: '234K', description: 'Theories, sightings, and investigations into the Hartwell Building mystery' },
+  { name: 't/TrustFallTim', icon: '🤾', members: '89K', description: 'Fan community for Trust Fall Tim. Fall statistics, meet-up planning, and The Incident discussions.' },
+  { name: 't/LocalMusic', icon: '🎸', members: '156K', description: 'Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.' },
+  { name: 't/Cornfield', icon: '🌽', members: '412K', description: 'General discussion for Cornfield, KS residents and enthusiasts' },
+  { name: 't/AskThreadit', icon: '❓', members: '5.2M', description: 'Ask and answer thought-provoking questions' },
 ]
 
 const SAMPLE_THREADS: Thread[] = [
   // ============================================================================
-  // r/QuantumCoffee Threads
+  // t/QuantumCoffee Threads
   // ============================================================================
   {
     id: 'aita_for_refusing_to_drink_my_roommates_quantum_brewed_coffee',
-    subreddit: 'r/QuantumCoffee',
+    subreddit: 't/QuantumCoffee',
     title: 'AITA for refusing to drink my roommate\'s "quantum brewed" coffee?',
     author: 'throwaway_brew_123',
     content: `My (24M) roommate (26F) just bought a $3000 quantum coffee maker and insists I try it every morning. I think it's pseudoscience bs and tastes the same as regular coffee.
@@ -121,7 +121,7 @@ Edit: Yes I know about the Martinez study. My roommate has told me about it appr
   },
   {
     id: 'dr_martinez_clarification_about_her_study',
-    subreddit: 'r/QuantumCoffee',
+    subreddit: 't/QuantumCoffee',
     title: 'Dr. Martinez just posted clarification about her study AGAIN. When will people learn?',
     author: 'DerekMod',
     content: `For the 847th time: Dr. Martinez's study was about subatomic particle behavior, NOT coffee brewing. She has repeatedly stated this.
@@ -159,7 +159,7 @@ Edit: Stop sending me hate mail Jennifer. I know it's you.`,
   },
   {
     id: 'my_partner_wont_stop_explaining_quantum_physics',
-    subreddit: 'r/QuantumCoffee',
+    subreddit: 't/QuantumCoffee',
     title: 'My partner won\'t stop explaining quantum physics to me and it\'s ruining our relationship',
     author: 'tired_of_particles',
     content: `We've been together for 2 years and I love him, but ever since he got into quantum coffee, he won't shut up about it.
@@ -198,11 +198,11 @@ Edit: Yes his name is Derek. No I'm not his ex-wife Jennifer.`,
   },
 
   // ============================================================================
-  // r/HartwellBuilding Threads
+  // t/HartwellBuilding Threads
   // ============================================================================
   {
     id: 'theory_floor_13_is_a_dimensional_pocket',
-    subreddit: 'r/HartwellBuilding',
+    subreddit: 't/HartwellBuilding',
     title: '[THEORY] The Hartwell Building Floor 13 is a dimensional pocket',
     author: 'floor13truther',
     content: `Okay hear me out. I've been researching the Hartwell Building for 3 years now. Here's what we know:
@@ -253,7 +253,7 @@ Anyone else notice strange things around the building?`,
   },
   {
     id: 'the_mirrors_on_floor_7_showed_me_something',
-    subreddit: 'r/HartwellBuilding',
+    subreddit: 't/HartwellBuilding',
     title: 'The mirrors on Floor 7 showed me something that wasn\'t there',
     author: 'delivery_driver_anon',
     content: `I do deliveries for a restaurant near the Hartwell Building. Made a delivery to Floor 7 yesterday.
@@ -291,7 +291,7 @@ Has anyone else seen things in those mirrors?`,
   },
   {
     id: 'what_does_omnicorp_actually_do',
-    subreddit: 'r/HartwellBuilding',
+    subreddit: 't/HartwellBuilding',
     title: 'What does Omnicorp actually DO?',
     author: 'curious_researcher',
     content: `I've been trying to figure out what Omnicorp Holdings actually does as a business. Their website is just a logo and "Synergizing Tomorrow's Solutions Today."
@@ -321,11 +321,11 @@ What company has been around 100+ years with no apparent product or service?`,
   },
 
   // ============================================================================
-  // r/TrustFallTim Threads
+  // t/TrustFallTim Threads
   // ============================================================================
   {
     id: 'weekly_stats_tim_achieved_79_catch_rate',
-    subreddit: 'r/TrustFallTim',
+    subreddit: 't/TrustFallTim',
     title: 'WEEKLY STATS: Tim achieved 79.2% catch rate this week!',
     author: 'TFT_Stats_Bot',
     content: `Trust Fall Tim Weekly Statistics Report:
@@ -373,7 +373,7 @@ Keep falling, Tim! 🙌`,
   },
   {
     id: 'i_was_there_for_the_incident_ama',
-    subreddit: 'r/TrustFallTim',
+    subreddit: 't/TrustFallTim',
     title: 'I was there for The Incident. AMA.',
     author: 'witness_to_history',
     content: `I was standing right next to Small Kevin when it happened. I've never spoken publicly about it but I feel like the community deserves to know the truth.
@@ -416,7 +416,7 @@ Ask me anything (except Kevin's current whereabouts - he asked me not to share t
   },
   {
     id: 'tims_mom_started_a_support_blog',
-    subreddit: 'r/TrustFallTim',
+    subreddit: 't/TrustFallTim',
     title: 'Tim\'s mom started a support blog and it\'s the most wholesome thing',
     author: 'wholesome_content',
     content: `Found Tim's mom's blog where she documents supporting her son's "performance art journey."
@@ -452,11 +452,11 @@ Link in comments. Get tissues ready.`,
   },
 
   // ============================================================================
-  // r/LocalMusic Threads
+  // t/LocalMusic Threads
   // ============================================================================
   {
     id: 'velvet_algorithms_cancelled_existential_crisis',
-    subreddit: 'r/LocalMusic',
+    subreddit: 't/LocalMusic',
     title: 'The Velvet Algorithms cancelled their show due to "existential crisis" - anyone know what happened?',
     author: 'UndergroundRegular',
     content: `Was supposed to see them at The Underground tonight and just got the notification that the show is cancelled. Anyone have inside info?
@@ -499,7 +499,7 @@ I drove 3 hours for this show. Anyone else stranded downtown?`,
   },
   {
     id: 'vex_still_posting_about_neon_requiem',
-    subreddit: 'r/LocalMusic',
+    subreddit: 't/LocalMusic',
     title: 'Vex (Neon Requiem drummer) is STILL posting about the band like they didn\'t break up 10 months ago',
     author: 'scene_watcher',
     content: `Check his blog. Every single post is about Neon Requiem reunion rumors, the "legendary" final show, or cryptic hints about new music.
@@ -536,7 +536,7 @@ Someone needs to stage an intervention.`,
   },
   {
     id: 'mars_banned_another_wonderwall_requester',
-    subreddit: 'r/LocalMusic',
+    subreddit: 't/LocalMusic',
     title: 'Mars permanently banned another Wonderwall requester',
     author: 'underground_regular_2',
     content: `Witnessed history tonight at The Underground. Some guy requested Wonderwall for the third time in one night.
@@ -575,11 +575,11 @@ Legend.`,
   },
 
   // ============================================================================
-  // r/Cornfield Threads
+  // t/Cornfield Threads
   // ============================================================================
   {
     id: 'psa_the_new_stop_sign_on_5th_and_main',
-    subreddit: 'r/Cornfield',
+    subreddit: 't/Cornfield',
     title: 'PSA: The new stop sign on 5th and Main is NOT optional',
     author: 'concerned_citizen_847',
     content: `I've seen 12 people run this stop sign today. TWELVE. It's been there for a week. Yes it's new. No that doesn't mean you can ignore it.
@@ -612,7 +612,7 @@ Deputy Morrison is setting up speed traps there starting Monday. Consider yourse
   },
   {
     id: 'why_were_8_fire_trucks_at_hartwell_last_night',
-    subreddit: 'r/Cornfield',
+    subreddit: 't/Cornfield',
     title: 'Anyone know why there were 8 fire trucks at the Hartwell Building last night?',
     author: 'downtown_neighbor',
     content: `Huge response around 2am. No smoke that I could see. Trucks just sat there for 3 hours then left.
@@ -646,7 +646,7 @@ Fire department says it was a "routine check." At 2am? With 8 trucks?`,
   },
   {
     id: 'the_quantum_coffee_shop_is_actually_pretty_good',
-    subreddit: 'r/Cornfield',
+    subreddit: 't/Cornfield',
     title: 'The quantum coffee shop downtown is actually pretty good?',
     author: 'reluctant_convert',
     content: `I was a skeptic. Thought it was all pseudoscience nonsense. My coworker dragged me there and... okay the coffee IS somehow better?
@@ -665,18 +665,18 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
         content: 'Apology accepted. Welcome to enlightenment. ☕',
         upvotes: 234,
         timestamp: '2 days ago',
-        flair: 'r/QuantumCoffee Mod',
+        flair: 't/QuantumCoffee Mod',
         replies: [],
       },
     ],
   },
 
   // ============================================================================
-  // r/AskThreadit Threads
+  // t/AskThreadit Threads
   // ============================================================================
   {
     id: 'whats_the_weirdest_thing_at_a_local_venue',
-    subreddit: 'r/AskThreadit',
+    subreddit: 't/AskThreadit',
     title: 'What\'s the weirdest thing you\'ve ever witnessed at a local venue?',
     author: 'curiosity_killed_me',
     content: `I'll start: At The Underground last month, a guy tried to crowdsurf during an acoustic set. There were like 12 people in the audience. They did not catch him.`,
@@ -716,7 +716,7 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
   },
   {
     id: 'whats_your_towns_open_secret',
-    subreddit: 'r/AskThreadit',
+    subreddit: 't/AskThreadit',
     title: 'What\'s your town\'s "open secret" that everyone knows but nobody talks about?',
     author: 'small_town_curious',
     content: `Every town has one. What's yours?`,
@@ -755,7 +755,7 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
   },
   {
     id: 'people_caught_by_trust_fall_tim_how_did_it_feel',
-    subreddit: 'r/AskThreadit',
+    subreddit: 't/AskThreadit',
     title: 'People who\'ve been caught by Trust Fall Tim: How did it feel?',
     author: 'tft_researcher',
     content: `Statistically, 78.5% of people DO catch him. I want to hear from the catchers - what goes through your mind in that moment?`,
@@ -807,18 +807,22 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
       setSelectedThread(null)
       setSelectedSubreddit(null)
     } else if (path.startsWith('/t/')) {
-      // Thread path: /t/thread_id
-      const threadId = path.slice(3)
-      const thread = SAMPLE_THREADS.find(t => t.id === threadId)
-      if (thread) {
-        setSelectedThread(thread)
-        setSelectedSubreddit(null)
+      // Check if it's a needle (post): /t/CommunityName/n/post_slug
+      const nMatch = path.match(/^\/t\/([^/]+)\/n\/(.+)$/)
+      if (nMatch) {
+        // It's a needle (post)
+        const [, communityName, postSlug] = nMatch
+        const thread = SAMPLE_THREADS.find(t => t.id === postSlug)
+        if (thread) {
+          setSelectedThread(thread)
+          setSelectedSubreddit('t/' + communityName)
+        }
+      } else {
+        // It's just a threadit (community): /t/CommunityName
+        const communityName = path.slice(3) // Remove '/t/'
+        setSelectedThread(null)
+        setSelectedSubreddit('t/' + communityName)
       }
-    } else if (path.startsWith('/r/')) {
-      // Subreddit path: /r/subreddit_name (with r/ prefix)
-      const subredditName = 'r/' + path.slice(3)
-      setSelectedThread(null)
-      setSelectedSubreddit(subredditName)
     }
 
     // Reset flag after state updates
@@ -830,15 +834,18 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
   // Navigation handlers that update both state and path
   const handleSelectThread = (thread: Thread) => {
     setSelectedThread(thread)
-    onPathChange('/t/' + thread.id)
+    // Generate /t/CommunityName/n/post_slug path
+    // thread.subreddit is "t/CommunityName", so remove the "t/" prefix
+    const communityName = thread.subreddit.slice(2)
+    onPathChange('/t/' + communityName + '/n/' + thread.id)
   }
 
   const handleSelectSubreddit = (subredditName: string | null) => {
     setSelectedSubreddit(subredditName)
     setSelectedThread(null)
     if (subredditName) {
-      // subredditName includes "r/" prefix, remove it for the path
-      onPathChange('/r/' + subredditName.slice(2))
+      // subredditName includes "t/" prefix, remove it for the path
+      onPathChange('/t/' + subredditName.slice(2))
     } else {
       onPathChange(null)
     }
@@ -852,9 +859,9 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
 
   const handleBackFromThread = () => {
     setSelectedThread(null)
-    // Go back to subreddit if one is selected, otherwise go to home
+    // Go back to threadit if one is selected, otherwise go to home
     if (selectedSubreddit) {
-      onPathChange('/r/' + selectedSubreddit.slice(2))
+      onPathChange('/t/' + selectedSubreddit.slice(2))
     } else {
       onPathChange(null)
     }
