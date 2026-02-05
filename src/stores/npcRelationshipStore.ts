@@ -15,8 +15,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-// Note: dramaEngine is imported dynamically to avoid circular dependencies
-// The store broadcasts events, and listeners can subscribe to them
+// The store broadcasts events via subscribeToRelationshipEvents
+// Drama engine runs server-side (server/src/services/drama-engine.ts)
 type EventListener = (event: RelationshipEvent, relationship: NPCRelationship) => void
 const eventListeners: EventListener[] = []
 

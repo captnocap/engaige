@@ -1,0 +1,5 @@
+{
+  "maxTextSize": 500000,
+  "maxEdges": 5000,
+  "securityLevel": "loose"
+}

@@ -17,7 +17,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useSocialStore, type Post } from './socialStore.js'
-import { dramaEngine } from '../services/dramaEngine.js'
 
 // ============================================================================
 // Types
@@ -261,16 +260,8 @@ export const useAwarenessStore = create<AwarenessState>()(
           socialStore.markPostAsSeen(post.id, npcId, platform)
         })
 
-        // Process reactions to posts (likes, comments)
-        // This is where NPCs respond to drama they see
-        postsToSee.forEach(post => {
-          dramaEngine.processPostReaction(npcId, post)
-        })
-
-        // Check for suspicious activity (affair discovery via posts)
-        if (postsToSee.length > 0) {
-          dramaEngine.checkForSuspiciousActivity(npcId, postsToSee)
-        }
+        // NOTE: Post reactions and suspicious activity checks now handled server-side
+        // via server/src/services/drama-engine.ts
 
         // Update last checked time
         const now = new Date().toISOString()

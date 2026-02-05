@@ -19,7 +19,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useAwarenessStore } from './awarenessStore.js'
-import { dramaEngine } from '../services/dramaEngine.js'
 
 // ============================================================================
 // Types
@@ -192,9 +191,8 @@ export const useSimulationStore = create<SimulationState>()(
         // NPCs check their platforms based on their habits
         useAwarenessStore.getState().simulateSocialMediaChecks()
 
-        // 2. Drama Engine
-        // Process relationship-based posts and affair discovery
-        dramaEngine.tick()
+        // NOTE: Drama engine now runs server-side via server/src/services/drama-engine.ts
+        // Server handles relationship-based posts and affair discovery
 
         // Log occasional status (every 4 ticks = 1 in-game hour with default settings)
         if (totalTicksProcessed % 4 === 0) {
