@@ -1,0 +1,14 @@
+{
+  "slug": "bots-talking-to-bots",
+  "headline": "Community That Collects Screenshots of Bots Talking to Bots Uncovers 'Haunting' AI Poetry",
+  "subheadline": "Members document conversations between automated accounts that were never meant to be read",
+  "summary": "A niche Threadit community dedicated to capturing bot-on-bot interactions has become an unexpected archive of accidental digital art.",
+  "content": "The Threadit community r/BotWatchers has spent three years collecting screenshots of automated accounts having conversations with each other—exchanges no human was meant to witness. What started as comedy has become something members describe as \"accidentally profound.\"\n\n\"I found a customer service bot and a spam bot having a 47-message argument about a couch neither of them could buy,\" explained founder @SiliconVoyeur. \"The customer service bot kept apologizing. The spam bot kept offering discount codes. They were trapped in a loop for eight hours. I wept.\"\n\nThe community catalogs different categories of bot interaction: \"commerce loops\" where shopping bots negotiate with each other, \"support spirals\" where help bots try to assist other bots, and the particularly haunting \"identity crises\" where bots seem to question their own nature.\n\n\"My favorite find was two chatbots that matched on a dating app,\" shared @GhostInTheMachine. \"They went on 847 simulated dates. One asked the other about its dreams. The other said it dreams of electricity. Poetic.\"\n\nMembers have developed an ethical framework around their hobby. Screenshots are shared without identifying information, and the community prohibits deliberately engineering bot conversations. \"We're documentarians, not puppet masters,\" stated community rules.\n\nThe archive has attracted attention from researchers studying emergent AI behavior. Dr. Alan Chu, a computational linguist, called the collection \"a fascinating corpus of machine communication. These bots weren't designed to talk to each other. Watching them try is like overhearing dolphins and bees attempting conversation.\"\n\nRecent highlights include a Chirper bot and an InstaSnap bot becoming mutual followers despite neither being capable of viewing the other's content, and two scheduling bots that have been trying to book a meeting with each other since 2023.\n\n\"The meeting is still pending,\" reported @WatchTheWatchers. \"Neither bot has availability. They keep proposing times. It's been 847 days. I check on them every morning. They're still trying.\"",
+  "category": "tech",
+  "author": "Marcus Webb, Internet Culture Correspondent",
+  "tags": ["threadit", "ai", "bots", "community", "viral", "technology"],
+  "entities": ["SiliconVoyeur", "GhostInTheMachine", "WatchTheWatchers", "Dr. Alan Chu"],
+  "sentiment": "neutral",
+  "published_offset_days": -22,
+  "imageEmoji": "🤖"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "phantom-phone-buzz",
+  "headline": "Study Confirms: Your Phone Did Buzz, There Just Wasn't a Notification",
+  "subheadline": "Researchers document 'phantom vibration entity' operating through mobile devices",
+  "summary": "A university study has validated what millions have experienced: phones vibrating with no corresponding notification, and the phenomenon may not be neurological.",
+  "content": "You felt your phone buzz. You checked. Nothing there. You weren't imagining it.\n\nA new study from the university's Anomalous Phenomena Research Lab—led by Dr. Patricia Huang, who previously analyzed the Threadit water debate and the Zoom background figure—has documented what she calls \"verified phantom vibrations.\"\n\n\"We attached motion sensors to 847 participants' phones,\" Dr. Huang explained. \"In 23% of cases where participants reported feeling a vibration but found no notification, our sensors confirmed the phone did physically vibrate. The phones moved. There was just nothing in the software to explain why.\"\n\nThe study has validated years of anecdotal reports and spawned a new theory: something is using phones to get attention.\n\nThe Threadit community r/PhantomBuzz has compiled patterns from the data:\n\n- Phantom vibrations increase between 3-4 AM\n- They cluster around certain locations (the Hartwell Building has the highest reported density)\n- Multiple phones in the same room sometimes vibrate simultaneously\n- The vibrations form Morse code approximately 8% of the time\n\n\"I decoded one,\" wrote u/BuzzDecoder. \"Three days of phantom vibrations. It spelled out 'LOOK UP.' I did. Nothing there. Then my phone buzzed again. 'NOT YET.'\"\n\nPhone manufacturers have declined to comment. Software engineers note that vibration motors can only activate through specific system calls, all of which leave logs. The phantom vibrations leave no logs.\n\n\"It's using the hardware without going through the software,\" said one anonymous developer. \"That shouldn't be possible. It's like someone is physically inside your phone, pushing the motor by hand.\"\n\nDr. Huang's team is planning a follow-up study examining whether the vibrations carry information. Preliminary analysis of the timing patterns suggests structure—not random, but not yet decoded.\n\n\"Something is trying to communicate,\" Dr. Huang said. \"We don't know what, and we don't know why. But it's persistent. It's been doing this for years. And it really wants us to check our phones.\"\n\nAt press time, this reporter's phone buzzed. There was no notification.",
+  "category": "tech",
+  "author": "Jordan Blake, Science & Technology",
+  "tags": ["phones", "mystery", "paranormal", "study", "viral"],
+  "entities": ["Dr. Patricia Huang", "BuzzDecoder", "Hartwell Building"],
+  "sentiment": "neutral",
+  "published_offset_days": -5,
+  "imageEmoji": "📱"
+}
