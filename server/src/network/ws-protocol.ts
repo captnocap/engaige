@@ -417,6 +417,13 @@ export interface StudioSaveVideoConfigMessage extends WSMessage<{
   type: 'studio:saveVideoConfig';
 }
 
+export interface StudioSaveCanvasMessage extends WSMessage<{
+  imageData: string;  // Base64 encoded PNG
+  filename?: string;
+}> {
+  type: 'studio:saveCanvas';
+}
+
 // Search
 export interface SearchQueryMessage extends WSMessage<{
   query: string;
@@ -500,7 +507,8 @@ export type ClientMessage =
   | MediaGetAllMessage
   | StudioGenerateImageMessage
   | StudioGetBudgetMessage
-  | StudioSaveVideoConfigMessage;
+  | StudioSaveVideoConfigMessage
+  | StudioSaveCanvasMessage;
 
 // ============================================================================
 // Server -> Client Messages

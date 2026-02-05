@@ -13,11 +13,12 @@ import { SidebarNav, type SidebarNavItem } from '../settings/components/SidebarN
 import { StudioProvider, useStudio, type StudioMode } from './StudioContext.js';
 import { useWSStore } from '../../stores/wsStore.js';
 
-// Mode components (placeholders for now)
+// Mode components
 import { ImageGeneratorMode } from './modes/ImageGeneratorMode.js';
 import { VideoCreatorMode } from './modes/VideoCreatorMode.js';
 import { PostComposerMode } from './modes/PostComposerMode.js';
 import { AssetLibraryMode } from './modes/AssetLibraryMode.js';
+import { CanvasMode } from './modes/CanvasMode.js';
 
 // ============================================================================
 // Navigation Config
@@ -25,6 +26,7 @@ import { AssetLibraryMode } from './modes/AssetLibraryMode.js';
 
 const NAV_ITEMS: SidebarNavItem<StudioMode>[] = [
   { id: 'generate', label: 'Generate', icon: '✨' },
+  { id: 'draw', label: 'Draw', icon: '🎨' },
   { id: 'video', label: 'Video', icon: '🎬' },
   { id: 'compose', label: 'Compose', icon: '📝' },
   { id: 'library', label: 'Library', icon: '🖼️' },
@@ -33,6 +35,7 @@ const NAV_ITEMS: SidebarNavItem<StudioMode>[] = [
 // Map modes to their components
 const MODE_COMPONENTS: Record<StudioMode, React.ComponentType> = {
   generate: ImageGeneratorMode,
+  draw: CanvasMode,
   video: VideoCreatorMode,
   compose: PostComposerMode,
   library: AssetLibraryMode,
@@ -41,6 +44,7 @@ const MODE_COMPONENTS: Record<StudioMode, React.ComponentType> = {
 // Mode titles for header
 const MODE_TITLES: Record<StudioMode, string> = {
   generate: 'Generate Images',
+  draw: 'Draw & Edit',
   video: 'Create Video',
   compose: 'Compose Post',
   library: 'Asset Library',

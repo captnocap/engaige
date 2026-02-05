@@ -562,6 +562,10 @@ async function routeMessage(
       await handleStudioSaveVideoConfig(ws, message);
       break;
 
+    case 'studio:saveCanvas':
+      await handleStudioSaveCanvas(ws, message);
+      break;
+
     default:
       send(ws, createError(`Unknown message type: ${(message as WSMessage).type}`, 'UNKNOWN_TYPE', message.id));
   }
@@ -2838,6 +2842,56 @@ async function handleStudioSaveVideoConfig(ws: ServerWebSocket<ClientSession>, m
     }));
   } catch (err: any) {
     send(ws, createResponse(message.id, false, null, err.message || 'Failed to save video config'));
+  }
+}
+
+async function handleStudioSaveCanvas(ws: ServerWebSocket<ClientSession>, message: WSMessage): Promise<void> {
+  const payload = message.payload as {
+    imageData: string;  // Base64 encoded PNG (data:image/png;base64,...)
+    filename?: string;
+  };
+
+  if (!payload?.imageData) {
+    send(ws, createResponse(message.id, false, null, 'Missing image data'));
+    return;
+  }
+
+  try {
+    const { storeMediaFile } = await import('../services/media.js');
+    const { generateId } = await import('../db/index.js');
+
+    // Parse base64 data
+    const base64Match = payload.imageData.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!base64Match) {
+      send(ws, createResponse(message.id, false, null, 'Invalid image data format'));
+      return;
+    }
+
+    const imageType = base64Match[1];
+    const base64Data = base64Match[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const filename = payload.filename || `canvas_${generateId()}.${imageType}`;
+
+    const mediaFile = await storeMediaFile(
+      {
+        buffer,
+        filename,
+        mimeType: `image/${imageType}`,
+      },
+      {
+        owner_type: 'player',
+        category: 'generated',
+        description: 'Canvas drawing from Creative Studio',
+      }
+    );
+
+    send(ws, createResponse(message.id, true, {
+      mediaFileId: mediaFile.id,
+      mediaFile,
+    }));
+  } catch (err: any) {
+    send(ws, createResponse(message.id, false, null, err.message || 'Failed to save canvas'));
   }
 }
 

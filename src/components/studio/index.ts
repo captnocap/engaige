@@ -27,6 +27,7 @@ export { useStudioAssets, type MediaFile } from './useStudioAssets.js';
 
 // Mode components (for advanced usage)
 export { ImageGeneratorMode } from './modes/ImageGeneratorMode.js';
+export { CanvasMode } from './modes/CanvasMode.js';
 export { VideoCreatorMode } from './modes/VideoCreatorMode.js';
 export { PostComposerMode } from './modes/PostComposerMode.js';
 export { AssetLibraryMode } from './modes/AssetLibraryMode.js';

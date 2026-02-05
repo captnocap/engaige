@@ -20,7 +20,7 @@ import {
 // Types
 // ============================================================================
 
-export type StudioMode = 'generate' | 'video' | 'compose' | 'library';
+export type StudioMode = 'generate' | 'video' | 'compose' | 'library' | 'draw';
 
 export type AssetSource = 'all' | 'generated' | 'imported' | 'npc' | 'system';
 export type AssetUsage = 'all' | 'used' | 'unused';
