@@ -58,12 +58,13 @@ export function Browser({ onClose }: BrowserProps) {
   const [draggedTabId, setDraggedTabId] = useState<string | null>(null)
   const [zoom, setZoom] = useState(100)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // Legacy: Get apps from old registry for home page icons
   const browserApps = getAppsForSurface('browser')
 
-  // Bookmark store
+  // Bookmark & history store
   const {
     bookmarks,
     showBookmarksBar,
@@ -71,6 +72,7 @@ export function Browser({ onClose }: BrowserProps) {
     removeBookmark,
     reorderBookmark,
     isBookmarked,
+    recordVisit,
   } = useBrowserStore()
 
   // -------------------------------------------------------------------------
@@ -82,6 +84,13 @@ export function Browser({ onClose }: BrowserProps) {
     setUrlInput(activeTab.url === ABOUT_BLANK ? '' : activeTab.url)
     setShowAutocomplete(false)
   }, [activeTab.url, activeTab.id])
+
+  // Record site visits for history tracking
+  useEffect(() => {
+    if (activeTab.site) {
+      recordVisit(activeTab.site.domain)
+    }
+  }, [activeTab.site?.domain, recordVisit])
 
   // -------------------------------------------------------------------------
   // Autocomplete
@@ -185,6 +194,21 @@ export function Browser({ onClose }: BrowserProps) {
 
     navigateToPath(newPath || '/')
   }, [activeTab.site, activeTab.path, navigateToPath])
+
+  // Handle refresh with visual feedback
+  const handleRefresh = useCallback(() => {
+    if (isRefreshing) return
+    setIsRefreshing(true)
+
+    // Brief delay to show the loading state, then refresh
+    setTimeout(() => {
+      refresh()
+      // Keep loading state a bit longer so it feels like a real reload
+      setTimeout(() => {
+        setIsRefreshing(false)
+      }, 200)
+    }, 150)
+  }, [refresh, isRefreshing])
 
   // -------------------------------------------------------------------------
   // Bookmarks
@@ -451,12 +475,18 @@ export function Browser({ onClose }: BrowserProps) {
             </svg>
           </button>
           <button
-            onClick={refresh}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
             className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--color-bgTertiary)]"
-            style={{ color: 'var(--color-text)' }}
+            style={{ color: 'var(--color-text)', opacity: isRefreshing ? 0.5 : 1 }}
             title="Refresh"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>
@@ -699,7 +729,22 @@ export function Browser({ onClose }: BrowserProps) {
       )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative">
+        {/* Refresh Loading Overlay */}
+        {isRefreshing && (
+          <div
+            className="absolute inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'var(--color-bg)', opacity: 0.8 }}
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="w-8 h-8 border-3 border-t-transparent rounded-full animate-spin"
+                style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}
+              />
+              <span style={{ color: 'var(--color-textMuted)', fontSize: '14px' }}>Reloading...</span>
+            </div>
+          </div>
+        )}
         <div
           style={{
             transform: `scale(${zoom / 100})`,
@@ -740,10 +785,25 @@ interface BrowserHomePageProps {
 }
 
 function BrowserHomePage({ sites, onNavigate }: BrowserHomePageProps) {
-  // Show popular sites - sorted by SEO score
+  const { getVisitCount } = useBrowserStore()
+
+  // Show popular sites - sorted by visit count first, then SEO score as fallback
   const popularSites = sites
     .filter(site => site.seo.baseScore >= 50)
-    .sort((a, b) => b.seo.baseScore - a.seo.baseScore)
+    .sort((a, b) => {
+      const aVisits = getVisitCount(a.domain)
+      const bVisits = getVisitCount(b.domain)
+
+      // If both have visits, sort by visit count
+      if (aVisits > 0 || bVisits > 0) {
+        if (aVisits !== bVisits) {
+          return bVisits - aVisits // Higher visits first
+        }
+      }
+
+      // Fall back to SEO score for unvisited or tied sites
+      return b.seo.baseScore - a.seo.baseScore
+    })
     .slice(0, 12)
 
   return (

@@ -68,12 +68,19 @@ export const THREADIT_MANIFEST: SiteManifest = {
   },
   seoScore: 85,
   pages: [
+    // Subreddits
     { path: '/r/QuantumCoffee', title: 'r/QuantumCoffee - Threadit', description: 'The unofficial subreddit for quantum coffee enthusiasts. Derek is a mod.', type: 'forum', tags: ['quantum coffee', 'derek', 'coffee'] },
     { path: '/r/HartwellBuilding', title: 'r/HartwellBuilding - Threadit', description: 'Theories, sightings, and investigations into the Hartwell Building mystery', type: 'forum', tags: ['hartwell', 'floor 13', 'mystery', 'conspiracy'] },
     { path: '/r/TrustFallTim', title: 'r/TrustFallTim - Threadit', description: 'Fan community for Trust Fall Tim. Fall statistics, meet-up planning, and The Incident discussions.', type: 'forum', tags: ['trust fall tim', 'fan', 'community'] },
     { path: '/r/LocalMusic', title: 'r/LocalMusic - Threadit', description: 'Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.', type: 'forum', tags: ['music', 'local', 'velvet algorithms', 'neon requiem', 'underground'] },
     { path: '/r/Cornfield', title: 'r/Cornfield - Threadit', description: 'General discussion for Cornfield, KS residents and enthusiasts', type: 'forum', tags: ['local', 'cornfield', 'community'] },
-    { path: '/t/floor_13_theory', title: '[THEORY] The Hartwell Building Floor 13 is a dimensional pocket', description: 'Conspiracy theory about the true nature of the missing floor. Evidence includes strange elevator behavior and the number 847.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'] },
+    { path: '/r/AskThreadit', title: 'r/AskThreadit - Threadit', description: 'Ask and answer thought-provoking questions on any topic', type: 'forum', tags: ['questions', 'discussion', 'community'] },
+    // Notable threads
+    { path: '/t/hb_1', title: '[THEORY] Floor 13 is a dimensional pocket - Threadit', description: 'Conspiracy theory about the true nature of the missing Hartwell Building floor. Evidence includes strange elevator behavior and the number 847.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'] },
+    { path: '/t/tft_2', title: 'I was there for The Incident. AMA. - Threadit', description: 'Eyewitness account of the infamous Trust Fall Tim incident involving Small Kevin.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'] },
+    { path: '/t/qc_2', title: 'Dr. Martinez clarification about her study - Threadit', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'] },
+    { path: '/t/at_2', title: 'What\'s your town\'s open secret? - Threadit', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'] },
+    { path: '/t/lm_3', title: 'Mars banned another Wonderwall requester - Threadit', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'] },
   ],
 }
 
@@ -160,9 +167,19 @@ export const FORCHAN_MANIFEST: SiteManifest = {
   },
   seoScore: 40,
   pages: [
-    { path: '/b/', title: '/b/ - Random', description: 'The random board. Rules: none. Expectations: adjust accordingly.', type: 'forum', tags: ['random', 'memes'] },
-    { path: '/x/', title: '/x/ - Paranormal', description: 'Paranormal discussion. Hartwell Building threads pinned permanently.', type: 'forum', tags: ['paranormal', 'conspiracy', 'hartwell building'] },
-    { path: '/mu/', title: '/mu/ - Music', description: 'Music discussion. Velvet Algorithms tier list threads every hour.', type: 'forum', tags: ['music', 'discussion'] },
+    // Boards
+    { path: '/b', title: '/b/ - Random', description: 'The random board. Rules: none. Expectations: adjust accordingly.', type: 'forum', tags: ['random', 'memes'] },
+    { path: '/g', title: '/g/ - Technology', description: 'Install Gentoo. Also quantum coffee machine debates.', type: 'forum', tags: ['technology', 'programming', 'hardware'] },
+    { path: '/mu', title: '/mu/ - Music', description: 'Music discussion. Velvet Algorithms tier list threads every hour.', type: 'forum', tags: ['music', 'discussion'] },
+    { path: '/ck', title: '/ck/ - Food & Cooking', description: 'How do I make pasta that doesn\'t taste like sadness?', type: 'forum', tags: ['food', 'cooking', 'recipes'] },
+    { path: '/x', title: '/x/ - Paranormal', description: 'Paranormal discussion. Hartwell Building threads pinned permanently.', type: 'forum', tags: ['paranormal', 'conspiracy', 'hartwell building'] },
+    { path: '/sci', title: '/sci/ - Science & Math', description: 'For the scientifically minded. Martinez study debates welcome.', type: 'forum', tags: ['science', 'math', 'physics'] },
+    { path: '/diy', title: '/diy/ - Do It Yourself', description: 'You can probably fix that yourself, right?', type: 'forum', tags: ['diy', 'repair', 'projects'] },
+    { path: '/adv', title: '/adv/ - Advice', description: 'Life lessons from anonymous strangers', type: 'forum', tags: ['advice', 'life', 'relationships'] },
+    // Notable threads
+    { path: '/g/thread/94817234', title: 'Quantum Coffee Machine General /qcg/', description: 'Sticky thread for quantum coffee machine discussion on /g/', type: 'forum', tags: ['quantum coffee', 'technology'] },
+    { path: '/x/thread/94812456', title: 'Hartwell Building - New Evidence', description: 'Anonymous claims cousin found sealed documents about the Hartwell incident', type: 'forum', tags: ['hartwell', 'conspiracy', 'paranormal'] },
+    { path: '/mu/thread/94815102', title: 'Velvet Algorithms Appreciation Thread', description: 'Discussion of the existential crisis show cancellation at The Underground', type: 'forum', tags: ['velvet algorithms', 'music', 'the underground'] },
   ],
 }
 
@@ -991,6 +1008,24 @@ export const MILLIONPIXELS_MANIFEST: SiteManifest = {
 }
 
 // ============================================================================
+// System/Utility Sites
+// ============================================================================
+
+export const CORNMAZE_MANIFEST: SiteManifest = {
+  id: 'cornmaze',
+  domain: 'maze.corn',
+  name: 'Corn Maze',
+  icon: '🌽',
+  homepage: {
+    title: 'corn:maze - The .corn Internet Index',
+    description: 'A complete directory of all .corn sites and their indexed content. Browse the entire sitemap of the fake internet.',
+    keywords: ['index', 'directory', 'sitemap', 'maze', 'all sites'],
+  },
+  seoScore: 80,
+  pages: [],
+}
+
+// ============================================================================
 // All Manifests Export
 // ============================================================================
 
@@ -1033,6 +1068,7 @@ export const ALL_SITE_MANIFESTS: SiteManifest[] = [
   COBCOIN_MANIFEST,
   // Specialized
   GOOBER_MANIFEST,
+  CORNMAZE_MANIFEST,
   CORNGPT_MANIFEST,
   STALKS_MANIFEST,
   CORNMAPS_MANIFEST,

@@ -75,6 +75,7 @@ import { WonderwallWarriorSite } from '../components/browser/sites/WonderwallWar
 import { Floor13BlogSite } from '../components/browser/sites/Floor13BlogSite.js'
 import { SmallKevinBlogSite } from '../components/browser/sites/SmallKevinBlogSite.js'
 import { GooberSite } from '../components/browser/sites/GooberSite.js'
+import { CornMazeSite } from '../components/browser/sites/CornMazeSite.js'
 import { CornGPTSite } from '../components/browser/sites/CornGPTSite.js'
 import { StalksSite } from '../components/browser/sites/StalksSite.js'
 
@@ -157,6 +158,7 @@ const SITE_COMPONENTS: Record<string, LegacyComponent | ModernComponent> = {
 
   // Specialized (these use full SiteComponentProps)
   'goober': GooberSite,
+  'cornmaze': CornMazeSite,
   'corngpt': CornGPTSite,
   'stalks': StalksSite,
   'cornmaps': CornMapsSite,
@@ -199,7 +201,7 @@ const SITE_COMPONENTS: Record<string, LegacyComponent | ModernComponent> = {
 /**
  * Sites that use full SiteComponentProps (don't need adaptation)
  */
-const MODERN_SITES = new Set(['goober', 'stalks'])
+const MODERN_SITES = new Set(['goober', 'cornmaze', 'stalks'])
 
 // ============================================================================
 // Registration

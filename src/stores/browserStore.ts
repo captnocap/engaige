@@ -10,11 +10,17 @@ export interface Bookmark {
   createdAt: number
 }
 
+export interface SiteVisit {
+  count: number
+  lastVisit: number
+}
+
 export interface BrowserState {
   bookmarks: Bookmark[]
   showBookmarksBar: boolean
+  siteVisits: Record<string, SiteVisit>  // domain -> visit data
 
-  // Actions
+  // Bookmark Actions
   addBookmark: (url: string, title: string, icon: string) => void
   removeBookmark: (id: string) => void
   reorderBookmark: (id: string, newPosition: number) => void
@@ -22,6 +28,12 @@ export interface BrowserState {
   getBookmarkByUrl: (url: string) => Bookmark | undefined
   toggleBookmarksBar: () => void
   setShowBookmarksBar: (show: boolean) => void
+
+  // Visit Tracking Actions
+  recordVisit: (domain: string) => void
+  getVisitCount: (domain: string) => number
+  getTopVisitedDomains: (limit?: number) => Array<{ domain: string; count: number; lastVisit: number }>
+  clearHistory: () => void
 }
 
 function generateBookmarkId(): string {
@@ -33,6 +45,7 @@ export const useBrowserStore = create<BrowserState>()(
     (set, get) => ({
       bookmarks: [],
       showBookmarksBar: true,
+      siteVisits: {},
 
       addBookmark: (url: string, title: string, icon: string) => {
         const { bookmarks } = get()
@@ -111,12 +124,48 @@ export const useBrowserStore = create<BrowserState>()(
       setShowBookmarksBar: (show: boolean) => {
         set({ showBookmarksBar: show })
       },
+
+      // Visit Tracking
+      recordVisit: (domain: string) => {
+        const { siteVisits } = get()
+        const normalized = domain.toLowerCase().replace(/^www\./, '')
+        const existing = siteVisits[normalized]
+
+        set({
+          siteVisits: {
+            ...siteVisits,
+            [normalized]: {
+              count: (existing?.count || 0) + 1,
+              lastVisit: Date.now(),
+            },
+          },
+        })
+      },
+
+      getVisitCount: (domain: string) => {
+        const { siteVisits } = get()
+        const normalized = domain.toLowerCase().replace(/^www\./, '')
+        return siteVisits[normalized]?.count || 0
+      },
+
+      getTopVisitedDomains: (limit = 12) => {
+        const { siteVisits } = get()
+        return Object.entries(siteVisits)
+          .map(([domain, data]) => ({ domain, ...data }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, limit)
+      },
+
+      clearHistory: () => {
+        set({ siteVisits: {} })
+      },
     }),
     {
       name: 'engaige-browser',
       partialize: (state) => ({
         bookmarks: state.bookmarks,
         showBookmarksBar: state.showBookmarksBar,
+        siteVisits: state.siteVisits,
       }),
     }
   )

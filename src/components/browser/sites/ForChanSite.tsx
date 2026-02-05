@@ -5,7 +5,7 @@
  * Features anonymous posting, greentext, reply chains, and classic imageboard aesthetic.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
@@ -493,15 +493,238 @@ peak /b/ moment`,
       },
     ],
   },
+  {
+    id: '94806123',
+    board: 'sci',
+    subject: 'The Martinez Study - Actual Physicist Breakdown',
+    content: `PhD in physics here. Since you retards keep citing the Martinez study wrong, let me break it down:
+
+>study was about subatomic particle behavior under specific electromagnetic conditions
+>nowhere does it mention coffee
+>the "quantum extraction" coffee people cite is from a BLOG POST that misunderstood the abstract
+>Martinez herself has clarified multiple times she's never even tried quantum coffee
+
+The absolute state of scientific literacy in this country`,
+    image: '🔬📖',
+    timestamp: '11/22/24(Fri)10:15:22',
+    replies: [
+      {
+        id: '94806156',
+        content: `>>94806123
+>PhD
+>on /sci/
+doubt`,
+        timestamp: '11/22/24(Fri)10:18:33',
+        replyTo: ['94806123'],
+      },
+      {
+        id: '94806189',
+        content: `>>94806123
+ok but have you actually TRIED quantum coffee? I've read the study (the abstract anyway) and it makes sense to me`,
+        timestamp: '11/22/24(Fri)10:21:47',
+        replyTo: ['94806123'],
+      },
+      {
+        id: '94806222',
+        content: `>>94806189
+>read the abstract
+>thinks he understands quantum mechanics
+every single time`,
+        timestamp: '11/22/24(Fri)10:24:58',
+        replyTo: ['94806189'],
+      },
+    ],
+  },
+  {
+    id: '94805456',
+    board: 'sci',
+    subject: 'Can someone explain the Hartwell EMF readings?',
+    content: `Not a schizo I promise. I do EMF work for a living and was called to inspect the Hartwell Building last year.
+
+The readings on floors 6-8 were normal. Floor 7 specifically showed some anomalies but nothing crazy.
+
+What was weird was when I tried to test between floors 12 and 14. My equipment showed readings that shouldn't be possible. Like the field was coming from a direction that doesn't exist.
+
+Anyone have a scientific explanation?`,
+    image: '📡❓',
+    timestamp: '11/22/24(Fri)08:45:33',
+    replies: [
+      {
+        id: '94805489',
+        content: `>>94805456
+>direction that doesn't exist
+elaborate`,
+        timestamp: '11/22/24(Fri)08:48:12',
+        replyTo: ['94805456'],
+      },
+      {
+        id: '94805522',
+        content: `>>94805456
+Probably just equipment interference from the elevator machinery. Older buildings have terrible electrical shielding.
+
+Source: also do EMF work`,
+        timestamp: '11/22/24(Fri)08:51:27',
+        replyTo: ['94805456'],
+      },
+      {
+        id: '94805555',
+        content: `>>94805522
+This. Industrial elevators from the 1920s produce weird readings all the time.
+
+>>94805456 is probably just new to the job`,
+        timestamp: '11/22/24(Fri)08:54:43',
+        replyTo: ['94805522', '94805456'],
+      },
+    ],
+  },
+  {
+    id: '94804789',
+    board: 'diy',
+    subject: 'Building my own quantum coffee maker - parts list?',
+    content: `Not paying $3000 for something I can probably build myself
+
+I've watched a few videos and it doesn't look that complicated. Basically just need:
+>precision temperature control
+>some kind of EMF generator?
+>observation chamber (whatever that is)
+>regular coffee maker parts
+
+Anyone have a real parts list? Not finding good resources`,
+    image: '🔧☕',
+    timestamp: '11/21/24(Thu)22:33:15',
+    replies: [
+      {
+        id: '94804822',
+        content: `>>94804789
+>observation chamber
+bro that's literally just a glass window
+they're selling you air`,
+        timestamp: '11/21/24(Thu)22:36:28',
+        replyTo: ['94804789'],
+      },
+      {
+        id: '94804855',
+        content: `>>94804789
+Don't do this. I tried building one and nearly burned my apartment down. The EMF field generator needs to be calibrated PERFECTLY or it just makes heat.
+
+Just save up for a real one or accept that regular coffee is fine`,
+        timestamp: '11/21/24(Thu)22:39:44',
+        replyTo: ['94804789'],
+      },
+      {
+        id: '94804888',
+        content: `>>94804855
+>nearly burned apartment down trying to make fancy coffee
+/diy/ moment`,
+        timestamp: '11/21/24(Thu)22:42:57',
+        replyTo: ['94804855'],
+      },
+    ],
+  },
+  {
+    id: '94803456',
+    board: 'diy',
+    subject: 'Repairing the sound system at The Underground',
+    content: `Mars is letting me help fix the PA system at The Underground after some drunk idiot spilled beer on the mixing board
+
+Anyone have experience with vintage Mackie boards? Need to replace some capacitors but can't find the right specs`,
+    image: '🔊🔧',
+    timestamp: '11/21/24(Thu)18:22:45',
+    replies: [
+      {
+        id: '94803489',
+        content: `>>94803456
+Post the board model. Most Mackies from that era use pretty standard caps.`,
+        timestamp: '11/21/24(Thu)18:25:33',
+        replyTo: ['94803456'],
+      },
+      {
+        id: '94803522',
+        content: `>>94803456
+>The Underground
+based. Mars is cool. Tell him Anon says hi`,
+        timestamp: '11/21/24(Thu)18:28:47',
+        replyTo: ['94803456'],
+      },
+      {
+        id: '94803555',
+        content: `>>94803456
+Wait was this the beer that got spilled during the Neon Requiem show? That was legendary`,
+        timestamp: '11/21/24(Thu)18:31:58',
+        replyTo: ['94803456'],
+      },
+    ],
+  },
 ]
 
 // ============================================================================
 // Components
 // ============================================================================
 
-export function ForChanSite({ siteId, onNavigate }: SiteProps) {
+export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
+
+  // Track if we're updating from path (to avoid triggering onPathChange)
+  const isUpdatingFromPath = useRef(false)
+
+  // Parse path and update state when path changes (from browser back/forward)
+  useEffect(() => {
+    isUpdatingFromPath.current = true
+
+    if (!path) {
+      setSelectedThread(null)
+      setSelectedBoard(null)
+    } else if (path.match(/^\/[a-z]+\/thread\/\d+$/)) {
+      // Thread path: /g/thread/94817234
+      const match = path.match(/^\/([a-z]+)\/thread\/(\d+)$/)
+      if (match) {
+        const [, boardId, threadId] = match
+        const thread = SAMPLE_THREADS.find(t => t.id === threadId)
+        if (thread) {
+          setSelectedBoard(boardId)
+          setSelectedThread(thread)
+        }
+      }
+    } else if (path.match(/^\/[a-z]+$/)) {
+      // Board path: /g
+      const boardId = path.slice(1)
+      if (BOARDS.some(b => b.id === boardId)) {
+        setSelectedThread(null)
+        setSelectedBoard(boardId)
+      }
+    }
+
+    // Reset flag after state updates
+    setTimeout(() => {
+      isUpdatingFromPath.current = false
+    }, 0)
+  }, [path])
+
+  // Navigation handlers that update both state and path
+  const handleSelectBoard = (boardId: string | null) => {
+    setSelectedBoard(boardId)
+    setSelectedThread(null)
+    if (boardId) {
+      onPathChange?.('/' + boardId)
+    } else {
+      onPathChange?.(null)
+    }
+  }
+
+  const handleSelectThread = (thread: Thread) => {
+    setSelectedThread(thread)
+    onPathChange?.('/' + thread.board + '/thread/' + thread.id)
+  }
+
+  const handleBackFromThread = () => {
+    setSelectedThread(null)
+    if (selectedBoard) {
+      onPathChange?.('/' + selectedBoard)
+    } else {
+      onPathChange?.(null)
+    }
+  }
 
   const displayedThreads = selectedBoard
     ? SAMPLE_THREADS.filter(t => t.board === selectedBoard)
@@ -532,10 +755,7 @@ export function ForChanSite({ siteId, onNavigate }: SiteProps) {
       >
         <span className="font-bold mr-2" style={{ color: site.theme.text }}>[ </span>
         <button
-          onClick={() => {
-            setSelectedBoard(null)
-            setSelectedThread(null)
-          }}
+          onClick={() => handleSelectBoard(null)}
           className="hover:underline"
           style={{ color: selectedBoard === null ? site.theme.linkVisited : site.theme.link }}
         >
@@ -545,10 +765,7 @@ export function ForChanSite({ siteId, onNavigate }: SiteProps) {
           <span key={board.id}>
             <span style={{ color: site.theme.text }}> / </span>
             <button
-              onClick={() => {
-                setSelectedBoard(board.id)
-                setSelectedThread(null)
-              }}
+              onClick={() => handleSelectBoard(board.id)}
               className="hover:underline"
               style={{ color: selectedBoard === board.id ? site.theme.linkVisited : site.theme.link }}
             >
@@ -579,7 +796,7 @@ export function ForChanSite({ siteId, onNavigate }: SiteProps) {
         {selectedThread ? (
           <ThreadView
             thread={selectedThread}
-            onBack={() => setSelectedThread(null)}
+            onBack={handleBackFromThread}
           />
         ) : (
           <div className="space-y-4">
@@ -641,7 +858,7 @@ export function ForChanSite({ siteId, onNavigate }: SiteProps) {
               <ThreadPreview
                 key={thread.id}
                 thread={thread}
-                onClick={() => setSelectedThread(thread)}
+                onClick={() => handleSelectThread(thread)}
               />
             ))}
           </div>

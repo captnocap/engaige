@@ -121,6 +121,8 @@ export const FILLER_SITES = {
       sticky: '#f00',          // Sticky red
       locked: '#789922',       // Locked green
       boardTitle: '#800000',   // Board title maroon
+      link: '#00e',            // Link blue
+      linkVisited: '#551a8b',  // Visited link purple
     },
   },
 
