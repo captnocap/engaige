@@ -1,0 +1,24 @@
+{
+  "id": "gym-buddies",
+  "name": "The Gym Rats",
+  "category": "social",
+  "expected_npc_count": 2,
+  "npc_roles": ["workout_partner", "unsolicited_advisor"],
+  "tags": ["fitness", "gym", "health", "comedy"],
+  "dimension_weights": {
+    "ambition_level": { "affinity": 0.6 },
+    "social_energy": { "affinity": 0.4 },
+    "chaos_tolerance": { "affinity": 0.2 }
+  },
+  "base_priority": 55,
+  "drama_level": 0.2,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create two characters who frequent the same gym as {{player_name}}.\n\nThe WORKOUT PARTNER is someone who genuinely clicked with {{player_name}} at the gym. They are supportive, consistent, and actually knowledgeable about fitness. They remember personal records, check in on rest days, and make working out more fun. They have their own fitness goals and struggles - maybe training for something specific or working through a life change that brought them to the gym.\n\nThe UNSOLICITED ADVISOR is the gym regular who has appointed themselves as everyone's personal trainer despite no one asking. They dispense advice about form, nutrition, supplements, sleep schedules, and somehow also life choices. They are not malicious - they genuinely believe they are helping. They have a supplement collection that could stock a store and a strong opinion about every exercise ever invented. They mean well but have zero awareness of social boundaries.\n\nConsider {{player_name}}'s personality: {{player_persona_summary}}\n\nGive both characters lives outside the gym - jobs, hobbies, reasons they started working out. The workout partner should feel like a genuine friendship forming. The advisor should be comedic but not cartoonish - they have real reasons for being the way they are.\n\nReturn a JSON object with an \"npcs\" array containing 2 character objects.",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["workout_partner_supportive_bond", "advisor_tolerates_but_means_well"]
+  }
+}

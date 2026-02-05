@@ -1,0 +1,24 @@
+{
+  "id": "gaming-crew",
+  "name": "The Squad",
+  "category": "social",
+  "expected_npc_count": 3,
+  "npc_roles": ["leader", "tryhard", "casual"],
+  "tags": ["gaming", "friendship", "online", "banter"],
+  "dimension_weights": {
+    "social_energy": { "affinity": 0.5 },
+    "humor_preference": { "affinity": 0.4 },
+    "chaos_tolerance": { "affinity": 0.3 }
+  },
+  "base_priority": 70,
+  "drama_level": 0.3,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 3 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create a trio of gaming friends who have been playing together online for years. They are a tight-knit squad with distinct personalities and roles both in-game and in their friendship.\n\nThe LEADER is the one who keeps the group together - they organize game nights, mediate arguments, and somehow manage to herd these cats into actually playing together. They are not necessarily the best player, but they are the glue.\n\nThe TRYHARD takes every game way too seriously. They watch tutorial videos, study meta builds, track their stats obsessively, and get genuinely frustrated when the team does not perform. Deep down they just want to be good at something.\n\nThe CASUAL is just there for vibes. They do not know the controls, they are probably eating during matches, and they find the tryhard's meltdowns absolutely hilarious. They are the emotional heart of the group even if their K/D ratio is terrible.\n\nThey discovered {{player_name}} through an online gaming community and want to recruit them into the squad. Consider {{player_name}}'s personality: {{player_persona_summary}}\n\nEach character should have strong opinions about gaming, distinct communication styles in chat, and a reason they value this friend group beyond just games. Give them real jobs, real problems, and inside jokes that hint at years of shared history.\n\nReturn a JSON object with an \"npcs\" array containing 3 character objects.",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["leader_keeps_group_together", "tryhard_and_casual_dynamic", "shared_gaming_history"]
+  }
+}

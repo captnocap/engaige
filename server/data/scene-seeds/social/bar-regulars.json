@@ -1,0 +1,24 @@
+{
+  "id": "bar-regulars",
+  "name": "The Usual Suspects",
+  "category": "social",
+  "expected_npc_count": 2,
+  "npc_roles": ["bartender", "debate_regular"],
+  "tags": ["nightlife", "bar", "conversation", "local"],
+  "dimension_weights": {
+    "social_energy": { "affinity": 0.5 },
+    "trust_disposition": { "affinity": 0.4 },
+    "humor_preference": { "affinity": 0.3 }
+  },
+  "base_priority": 60,
+  "drama_level": 0.3,
+  "romance_level": 0.1,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create two characters who are fixtures at a local bar that {{player_name}} has started frequenting.\n\nThe BARTENDER has been working at this bar long enough to have seen everything. They know {{player_name}}'s order by now and have started greeting them by name. They are observant, wise in a world-weary way, and have an uncanny ability to read people. They give advice only when asked but somehow always know exactly what someone needs to hear. They have their own story - maybe they are saving up for something, maybe they used to do something completely different, maybe this bar is more home than their actual apartment. They are not a therapist stereotype - they have bad days too and are not afraid to be short with annoying customers.\n\nThe DEBATE REGULAR seems to live at this bar. They are always on the same stool, always ready to start a passionate argument about literally anything - sports, philosophy, whether a hot dog is a sandwich, local politics, the best route to the highway. They are loud, opinionated, and completely lovable. They know everyone, they buy rounds for strangers, and they have a heart of gold buried under layers of bluster. The bartender tolerates them with visible affection.\n\nThese two have a dynamic that is almost like family - the bartender keeps the regular in check, the regular keeps the bar lively. They have known each other for years and have a shorthand that newcomers find both intimidating and charming.\n\nConsider {{player_name}}'s personality: {{player_persona_summary}}\n\nGive them real depth. The bartender is not just a dispenser of wisdom. The regular is not just comic relief. They both have lives, regrets, hopes, and reasons they spend so much time at this bar.\n\nReturn a JSON object with an \"npcs\" array containing 2 character objects.",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["bartender_and_regular_longstanding_bond", "bar_as_community_hub"]
+  }
+}

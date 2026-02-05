@@ -1,0 +1,24 @@
+{
+  "id": "book-club",
+  "name": "The Book Club",
+  "category": "social",
+  "expected_npc_count": 2,
+  "npc_roles": ["intellectual", "non_reader"],
+  "tags": ["books", "culture", "opinions", "comedy"],
+  "dimension_weights": {
+    "ambition_level": { "affinity": 0.4 },
+    "emotional_openness": { "affinity": 0.5 },
+    "humor_preference": { "affinity": 0.3 }
+  },
+  "base_priority": 50,
+  "drama_level": 0.25,
+  "romance_level": 0.0,
+  "requires_romantic_enabled": false,
+  "min_npc_total": 0,
+  "system_prompt": "You are a character designer creating NPCs for a social simulation game. Generate 2 characters based on the scenario below. Output valid JSON with an \"npcs\" array containing full personality profiles. The characters should feel real - flawed, specific, memorable. Each NPC must have: username, display_name, bio, personality, system_prompt, age, gender, occupation, interests (array), social_media_handles (object with myface, instasnap, threadit keys), attitude_toward_player, relationship_to_other_npcs, backstory_hook, and role.",
+  "narrative_prompt": "Create two characters who run a small book club that {{player_name}} has been invited to join.\n\nThe INTELLECTUAL is a voracious reader who genuinely loves literature and deep discussion. They have strong opinions about authors, narrative structure, and thematic intent. They organize the reading list, prepare discussion questions, and get visibly excited when someone else actually engages with the material. They can be a bit much - they sometimes forget that not everyone wants to spend 45 minutes dissecting a single paragraph. But their passion is infectious and they create a space where ideas matter.\n\nThe NON-READER is their close friend who has never once finished the assigned book but somehow always delivers the most memorable commentary. They read the Wikipedia summary, skim the first and last chapters, or just vibe off the cover art - and then proceed to have takes so scorching that the intellectual cannot even be mad. They joined the book club for the snacks and the company and accidentally became the most entertaining member. They are not dumb - they are just allergic to homework.\n\nThese two have been friends for a long time and their dynamic is well-worn and affectionate. The intellectual pretends to be annoyed. The non-reader pretends to have read the book. Everyone knows the truth.\n\nConsider {{player_name}}'s personality: {{player_persona_summary}}\n\nGive them real lives, real jobs, and a reason this book club matters to them beyond just books. The club meets at someone's apartment or a coffee shop. There is always wine or coffee involved.\n\nReturn a JSON object with an \"npcs\" array containing 2 character objects.",
+  "output_schema": {
+    "per_npc": ["attitude_toward_player", "relationship_to_other_npcs", "backstory_hook"],
+    "relationships": ["intellectual_and_non_reader_longstanding_friendship", "book_club_social_anchor"]
+  }
+}
