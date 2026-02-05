@@ -75,12 +75,12 @@ export const THREADIT_MANIFEST: SiteManifest = {
     { path: '/r/LocalMusic', title: 'r/LocalMusic - Threadit', description: 'Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.', type: 'forum', tags: ['music', 'local', 'velvet algorithms', 'neon requiem', 'underground'] },
     { path: '/r/Cornfield', title: 'r/Cornfield - Threadit', description: 'General discussion for Cornfield, KS residents and enthusiasts', type: 'forum', tags: ['local', 'cornfield', 'community'] },
     { path: '/r/AskThreadit', title: 'r/AskThreadit - Threadit', description: 'Ask and answer thought-provoking questions on any topic', type: 'forum', tags: ['questions', 'discussion', 'community'] },
-    // Notable threads
-    { path: '/t/hb_1', title: '[THEORY] Floor 13 is a dimensional pocket - Threadit', description: 'Conspiracy theory about the true nature of the missing Hartwell Building floor. Evidence includes strange elevator behavior and the number 847.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'] },
-    { path: '/t/tft_2', title: 'I was there for The Incident. AMA. - Threadit', description: 'Eyewitness account of the infamous Trust Fall Tim incident involving Small Kevin.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'] },
-    { path: '/t/qc_2', title: 'Dr. Martinez clarification about her study - Threadit', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'] },
-    { path: '/t/at_2', title: 'What\'s your town\'s open secret? - Threadit', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'] },
-    { path: '/t/lm_3', title: 'Mars banned another Wonderwall requester - Threadit', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'] },
+    // Notable threads (nested under subreddits in actual site navigation)
+    { path: '/t/hb_1', title: '[THEORY] Floor 13 is a dimensional pocket', description: 'Conspiracy theory about the missing Hartwell Building floor.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'], parent: '/r/HartwellBuilding' },
+    { path: '/t/tft_2', title: 'I was there for The Incident. AMA.', description: 'Eyewitness account of the infamous Trust Fall Tim incident.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'], parent: '/r/TrustFallTim' },
+    { path: '/t/qc_2', title: 'Dr. Martinez clarification about her study', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'], parent: '/r/QuantumCoffee' },
+    { path: '/t/at_2', title: 'What\'s your town\'s open secret?', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'], parent: '/r/AskThreadit' },
+    { path: '/t/lm_3', title: 'Mars banned another Wonderwall requester', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'], parent: '/r/LocalMusic' },
   ],
 }
 
@@ -176,10 +176,10 @@ export const FORCHAN_MANIFEST: SiteManifest = {
     { path: '/sci', title: '/sci/ - Science & Math', description: 'For the scientifically minded. Martinez study debates welcome.', type: 'forum', tags: ['science', 'math', 'physics'] },
     { path: '/diy', title: '/diy/ - Do It Yourself', description: 'You can probably fix that yourself, right?', type: 'forum', tags: ['diy', 'repair', 'projects'] },
     { path: '/adv', title: '/adv/ - Advice', description: 'Life lessons from anonymous strangers', type: 'forum', tags: ['advice', 'life', 'relationships'] },
-    // Notable threads
-    { path: '/g/thread/94817234', title: 'Quantum Coffee Machine General /qcg/', description: 'Sticky thread for quantum coffee machine discussion on /g/', type: 'forum', tags: ['quantum coffee', 'technology'] },
-    { path: '/x/thread/94812456', title: 'Hartwell Building - New Evidence', description: 'Anonymous claims cousin found sealed documents about the Hartwell incident', type: 'forum', tags: ['hartwell', 'conspiracy', 'paranormal'] },
-    { path: '/mu/thread/94815102', title: 'Velvet Algorithms Appreciation Thread', description: 'Discussion of the existential crisis show cancellation at The Underground', type: 'forum', tags: ['velvet algorithms', 'music', 'the underground'] },
+    // Notable threads (nested under boards in actual site navigation)
+    { path: '/g/thread/94817234', title: 'Quantum Coffee Machine General /qcg/', description: 'Sticky thread for quantum coffee machine discussion on /g/', type: 'forum', tags: ['quantum coffee', 'technology'], parent: '/g' },
+    { path: '/x/thread/94812456', title: 'Hartwell Building - New Evidence', description: 'Anonymous claims cousin found sealed documents about the Hartwell incident', type: 'forum', tags: ['hartwell', 'conspiracy', 'paranormal'], parent: '/x' },
+    { path: '/mu/thread/94815102', title: 'Velvet Algorithms Appreciation Thread', description: 'Discussion of the existential crisis show cancellation at The Underground', type: 'forum', tags: ['velvet algorithms', 'music', 'the underground'], parent: '/mu' },
   ],
 }
 

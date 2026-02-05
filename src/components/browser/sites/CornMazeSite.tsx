@@ -404,50 +404,146 @@ function SiteEntry({ manifest, expanded, onToggle, onNavigate }: SiteEntryProps)
             </div>
           </div>
 
-          {/* Pages */}
+          {/* Pages - hierarchical display */}
           {manifest.pages.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {manifest.pages.map((page, i) => (
-                <div key={i}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                    <span
-                      style={{
-                        fontSize: '10px',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        background: `${getCategoryColor(page.type)}20`,
-                        color: getCategoryColor(page.type),
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {page.type}
-                    </span>
-                    <button
-                      onClick={() => onNavigate(`www.${manifest.domain}${page.path}`)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: THEME.link,
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        padding: 0,
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      {page.path}
-                    </button>
-                  </div>
-                  <div style={{ color: THEME.text, fontSize: '12px' }}>
-                    {page.title}
-                  </div>
-                  {page.description && (
-                    <div style={{ color: THEME.textDim, fontSize: '11px' }}>
-                      {page.description.slice(0, 100)}
-                      {page.description.length > 100 ? '...' : ''}
+              {/* Top-level pages (no parent) */}
+              {manifest.pages
+                .filter(page => !page.parent)
+                .map((page, i) => {
+                  // Find child pages for this parent
+                  const children = manifest.pages.filter(p => p.parent === page.path)
+
+                  return (
+                    <div key={i}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            padding: '2px 6px',
+                            borderRadius: '3px',
+                            background: `${getCategoryColor(page.type)}20`,
+                            color: getCategoryColor(page.type),
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {page.type}
+                        </span>
+                        <button
+                          onClick={() => onNavigate(`www.${manifest.domain}${page.path}`)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: THEME.link,
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            padding: 0,
+                            fontFamily: 'inherit',
+                          }}
+                        >
+                          {page.path}
+                        </button>
+                      </div>
+                      <div style={{ color: THEME.text, fontSize: '12px' }}>
+                        {page.title}
+                      </div>
+                      {page.description && (
+                        <div style={{ color: THEME.textDim, fontSize: '11px' }}>
+                          {page.description.slice(0, 100)}
+                          {page.description.length > 100 ? '...' : ''}
+                        </div>
+                      )}
+
+                      {/* Nested child pages */}
+                      {children.length > 0 && (
+                        <div style={{
+                          marginTop: '8px',
+                          marginLeft: '16px',
+                          paddingLeft: '12px',
+                          borderLeft: `2px solid ${THEME.border}`,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '8px',
+                        }}>
+                          {children.map((child, j) => (
+                            <div key={j}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                                <span
+                                  style={{
+                                    fontSize: '9px',
+                                    padding: '1px 4px',
+                                    borderRadius: '2px',
+                                    background: `${THEME.textDim}20`,
+                                    color: THEME.textDim,
+                                    textTransform: 'uppercase',
+                                  }}
+                                >
+                                  thread
+                                </span>
+                                <button
+                                  onClick={() => onNavigate(`www.${manifest.domain}${child.path}`)}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: THEME.link,
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                    fontFamily: 'inherit',
+                                  }}
+                                >
+                                  {child.path}
+                                </button>
+                              </div>
+                              <div style={{ color: THEME.textMuted, fontSize: '11px' }}>
+                                {child.title}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  )
+                })}
+
+              {/* Pages without a parent that aren't parents themselves (orphan pages) */}
+              {manifest.pages
+                .filter(page => page.parent && !manifest.pages.some(p => p.path === page.parent))
+                .map((page, i) => (
+                  <div key={`orphan-${i}`} style={{ marginLeft: '16px', opacity: 0.7 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                      <span
+                        style={{
+                          fontSize: '9px',
+                          padding: '1px 4px',
+                          borderRadius: '2px',
+                          background: `${THEME.textDim}20`,
+                          color: THEME.textDim,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {page.type}
+                      </span>
+                      <button
+                        onClick={() => onNavigate(`www.${manifest.domain}${page.path}`)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: THEME.link,
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        {page.path}
+                      </button>
+                    </div>
+                    <div style={{ color: THEME.textMuted, fontSize: '11px' }}>
+                      {page.title}
+                    </div>
+                  </div>
+                ))}
             </div>
           )}
         </div>

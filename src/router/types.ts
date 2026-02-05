@@ -204,6 +204,8 @@ export interface IndexablePage {
   metadata?: Record<string, unknown>
   /** When this content was "created" (for freshness ranking) */
   createdAt?: number
+  /** Parent page path for hierarchical content (e.g., thread belongs to subreddit) */
+  parent?: string
 }
 
 /**
