@@ -10,11 +10,12 @@
  * - "Courses" and premium content CTAs
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // Site config
 const SITE = FILLER_SITES.wealthwisdom
@@ -403,7 +404,39 @@ const COURSES: Course[] = [
   },
 ]
 
+// ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Article interface.
+ * Uses metadata for article-specific fields like author, authorTitle, category, content, etc.
+ */
+function dbToArticle(item: SiteContentItem): Article {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    author: m.author ?? m.Author ?? 'Unknown',
+    authorTitle: m.authorTitle ?? m.author_title ?? '',
+    authorEmoji: item.thumbnailEmoji ?? m.authorEmoji ?? m.author_emoji ?? '🦅',
+    category: (m.category ?? item.category ?? 'investing') as Article['category'],
+    readTime: m.readTime ?? m.read_time ?? 5,
+    likes: item.likeCount ?? m.likes ?? 0,
+    isPremium: m.isPremium ?? m.is_premium ?? false,
+    preview: item.subtitle ?? item.summary ?? m.preview ?? '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    tags: item.tags.length > 0 ? item.tags : (m.tags ?? []),
+  }
+}
+
 export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
+  const { content: dbContent } = useSiteContent('wealthwisdom')
+  const articles = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToArticle)
+    return ARTICLES
+  }, [dbContent])
+
   const [view, setView] = useState<'home' | 'article' | 'guru' | 'courses'>('home')
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
   const [selectedGuru, setSelectedGuru] = useState<Guru | null>(null)
@@ -414,8 +447,8 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
   const categories = ['all', 'investing', 'crypto', 'mindset', 'real-estate', 'side-hustles', 'retirement']
 
   const filteredArticles = selectedCategory === 'all'
-    ? ARTICLES
-    : ARTICLES.filter(a => a.category === selectedCategory)
+    ? articles
+    : articles.filter(a => a.category === selectedCategory)
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -839,7 +872,7 @@ export function WealthWisdomSite({ siteId, onNavigate }: SiteProps) {
               Articles by {selectedGuru.name.split(' ')[0]}
             </h3>
             <div className="grid gap-3">
-              {ARTICLES.filter(a => a.author === selectedGuru.name).map(article => (
+              {articles.filter(a => a.author === selectedGuru.name).map(article => (
                 <StyledCard
                   key={article.id}
                   bgColor="#1f2937"

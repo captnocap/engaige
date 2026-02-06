@@ -7,10 +7,11 @@
  * Refactored to use shared components: StyledCard, Button, Avatar, MetaRow
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.pharmacy
 
@@ -321,10 +322,44 @@ const MEDICATIONS: Medication[] = [
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Medication interface.
+ * Uses metadata for medication-specific fields like genericName, sideEffects, testimonials, etc.
+ */
+function dbToMedication(item: SiteContentItem): Medication {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    name: item.title,
+    genericName: m.genericName ?? m.generic_name ?? '',
+    tagline: item.subtitle ?? m.tagline ?? '',
+    condition: m.condition ?? '',
+    description: item.body ?? item.summary ?? '',
+    icon: item.thumbnailEmoji ?? m.icon ?? '💊',
+    color: m.color ?? '#6B4C9A',
+    dosage: m.dosage ?? '',
+    howItWorks: m.howItWorks ?? m.how_it_works ?? '',
+    clinicalResults: Array.isArray(m.clinicalResults ?? m.clinical_results) ? (m.clinicalResults ?? m.clinical_results) : [],
+    sideEffects: m.sideEffects ?? m.side_effects ?? { common: [], uncommon: [], rare: [] },
+    testimonials: Array.isArray(m.testimonials) ? m.testimonials : [],
+    disclaimer: m.disclaimer ?? '',
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
 export function VitalityRxSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('vitalityrx')
+  const medications = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToMedication)
+    return MEDICATIONS
+  }, [dbContent])
+
   const [selectedMed, setSelectedMed] = useState<Medication | null>(null)
   const [showSideEffects, setShowSideEffects] = useState(false)
 
@@ -426,7 +461,7 @@ export function VitalityRxSite({ siteId }: SiteProps) {
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {MEDICATIONS.map((med) => (
+                {medications.map((med) => (
                   <MedicationCard
                     key={med.id}
                     medication={med}

@@ -9,8 +9,9 @@
  * The Underground, Mildred, and Omnicorp Holdings.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Types & Data
@@ -218,17 +219,50 @@ const UNHINGED_MESSAGES = [
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Stream interface.
+ * Uses metadata for stream-specific fields like chatMessages, viewers, stalkers, etc.
+ */
+function dbToStream(item: SiteContentItem): Stream {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    username: m.username ?? m.user_name ?? item.slug,
+    displayName: item.title,
+    title: item.subtitle ?? m.streamTitle ?? m.stream_title ?? item.title,
+    category: item.category ?? m.category ?? 'Just Chatting',
+    viewers: m.viewers ?? item.viewCount ?? 0,
+    stalkers: m.stalkers ?? m.followers ?? item.likeCount ?? 0,
+    thumbnailEmoji: item.thumbnailEmoji ?? m.thumbnailEmoji ?? m.thumbnail_emoji ?? '🌽',
+    isLive: m.isLive ?? m.is_live ?? true,
+    isPartner: m.isPartner ?? m.is_partner ?? false,
+    tags: item.tags.length > 0 ? item.tags : (m.tags ?? []),
+    description: item.body ?? item.summary ?? m.description ?? '',
+    chatMessages: Array.isArray(m.chatMessages ?? m.chat_messages) ? (m.chatMessages ?? m.chat_messages) : [],
+  }
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
 export function StalkSite({ siteId, onNavigate }: SiteProps) {
+  const { content: dbContent } = useSiteContent('stalk')
+  const streams = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToStream)
+    return STREAMS
+  }, [dbContent])
+
   const [selectedStream, setSelectedStream] = useState<Stream | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isFollowing, setIsFollowing] = useState(false)
 
   const filteredStreams = selectedCategory
-    ? STREAMS.filter(s => s.category === selectedCategory)
-    : STREAMS
+    ? streams.filter(s => s.category === selectedCategory)
+    : streams
 
   const handleBack = () => {
     setSelectedStream(null)

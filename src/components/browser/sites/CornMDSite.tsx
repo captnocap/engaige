@@ -17,10 +17,11 @@
  * "If symptoms persist, consult your local corn farmer." is the tagline.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button, Avatar } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.cornmd
 
@@ -372,10 +373,41 @@ const DRUGS = [
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Condition interface.
+ * Uses metadata for condition-specific fields like icdCode, prevalence, treatments, etc.
+ */
+function dbToCondition(item: SiteContentItem): Condition {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    name: item.title,
+    icdCode: m.icdCode ?? m.icd_code ?? 'UNK-000',
+    prevalence: m.prevalence ?? item.subtitle ?? '',
+    summary: item.body ?? item.summary ?? '',
+    symptoms: Array.isArray(m.symptoms) ? m.symptoms : [],
+    causes: Array.isArray(m.causes) ? m.causes : [],
+    treatments: Array.isArray(m.treatments) ? m.treatments : [],
+    drugInteractions: Array.isArray(m.drugInteractions ?? m.drug_interactions) ? (m.drugInteractions ?? m.drug_interactions) : [],
+    sideEffects: Array.isArray(m.sideEffects ?? m.side_effects) ? (m.sideEffects ?? m.side_effects) : [],
+    patientComments: Array.isArray(m.patientComments ?? m.patient_comments) ? (m.patientComments ?? m.patient_comments) : [],
+  }
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
 export function CornMDSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('cornmd')
+  const conditions = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToCondition)
+    return CONDITIONS
+  }, [dbContent])
+
   const [view, setView] = useState<'home' | 'checker' | 'condition' | 'drugs' | 'ask'>('home')
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
   const [showDiagnosis, setShowDiagnosis] = useState(false)
@@ -438,7 +470,7 @@ export function CornMDSite({ siteId }: SiteProps) {
           <HomeView onChecker={() => setView('checker')} onCondition={(c) => { setSelectedCondition(c); setView('condition') }} th={th} />
         )}
         {view === 'checker' && (
-          <CheckerView symptoms={SYMPTOMS} selected={selectedSymptoms} toggle={toggleSymptom} showDiag={showDiagnosis} check={() => setShowDiagnosis(true)} diagnoses={getDiagnoses()} onCondition={(n) => { const c = CONDITIONS.find(x => x.name === n); if (c) { setSelectedCondition(c); setView('condition') } }} th={th} />
+          <CheckerView symptoms={SYMPTOMS} selected={selectedSymptoms} toggle={toggleSymptom} showDiag={showDiagnosis} check={() => setShowDiagnosis(true)} diagnoses={getDiagnoses()} onCondition={(n) => { const c = conditions.find(x => x.name === n); if (c) { setSelectedCondition(c); setView('condition') } }} th={th} />
         )}
         {view === 'condition' && selectedCondition && (
           <ConditionView c={selectedCondition} back={() => { setSelectedCondition(null); setView('home') }} th={th} />
@@ -478,7 +510,7 @@ function HomeView({ onChecker, onCondition, th }: { onChecker: () => void; onCon
       <section>
         <h2 className="text-xl font-bold mb-4" style={{ color: th?.text }}>Featured Conditions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CONDITIONS.map(c => (
+          {conditions.map(c => (
             <StyledCard key={c.id} onClick={() => onCondition(c)} bgColor={th?.surface} borderColor={th?.border} textColor={th?.text} padding="md" borderRadius="lg" shadow="md" interactive className="cursor-pointer">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🌽</span>

@@ -9,8 +9,9 @@
  * view counts, expiration timestamps, and non-functional Report/Raw buttons.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Types & Data
@@ -526,6 +527,31 @@ const RECENT_TITLES = [
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Paste interface.
+ * Uses metadata for paste-specific fields like category, syntax, expires, etc.
+ */
+function dbToPaste(item: SiteContentItem): Paste {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    author: m.author ?? m.Author ?? 'Anonymous',
+    category: (m.category ?? m.Category ?? item.category ?? 'text') as PasteCategory,
+    created: m.created ?? m.Created ?? new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    expires: m.expires ?? m.Expires ?? null,
+    views: item.viewCount ?? m.views ?? m.Views ?? 0,
+    syntax: m.syntax ?? m.Syntax ?? 'none',
+    content: item.body ?? item.summary ?? '',
+    isPrivate: m.isPrivate ?? m.is_private ?? false,
+    isHighlighted: item.isFeatured ?? m.isHighlighted ?? m.is_highlighted ?? false,
+  }
+}
+
+// ============================================================================
 // Utility Functions
 // ============================================================================
 
@@ -820,6 +846,12 @@ function StatsSidebar() {
 // ============================================================================
 
 export function PasteLiveSite({ siteId, path, onPathChange }: SiteProps) {
+  const { content: dbContent } = useSiteContent('pastelive')
+  const pastes = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToPaste)
+    return PASTES
+  }, [dbContent])
+
   const [selectedPaste, setSelectedPaste] = useState<Paste | null>(null)
 
   // Handle path-based navigation
@@ -889,11 +921,11 @@ export function PasteLiveSite({ siteId, path, onPathChange }: SiteProps) {
               <div className="px-4 py-3 bg-gray-750 border-b border-gray-700 flex justify-between items-center" style={{ backgroundColor: '#1f2937' }}>
                 <h2 className="text-sm font-medium text-gray-300">Latest Pastes</h2>
                 <span className="text-xs text-gray-500">
-                  {PASTES.length} featured | 847,231 total
+                  {pastes.length} featured | 847,231 total
                 </span>
               </div>
               <div>
-                {PASTES.map((paste) => (
+                {pastes.map((paste) => (
                   <PasteListItem
                     key={paste.id}
                     paste={paste}
@@ -929,7 +961,7 @@ export function PasteLiveSite({ siteId, path, onPathChange }: SiteProps) {
           <aside className="w-64 flex-shrink-0 space-y-4 hidden lg:block">
             <StatsSidebar />
             <RecentPastesSidebar onSelectPaste={(id) => {
-              const paste = PASTES.find(p => p.id === id)
+              const paste = pastes.find(p => p.id === id)
               if (paste) handleSelectPaste(paste)
             }} />
 

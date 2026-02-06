@@ -12,6 +12,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import type { SiteComponentProps } from '../../../router/types.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Theme
@@ -260,6 +261,32 @@ const MARKETS: Market[] = [
 ]
 
 const USER_BALANCE = 10000 // Starting Kernels
+
+// ============================================================================
+// DB Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Market interface.
+ * Uses metadata for market-specific fields like yesPrice, volume, traders, etc.
+ */
+function dbToMarket(item: SiteContentItem): Market {
+  const m = item.metadata || {}
+  return {
+    slug: item.slug,
+    title: item.title,
+    description: item.body ?? item.summary ?? '',
+    category: (m.category ?? item.category ?? 'general') as MarketCategory,
+    yesPrice: m.yesPrice ?? m.yes_price ?? 50,
+    volume: m.volume ?? item.viewCount ?? 0,
+    traders: m.traders ?? item.commentCount ?? 0,
+    endDate: m.endDate ?? m.end_date ?? 'Open',
+    resolution: m.resolution ?? null,
+    featured: item.isFeatured ?? m.featured ?? false,
+    hot: m.hot ?? false,
+    tags: item.tags.length > 0 ? item.tags : (m.tags ?? []),
+  }
+}
 
 // ============================================================================
 // Components
@@ -791,6 +818,12 @@ function CategoryFilter({
 // ============================================================================
 
 export function StalksSite({ path, onPathChange, onNavigateToUrl }: SiteComponentProps) {
+  const { content: dbContent } = useSiteContent('stalks')
+  const markets = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToMarket)
+    return MARKETS
+  }, [dbContent])
+
   const [selectedCategory, setSelectedCategory] = useState<MarketCategory | null>(null)
   const [balance] = useState(USER_BALANCE)
 
@@ -808,19 +841,19 @@ export function StalksSite({ path, onPathChange, onNavigateToUrl }: SiteComponen
 
   const selectedMarket = useMemo(() => {
     if (parsedPath.view === 'market' && parsedPath.slug) {
-      return MARKETS.find(m => m.slug === parsedPath.slug) || null
+      return markets.find(m => m.slug === parsedPath.slug) || null
     }
     return null
-  }, [parsedPath])
+  }, [parsedPath, markets])
 
   const filteredMarkets = useMemo(() => {
-    if (!selectedCategory) return MARKETS
-    return MARKETS.filter(m => m.category === selectedCategory)
-  }, [selectedCategory])
+    if (!selectedCategory) return markets
+    return markets.filter(m => m.category === selectedCategory)
+  }, [selectedCategory, markets])
 
   const featuredMarkets = useMemo(() => {
-    return MARKETS.filter(m => m.featured)
-  }, [])
+    return markets.filter(m => m.featured)
+  }, [markets])
 
   const handleMarketClick = useCallback((market: Market) => {
     onPathChange(`/market/${market.slug}`)
@@ -896,9 +929,9 @@ export function StalksSite({ path, onPathChange, onNavigateToUrl }: SiteComponen
             celebrity drama, and whether Floor 13 actually exists.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', fontSize: '14px' }}>
-            <span style={{ color: THEME.textMuted }}>📊 {MARKETS.length} markets</span>
-            <span style={{ color: THEME.textMuted }}>🌽 {(MARKETS.reduce((sum, m) => sum + m.volume, 0) / 1000000).toFixed(1)}M volume</span>
-            <span style={{ color: THEME.textMuted }}>👥 {MARKETS.reduce((sum, m) => sum + m.traders, 0).toLocaleString()} traders</span>
+            <span style={{ color: THEME.textMuted }}>📊 {markets.length} markets</span>
+            <span style={{ color: THEME.textMuted }}>🌽 {(markets.reduce((sum, m) => sum + m.volume, 0) / 1000000).toFixed(1)}M volume</span>
+            <span style={{ color: THEME.textMuted }}>👥 {markets.reduce((sum, m) => sum + m.traders, 0).toLocaleString()} traders</span>
           </div>
         </div>
 

@@ -10,11 +10,12 @@
  * - The 847 easter egg throughout
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // Use the config or define locally
 const site = FILLER_SITES.linkedcorn ?? {
@@ -658,10 +659,106 @@ const NOTIFICATIONS: Notification[] = [
 ]
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem (contentType 'profile') to the local Profile interface.
+ * Uses metadata for profile-specific fields like skills, experience, education, etc.
+ */
+function dbToProfile(item: SiteContentItem): Profile {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    name: item.title,
+    headline: item.subtitle ?? m.headline ?? '',
+    company: m.company ?? '',
+    avatar: item.thumbnailEmoji ?? m.avatar ?? '🌽',
+    connections: m.connections ?? item.likeCount ?? 0,
+    isOpenToWork: m.isOpenToWork ?? m.is_open_to_work ?? false,
+    isHiring: m.isHiring ?? m.is_hiring ?? false,
+    pronouns: m.pronouns,
+    location: m.location,
+    skills: Array.isArray(m.skills) ? m.skills : [],
+    experience: Array.isArray(m.experience) ? m.experience : undefined,
+    education: Array.isArray(m.education) ? m.education : undefined,
+  }
+}
+
+/**
+ * Maps a SiteContentItem (contentType 'post') to the local Post interface.
+ * Requires a profiles array to resolve author references.
+ */
+function dbToPost(item: SiteContentItem, profiles: Profile[]): Post {
+  const m = item.metadata || {}
+  const authorId = m.authorId ?? m.author_id ?? ''
+  const author = profiles.find(p => p.id === authorId) || {
+    id: authorId,
+    name: m.authorName ?? m.author_name ?? 'Unknown',
+    headline: m.authorHeadline ?? m.author_headline ?? '',
+    company: '',
+    avatar: m.authorAvatar ?? m.author_avatar ?? '🌽',
+    connections: 0,
+    skills: [],
+  }
+  return {
+    id: item.slug,
+    author,
+    content: item.body ?? item.summary ?? '',
+    timestamp: m.timestamp ?? 'recently',
+    likes: item.likeCount ?? m.likes ?? 0,
+    comments: item.commentCount ?? m.comments ?? 0,
+    reposts: m.reposts ?? 0,
+    hashtags: item.tags.length > 0 ? item.tags : (m.hashtags ?? undefined),
+    isRepost: m.isRepost ?? m.is_repost ?? false,
+    repostAuthor: m.repostAuthor ?? m.repost_author,
+  }
+}
+
+/**
+ * Maps a SiteContentItem (contentType 'job') to the local Job interface.
+ * Uses metadata for job-specific fields like salary, requirements, etc.
+ */
+function dbToJob(item: SiteContentItem): Job {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    company: m.company ?? '',
+    location: m.location ?? '',
+    salary: m.salary,
+    posted: m.posted ?? 'recently',
+    applicants: m.applicants ?? item.viewCount ?? 0,
+    description: item.body ?? item.summary ?? '',
+    requirements: Array.isArray(m.requirements) ? m.requirements : [],
+    companyLogo: item.thumbnailEmoji ?? m.companyLogo ?? m.company_logo ?? '🏢',
+  }
+}
+
+// ============================================================================
 // Component
 // ============================================================================
 
 export function LinkedCornSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  const { content: dbProfiles } = useSiteContent('linkedcorn', { contentType: 'profile' })
+  const { content: dbPosts } = useSiteContent('linkedcorn', { contentType: 'post' })
+  const { content: dbJobs } = useSiteContent('linkedcorn', { contentType: 'job' })
+
+  const profiles = useMemo(() => {
+    if (dbProfiles.length > 0) return dbProfiles.map(dbToProfile)
+    return PROFILES
+  }, [dbProfiles])
+
+  const posts = useMemo(() => {
+    if (dbPosts.length > 0) return dbPosts.map(item => dbToPost(item, profiles))
+    return POSTS
+  }, [dbPosts, profiles])
+
+  const jobs = useMemo(() => {
+    if (dbJobs.length > 0) return dbJobs.map(dbToJob)
+    return JOBS
+  }, [dbJobs])
+
   const [activeTab, setActiveTab] = useState<'feed' | 'jobs' | 'network' | 'notifications'>('feed')
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null)
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
@@ -678,7 +775,7 @@ export function LinkedCornSite({ siteId, path, onNavigate, onPathChange }: SiteP
       setSelectedProfile(null)
     } else if (path.startsWith('/profile/')) {
       const profileId = path.slice(9)
-      const profile = PROFILES.find(p => p.id === profileId)
+      const profile = profiles.find(p => p.id === profileId)
       if (profile) {
         setSelectedProfile(profile)
       }
@@ -693,7 +790,7 @@ export function LinkedCornSite({ siteId, path, onNavigate, onPathChange }: SiteP
     setTimeout(() => {
       isUpdatingFromPath.current = false
     }, 0)
-  }, [path])
+  }, [path, profiles])
 
   // Navigation handlers
   const handleViewProfile = (profile: Profile) => {
@@ -854,9 +951,9 @@ export function LinkedCornSite({ siteId, path, onNavigate, onPathChange }: SiteP
             theme={theme}
           />
         ) : activeTab === 'jobs' ? (
-          <JobsView theme={theme} onViewProfile={handleViewProfile} />
+          <JobsView theme={theme} onViewProfile={handleViewProfile} jobs={jobs} />
         ) : activeTab === 'network' ? (
-          <NetworkView theme={theme} onViewProfile={handleViewProfile} />
+          <NetworkView theme={theme} onViewProfile={handleViewProfile} profiles={profiles} />
         ) : (
           <FeedView
             theme={theme}
@@ -864,6 +961,8 @@ export function LinkedCornSite({ siteId, path, onNavigate, onPathChange }: SiteP
             onLike={handleLike}
             onViewProfile={handleViewProfile}
             onNavigate={onNavigate}
+            posts={posts}
+            profiles={profiles}
           />
         )}
       </div>
@@ -881,9 +980,11 @@ interface FeedViewProps {
   onLike: (id: string) => void
   onViewProfile: (profile: Profile) => void
   onNavigate: (appId: string) => void
+  posts: Post[]
+  profiles: Profile[]
 }
 
-function FeedView({ theme, likedPosts, onLike, onViewProfile, onNavigate }: FeedViewProps) {
+function FeedView({ theme, likedPosts, onLike, onViewProfile, onNavigate, posts, profiles }: FeedViewProps) {
   return (
     <div className="flex gap-6">
       {/* Left Sidebar - Profile Card */}
@@ -974,7 +1075,7 @@ function FeedView({ theme, likedPosts, onLike, onViewProfile, onNavigate }: Feed
         </StyledCard>
 
         {/* Posts */}
-        {POSTS.map(post => (
+        {posts.map(post => (
           <PostCard
             key={post.id}
             post={post}
@@ -1001,7 +1102,7 @@ function FeedView({ theme, likedPosts, onLike, onViewProfile, onNavigate }: Feed
             People you may know
           </div>
           <div>
-            {PROFILES.slice(0, 4).map(profile => (
+            {profiles.slice(0, 4).map(profile => (
               <button
                 key={profile.id}
                 onClick={() => onViewProfile(profile)}
@@ -1374,9 +1475,10 @@ function ProfileView({ profile, onBack, theme }: ProfileViewProps) {
 interface JobsViewProps {
   theme: typeof site.theme
   onViewProfile: (profile: Profile) => void
+  jobs: Job[]
 }
 
-function JobsView({ theme, onViewProfile }: JobsViewProps) {
+function JobsView({ theme, onViewProfile, jobs }: JobsViewProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
 
   return (
@@ -1384,7 +1486,7 @@ function JobsView({ theme, onViewProfile }: JobsViewProps) {
       {/* Job List */}
       <div className="w-96 shrink-0 space-y-2">
         <h2 className="font-medium mb-4" style={{ color: theme.text }}>Jobs for You</h2>
-        {JOBS.map(job => (
+        {jobs.map(job => (
           <button
             key={job.id}
             onClick={() => setSelectedJob(job)}
@@ -1490,9 +1592,10 @@ function JobsView({ theme, onViewProfile }: JobsViewProps) {
 interface NetworkViewProps {
   theme: typeof site.theme
   onViewProfile: (profile: Profile) => void
+  profiles: Profile[]
 }
 
-function NetworkView({ theme, onViewProfile }: NetworkViewProps) {
+function NetworkView({ theme, onViewProfile, profiles }: NetworkViewProps) {
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="font-medium mb-4" style={{ color: theme.text }}>Grow your network</h2>
@@ -1508,7 +1611,7 @@ function NetworkView({ theme, onViewProfile }: NetworkViewProps) {
       >
         <h3 className="font-medium mb-4" style={{ color: theme.text }}>Pending Invitations (2)</h3>
         <div className="space-y-4">
-          {[PROFILES[0], PROFILES[4]].map(profile => (
+          {[profiles[0], profiles[4]].filter(Boolean).map(profile => (
             <div key={profile.id} className="flex items-center gap-4">
               <button onClick={() => onViewProfile(profile)}>
                 <Avatar seed={profile.id} size={56} emoji={profile.avatar} />
@@ -1549,7 +1652,7 @@ function NetworkView({ theme, onViewProfile }: NetworkViewProps) {
       {/* People You May Know Grid */}
       <h3 className="font-medium mb-4" style={{ color: theme.text }}>People you may know</h3>
       <div className="grid grid-cols-3 gap-4">
-        {PROFILES.map(profile => (
+        {profiles.map(profile => (
           <StyledCard
             key={profile.id}
             bgColor={theme.surface}
