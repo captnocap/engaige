@@ -5,10 +5,11 @@
  * Features a grid of bizarre, absurd pixel ad blocks that reference game lore.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.millionpixels
 
@@ -358,6 +359,32 @@ const PIXEL_BLOCKS: PixelBlock[] = [
 ]
 
 // ============================================================================
+// DB → Local Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local PixelBlock interface.
+ * Grid position, dimensions, colors, and display text stored in metadata.
+ */
+function dbToPixelBlock(item: SiteContentItem): PixelBlock {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    x: m.x ?? 0,
+    y: m.y ?? 0,
+    width: m.width ?? 1,
+    height: m.height ?? 1,
+    color: m.color || '#ccc',
+    gradient: m.gradient,
+    emoji: item.thumbnailEmoji || m.emoji,
+    text: item.title || m.text,
+    subtext: item.subtitle || m.subtext,
+    url: m.url,
+    category: (item.category || m.category || 'meta') as PixelBlock['category'],
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -437,6 +464,13 @@ function PixelBlockComponent({ block, isSelected, onSelect }: PixelBlockComponen
 // ============================================================================
 
 export function MillionPixelsSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('millionpixels')
+
+  const pixelBlocks = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToPixelBlock)
+    return PIXEL_BLOCKS
+  }, [dbContent])
+
   const [selectedBlock, setSelectedBlock] = useState<PixelBlock | null>(null)
   const [soldCount] = useState(() => Math.floor(Math.random() * 50000) + 950000)
 
@@ -467,7 +501,7 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
             background: 'repeating-linear-gradient(0deg, transparent, transparent 49px, #333 49px, #333 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, #333 49px, #333 50px)',
           }}
         >
-          {PIXEL_BLOCKS.map(block => (
+          {pixelBlocks.map(block => (
             <PixelBlockComponent
               key={block.id}
               block={block}
@@ -523,7 +557,7 @@ export function MillionPixelsSite({ siteId }: SiteProps) {
           {[
             { label: 'Pixels Sold', value: soldCount.toLocaleString(), emoji: '🟢' },
             { label: 'Revenue', value: `$${(soldCount / 100).toLocaleString()}`, emoji: '💵' },
-            { label: 'Advertisers', value: PIXEL_BLOCKS.length.toString(), emoji: '🏪' },
+            { label: 'Advertisers', value: pixelBlocks.length.toString(), emoji: '🏪' },
             { label: 'Dead Links', value: '47%', emoji: '💀' },
           ].map((stat, i) => (
             <StyledCard

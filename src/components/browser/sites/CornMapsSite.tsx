@@ -22,10 +22,11 @@
  * - Nebraska: State that's "still being mapped", all roads lead to corn
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.cornmaps
 
@@ -732,6 +733,40 @@ function LocationDetail({
 }
 
 // ============================================================================
+// DB → Local Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Location interface.
+ * Metadata stores all the complex nested data (reviews, directions, popularTimes, etc.)
+ */
+function dbToLocation(item: SiteContentItem): Location {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    name: item.title,
+    type: m.type || item.contentType || '',
+    address: m.address || '',
+    rating: m.rating ?? null,
+    totalReviews: item.commentCount || m.totalReviews || 0,
+    hours: m.hours || '',
+    hoursNote: m.hoursNote,
+    noiseLevel: m.noiseLevel,
+    streetViewStatus: m.streetViewStatus || 'unavailable',
+    streetViewNote: m.streetViewNote,
+    description: item.body || '',
+    highlights: item.tags || [],
+    reviews: (m.reviews || []) as Review[],
+    popularTimes: m.popularTimes as PopularTimes | undefined,
+    directions: (m.directions || []) as DirectionStep[],
+    nearby: (m.nearby || []) as string[],
+    specialNote: item.subtitle || m.specialNote,
+    category: item.category || m.category || 'unknown',
+    website: m.website,
+  }
+}
+
+// ============================================================================
 // Map Marker Configuration
 // ============================================================================
 
@@ -750,16 +785,23 @@ const MAP_MARKERS = [
 // ============================================================================
 
 export function CornMapsSite({ siteId, onNavigate }: SiteProps) {
+  const { content: dbContent } = useSiteContent('cornmaps')
+
+  const locations = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToLocation)
+    return LOCATIONS
+  }, [dbContent])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
 
   // Filter locations based on search query (name or type)
   const filteredLocations = searchQuery.trim()
-    ? LOCATIONS.filter(l =>
+    ? locations.filter(l =>
         l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         l.type.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : LOCATIONS
+    : locations
 
   return (
     <div className="h-full flex" style={{ backgroundColor: site.theme.background }}>
@@ -855,7 +897,7 @@ export function CornMapsSite({ siteId, onNavigate }: SiteProps) {
             {MAP_MARKERS.map(marker => (
               <button
                 key={marker.id}
-                onClick={() => setSelectedLocation(LOCATIONS.find(l => l.id === marker.id) || null)}
+                onClick={() => setSelectedLocation(locations.find(l => l.id === marker.id) || null)}
                 className="absolute flex flex-col items-center group"
                 style={{ left: marker.x, top: marker.y, transform: 'translate(-50%, -50%)' }}
               >

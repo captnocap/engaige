@@ -6,9 +6,10 @@
  * Features stats tracking, highlight reels, fan art, and way too much information.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.trustfalltim
 
@@ -145,6 +146,29 @@ const FAQ_ITEMS = [
 ]
 
 // ============================================================================
+// DB → Local Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local FallRecord interface.
+ * Fall-specific fields (caught, catcher, height, style, legendary) stored in metadata.
+ */
+function dbToFallRecord(item: SiteContentItem): FallRecord {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    date: m.date || (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''),
+    location: item.title,
+    caught: m.caught ?? true,
+    catcher: m.catcher,
+    height: m.height || '',
+    style: m.style || '',
+    notes: item.body || m.notes || '',
+    legendary: m.legendary ?? item.isFeatured,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -188,6 +212,13 @@ function FallRecordCard({ fall }: { fall: FallRecord }) {
 // ============================================================================
 
 export function TrustFallTimSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('trustfalltim')
+
+  const recentFalls = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToFallRecord)
+    return RECENT_FALLS
+  }, [dbContent])
+
   const [activeTab, setActiveTab] = useState<'home' | 'stats' | 'gallery' | 'faq'>('home')
 
   return (
@@ -260,7 +291,7 @@ export function TrustFallTimSite({ siteId }: SiteProps) {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-orange-800 mb-4">📋 Recent Falls</h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {RECENT_FALLS.map(fall => (
+                {recentFalls.map(fall => (
                   <FallRecordCard key={fall.id} fall={fall} />
                 ))}
               </div>

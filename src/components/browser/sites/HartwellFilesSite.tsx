@@ -6,10 +6,11 @@
  * the kind of unhinged theorizing that gives /x/ a run for its money.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.hartwellfiles
 
@@ -184,6 +185,27 @@ const QUICK_FACTS = [
 ]
 
 // ============================================================================
+// DB → Local Adapter
+// ============================================================================
+
+/**
+ * Maps a SiteContentItem from the database to the local Evidence interface.
+ * Content paragraphs stored in metadata.content array, classification/type in metadata.
+ */
+function dbToEvidence(item: SiteContentItem): Evidence {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    date: m.date || (item.publishedAt ? new Date(item.publishedAt).toISOString().split('T')[0] : ''),
+    type: (m.evidenceType || item.contentType || 'document') as Evidence['type'],
+    classification: (m.classification || 'unverified') as Evidence['classification'],
+    content: m.content || (item.body ? item.body.split('\n\n') : []),
+    relatedFiles: m.relatedFiles,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -307,6 +329,13 @@ function EvidenceDetail({ evidence, onBack }: { evidence: Evidence; onBack: () =
 // ============================================================================
 
 export function HartwellFilesSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('hartwellfiles')
+
+  const evidenceFiles = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToEvidence)
+    return EVIDENCE_FILES
+  }, [dbContent])
+
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null)
   const [activeTab, setActiveTab] = useState<'files' | 'timeline' | 'about'>('files')
 
@@ -360,7 +389,7 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
               />
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
-                {EVIDENCE_FILES.map(evidence => (
+                {evidenceFiles.map(evidence => (
                   <EvidenceCard
                     key={evidence.id}
                     evidence={evidence}
@@ -497,7 +526,7 @@ export function HartwellFilesSite({ siteId }: SiteProps) {
             textColor="#f3f4f6"
           >
             <h3 className="text-gray-400 text-xs uppercase mb-2">Files Documented</h3>
-            <p className="text-2xl font-bold text-white">{EVIDENCE_FILES.length}</p>
+            <p className="text-2xl font-bold text-white">{evidenceFiles.length}</p>
           </StyledCard>
           <StyledCard
             variant="dark"
