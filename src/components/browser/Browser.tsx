@@ -11,6 +11,9 @@ import { BrowserSiteContainer } from './BrowserSiteContainer.js'
 import { useBrowserStore, type StartupTab, type StartupBehavior } from '../../stores/browserStore.js'
 import { useCornRouter, getAllSites, getUrlForSite, ABOUT_BLANK } from '../../router/index.js'
 import type { CornSite, AutocompleteSuggestion } from '../../router/index.js'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { browserPagePreset, browserTabPreset, browserBookmarkPreset } from '../../hooks/useContextMenuPresets.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 interface BrowserProps {
@@ -60,6 +63,11 @@ export function Browser({ onClose }: BrowserProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  // Context menus
+  const tabCtx = useContextMenu<string>() // data = tabId
+  const bookmarkCtx = useContextMenu<string>() // data = bookmarkId
+  const pageCtx = useContextMenu()
 
   // Legacy: Get apps from old registry for home page icons
   const browserApps = getAppsForSurface('browser')
@@ -392,6 +400,7 @@ export function Browser({ onClose }: BrowserProps) {
               draggable
               onClick={() => setActiveTabId(tab.id)}
               onMouseDown={(e) => handleTabMouseDown(tab.id, e)}
+              onContextMenu={(e) => tabCtx.show(e, tab.id)}
               onDragStart={(e) => handleTabDragStart(e, tab.id)}
               onDragOver={(e) => handleTabDragOver(e, tab.id)}
               onDragEnd={handleTabDragEnd}
@@ -759,6 +768,7 @@ export function Browser({ onClose }: BrowserProps) {
                 onDragStart={e => handleBookmarkDragStart(e, bookmark.id)}
                 onDragOver={e => handleBookmarkDragOver(e, bookmark.id)}
                 onDragEnd={handleBookmarkDragEnd}
+                onContextMenu={e => bookmarkCtx.show(e, bookmark.id)}
                 className={`
                   group relative flex items-center gap-1.5 px-2 py-1 rounded-md cursor-pointer
                   transition-colors hover:bg-[var(--color-bgTertiary)]
@@ -800,7 +810,7 @@ export function Browser({ onClose }: BrowserProps) {
       )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto relative">
+      <div className="flex-1 overflow-auto relative" onContextMenu={pageCtx.show}>
         {/* Refresh Loading Overlay */}
         {isRefreshing && (
           <div
@@ -842,6 +852,68 @@ export function Browser({ onClose }: BrowserProps) {
           )}
         </div>
       </div>
+
+      {/* Tab Context Menu */}
+      {tabCtx.visible && tabCtx.data && (
+        <ContextMenu
+          items={browserTabPreset({
+            tabId: tabCtx.data,
+            onReload: handleRefresh,
+            onDuplicate: handleAddTab,
+            onCloseOthers: tabs.length > 1
+              ? () => {
+                  tabs.forEach(t => {
+                    if (t.id !== tabCtx.data) handleCloseTab(t.id)
+                  })
+                }
+              : undefined,
+            onClose: () => handleCloseTab(tabCtx.data!),
+          })}
+          x={tabCtx.x}
+          y={tabCtx.y}
+          onClose={tabCtx.hide}
+        />
+      )}
+
+      {/* Bookmark Context Menu */}
+      {bookmarkCtx.visible && bookmarkCtx.data && (() => {
+        const bm = bookmarks.find(b => b.id === bookmarkCtx.data)
+        if (!bm) return null
+        return (
+          <ContextMenu
+            items={browserBookmarkPreset({
+              url: bm.url,
+              onOpen: () => navigateTo(bm.url),
+              onOpenNewTab: () => {
+                addTab()
+                navigateTo(bm.url)
+              },
+              onRemove: () => removeBookmark(bm.id),
+            })}
+            x={bookmarkCtx.x}
+            y={bookmarkCtx.y}
+            onClose={bookmarkCtx.hide}
+          />
+        )
+      })()}
+
+      {/* Page Content Context Menu */}
+      {pageCtx.visible && (
+        <ContextMenu
+          items={browserPagePreset({
+            onBack: goBack,
+            onForward: goForward,
+            onReload: handleRefresh,
+            onBookmark: activeTab.site ? toggleBookmark : undefined,
+            canGoBack,
+            canGoForward,
+            isBookmarked: isBookmarked(activeTab.url),
+          })}
+          x={pageCtx.x}
+          y={pageCtx.y}
+          onClose={pageCtx.hide}
+        />
+      )}
 
       {/* Startup Settings Modal */}
       {showStartupSettings && (

@@ -6,6 +6,7 @@ interface DesktopIconProps {
   onClick?: (e: React.MouseEvent) => void
   onDoubleClick?: () => void
   onDragStart?: (e: React.MouseEvent) => void
+  onContextMenu?: (e: React.MouseEvent) => void
   isSelected?: boolean
   isDragging?: boolean
   className?: string
@@ -19,6 +20,7 @@ export function DesktopIcon({
   onClick,
   onDoubleClick,
   onDragStart,
+  onContextMenu,
   isSelected = false,
   isDragging = false,
   className,
@@ -81,6 +83,7 @@ export function DesktopIcon({
     <button
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
+      onContextMenu={onContextMenu}
       className={`
         flex flex-col items-center gap-1 p-2 rounded-lg w-20 transition-colors select-none group
         ${isSelected ? 'bg-[#00ff88]/20 outline outline-1 outline-[#00ff88]/50' : 'hover:bg-white/5'}
