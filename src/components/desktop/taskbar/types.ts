@@ -2,7 +2,7 @@
  * Shared types for the modular taskbar system
  */
 
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react' // still needed for TaskbarWindow/TaskbarProps
 
 export interface TaskbarWindow {
   id: string
@@ -12,22 +12,23 @@ export interface TaskbarWindow {
   isActive: boolean
 }
 
+export interface StartMenuApp {
+  id: string
+  icon: ReactNode
+  label: string
+}
+
 export interface TaskbarProps {
   windows: TaskbarWindow[]
   onWindowClick: (id: string) => void
   onWindowClose?: (id: string) => void
-  onStartClick?: () => void
+  onOpenApp?: (appId: string) => void
+  apps?: StartMenuApp[]
   phoneVisible?: boolean
   onPhoneToggle?: () => void
   onOpenNPCConversation?: (npcId: string) => void
   className?: string
 }
 
-export interface ContextMenuItem {
-  label: string
-  icon?: ReactNode
-  onClick: () => void
-  disabled?: boolean
-  danger?: boolean
-  separator?: boolean
-}
+// Re-exported from canonical location for backward compatibility
+export type { ContextMenuItem } from '../../ui/ContextMenu.js'

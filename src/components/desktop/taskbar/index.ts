@@ -3,4 +3,4 @@
  */
 
 export { Taskbar } from './Taskbar.js'
-export type { TaskbarWindow, TaskbarProps, ContextMenuItem } from './types.js'
+export type { TaskbarWindow, TaskbarProps, StartMenuApp, ContextMenuItem } from './types.js'

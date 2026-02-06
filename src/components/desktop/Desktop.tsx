@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { Window, type WindowState } from './Window'
-import { Taskbar, type TaskbarWindow } from './taskbar'
+import { Taskbar, type TaskbarWindow, type StartMenuApp } from './taskbar'
 import { DesktopIcon } from './DesktopIcon'
 import { Onboarding, type OnboardingData } from '../onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
@@ -20,6 +20,9 @@ import { WorldWindow } from '../world/index.js'
 import { CreativeStudioWindow } from '../studio/index.js'
 import { CobHubIDE } from '../ide/index.js'
 import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { desktopEmptyPreset, desktopIconPreset } from '../../hooks/useContextMenuPresets.js'
 import cornCobIcon from '../../assets/thecorncobb-icon.png'
 
 interface WindowConfig {
@@ -77,6 +80,9 @@ export function Desktop() {
   const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set())
   const [phoneVisible, setPhoneVisible] = useState(false)
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
+
+  // Context menu state
+  const desktopCtx = useContextMenu<{ type: 'desktop' } | { type: 'icon'; iconId: string }>()
 
   // Drag state for moving icons
   const [isDragging, setIsDragging] = useState(false)
@@ -199,6 +205,13 @@ export function Desktop() {
     { id: 'studio', icon: '🎨', label: 'Creative Suite', opensWindow: 'studio' },
     { id: 'cobhub-ide', icon: '🌽', label: 'CobHub IDE', opensWindow: 'cobhub-ide' },
   ]
+
+  // Build start menu app list from desktop icons
+  const startMenuApps: StartMenuApp[] = desktopIcons.map(icon => ({
+    id: icon.opensWindow ?? icon.id,
+    icon: icon.icon,
+    label: icon.label,
+  }))
 
   // Get icon position from store or use default
   const getIconPosition = useCallback((iconId: string, index: number): IconPosition => {
@@ -452,6 +465,41 @@ export function Desktop() {
     }
   }, [])
 
+  // Context menu handlers
+  const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement
+    if (target === desktopRef.current || target.dataset.desktopArea === 'true') {
+      desktopCtx.show(e, { type: 'desktop' })
+    }
+  }, [desktopCtx])
+
+  const handleIconContextMenu = useCallback((iconId: string, e: React.MouseEvent) => {
+    desktopCtx.show(e, { type: 'icon', iconId })
+  }, [desktopCtx])
+
+  const getContextMenuItems = useCallback(() => {
+    if (!desktopCtx.data) return []
+
+    if (desktopCtx.data.type === 'desktop') {
+      return desktopEmptyPreset({
+        onRefresh: () => window.location.reload(),
+        onChangeWallpaper: () => openWindow('settings'),
+        onOpenSettings: () => openWindow('settings'),
+      })
+    }
+
+    // Icon context menu
+    const data = desktopCtx.data as { type: 'icon'; iconId: string }
+    const icon = desktopIcons.find(i => i.id === data.iconId)
+    if (!icon) return []
+
+    return desktopIconPreset({
+      iconLabel: icon.label,
+      onOpen: () => handleIconDoubleClick(icon),
+      onOpenNewInstance: icon.allowMultiple ? () => handleIconDoubleClick(icon) : undefined,
+    })
+  }, [desktopCtx.data, desktopIcons, openWindow, handleIconDoubleClick])
+
   const handleTaskbarWindowClick = useCallback((windowId: string) => {
     const state = windowStates[windowId]
     if (state?.isMinimized || activeWindow !== windowId) focusWindow(windowId)
@@ -525,6 +573,7 @@ export function Desktop() {
       style={backgroundStyle}
       onClick={handleDesktopClick}
       onMouseDown={handleDesktopMouseDown}
+      onContextMenu={handleDesktopContextMenu}
     >
       <div className="flex-1 relative" data-desktop-area="true">
         {/* Desktop Icons with free positioning */}
@@ -540,6 +589,7 @@ export function Desktop() {
               onClick={(e) => handleIconClick(icon.id, e)}
               onDoubleClick={() => handleIconDoubleClick(icon)}
               onDragStart={(e) => handleIconDragStart(icon.id, e)}
+              onContextMenu={(e) => handleIconContextMenu(icon.id, e)}
               style={{
                 position: 'absolute',
                 left: pos.x,
@@ -611,7 +661,8 @@ export function Desktop() {
         windows={taskbarWindows}
         onWindowClick={handleTaskbarWindowClick}
         onWindowClose={closeWindow}
-        onStartClick={() => console.log('Start menu')}
+        apps={startMenuApps}
+        onOpenApp={openWindow}
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
         onOpenNPCConversation={(npcId) => {
@@ -622,6 +673,16 @@ export function Desktop() {
 
       {/* Server Connection Overlay - Blocks entire game when disconnected */}
       <ServerConnectionOverlay />
+
+      {/* Desktop Context Menu */}
+      {desktopCtx.visible && (
+        <ContextMenu
+          items={getContextMenuItems()}
+          x={desktopCtx.x}
+          y={desktopCtx.y}
+          onClose={desktopCtx.hide}
+        />
+      )}
     </div>
   )
 }

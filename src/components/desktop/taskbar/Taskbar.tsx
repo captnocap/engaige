@@ -10,7 +10,6 @@
 
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { useOSThemeStore } from '../../../stores/osThemeStore.js'
-import { useTotalUnreadCount } from '../../../stores/conversationStore.js'
 import type { TaskbarProps } from './types.js'
 import { TaskbarSimsHub } from './TaskbarSimsHub.js'
 import { TaskbarStartButton } from './TaskbarStartButton.js'
@@ -22,14 +21,14 @@ export function Taskbar({
   windows,
   onWindowClick,
   onWindowClose,
-  onStartClick,
+  onOpenApp,
+  apps,
   phoneVisible,
   onPhoneToggle,
   onOpenNPCConversation,
   className,
 }: TaskbarProps) {
   const showHub = useOSThemeStore(s => s.taskbar.showHub)
-  const totalUnread = useTotalUnreadCount()
 
   const handleDragStart = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return
@@ -55,7 +54,7 @@ export function Taskbar({
       {/* Zone A: Plumbob + Start */}
       <div className="flex items-center gap-1 shrink-0">
         {showHub && <TaskbarSimsHub />}
-        <TaskbarStartButton onClick={onStartClick} />
+        <TaskbarStartButton apps={apps} onAppClick={onOpenApp} />
       </div>
 
       <div className="w-px h-6 bg-white/10 shrink-0" />
@@ -76,7 +75,6 @@ export function Taskbar({
       <TaskbarSystemTray
         phoneVisible={phoneVisible}
         onPhoneToggle={onPhoneToggle}
-        totalUnread={totalUnread}
       />
     </div>
   )
