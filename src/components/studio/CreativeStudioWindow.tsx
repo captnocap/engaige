@@ -10,9 +10,10 @@
  * Layout: MenuBar (top) | Toolbar (left) | Workspace (center) | PanelSidebar (right) | StatusBar (bottom)
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StudioProvider, useStudio, type StudioMode } from './StudioContext.js';
 import { useWSStore } from '../../stores/wsStore.js';
+import { useStudioKeyboard } from './hooks/useStudioKeyboard.js';
 
 // Layout components
 import { StudioMenuBar } from './layout/StudioMenuBar.js';
@@ -33,12 +34,11 @@ import { PublishModal } from './modals/PublishModal.js';
 import './studio-theme.css';
 
 // ============================================================================
-// Mode Components Map
+// Mode Components Map (for non-draw modes)
 // ============================================================================
 
-const MODE_COMPONENTS: Record<Exclude<StudioMode, 'compose'>, React.ComponentType> = {
+const MODE_COMPONENTS: Record<Exclude<StudioMode, 'compose' | 'draw'>, React.ComponentType> = {
   generate: ImageGeneratorMode,
-  draw: CanvasMode,
   video: VideoCreatorMode,
   library: AssetLibraryMode,
 };
@@ -48,18 +48,26 @@ const MODE_COMPONENTS: Record<Exclude<StudioMode, 'compose'>, React.ComponentTyp
 // ============================================================================
 
 function CreativeSuiteInner() {
-  const { state, dispatch } = useStudio();
+  const { state, dispatch, canvasCallbacksRef } = useStudio();
   const request = useWSStore((s) => s.request);
   const connected = useWSStore((s) => s.connected);
   const [showPublishModal, setShowPublishModal] = useState(false);
-
-  // Canvas interaction refs (passed down via callbacks)
-  const canvasUndoRef = useRef<(() => void) | null>(null);
-  const canvasRedoRef = useRef<(() => void) | null>(null);
-  const canvasSaveRef = useRef<(() => void) | null>(null);
-  const canvasImportRef = useRef<(() => void) | null>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+
+  // Keyboard shortcuts — reads canvas callbacks from context ref
+  useStudioKeyboard({
+    onUndo: () => canvasCallbacksRef.current?.undo(),
+    onRedo: () => canvasCallbacksRef.current?.redo(),
+    onSave: () => canvasCallbacksRef.current?.save(),
+    onPublish: () => setShowPublishModal(true),
+  });
+
+  // CanvasMode reports history state changes here
+  const handleHistoryChange = useCallback((undo: boolean, redo: boolean) => {
+    setCanUndo(undo);
+    setCanRedo(redo);
+  }, []);
 
   // Fetch budget on mount
   useEffect(() => {
@@ -84,17 +92,16 @@ function CreativeSuiteInner() {
 
   // Determine which mode component to render
   const activeMode = state.activeMode === 'compose' ? 'generate' : state.activeMode;
-  const ActiveModeComponent = MODE_COMPONENTS[activeMode];
 
   return (
     <div className="studio-theme h-full flex flex-col">
       {/* Menu Bar */}
       <StudioMenuBar
         onPublish={() => setShowPublishModal(true)}
-        onUndo={() => canvasUndoRef.current?.()}
-        onRedo={() => canvasRedoRef.current?.()}
-        onSave={() => canvasSaveRef.current?.()}
-        onImport={() => canvasImportRef.current?.()}
+        onUndo={() => canvasCallbacksRef.current?.undo()}
+        onRedo={() => canvasCallbacksRef.current?.redo()}
+        onSave={() => canvasCallbacksRef.current?.save()}
+        onImport={() => canvasCallbacksRef.current?.openImport()}
         canUndo={canUndo}
         canRedo={canRedo}
       />
@@ -106,7 +113,14 @@ function CreativeSuiteInner() {
 
         {/* Workspace (center) */}
         <div className="flex-1 overflow-hidden" style={{ background: 'var(--studio-bg)' }}>
-          <ActiveModeComponent />
+          {activeMode === 'draw' ? (
+            <CanvasMode onHistoryChange={handleHistoryChange} />
+          ) : (
+            (() => {
+              const ModeComponent = MODE_COMPONENTS[activeMode];
+              return <ModeComponent />;
+            })()
+          )}
         </div>
 
         {/* Right Panel Sidebar */}

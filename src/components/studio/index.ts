@@ -27,6 +27,7 @@ export {
   type VideoComposition,
   type TextSegmentDraft,
   type EnergyLevel,
+  type CanvasCallbacks,
 } from './StudioContext.js';
 
 export { useStudioAssets, type MediaFile } from './useStudioAssets.js';

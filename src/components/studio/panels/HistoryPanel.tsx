@@ -1,15 +1,17 @@
 /**
  * History Panel
  *
- * Undo/redo entry list with click-to-restore.
- * Shows a list of drawing actions with the current position highlighted.
+ * Undo/redo buttons wired to canvas callbacks via context ref.
  */
 
+import { useStudio } from '../StudioContext.js';
 import { UndoIcon, RedoIcon } from '../icons/StudioIcons.js';
 
 export function HistoryPanel() {
-  // History data is managed inside the canvas hook.
-  // This panel shows a simplified view with undo/redo buttons.
+  const { canvasCallbacksRef } = useStudio();
+
+  const handleUndo = () => canvasCallbacksRef.current?.undo();
+  const handleRedo = () => canvasCallbacksRef.current?.redo();
 
   return (
     <div className="space-y-2">
@@ -18,6 +20,7 @@ export function HistoryPanel() {
           className="studio-toolbar-btn flex-1"
           title="Undo (Ctrl+Z)"
           style={{ justifyContent: 'center', gap: 4, display: 'flex', alignItems: 'center' }}
+          onClick={handleUndo}
         >
           <UndoIcon size={14} />
           <span style={{ fontSize: '11px' }}>Undo</span>
@@ -26,6 +29,7 @@ export function HistoryPanel() {
           className="studio-toolbar-btn flex-1"
           title="Redo (Ctrl+Shift+Z)"
           style={{ justifyContent: 'center', gap: 4, display: 'flex', alignItems: 'center' }}
+          onClick={handleRedo}
         >
           <RedoIcon size={14} />
           <span style={{ fontSize: '11px' }}>Redo</span>

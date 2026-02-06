@@ -6,16 +6,27 @@
  * Toolbar, colors, and history moved to panels.
  */
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { useStudio } from '../StudioContext.js';
 import { useCanvasDrawing, CANVAS_PRESETS } from '../hooks/useCanvasDrawing.js';
 import { ImportImageModal } from '../modals/ImportImageModal.js';
 
-export function CanvasMode() {
+interface CanvasModeProps {
+  onHistoryChange?: (canUndo: boolean, canRedo: boolean) => void;
+}
+
+export function CanvasMode({ onHistoryChange }: CanvasModeProps) {
+  const { canvasCallbacksRef } = useStudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const {
     startDrawing,
     draw,
     stopDrawing,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    saveCanvas,
     zoom,
     canvasPreset,
     showImportModal,
@@ -23,6 +34,24 @@ export function CanvasMode() {
     loadImageToCanvas,
     error,
   } = useCanvasDrawing(canvasRef);
+
+  // Register canvas callbacks into context ref (no re-renders)
+  useEffect(() => {
+    canvasCallbacksRef.current = {
+      undo,
+      redo,
+      save: saveCanvas,
+      openImport: () => setShowImportModal(true),
+      canUndo,
+      canRedo,
+    };
+    return () => { canvasCallbacksRef.current = null; };
+  });
+
+  // Notify parent of history state changes for menu disabled styling
+  useEffect(() => {
+    onHistoryChange?.(canUndo, canRedo);
+  }, [canUndo, canRedo, onHistoryChange]);
 
   return (
     <div className="h-full flex flex-col relative">

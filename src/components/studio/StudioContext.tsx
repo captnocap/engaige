@@ -79,6 +79,19 @@ export interface VideoComposition {
   loop: boolean;
 }
 
+// ============================================================================
+// Canvas Callbacks (ref-based bridge, no re-renders)
+// ============================================================================
+
+export interface CanvasCallbacks {
+  undo: () => void;
+  redo: () => void;
+  save: () => void;
+  openImport: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
 export interface PendingGeneration {
   requestId: string;
   prompt: string;
@@ -414,6 +427,9 @@ interface StudioContextValue {
   state: StudioState;
   dispatch: Dispatch<StudioAction>;
 
+  // Canvas callbacks ref (written by CanvasMode, read by menu/keyboard/history)
+  canvasCallbacksRef: React.MutableRefObject<CanvasCallbacks | null>;
+
   // Convenience methods
   setMode: (mode: StudioMode) => void;
   setTool: (tool: Tool) => void;
@@ -444,6 +460,7 @@ export function StudioProvider({ children }: StudioProviderProps) {
   const [state, dispatch] = useReducer(studioReducer, initialState);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialLoadDone = useRef(false);
+  const canvasCallbacksRef = useRef<CanvasCallbacks | null>(null);
 
   // Restore draft from localStorage on mount
   useEffect(() => {
@@ -542,6 +559,7 @@ export function StudioProvider({ children }: StudioProviderProps) {
   const value: StudioContextValue = {
     state,
     dispatch,
+    canvasCallbacksRef,
     setMode,
     setTool,
     togglePanel,
