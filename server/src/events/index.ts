@@ -59,4 +59,8 @@ export {
   type OnboardingPersonalityTestCompletedPayload,
   type OnboardingNPCWavePayload,
   type OnboardingCompletedPayload,
+  type PinballGameStartedPayload,
+  type PinballGameEndedPayload,
+  type PinballEloUpdatedPayload,
+  type PinballHighScorePayload,
 } from './event-types.js';

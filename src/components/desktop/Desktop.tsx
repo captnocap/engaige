@@ -14,6 +14,7 @@ import { SettingsWindow } from './SettingsWindow'
 import { WalletWindow } from './WalletWindow'
 import { LogsWindow } from './LogsWindow'
 import { ChessWindow } from './ChessWindow.js'
+import { PinballWindow } from '../pinball/PinballWindow.js'
 import { Phone } from '../phone/Phone.js'
 import { Browser } from '../browser/Browser.js'
 import { WorldWindow } from '../world/index.js'
@@ -192,6 +193,13 @@ export function Desktop() {
       component: ({ onClose }) => <CobHubIDE onClose={onClose} />,
       defaultState: { x: 50, y: 30, width: 1100, height: 750 },
     },
+    {
+      id: 'pinball',
+      title: 'Space Cadet Pinball',
+      icon: '🪩',
+      component: () => <PinballWindow />,
+      defaultState: { x: 150, y: 20, width: 650, height: 800 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
@@ -204,6 +212,7 @@ export function Desktop() {
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
     { id: 'studio', icon: '🎨', label: 'Creative Suite', opensWindow: 'studio' },
     { id: 'cobhub-ide', icon: '🌽', label: 'CobHub IDE', opensWindow: 'cobhub-ide' },
+    { id: 'pinball', icon: '🪩', label: 'Pinball', opensWindow: 'pinball' },
   ]
 
   // Build start menu app list from desktop icons

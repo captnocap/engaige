@@ -185,6 +185,24 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
 
       -- Initialize player chess profile
       INSERT OR IGNORE INTO player_chess_profile (id) VALUES ('player');
+
+      -- === PLAYER PINBALL PROFILE ===
+      CREATE TABLE IF NOT EXISTS player_pinball_profile (
+        id TEXT PRIMARY KEY CHECK (id = 'player'),
+        elo_rating INTEGER DEFAULT 1200,
+        peak_elo INTEGER DEFAULT 1200,
+        total_games INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        high_score INTEGER DEFAULT 0,
+        current_win_streak INTEGER DEFAULT 0,
+        best_win_streak INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch())
+      );
+
+      -- Initialize player pinball profile
+      INSERT OR IGNORE INTO player_pinball_profile (id) VALUES ('player');
     `);
   }
 
@@ -346,6 +364,29 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
 
       CREATE INDEX IF NOT EXISTS idx_chess_profiles_elo ON chess_profiles(elo_rating DESC);
       CREATE INDEX IF NOT EXISTS idx_chess_profiles_npc ON chess_profiles(npc_id);
+
+      -- === PINBALL PROFILES (NPC Pinball Stats & ELO) ===
+      CREATE TABLE IF NOT EXISTS pinball_profiles (
+        id TEXT PRIMARY KEY,
+        npc_id TEXT NOT NULL UNIQUE,
+        elo_rating INTEGER DEFAULT 1200,
+        peak_elo INTEGER DEFAULT 1200,
+        total_games INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        high_score INTEGER DEFAULT 0,
+        skill_level INTEGER DEFAULT 5,
+        playstyle TEXT DEFAULT 'balanced' CHECK (playstyle IN ('aggressive', 'defensive', 'balanced', 'precise', 'chaotic')),
+        last_game_at INTEGER,
+        current_win_streak INTEGER DEFAULT 0,
+        best_win_streak INTEGER DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()),
+        updated_at INTEGER DEFAULT (unixepoch()),
+        FOREIGN KEY (npc_id) REFERENCES npcs(id)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_pinball_profiles_elo ON pinball_profiles(elo_rating DESC);
+      CREATE INDEX IF NOT EXISTS idx_pinball_profiles_npc ON pinball_profiles(npc_id);
     `);
   }
 
@@ -794,6 +835,34 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
       CREATE INDEX IF NOT EXISTS idx_chess_matches_status ON chess_matches(status);
       CREATE INDEX IF NOT EXISTS idx_chess_matches_started ON chess_matches(started_at DESC);
       CREATE INDEX IF NOT EXISTS idx_chess_moves_match ON chess_moves(match_id, move_number);
+    `);
+
+    // === PINBALL SYSTEM ===
+    db.exec(`
+      -- Pinball games
+      CREATE TABLE IF NOT EXISTS pinball_games (
+        id TEXT PRIMARY KEY,
+        player_id TEXT NOT NULL,
+        player_type TEXT NOT NULL CHECK (player_type IN ('player', 'npc')),
+        status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'abandoned')),
+        result TEXT CHECK (result IN ('win', 'loss', 'abandoned')),
+        score INTEGER DEFAULT 0,
+        benchmark_score INTEGER DEFAULT 0,
+        balls_used INTEGER DEFAULT 0,
+        max_combo INTEGER DEFAULT 0,
+        duration_seconds INTEGER DEFAULT 0,
+        elo_before INTEGER,
+        elo_after INTEGER,
+        elo_change INTEGER DEFAULT 0,
+        started_at INTEGER DEFAULT (unixepoch()),
+        completed_at INTEGER
+      );
+
+      -- Pinball indexes
+      CREATE INDEX IF NOT EXISTS idx_pinball_games_player ON pinball_games(player_id, player_type);
+      CREATE INDEX IF NOT EXISTS idx_pinball_games_status ON pinball_games(status);
+      CREATE INDEX IF NOT EXISTS idx_pinball_games_started ON pinball_games(started_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_pinball_games_score ON pinball_games(score DESC);
     `);
 
     // === WORLD MAP SYSTEM ===

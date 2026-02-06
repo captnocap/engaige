@@ -83,6 +83,17 @@ export function createNPC(data: NPCCreateData, generationMethod: 'ai' | 'manual'
     VALUES (?, ?, ?, ?, ?, ?)
   `).run(generateId(), id, initialElo, initialElo, skillLevel, playstyle);
 
+  // Initialize pinball profile
+  const pinballElo = Math.floor(Math.random() * 1200) + 800;
+  const pinballSkill = Math.floor(((pinballElo - 800) / 1200) * 9) + 1;
+  const pinballPlaystyles = ['aggressive', 'defensive', 'balanced', 'precise', 'chaotic'];
+  const pinballPlaystyle = pinballPlaystyles[Math.floor(Math.random() * pinballPlaystyles.length)];
+
+  db.prepare(`
+    INSERT INTO pinball_profiles (id, npc_id, elo_rating, peak_elo, skill_level, playstyle)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(generateId(), id, pinballElo, pinballElo, pinballSkill, pinballPlaystyle);
+
   return npc;
 }
 

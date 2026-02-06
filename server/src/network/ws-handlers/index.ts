@@ -33,6 +33,7 @@ import { instasnapHandlers } from './instasnap.js';
 import { interactionHandlers } from './interaction.js';
 import { sitesHandlers } from './sites.js';
 import { newsHandlers } from './news.js';
+import { pinballHandlers } from './pinball.js';
 
 // Re-export broadcast functions for external use
 export { broadcastThought, broadcastDeliberationStarted, broadcastDeliberationCompleted } from './thoughts.js';
@@ -67,6 +68,7 @@ export const handlers = {
   ...interactionHandlers,
   ...sitesHandlers,
   ...newsHandlers,
+  ...pinballHandlers,
 };
 
 // Export individual handler maps for testing or selective imports
@@ -97,4 +99,5 @@ export {
   interactionHandlers,
   sitesHandlers,
   newsHandlers,
+  pinballHandlers,
 };

@@ -32,6 +32,7 @@ import { initializeSocialAutopilot, startSocialAutopilot } from './agents/social
 import { initializeConversationInitiator, startConversationInitiator } from './agents/conversation-initiator.js';
 import { initializeNewsTasks, scheduleStoryGeneration } from './services/news-tasks.js';
 import { initializeChessAutopilot, startChessAutopilot, initializeChessProfilesForExistingNPCs } from './agents/chess-autopilot.js';
+import { initializePinballAutopilot, startPinballAutopilot, initializePinballProfilesForExistingNPCs } from './agents/pinball-autopilot.js';
 import { searchService, indexDynamicContent } from './services/search.js';
 import { initializeSceneSeedSystem } from './services/onboarding.js';
 
@@ -206,10 +207,12 @@ initializeSocialAutopilot();
 initializeConversationInitiator();
 initializeNewsTasks();
 initializeChessAutopilot();
+initializePinballAutopilot();
 initializeSceneSeedSystem();
 
 // Initialize chess profiles for any existing NPCs
 initializeChessProfilesForExistingNPCs();
+initializePinballProfilesForExistingNPCs();
 
 // ─────────────────────────────────────────────────────────────────
 // Start Background Systems
@@ -222,6 +225,7 @@ setTimeout(async () => {
   startSocialAutopilot({ initialBurst: true, postIntervalMinutes: 45 });
   startConversationInitiator({ checkIntervalMinutes: 60 });
   startChessAutopilot({ initialBurst: true, matchIntervalHours: 2 });
+  startPinballAutopilot({ initialBurst: true, batchIntervalHours: 3 });
   startDramaEngine({ tickIntervalMinutes: 5 });
 
   // Start awareness checks (NPCs checking social media based on their habits)
@@ -240,7 +244,7 @@ setTimeout(async () => {
     }
   }, 60 * 1000); // Check every minute
 
-  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess, awareness, drama)');
+  console.log('[Server] Autonomous NPC behaviors started (social, chat, chess, pinball, awareness, drama)');
 }, 5000);
 
 // Simple CORS headers for any HTTP endpoints (health check, etc.)

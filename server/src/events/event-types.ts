@@ -549,6 +549,41 @@ export interface ChessChallengeSentPayload {
   opponent_type: 'player' | 'npc';
 }
 
+// === PINBALL EVENTS ===
+export interface PinballGameStartedPayload {
+  game_id: string;
+  player_id: string;
+  player_type: 'player' | 'npc';
+  elo_before: number;
+  benchmark_score: number;
+}
+
+export interface PinballGameEndedPayload {
+  game_id: string;
+  player_id: string;
+  player_type: 'player' | 'npc';
+  score: number;
+  benchmark_score: number;
+  result: 'win' | 'loss' | 'abandoned';
+  elo_change: number;
+  duration_seconds: number;
+}
+
+export interface PinballEloUpdatedPayload {
+  player_id: string;
+  player_type: 'player' | 'npc';
+  old_elo: number;
+  new_elo: number;
+  change: number;
+}
+
+export interface PinballHighScorePayload {
+  player_id: string;
+  player_type: 'player' | 'npc';
+  new_high_score: number;
+  previous_high_score: number;
+}
+
 // === GUARDRAILS EVENTS ===
 export interface GuardrailsRatingChangedPayload {
   old_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
@@ -718,6 +753,12 @@ export const EventTypes = {
   CHESS_MATCH_ENDED: 'chess:match_ended',
   CHESS_ELO_UPDATED: 'chess:elo_updated',
   CHESS_CHALLENGE_SENT: 'chess:challenge_sent',
+
+  // Pinball
+  PINBALL_GAME_STARTED: 'pinball:game_started',
+  PINBALL_GAME_ENDED: 'pinball:game_ended',
+  PINBALL_ELO_UPDATED: 'pinball:elo_updated',
+  PINBALL_HIGH_SCORE: 'pinball:high_score',
 
   // Guardrails
   GUARDRAILS_RATING_CHANGED: 'guardrails:rating_changed',
