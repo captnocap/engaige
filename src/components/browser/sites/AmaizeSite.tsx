@@ -12,9 +12,10 @@
  * - Category view: path = '/category/{category-slug}'
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, useSiteChannels, useSiteCategories, type SiteContentItem, type SiteChannel, type SiteCategory } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Types
@@ -391,6 +392,67 @@ const SELLERS: Seller[] = [
 ]
 
 // ============================================================================
+// DB-to-Local Adapters
+// ============================================================================
+
+/** Adapt a DB Review object (from metadata) to the local Review interface */
+function dbToReview(raw: Record<string, any>): Review {
+  return {
+    id: raw.id || '',
+    author: raw.author || 'Anonymous',
+    rating: raw.rating || 0,
+    title: raw.title || '',
+    content: raw.content || '',
+    date: raw.date || '',
+    verified: raw.verified || false,
+    helpful: raw.helpful || 0,
+    unhelpful: raw.unhelpful || 0,
+  }
+}
+
+/** Adapt a DB SiteContentItem to the local Product interface */
+function dbToProduct(item: SiteContentItem): Product {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    price: m.price ?? 0,
+    originalPrice: m.originalPrice,
+    rating: m.rating || 0,
+    reviewCount: item.commentCount || m.reviewCount || 0,
+    seller: m.seller || '',
+    sellerVerified: m.sellerVerified || false,
+    image: item.thumbnailEmoji || m.image || '📦',
+    primeEligible: m.primeEligible || false,
+    description: item.body || item.summary || '',
+    features: m.features || [],
+    reviews: Array.isArray(m.reviews) ? m.reviews.map(dbToReview) : [],
+    frequentlyBoughtWith: m.frequentlyBoughtWith || [],
+    category: item.category || '',
+    inStock: m.inStock !== false,
+    stockNote: m.stockNote,
+    shipsFrom: m.shipsFrom,
+  }
+}
+
+/** Adapt a DB SiteChannel to the local Seller interface */
+function dbToSeller(ch: SiteChannel): Seller {
+  const m = ch.metadata || {}
+  return {
+    id: ch.slug,
+    name: ch.name,
+    avatar: ch.avatarEmoji || m.avatar || '🏪',
+    rating: m.rating || 0,
+    reviewCount: ch.contentCount || m.reviewCount || 0,
+    memberSince: m.memberSince || '',
+    description: ch.description || '',
+    shipsFrom: m.shipsFrom || '',
+    responseTime: m.responseTime || '',
+    products: m.products || [],
+  }
+}
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -406,17 +468,8 @@ function renderStars(rating: number): string {
   return '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars)
 }
 
-function getProductById(id: string): Product | undefined {
-  return PRODUCTS.find(p => p.id === id)
-}
-
-function getSellerByName(name: string): Seller | undefined {
-  return SELLERS.find(s => s.name === name)
-}
-
-function getSellerById(id: string): Seller | undefined {
-  return SELLERS.find(s => s.id === id)
-}
+// NOTE: getProductById, getSellerByName, getSellerById, and findCategoryBySlug
+// are defined inside AmaizeSite component to reference the dynamic data arrays.
 
 // ============================================================================
 // URL Routing Helpers
@@ -428,15 +481,6 @@ function getSellerById(id: string): Seller | undefined {
  */
 function slugifyCategory(category: string): string {
   return category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')
-}
-
-/**
- * Find a category by its slug.
- * Converts "kitchen-appliances" back to "Kitchen Appliances"
- */
-function findCategoryBySlug(slug: string): string | null {
-  const normalized = slug.toLowerCase()
-  return CATEGORIES.find(cat => slugifyCategory(cat) === normalized) || null
 }
 
 /**
@@ -560,14 +604,16 @@ function ProductCard({ product, onClick }: ProductCardProps) {
 
 interface ProductDetailProps {
   product: Product
+  allProducts: Product[]
+  allSellers: Seller[]
   onBack: () => void
   onSellerClick: (seller: Seller) => void
   onProductClick: (product: Product) => void
 }
 
-function ProductDetail({ product, onBack, onSellerClick, onProductClick }: ProductDetailProps) {
+function ProductDetail({ product, allProducts, allSellers, onBack, onSellerClick, onProductClick }: ProductDetailProps) {
   const [selectedReviewSort, setSelectedReviewSort] = useState<'helpful' | 'recent'>('helpful')
-  const seller = getSellerByName(product.seller)
+  const seller = allSellers.find(s => s.name === product.seller)
 
   const sortedReviews = [...product.reviews].sort((a, b) => {
     if (selectedReviewSort === 'helpful') return b.helpful - a.helpful
@@ -750,7 +796,7 @@ function ProductDetail({ product, onBack, onSellerClick, onProductClick }: Produ
               {product.image}
             </div>
             {product.frequentlyBoughtWith.map((id, i) => {
-              const related = getProductById(id)
+              const related = allProducts.find(p => p.id === id)
               if (!related) return null
               return (
                 <div key={id} className="flex items-center gap-4">
@@ -879,7 +925,7 @@ function ProductDetail({ product, onBack, onSellerClick, onProductClick }: Produ
           (It's always corn. It's always about corn.)
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {PRODUCTS.filter(p => p.id !== product.id).slice(0, 6).map(p => (
+          {allProducts.filter(p => p.id !== product.id).slice(0, 6).map(p => (
             <ProductCard key={p.id} product={p} onClick={() => onProductClick(p)} />
           ))}
         </div>
@@ -890,12 +936,13 @@ function ProductDetail({ product, onBack, onSellerClick, onProductClick }: Produ
 
 interface SellerProfileProps {
   seller: Seller
+  allProducts: Product[]
   onBack: () => void
   onProductClick: (product: Product) => void
 }
 
-function SellerProfile({ seller, onBack, onProductClick }: SellerProfileProps) {
-  const sellerProducts = PRODUCTS.filter(p => p.seller === seller.name)
+function SellerProfile({ seller, allProducts, onBack, onProductClick }: SellerProfileProps) {
+  const sellerProducts = allProducts.filter(p => p.seller === seller.name)
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -966,7 +1013,8 @@ function SellerProfile({ seller, onBack, onProductClick }: SellerProfileProps) {
 // Main Site Component
 // ============================================================================
 
-const CATEGORIES = [
+/** Hardcoded fallback category list used when DB has no categories */
+const FALLBACK_CATEGORIES = [
   'All',
   'Kitchen Appliances',
   'Sports & Outdoors',
@@ -978,6 +1026,58 @@ const CATEGORIES = [
 ]
 
 export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // ---------------------------------------------------------------------------
+  // Fetch DB content with fallback to hardcoded data
+  // ---------------------------------------------------------------------------
+  const { content: dbContent } = useSiteContent('amaize')
+  const { channels: dbChannels } = useSiteChannels('amaize')
+  const { categories: dbCategories } = useSiteCategories('amaize')
+
+  /** Products array: prefer DB content, fall back to hardcoded PRODUCTS */
+  const products = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToProduct)
+    return PRODUCTS
+  }, [dbContent])
+
+  /** Sellers array: prefer DB channels, fall back to hardcoded SELLERS */
+  const sellers = useMemo(() => {
+    if (dbChannels.length > 0) return dbChannels.map(dbToSeller)
+    return SELLERS
+  }, [dbChannels])
+
+  /** Categories list: prefer DB categories, fall back to hardcoded list */
+  const categories = useMemo(() => {
+    if (dbCategories.length > 0) {
+      return ['All', ...dbCategories.map(c => c.name)]
+    }
+    return FALLBACK_CATEGORIES
+  }, [dbCategories])
+
+  // ---------------------------------------------------------------------------
+  // Lookup helpers (scoped to dynamic data)
+  // ---------------------------------------------------------------------------
+  const getProductById = useCallback(
+    (id: string) => products.find(p => p.id === id),
+    [products]
+  )
+
+  const getSellerById = useCallback(
+    (id: string) => sellers.find(s => s.id === id),
+    [sellers]
+  )
+
+  const findCategoryBySlug = useCallback(
+    (slug: string): string | null => {
+      const normalized = slug.toLowerCase()
+      return categories.find(cat => slugifyCategory(cat) === normalized) || null
+    },
+    [categories]
+  )
+
+  // ---------------------------------------------------------------------------
+  // Routing
+  // ---------------------------------------------------------------------------
+
   // Parse the current route to determine what view to show
   const route = useMemo(() => parseRoute(path), [path])
 
@@ -985,12 +1085,12 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
   const selectedProduct = useMemo(() => {
     if (route.view !== 'product' || !route.id) return null
     return getProductById(route.id) || null
-  }, [route.view, route.id])
+  }, [route.view, route.id, getProductById])
 
   const selectedSeller = useMemo(() => {
     if (route.view !== 'seller' || !route.id) return null
     return getSellerById(route.id) || null
-  }, [route.view, route.id])
+  }, [route.view, route.id, getSellerById])
 
   // Category from URL or default to 'All'
   const selectedCategory = useMemo(() => {
@@ -998,12 +1098,12 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
       return findCategoryBySlug(route.id) || 'All'
     }
     return 'All'
-  }, [route.view, route.id])
+  }, [route.view, route.id, findCategoryBySlug])
 
   // Local UI state (not URL-based)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const filteredProducts = PRODUCTS.filter(p => {
+  const filteredProducts = products.filter(p => {
     if (selectedCategory !== 'All' && p.category !== selectedCategory) return false
     if (searchQuery && !p.title.toLowerCase().includes(searchQuery.toLowerCase())) return false
     return true
@@ -1065,7 +1165,7 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
                   style={{ borderColor: THEME.border }}
                 >
                   <option>All</option>
-                  {CATEGORIES.slice(1).map(cat => (
+                  {categories.slice(1).map(cat => (
                     <option key={cat}>{cat}</option>
                   ))}
                 </select>
@@ -1127,12 +1227,15 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
         {selectedSeller ? (
           <SellerProfile
             seller={selectedSeller}
+            allProducts={products}
             onBack={handleBack}
             onProductClick={handleProductClick}
           />
         ) : selectedProduct ? (
           <ProductDetail
             product={selectedProduct}
+            allProducts={products}
+            allSellers={sellers}
             onBack={handleBack}
             onSellerClick={handleSellerClick}
             onProductClick={handleProductClick}
@@ -1175,7 +1278,7 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
                 Today's Deals
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {PRODUCTS.filter(p => p.originalPrice).slice(0, 4).map(product => (
+                {products.filter(p => p.originalPrice).slice(0, 4).map(product => (
                   <div key={product.id} className="relative">
                     <div
                       className="absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white z-10"
@@ -1197,7 +1300,7 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
                     Department
                   </h3>
                   <div className="space-y-1">
-                    {CATEGORIES.map(cat => (
+                    {categories.map(cat => (
                       <button
                         key={cat}
                         onClick={() => handleCategoryClick(cat)}
@@ -1288,7 +1391,7 @@ export function AmaizeSite({ siteId, path, onNavigate, onPathChange }: SiteProps
                   Your recently viewed items
                 </h2>
                 <div className="flex gap-4 overflow-x-auto pb-2">
-                  {PRODUCTS.slice(0, 6).map(product => (
+                  {products.slice(0, 6).map(product => (
                     <button
                       key={product.id}
                       onClick={() => handleProductClick(product)}

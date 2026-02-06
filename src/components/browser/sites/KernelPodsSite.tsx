@@ -9,9 +9,10 @@
  * and mysterious anonymous hosts investigating the Hartwell Building.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Types & Data
@@ -999,10 +1000,46 @@ function CategoryFilter({
 }
 
 // ============================================================================
+// DB Content Adapter
+// ============================================================================
+
+/**
+ * Maps a DB SiteContentItem to the local Podcast interface.
+ * Episodes, reviews, host info, and category are pulled from metadata.
+ */
+function dbToPodcast(item: SiteContentItem): Podcast {
+  const m = item.metadata as Record<string, unknown> || {}
+  return {
+    id: item.slug || item.id,
+    title: item.title || 'Untitled Podcast',
+    host: (m.host ?? m.hostName ?? '') as string,
+    hostBio: (m.hostBio ?? m.host_bio ?? '') as string,
+    coverEmoji: item.thumbnailEmoji || (m.coverEmoji ?? m.cover_emoji ?? '🎙️') as string,
+    category: (m.category ?? item.category ?? 'lifestyle') as Podcast['category'],
+    rating: Number(m.rating ?? item.likeCount ?? 0),
+    totalDownloads: Number(m.totalDownloads ?? m.total_downloads ?? item.viewCount ?? 0),
+    reviewCount: Number(m.reviewCount ?? m.review_count ?? 0),
+    description: item.summary || item.body || (m.description as string) || '',
+    tagline: (m.tagline ?? '') as string,
+    featured: item.isFeatured || (m.featured as boolean) || false,
+    episodes: Array.isArray(m.episodes) ? (m.episodes as Episode[]) : [],
+    reviews: Array.isArray(m.reviews) ? (m.reviews as Review[]) : [],
+  }
+}
+
+// ============================================================================
 // Main Site Component
 // ============================================================================
 
 export function KernelPodsSite({ path, onPathChange }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded podcasts
+  const { content: dbContent } = useSiteContent('kernelpods')
+
+  const podcasts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToPodcast)
+    return PODCASTS
+  }, [dbContent])
+
   const [selectedPodcast, setSelectedPodcast] = useState<Podcast | null>(null)
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -1024,7 +1061,7 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
       const podcastId = pathParts[0]
       const episodeId = pathParts[1] || null
 
-      const podcast = PODCASTS.find((p) => p.id === podcastId)
+      const podcast = podcasts.find((p) => p.id === podcastId)
       if (podcast) {
         setSelectedPodcast(podcast)
         if (episodeId) {
@@ -1044,7 +1081,7 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
       let foundPodcast: Podcast | null = null
       let foundEpisode: Episode | null = null
 
-      for (const podcast of PODCASTS) {
+      for (const podcast of podcasts) {
         const episode = podcast.episodes.find((e) => e.id === episodeId)
         if (episode) {
           foundPodcast = podcast
@@ -1067,12 +1104,12 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
     setTimeout(() => {
       isUpdatingFromPath.current = false
     }, 0)
-  }, [path])
+  }, [path, podcasts])
 
   // Filter podcasts by category
   const filteredPodcasts = activeCategory
-    ? PODCASTS.filter((p) => p.category === activeCategory)
-    : PODCASTS
+    ? podcasts.filter((p) => p.category === activeCategory)
+    : podcasts
 
   // Handle navigation
   const handleSelectPodcast = (podcast: Podcast) => {
@@ -1174,7 +1211,7 @@ export function KernelPodsSite({ path, onPathChange }: SiteProps) {
                         backgroundColor="#ffffff"
                         textColor="#7C3AED"
                         className="mt-3"
-                        onClick={() => handleSelectPodcast(PODCASTS[0])}
+                        onClick={() => handleSelectPodcast(podcasts[0])}
                       >
                         Listen Now
                       </Button>

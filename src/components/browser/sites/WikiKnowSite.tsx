@@ -5,10 +5,11 @@
  * Features encyclopedic content about absurd topics played completely straight.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.wiki
 
@@ -1053,6 +1054,27 @@ An online community dedicated to investigating the Hartwell Building has compile
 ]
 
 // ============================================================================
+// DB Content Adapter
+// ============================================================================
+
+/** Adapt DB content to local WikiArticle interface */
+function dbToWikiArticle(item: SiteContentItem): WikiArticle {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    category: item.category || m.category || 'General',
+    summary: item.summary || item.body?.slice(0, 300) || '',
+    sections: m.sections || [{ id: 'intro', heading: 'Overview', content: item.body || item.summary || '' }],
+    infobox: m.infobox,
+    relatedArticles: m.relatedArticles || m.related_articles || [],
+    references: m.references || [],
+    lastEdited: m.lastEdited || (item.updatedAt ? new Date(item.updatedAt * 1000).toLocaleDateString() : ''),
+    views: item.viewCount || m.views || 0,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -1079,14 +1101,14 @@ function slugToTitle(slug: string): string {
 /**
  * Finds an article by its URL slug (matches against article id or title slug).
  */
-function findArticleBySlug(slug: string): WikiArticle | undefined {
+function findArticleBySlug(slug: string, articleList: WikiArticle[]): WikiArticle | undefined {
   // First try exact id match
-  const byId = SAMPLE_ARTICLES.find(a => a.id === slug.toLowerCase())
+  const byId = articleList.find(a => a.id === slug.toLowerCase())
   if (byId) return byId
 
   // Then try title match (convert slug to title and search)
   const title = slugToTitle(slug)
-  return SAMPLE_ARTICLES.find(a =>
+  return articleList.find(a =>
     a.title.toLowerCase() === title.toLowerCase()
   )
 }
@@ -1096,6 +1118,14 @@ function findArticleBySlug(slug: string): WikiArticle | undefined {
 // ============================================================================
 
 export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('wikiknow')
+
+  const articles = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToWikiArticle)
+    return SAMPLE_ARTICLES
+  }, [dbContent])
+
   // State for current view - null means homepage, otherwise shows article
   const [selectedArticle, setSelectedArticle] = useState<WikiArticle | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -1115,7 +1145,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
     } else if (path.startsWith('/wiki/')) {
       // Article path: /wiki/Article_Slug
       const slug = path.slice(6) // Remove '/wiki/'
-      const article = findArticleBySlug(slug)
+      const article = findArticleBySlug(slug, articles)
       if (article) {
         setSelectedArticle(article)
         setSelectedCategory(null)
@@ -1135,7 +1165,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
     setTimeout(() => {
       isUpdatingFromPath.current = false
     }, 0)
-  }, [path])
+  }, [path, articles])
 
   // Navigation handlers that update both state and path
   const handleSelectArticle = (article: WikiArticle) => {
@@ -1157,15 +1187,15 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
   }
 
   const handleRandomArticle = () => {
-    const randomIndex = Math.floor(Math.random() * SAMPLE_ARTICLES.length)
-    const article = SAMPLE_ARTICLES[randomIndex]
+    const randomIndex = Math.floor(Math.random() * articles.length)
+    const article = articles[randomIndex]
     handleSelectArticle(article)
   }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Find article by title (case-insensitive partial match)
-    const found = SAMPLE_ARTICLES.find(a =>
+    const found = articles.find(a =>
       a.title.toLowerCase().includes(searchQuery.toLowerCase())
     )
     if (found) {
@@ -1175,7 +1205,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
   }
 
   const handleRelatedClick = (title: string) => {
-    const found = SAMPLE_ARTICLES.find(a =>
+    const found = articles.find(a =>
       a.title.toLowerCase().includes(title.toLowerCase())
     )
     if (found) {
@@ -1185,8 +1215,8 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
 
   // Get articles filtered by category (if category is selected)
   const filteredArticles = selectedCategory
-    ? SAMPLE_ARTICLES.filter(a => a.category === selectedCategory)
-    : SAMPLE_ARTICLES
+    ? articles.filter(a => a.category === selectedCategory)
+    : articles
 
   return (
     <div className="min-h-full" style={{ background: site.theme.background }}>
@@ -1253,7 +1283,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                 Random article
               </button>
               <span className="text-sm" style={{ color: site.theme.textMuted }}>
-                {SAMPLE_ARTICLES.length.toLocaleString()} articles
+                {articles.length.toLocaleString()} articles
               </span>
             </div>
           </div>
@@ -1304,7 +1334,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                     {site.tagline}
                   </p>
                   <p className="text-sm" style={{ color: site.theme.text }}>
-                    <strong>{SAMPLE_ARTICLES.length.toLocaleString()}</strong> articles in English
+                    <strong>{articles.length.toLocaleString()}</strong> articles in English
                   </p>
                 </div>
 
@@ -1321,17 +1351,17 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                     style={{ background: site.theme.surface, border: `1px solid ${site.theme.border}` }}
                   >
                     <button
-                      onClick={() => handleSelectArticle(SAMPLE_ARTICLES[0])}
+                      onClick={() => handleSelectArticle(articles[0])}
                       className="text-lg font-bold hover:underline text-left"
                       style={{ color: site.theme.primary }}
                     >
-                      {SAMPLE_ARTICLES[0].title}
+                      {articles[0].title}
                     </button>
                     <p className="text-sm mt-2" style={{ color: site.theme.text }}>
-                      {SAMPLE_ARTICLES[0].summary.slice(0, 300)}...
+                      {articles[0].summary.slice(0, 300)}...
                     </p>
                     <button
-                      onClick={() => handleSelectArticle(SAMPLE_ARTICLES[0])}
+                      onClick={() => handleSelectArticle(articles[0])}
                       className="text-sm mt-2 hover:underline"
                       style={{ color: site.theme.primary }}
                     >
@@ -1349,7 +1379,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                     Browse by Category
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {Array.from(new Set(SAMPLE_ARTICLES.map(a => a.category))).map(category => (
+                    {Array.from(new Set(articles.map(a => a.category))).map(category => (
                       <button
                         key={category}
                         onClick={() => handleSelectCategory(category)}
@@ -1375,7 +1405,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                     All Articles
                   </h2>
                   <div className="space-y-3">
-                    {SAMPLE_ARTICLES.map(article => (
+                    {articles.map(article => (
                       <div
                         key={article.id}
                         className="p-3 rounded"
@@ -1688,7 +1718,7 @@ export function WikiKnowSite({ siteId, path, onNavigate, onPathChange }: SitePro
                 {selectedArticle ? 'Other articles' : 'Popular articles'}
               </h3>
               <ul className="text-sm space-y-2">
-                {SAMPLE_ARTICLES
+                {articles
                   .filter(a => !selectedArticle || a.id !== selectedArticle.id)
                   .slice(0, 5)
                   .map((article) => (

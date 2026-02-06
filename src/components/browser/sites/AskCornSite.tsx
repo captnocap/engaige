@@ -7,10 +7,11 @@
  * URL: www.askcorn.corn
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, useSiteCategories, type SiteContentItem, type SiteCategory } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Site Theme Configuration
@@ -91,7 +92,70 @@ interface User {
 }
 
 // ============================================================================
-// Sample Data - Questions
+// DB-to-Local Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local Question interface */
+function dbToQuestion(item: SiteContentItem): Question {
+  const m = item.metadata || {}
+  // Map answers from metadata, adapting each to the local Answer interface
+  const rawAnswers: any[] = m.answers || []
+  const answers: Answer[] = rawAnswers.map((a: any, idx: number) => ({
+    id: a.id || `${item.slug}_a${idx}`,
+    author: a.author || 'anonymous',
+    authorRep: a.authorRep ?? 0,
+    content: a.content || '',
+    votes: a.votes ?? 0,
+    isAccepted: a.isAccepted ?? false,
+    timestamp: a.timestamp || '',
+    comments: (a.comments || []).map((c: any) => ({
+      author: c.author || 'anonymous',
+      content: c.content || '',
+      timestamp: c.timestamp || '',
+    })),
+  }))
+
+  return {
+    id: item.slug,
+    title: item.title,
+    content: item.body || item.summary || '',
+    author: m.author || 'anonymous',
+    authorRep: m.authorRep ?? 0,
+    votes: item.likeCount || m.votes || 0,
+    views: item.viewCount || m.views || 0,
+    answerCount: m.answerCount ?? answers.length,
+    timestamp: m.timestamp || '',
+    tags: item.tags,
+    answers,
+    isClosed: m.isClosed,
+    closeReason: m.closeReason,
+    isDuplicate: m.isDuplicate,
+    duplicateOf: m.duplicateOf,
+  }
+}
+
+/** Adapt a DB SiteCategory to the local Tag interface */
+function dbCategoryToTag(cat: SiteCategory): Tag {
+  return {
+    name: cat.slug,
+    count: cat.sortOrder || 0,
+  }
+}
+
+/** Adapt a DB SiteContentItem (user-type content) to the local User interface */
+function dbToUser(item: SiteContentItem): User {
+  const m = item.metadata || {}
+  return {
+    username: item.slug,
+    reputation: m.reputation ?? item.likeCount ?? 0,
+    badges: m.badges || { gold: 0, silver: 0, bronze: 0 },
+    about: item.summary || m.about || undefined,
+    topTags: m.topTags || item.tags || undefined,
+  }
+}
+
+// ============================================================================
+// Sample Data - Questions (hardcoded fallback)
 // ============================================================================
 
 const SAMPLE_QUESTIONS: Question[] = [
@@ -556,7 +620,7 @@ Also, your QuBrew Pro 3000 is a solid choice. Worth every penny of the divorce.`
   },
 ]
 
-// Additional questions for the list view
+// Additional questions for the list view (hardcoded fallback)
 const ADDITIONAL_QUESTIONS: Partial<Question>[] = [
   {
     id: 'q_velvet_algorithms',
@@ -606,10 +670,10 @@ const ADDITIONAL_QUESTIONS: Partial<Question>[] = [
 ]
 
 // ============================================================================
-// Sample Data - Tags
+// Sample Data - Tags (hardcoded fallback)
 // ============================================================================
 
-const POPULAR_TAGS: Tag[] = [
+const POPULAR_TAGS_FALLBACK: Tag[] = [
   { name: 'quantum-coffee', count: 8472 },
   { name: 'hartwell-building', count: 3421 },
   { name: 'trust-falls', count: 2847 },
@@ -621,10 +685,10 @@ const POPULAR_TAGS: Tag[] = [
 ]
 
 // ============================================================================
-// Sample Data - Users
+// Sample Data - Users (hardcoded fallback)
 // ============================================================================
 
-const SAMPLE_USERS: Record<string, User> = {
+const SAMPLE_USERS_FALLBACK: Record<string, User> = {
   'quantum_derek_847': {
     username: 'quantum_derek_847',
     reputation: 847,
@@ -649,7 +713,7 @@ const SAMPLE_USERS: Record<string, User> = {
 }
 
 // ============================================================================
-// Hot Network Questions (Sidebar)
+// Hot Network Questions (Sidebar) - always hardcoded
 // ============================================================================
 
 const HOT_NETWORK_QUESTIONS = [
@@ -666,6 +730,45 @@ const HOT_NETWORK_QUESTIONS = [
 // ============================================================================
 
 export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('askcorn')
+  const { content: dbUserContent } = useSiteContent('askcorn', { contentType: 'user' })
+  const { categories: dbCategories } = useSiteCategories('askcorn')
+
+  // Derive questions from DB content, falling back to hardcoded data
+  const questions = useMemo(() => {
+    // Filter to only question-type content (exclude user-type)
+    const questionContent = dbContent.filter(item => item.contentType !== 'user')
+    if (questionContent.length > 0) return questionContent.map(dbToQuestion)
+    return SAMPLE_QUESTIONS
+  }, [dbContent])
+
+  // Derive additional questions stub list for the combined listing
+  const additionalQuestions = useMemo((): Partial<Question>[] => {
+    // When DB content is available, all questions are in `questions` already
+    if (dbContent.filter(item => item.contentType !== 'user').length > 0) return []
+    return ADDITIONAL_QUESTIONS
+  }, [dbContent])
+
+  // Derive tags from DB categories, falling back to hardcoded data
+  const popularTags = useMemo(() => {
+    if (dbCategories.length > 0) return dbCategories.map(dbCategoryToTag)
+    return POPULAR_TAGS_FALLBACK
+  }, [dbCategories])
+
+  // Derive users from DB user-type content, falling back to hardcoded data
+  const sampleUsers = useMemo((): Record<string, User> => {
+    if (dbUserContent.length > 0) {
+      const map: Record<string, User> = {}
+      for (const item of dbUserContent) {
+        const user = dbToUser(item)
+        map[user.username] = user
+      }
+      return map
+    }
+    return SAMPLE_USERS_FALLBACK
+  }, [dbUserContent])
+
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
@@ -687,7 +790,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     } else if (path.startsWith('/question/')) {
       // Question detail view: /question/question-id
       const questionId = path.slice('/question/'.length)
-      const question = SAMPLE_QUESTIONS.find(q => q.id === questionId)
+      const question = questions.find(q => q.id === questionId)
       if (question) {
         setSelectedQuestion(question)
         setSelectedUser(null)
@@ -696,7 +799,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     } else if (path.startsWith('/user/')) {
       // User profile view: /user/username
       const username = path.slice('/user/'.length)
-      const user = SAMPLE_USERS[username]
+      const user = sampleUsers[username]
       if (user) {
         setSelectedUser(user)
         setSelectedQuestion(null)
@@ -714,12 +817,12 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     setTimeout(() => {
       isUpdatingFromPath.current = false
     }, 0)
-  }, [path])
+  }, [path, questions, sampleUsers])
 
   // Navigation handlers
   const handleSelectQuestion = (question: Question) => {
     // Find full question data
-    const fullQuestion = SAMPLE_QUESTIONS.find(q => q.id === question.id)
+    const fullQuestion = questions.find(q => q.id === question.id)
     if (fullQuestion) {
       setSelectedQuestion(fullQuestion)
       setSelectedUser(null)
@@ -729,7 +832,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
   }
 
   const handleSelectUser = (username: string) => {
-    const user = SAMPLE_USERS[username]
+    const user = sampleUsers[username]
     if (user) {
       setSelectedUser(user)
       setSelectedQuestion(null)
@@ -761,16 +864,16 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
   }
 
   // Combine full questions with additional question stubs for listing
-  const allQuestionsForList = [
-    ...SAMPLE_QUESTIONS,
-    ...ADDITIONAL_QUESTIONS.map(q => ({
+  const allQuestionsForList = useMemo(() => [
+    ...questions,
+    ...additionalQuestions.map(q => ({
       ...q,
       author: 'anonymous_user',
       authorRep: Math.floor(Math.random() * 1000),
       content: '',
       answers: [],
     } as Question)),
-  ]
+  ], [questions, additionalQuestions])
 
   // Filter questions by selected tag if applicable
   const filteredQuestions = selectedTag
@@ -888,6 +991,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
             ) : selectedUser ? (
               <UserProfile
                 user={selectedUser}
+                questions={questions}
                 onBack={handleBackToHome}
                 onSelectQuestion={handleSelectQuestion}
               />
@@ -895,15 +999,16 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
               <TagFilterView
                 tagName={selectedTag}
                 questions={filteredQuestions}
+                popularTags={popularTags}
                 onBack={handleBackToHome}
                 onSelectQuestion={handleSelectQuestion}
                 userVotes={userVotes}
                 onVote={handleVote}
               />
             ) : activeTab === 'tags' ? (
-              <TagsList tags={POPULAR_TAGS} onSelectTag={handleSelectTag} />
+              <TagsList tags={popularTags} onSelectTag={handleSelectTag} />
             ) : activeTab === 'users' ? (
-              <UsersList users={Object.values(SAMPLE_USERS)} onSelectUser={handleSelectUser} />
+              <UsersList users={Object.values(sampleUsers)} onSelectUser={handleSelectUser} />
             ) : (
               <QuestionsList
                 questions={filteredQuestions}
@@ -961,7 +1066,7 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
                 Popular Tags
               </h3>
               <div className="flex flex-wrap gap-2">
-                {POPULAR_TAGS.slice(0, 6).map((tag) => (
+                {popularTags.slice(0, 6).map((tag) => (
                   <TagBadge key={tag.name} name={tag.name} count={tag.count} onClick={() => handleSelectTag(tag.name)} />
                 ))}
               </div>
@@ -1565,15 +1670,16 @@ function TagsList({ tags, onSelectTag }: TagsListProps) {
 interface TagFilterViewProps {
   tagName: string
   questions: Question[]
+  popularTags: Tag[]
   onBack: () => void
   onSelectQuestion: (question: Question) => void
   userVotes: Record<string, number>
   onVote: (id: string, direction: 1 | -1) => void
 }
 
-function TagFilterView({ tagName, questions, onBack, onSelectQuestion, userVotes, onVote }: TagFilterViewProps) {
-  // Find tag info from POPULAR_TAGS if available
-  const tagInfo = POPULAR_TAGS.find(t => t.name === tagName)
+function TagFilterView({ tagName, questions, popularTags, onBack, onSelectQuestion, userVotes, onVote }: TagFilterViewProps) {
+  // Find tag info from popularTags if available
+  const tagInfo = popularTags.find(t => t.name === tagName)
 
   return (
     <div>
@@ -1683,13 +1789,14 @@ function UsersList({ users, onSelectUser }: UsersListProps) {
 
 interface UserProfileProps {
   user: User
+  questions: Question[]
   onBack: () => void
   onSelectQuestion: (question: Question) => void
 }
 
-function UserProfile({ user, onBack, onSelectQuestion }: UserProfileProps) {
-  // Find questions by this user
-  const userQuestions = SAMPLE_QUESTIONS.filter(q => q.author === user.username)
+function UserProfile({ user, questions, onBack, onSelectQuestion }: UserProfileProps) {
+  // Find questions by this user from the passed-in questions array
+  const userQuestions = questions.filter(q => q.author === user.username)
 
   return (
     <div>

@@ -18,10 +18,11 @@
  * - 847 COB = 1 USD (the magic number)
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // Site config
 const SITE = FILLER_SITES.cobcoin
@@ -308,7 +309,80 @@ const TRADING_PAIRS = [
   { base: 'POP', quote: 'CORN', price: 0.0023, change: -18.7 },
 ]
 
+/**
+ * Adapter: maps SiteContentItem to local Cryptocurrency interface.
+ * Expects metadata to carry crypto-specific fields (symbol, price, change, etc.)
+ */
+function dbToCryptocurrency(item: SiteContentItem): Cryptocurrency {
+  return {
+    id: item.slug,
+    symbol: item.metadata?.symbol ?? item.slug.toUpperCase(),
+    name: item.title,
+    price: item.metadata?.price ?? 0,
+    change24h: item.metadata?.change24h ?? 0,
+    change7d: item.metadata?.change7d ?? 0,
+    marketCap: item.metadata?.marketCap ?? '$0',
+    volume24h: item.metadata?.volume24h ?? '$0',
+    icon: item.thumbnailEmoji ?? '🌽',
+    description: item.body ?? item.summary ?? '',
+    launchDate: item.metadata?.launchDate ?? 'Unknown',
+    isRugPull: item.metadata?.isRugPull ?? false,
+    rugPullWarning: item.metadata?.rugPullWarning,
+  }
+}
+
+/**
+ * Adapter: maps SiteContentItem to local NewsItem interface.
+ * Uses contentType 'news' items from the cobcoin site.
+ */
+function dbToNewsItem(item: SiteContentItem): NewsItem {
+  return {
+    id: item.slug,
+    title: item.title,
+    source: item.metadata?.source ?? 'CobCoin News',
+    timestamp: item.metadata?.timestamp ?? (item.publishedAt ? new Date(item.publishedAt).toLocaleString() : 'Unknown'),
+    sentiment: item.metadata?.sentiment ?? 'neutral',
+    content: item.body ?? item.summary ?? '',
+  }
+}
+
+/**
+ * Adapter: maps SiteContentItem to local Comment interface.
+ * Uses contentType 'comment' items from the cobcoin site.
+ */
+function dbToComment(item: SiteContentItem): Comment {
+  return {
+    id: item.slug,
+    author: item.metadata?.author ?? item.title,
+    avatar: item.thumbnailEmoji ?? '🌽',
+    timestamp: item.metadata?.timestamp ?? 'Unknown',
+    content: item.body ?? item.summary ?? '',
+    upvotes: item.likeCount ?? 0,
+    isDelusional: item.metadata?.isDelusional ?? false,
+  }
+}
+
 export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
+  // Fetch DB content for each content type, falling back to hardcoded arrays
+  const { content: dbCryptos } = useSiteContent('cobcoin', { contentType: 'crypto' })
+  const { content: dbNews } = useSiteContent('cobcoin', { contentType: 'news' })
+  const { content: dbComments } = useSiteContent('cobcoin', { contentType: 'comment' })
+
+  const cryptos = useMemo(() => {
+    if (dbCryptos.length > 0) return dbCryptos.map(dbToCryptocurrency)
+    return CRYPTOCURRENCIES
+  }, [dbCryptos])
+
+  const newsItems = useMemo(() => {
+    if (dbNews.length > 0) return dbNews.map(dbToNewsItem)
+    return NEWS_ITEMS
+  }, [dbNews])
+
+  const comments = useMemo(() => {
+    if (dbComments.length > 0) return dbComments.map(dbToComment)
+    return COMMENTS
+  }, [dbComments])
+
   const [view, setView] = useState<'market' | 'portfolio' | 'trade' | 'news'>('market')
   const [selectedCrypto, setSelectedCrypto] = useState<Cryptocurrency | null>(null)
   const [chartData, setChartData] = useState<number[]>([])
@@ -521,7 +595,7 @@ export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
               </div>
 
               {/* Cryptocurrency Rows */}
-              {CRYPTOCURRENCIES.map((crypto, index) => (
+              {cryptos.map((crypto, index) => (
                 <StyledCard
                   key={crypto.id}
                   bgColor="#1f2937"
@@ -748,7 +822,7 @@ export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
             {/* Holdings */}
             <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>Your Holdings (aka Bags)</h2>
             {PORTFOLIO_HOLDINGS.map(holding => {
-              const crypto = CRYPTOCURRENCIES.find(c => c.symbol === holding.symbol)
+              const crypto = cryptos.find(c => c.symbol === holding.symbol)
               const value = holding.amount * holding.currentPrice
               const cost = holding.amount * holding.avgBuyPrice
               const change = ((value - cost) / cost) * 100
@@ -829,7 +903,7 @@ export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
                     border: '1px solid #374151',
                     color: '#e5e7eb',
                   }}>
-                    {CRYPTOCURRENCIES.map(c => (
+                    {cryptos.map(c => (
                       <option key={c.id} value={c.id}>{c.symbol} - {c.name}</option>
                     ))}
                   </select>
@@ -929,7 +1003,7 @@ export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
             </h2>
 
             {/* News Feed */}
-            {NEWS_ITEMS.map(news => (
+            {newsItems.map(news => (
               <StyledCard
                 key={news.id}
                 bgColor="#1f2937"
@@ -969,7 +1043,7 @@ export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
               Community Sentiment (Mostly Delusional)
             </h2>
 
-            {COMMENTS.map(comment => (
+            {comments.map(comment => (
               <StyledCard
                 key={comment.id}
                 bgColor="#1f2937"

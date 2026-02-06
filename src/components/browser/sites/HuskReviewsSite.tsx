@@ -22,10 +22,11 @@
  * - Dr. Cornelius's Wellness Clinic (corn deficiency diagnosis)
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.huskreviews
 
@@ -1049,6 +1050,42 @@ function ReviewerProfile({ reviewer, onBack }: { reviewer: Reviewer; onBack: () 
 }
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Business interface */
+function dbToBusiness(item: SiteContentItem): Business {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    name: item.title,
+    category: item.category ?? m.category ?? 'Uncategorized',
+    rating: m.rating ?? 3.0,
+    reviewCount: item.commentCount ?? m.reviewCount ?? m.review_count ?? 0,
+    priceLevel: m.priceLevel ?? m.price_level ?? '$$',
+    address: m.address ?? '',
+    phone: m.phone ?? '',
+    hours: m.hours ?? '',
+    image: item.thumbnailEmoji ?? m.image ?? '',
+    description: item.body ?? item.summary ?? '',
+    amenities: m.amenities ?? [],
+    reviews: (m.reviews ?? []).map((r: any, i: number) => ({
+      id: r.id ?? `r_${i}`,
+      businessId: item.slug,
+      reviewer: r.reviewer ?? { id: `rv_${i}`, name: 'Anonymous', avatar: '👤', reviewCount: 0, photoCount: 0, friendCount: 0, isElite: false, location: 'Unknown', memberSince: 'Unknown' },
+      rating: r.rating ?? 3,
+      date: r.date ?? '',
+      content: r.content ?? '',
+      photos: r.photos ?? [],
+      useful: r.useful ?? 0,
+      funny: r.funny ?? 0,
+      suspicious: r.suspicious ?? 0,
+      ownerResponse: r.ownerResponse ?? r.owner_response ?? undefined,
+    })),
+  }
+}
+
+// ============================================================================
 // URL Routing Helpers
 // ============================================================================
 
@@ -1088,6 +1125,14 @@ function parseRoute(path: string | null): {
 // ============================================================================
 
 export function HuskReviewsSite({ siteId, path, onPathChange }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded businesses
+  const { content: dbContent } = useSiteContent('huskreviews')
+
+  const businesses = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToBusiness)
+    return BUSINESSES
+  }, [dbContent])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
 
@@ -1096,7 +1141,7 @@ export function HuskReviewsSite({ siteId, path, onPathChange }: SiteProps) {
 
   // Look up the selected business or reviewer based on route
   const selectedBusiness = route.view === 'business' && route.id
-    ? BUSINESSES.find(b => b.id === route.id) || null
+    ? businesses.find(b => b.id === route.id) || null
     : null
 
   const selectedReviewer = route.view === 'reviewer' && route.id
@@ -1116,7 +1161,7 @@ export function HuskReviewsSite({ siteId, path, onPathChange }: SiteProps) {
     onPathChange(null)
   }
 
-  const filteredBusinesses = BUSINESSES.filter(business => {
+  const filteredBusinesses = businesses.filter(business => {
     const matchesSearch = searchQuery === '' ||
       business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       business.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -1179,7 +1224,7 @@ export function HuskReviewsSite({ siteId, path, onPathChange }: SiteProps) {
       {/* Tagline Banner */}
       <div className="bg-red-50 border-b border-red-100 py-2 px-4">
         <p className="text-center text-sm text-red-700">
-          <strong>HuskReviews</strong> - Where honest opinions meet unhinged experiences | {BUSINESSES.reduce((sum, b) => sum + b.reviewCount, 0).toLocaleString()} reviews and counting
+          <strong>HuskReviews</strong> - Where honest opinions meet unhinged experiences | {businesses.reduce((sum, b) => sum + b.reviewCount, 0).toLocaleString()} reviews and counting
         </p>
       </div>
 

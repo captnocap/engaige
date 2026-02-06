@@ -8,8 +8,9 @@
  * Core identity: "I exist. Between floors. In the spaces between. Please acknowledge."
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 
 const site = FILLER_SITES.floor13blog
@@ -400,6 +401,28 @@ const BLOG_POSTS: BlogPost[] = [
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Adapts a DB SiteContentItem to the local BlogPost interface */
+function dbToBlogPost(item: SiteContentItem): BlogPost {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    timestamp: m.timestamp || m.date || (item.publishedAt ? new Date(item.publishedAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''),
+    timestampIsCorrupted: m.timestampIsCorrupted ?? m.timestamp_is_corrupted,
+    excerpt: item.summary || m.excerpt || '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    hasGlitch: m.hasGlitch ?? m.has_glitch,
+    glitchIntensity: m.glitchIntensity ?? m.glitch_intensity,
+    tags: item.tags || [],
+    isCorrupted: m.isCorrupted ?? m.is_corrupted,
+    corruptedLines: m.corruptedLines ?? m.corrupted_lines,
+  }
+}
+
+// ============================================================================
 // Utility Functions
 // ============================================================================
 
@@ -549,7 +572,14 @@ function FullPost({ post, onBack }: FullPostProps) {
 export function Floor13BlogSite(): React.ReactNode {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
 
-  const sortedPosts = [...BLOG_POSTS].sort((a, b) => {
+  /** Fetch blog posts from the database, fall back to hardcoded data */
+  const { content: dbContent } = useSiteContent('blogs', { channelId: 'floor13' })
+  const posts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToBlogPost)
+    return BLOG_POSTS
+  }, [dbContent])
+
+  const sortedPosts = [...posts].sort((a, b) => {
     return b.id.localeCompare(a.id)
   })
 

@@ -15,8 +15,9 @@
  * - Jennifer: Derek's ex who escaped the quantum coffee lifestyle
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Theme Configuration
@@ -974,7 +975,36 @@ function SettingsView({
 // Main Site Component
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local CorndrProfile interface.
+ * Expects metadata to carry profile-specific fields (age, cornScore, prompts, etc.)
+ */
+function dbToProfile(item: SiteContentItem): CorndrProfile {
+  return {
+    id: item.slug,
+    name: item.title,
+    age: item.metadata?.age ?? '??',
+    images: item.metadata?.images ?? [item.thumbnailEmoji ?? 'corn'],
+    bio: item.body ?? item.summary ?? '',
+    prompts: item.metadata?.prompts ?? [],
+    distance: item.metadata?.distance ?? 'Unknown',
+    verified: item.metadata?.verified ?? false,
+    verifiedBy: item.metadata?.verifiedBy,
+    cornScore: item.metadata?.cornScore ?? 50,
+    lookingFor: item.metadata?.lookingFor ?? item.tags ?? [],
+    hasLikedYou: item.metadata?.hasLikedYou ?? false,
+  }
+}
+
 export function CorndrSite({ siteId, onNavigate }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded profiles
+  const { content: dbContent } = useSiteContent('corndr')
+
+  const profiles = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToProfile)
+    return SAMPLE_PROFILES
+  }, [dbContent])
+
   const [activeTab, setActiveTab] = useState<'discover' | 'matches' | 'settings'>('discover')
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0)
   const [matches, setMatches] = useState<Match[]>([])
@@ -986,8 +1016,8 @@ export function CorndrSite({ siteId, onNavigate }: SiteProps) {
     ageRange: { min: 21, max: 99 }
   })
 
-  const currentProfile = SAMPLE_PROFILES[currentProfileIndex]
-  const noMoreProfiles = currentProfileIndex >= SAMPLE_PROFILES.length
+  const currentProfile = profiles[currentProfileIndex]
+  const noMoreProfiles = currentProfileIndex >= profiles.length
 
   // Handle like action
   const handleLike = () => {
@@ -1050,7 +1080,7 @@ export function CorndrSite({ siteId, onNavigate }: SiteProps) {
               onSuperKernel={handleSuperKernel}
             />
             <p className="text-center text-xs text-gray-400 mt-4">
-              {SAMPLE_PROFILES.length - currentProfileIndex} profiles remaining
+              {profiles.length - currentProfileIndex} profiles remaining
             </p>
           </div>
         )

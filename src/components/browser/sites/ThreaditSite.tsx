@@ -5,10 +5,11 @@
  * Features chaotic drama, AITA posts, and nested comment threads.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, useSiteCategories, useSiteContentBySlug, type SiteContentItem, type SiteCategory, type SiteCommentTree } from '../../../hooks/useSiteContent.js'
 import { StyledCard, Button, Avatar, MetaRow } from '../../ui/shared/index.js'
 
 const site = FILLER_SITES.reddit
@@ -787,14 +788,94 @@ Derek if you're reading this, you were right. I'm sorry I called you a cult memb
 ]
 
 // ============================================================================
+// DB-to-Local Adapters
+// ============================================================================
+
+/** Adapt DB content to local Thread interface */
+function dbToThread(item: SiteContentItem): Thread {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    subreddit: m.subreddit || item.category || 't/General',
+    title: item.title,
+    content: item.body || item.summary || '',
+    author: m.author || 'anonymous',
+    flair: m.flair,
+    upvotes: item.likeCount || m.upvotes || 0,
+    commentCount: item.commentCount || m.commentCount || 0,
+    timestamp: m.timeAgo || formatTimeAgo(item.publishedAt || item.createdAt),
+    awards: m.awards || [],
+    comments: m.comments ? (m.comments as ThreadComment[]) : [],
+  }
+}
+
+/** Adapt DB category to local Subreddit interface */
+function dbToSubreddit(cat: SiteCategory): Subreddit {
+  return {
+    name: cat.name.startsWith('t/') ? cat.name : `t/${cat.name}`,
+    icon: cat.iconEmoji || '🌽',
+    members: cat.description?.match(/\d+[KM]/) ? cat.description.match(/\d+[KM]/)![0] : '1K',
+    description: cat.description || '',
+  }
+}
+
+/** Recursively convert DB comment trees to local ThreadComment format */
+function dbCommentsToThreadComments(trees: SiteCommentTree[]): ThreadComment[] {
+  return trees.map(c => ({
+    id: c.id,
+    author: c.authorName,
+    content: c.content,
+    upvotes: c.likeCount - c.dislikeCount,
+    timestamp: formatTimeAgo(c.publishedAt || c.createdAt),
+    replies: c.replies ? dbCommentsToThreadComments(c.replies) : [],
+  }))
+}
+
+/** Format a unix timestamp (seconds) into a human-readable relative string */
+function formatTimeAgo(timestamp: number): string {
+  const seconds = Math.floor((Date.now() / 1000) - timestamp)
+  if (seconds < 60) return 'just now'
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+  return `${Math.floor(seconds / 86400)}d ago`
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
 export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('threadit')
+  const { categories: dbCategories } = useSiteCategories('threadit')
+
+  const threads = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToThread)
+    return SAMPLE_THREADS
+  }, [dbContent])
+
+  const subreddits = useMemo(() => {
+    if (dbCategories.length > 0) return dbCategories.map(dbToSubreddit)
+    return SUBREDDITS
+  }, [dbCategories])
+
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   const [selectedSubreddit, setSelectedSubreddit] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'top'>('hot')
   const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down' | null>>({})
+
+  // For thread detail view - fetch comments from DB when a thread is selected
+  const selectedThreadSlug = selectedThread?.id ?? null
+  const { comments: dbComments } = useSiteContentBySlug('threadit', selectedThreadSlug)
+
+  // Merge DB comments into the selected thread when available
+  const displayThread = useMemo(() => {
+    if (!selectedThread) return null
+    if (dbComments.length > 0) {
+      return { ...selectedThread, comments: dbCommentsToThreadComments(dbComments) }
+    }
+    return selectedThread
+  }, [selectedThread, dbComments])
 
   // Track if we're updating from path (to avoid triggering onPathChange)
   const isUpdatingFromPath = useRef(false)
@@ -812,7 +893,7 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
       if (nMatch) {
         // It's a needle (post)
         const [, communityName, postSlug] = nMatch
-        const thread = SAMPLE_THREADS.find(t => t.id === postSlug)
+        const thread = threads.find(t => t.id === postSlug)
         if (thread) {
           setSelectedThread(thread)
           setSelectedSubreddit('t/' + communityName)
@@ -868,8 +949,8 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
   }
 
   const filteredThreads = selectedSubreddit
-    ? SAMPLE_THREADS.filter(t => t.subreddit === selectedSubreddit)
-    : SAMPLE_THREADS
+    ? threads.filter(t => t.subreddit === selectedSubreddit)
+    : threads
 
   const handleVote = (id: string, direction: 'up' | 'down') => {
     setUserVotes(prev => ({
@@ -941,9 +1022,9 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
         <div className="flex gap-6">
           {/* Main Content */}
           <main className="flex-1 min-w-0">
-            {selectedThread ? (
+            {displayThread ? (
               <ThreadDetail
-                thread={selectedThread}
+                thread={displayThread}
                 onBack={handleBackFromThread}
                 userVotes={userVotes}
                 onVote={handleVote}
@@ -1010,7 +1091,7 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
                   shadow="none"
                 >
                   <p className="text-sm mb-3" style={{ color: site.theme.textMuted }}>
-                    {SUBREDDITS.find(s => s.name === selectedSubreddit)?.description}
+                    {subreddits.find(s => s.name === selectedSubreddit)?.description}
                   </p>
                   <Button
                     onClick={() => handleSelectSubreddit(null)}
@@ -1054,7 +1135,7 @@ export function ThreaditSite({ siteId, path, onNavigate, onPathChange }: SitePro
                 Popular Communities
               </div>
               <div className="py-2">
-                {SUBREDDITS.map((sub) => (
+                {subreddits.map((sub) => (
                   <Button
                     key={sub.name}
                     onClick={() => handleSelectSubreddit(sub.name)}

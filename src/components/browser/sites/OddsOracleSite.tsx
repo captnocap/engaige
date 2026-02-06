@@ -5,10 +5,11 @@
  * Features absurd bets, fake odds, and questionable predictions.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.betting
 
@@ -408,13 +409,49 @@ This would legitimize quantum coffee as a recognized phenomenon rather than just
 // Components
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local Market interface.
+ * Expects metadata to carry market-specific fields (yesPrice, volume, endDate, comments, etc.)
+ */
+function dbToMarket(item: SiteContentItem): Market {
+  return {
+    id: item.slug,
+    question: item.title,
+    category: item.category ?? item.metadata?.category ?? 'Uncategorized',
+    yesPrice: item.metadata?.yesPrice ?? 50,
+    volume: item.metadata?.volume ?? '$0',
+    endDate: item.metadata?.endDate ?? 'TBD',
+    description: item.body ?? item.summary ?? '',
+    icon: item.thumbnailEmoji ?? '📊',
+    trending: item.metadata?.trending ?? false,
+    hot: item.metadata?.hot ?? item.isFeatured ?? false,
+    resolved: item.metadata?.resolved,
+    comments: (item.metadata?.comments ?? []).map((c: any, i: number) => ({
+      id: c.id ?? `c_${i}`,
+      author: c.author ?? 'Anonymous',
+      position: c.position ?? 'none',
+      content: c.content ?? '',
+      timestamp: c.timestamp ?? 'Unknown',
+      likes: c.likes ?? 0,
+    })),
+  }
+}
+
 export function OddsOracleSite({ siteId, onNavigate }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded markets
+  const { content: dbContent } = useSiteContent('oddsoracle')
+
+  const markets = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToMarket)
+    return SAMPLE_MARKETS
+  }, [dbContent])
+
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [balance] = useState(1000) // Fake balance
   const [showResolved, setShowResolved] = useState(false)
 
-  const filteredMarkets = SAMPLE_MARKETS.filter((market) => {
+  const filteredMarkets = markets.filter((market) => {
     if (!showResolved && market.resolved) return false
     if (selectedCategory !== 'All' && market.category !== selectedCategory) return false
     return true
@@ -511,7 +548,7 @@ export function OddsOracleSite({ siteId, onNavigate }: SiteProps) {
               🔥 Hot Markets
             </h2>
             <div className="flex gap-4 overflow-x-auto pb-2">
-              {SAMPLE_MARKETS.filter(m => m.hot || m.trending).slice(0, 4).map((market) => (
+              {markets.filter(m => m.hot || m.trending).slice(0, 4).map((market) => (
                 <button
                   key={market.id}
                   onClick={() => setSelectedMarket(market)}

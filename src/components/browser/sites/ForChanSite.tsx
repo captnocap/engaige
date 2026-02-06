@@ -5,10 +5,11 @@
  * Features anonymous posting, greentext, reply chains, and classic imageboard aesthetic.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, useSiteCategories, type SiteContentItem, type SiteCategory } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.imageboard
 
@@ -2236,10 +2237,55 @@ and it's never accurate enough`,
 ]
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local Thread interface */
+function dbToThread(item: SiteContentItem): Thread {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    board: m.board || item.category || 'b',
+    subject: item.title || m.subject,
+    content: item.body || item.summary || '',
+    image: item.thumbnailEmoji || m.image,
+    timestamp: m.timestamp || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleString(),
+    replies: Array.isArray(m.replies) ? (m.replies as Reply[]) : [],
+    name: m.name,
+    tripcode: m.tripcode,
+    sticky: item.isPinned || m.sticky || false,
+    locked: m.locked || false,
+  }
+}
+
+/** Adapt a DB SiteCategory to the local Board interface */
+function dbToBoard(cat: SiteCategory): Board {
+  return {
+    id: cat.slug,
+    name: cat.name,
+    description: cat.description || '',
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
 export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('forchan')
+  const { categories: dbCategories } = useSiteCategories('forchan')
+
+  const threads = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToThread)
+    return SAMPLE_THREADS
+  }, [dbContent])
+
+  const boards = useMemo(() => {
+    if (dbCategories.length > 0) return dbCategories.map(dbToBoard)
+    return BOARDS
+  }, [dbCategories])
+
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
 
@@ -2258,7 +2304,7 @@ export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProp
       const match = path.match(/^\/([a-z]+)\/thread\/(\d+)$/)
       if (match) {
         const [, boardId, threadId] = match
-        const thread = SAMPLE_THREADS.find(t => t.id === threadId)
+        const thread = threads.find(t => t.id === threadId)
         if (thread) {
           setSelectedBoard(boardId)
           setSelectedThread(thread)
@@ -2267,7 +2313,7 @@ export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     } else if (path.match(/^\/[a-z]+$/)) {
       // Board path: /g
       const boardId = path.slice(1)
-      if (BOARDS.some(b => b.id === boardId)) {
+      if (boards.some(b => b.id === boardId)) {
         setSelectedThread(null)
         setSelectedBoard(boardId)
       }
@@ -2305,8 +2351,8 @@ export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProp
   }
 
   const displayedThreads = selectedBoard
-    ? SAMPLE_THREADS.filter(t => t.board === selectedBoard)
-    : SAMPLE_THREADS
+    ? threads.filter(t => t.board === selectedBoard)
+    : threads
 
   return (
     <div className="min-h-full" style={{ background: site.theme.background }}>
@@ -2339,7 +2385,7 @@ export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProp
         >
           Home
         </button>
-        {BOARDS.map((board, i) => (
+        {boards.map((board, i) => (
           <span key={board.id}>
             <span style={{ color: site.theme.text }}> / </span>
             <button
@@ -2361,10 +2407,10 @@ export function ForChanSite({ siteId, path, onNavigate, onPathChange }: SiteProp
           style={{ background: site.theme.surface, borderBottom: `1px solid ${site.theme.border}` }}
         >
           <h2 className="text-xl font-bold" style={{ color: site.theme.boardTitle }}>
-            /{selectedBoard}/ - {BOARDS.find(b => b.id === selectedBoard)?.name}
+            /{selectedBoard}/ - {boards.find(b => b.id === selectedBoard)?.name}
           </h2>
           <p className="text-sm italic" style={{ color: site.theme.textMuted }}>
-            {BOARDS.find(b => b.id === selectedBoard)?.description}
+            {boards.find(b => b.id === selectedBoard)?.description}
           </p>
         </div>
       )}

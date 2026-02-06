@@ -8,9 +8,10 @@
  * The joke: Dark web aesthetics, shady language, but 100% legal corn silk.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Site Theme Configuration
@@ -388,10 +389,50 @@ As Mars from The Underground says: "One day, Tim. One day." Until that day, we h
 const CATEGORIES = ['All Products', 'Raw Materials', 'Supplements', 'Bulk Orders', 'Specialty', 'Specialty Blends', 'Experimental']
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Product interface */
+function dbToProduct(item: SiteContentItem): Product {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    price: m.price ?? 0,
+    category: item.category ?? m.category ?? 'Raw Materials',
+    vendor: m.vendor ?? { id: 'unknown', username: 'Anonymous', avatar: '?', trustScore: 0, totalSales: 0, positivePercent: 0, verified: false, memberSince: 'Unknown', bio: '', specialties: [], responseTime: 'Unknown' },
+    description: item.body ?? item.summary ?? '',
+    shipping: m.shipping ?? [],
+    escrowAvailable: m.escrowAvailable ?? m.escrow_available ?? true,
+    btcAccepted: m.btcAccepted ?? m.btc_accepted ?? true,
+    cardAccepted: m.cardAccepted ?? m.card_accepted ?? true,
+    inStock: m.inStock ?? m.in_stock ?? 0,
+    sold: m.sold ?? 0,
+    views: item.viewCount ?? m.views ?? 0,
+    reviews: (m.reviews ?? []).map((r: any, i: number) => ({
+      id: r.id ?? `r_${i}`,
+      author: r.author ?? 'Anonymous',
+      rating: r.rating ?? 5,
+      text: r.text ?? r.content ?? '',
+      timestamp: r.timestamp ?? '',
+      verified: r.verified ?? false,
+    })),
+  }
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
 export function SilkRoadSite({ onNavigate }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded products
+  const { content: dbContent } = useSiteContent('silkroad')
+
+  const products = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToProduct)
+    return PRODUCTS
+  }, [dbContent])
+
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null)
@@ -399,8 +440,8 @@ export function SilkRoadSite({ onNavigate }: SiteProps) {
   const [activeTab, setActiveTab] = useState<'market' | 'vendors' | 'escrow'>('market')
 
   const filteredProducts = selectedCategory === 'All Products'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.category === selectedCategory)
+    ? products
+    : products.filter(p => p.category === selectedCategory)
 
   return (
     <div className="min-h-full font-mono" style={{ background: SITE_CONFIG.theme.background }}>
@@ -499,7 +540,7 @@ export function SilkRoadSite({ onNavigate }: SiteProps) {
         ) : selectedVendor ? (
           <VendorProfile
             vendor={selectedVendor}
-            products={PRODUCTS.filter(p => p.vendor.id === selectedVendor.id)}
+            products={products.filter(p => p.vendor.id === selectedVendor.id)}
             onBack={() => setSelectedVendor(null)}
             onProductClick={setSelectedProduct}
           />

@@ -5,11 +5,12 @@
  * Features questionable listings, desperate sellers, and typical marketplace chaos.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, useSiteCategories, type SiteContentItem, type SiteCategory } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.marketplace
 
@@ -443,10 +444,52 @@ If this wasn't you but you also appreciate quantum coffee and existential dread,
 ]
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local Listing interface */
+function dbToListing(item: SiteContentItem): Listing {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    price: m.price ?? 0,
+    category: item.category || m.category || 'All Categories',
+    condition: m.condition || 'Good',
+    location: m.location || '',
+    posted: m.posted || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString(),
+    image: item.thumbnailEmoji || m.image || '',
+    description: item.body || item.summary || '',
+    seller: m.seller || { name: 'Anonymous', avatar: '👤', joined: 'Unknown' },
+    tags: item.tags.length > 0 ? item.tags : m.tags,
+    suspicious: m.suspicious || false,
+  }
+}
+
+/** Adapt a DB SiteCategory to a category string */
+function dbToCategoryName(cat: SiteCategory): string {
+  return cat.name
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
 export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('bargainbay')
+  const { categories: dbCategories } = useSiteCategories('bargainbay')
+
+  const listings = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToListing)
+    return SAMPLE_LISTINGS
+  }, [dbContent])
+
+  const categories = useMemo(() => {
+    if (dbCategories.length > 0) return ['All Categories', ...dbCategories.map(dbToCategoryName)]
+    return CATEGORIES
+  }, [dbCategories])
+
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
   const [searchQuery, setSearchQuery] = useState('')
@@ -465,7 +508,7 @@ export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteP
     } else if (path.startsWith('/listing/')) {
       // Listing detail path: /listing/listing-slug
       const slug = path.slice(9) // Remove '/listing/'
-      const listing = SAMPLE_LISTINGS.find(l =>
+      const listing = listings.find(l =>
         l.id === slug || createSlug(l.title) === slug
       )
       if (listing) {
@@ -474,7 +517,7 @@ export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteP
     } else if (path.startsWith('/category/')) {
       // Category path: /category/category-slug
       const slug = path.slice(10) // Remove '/category/'
-      const category = findCategoryFromSlug(slug, CATEGORIES)
+      const category = findCategoryFromSlug(slug, categories)
       if (category && category !== 'All Categories') {
         setSelectedListing(null)
         setSelectedCategory(category)
@@ -523,7 +566,7 @@ export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteP
     onPathChange(null)
   }
 
-  const filteredListings = SAMPLE_LISTINGS.filter((listing) => {
+  const filteredListings = listings.filter((listing) => {
     if (selectedCategory !== 'All Categories' && listing.category !== selectedCategory) {
       return false
     }
@@ -599,7 +642,7 @@ export function BargainBaySite({ siteId, path, onNavigate, onPathChange }: SiteP
                 Categories
               </h3>
               <div className="space-y-1">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <Button
                     key={cat}
                     onClick={() => handleSelectCategory(cat)}

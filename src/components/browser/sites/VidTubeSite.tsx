@@ -4,7 +4,10 @@
  * YouTube clone for the engAIge browser.
  * Features video thumbnails, comments, channels, and recommendations.
  *
- * Video content is configured in src/config/vidtube-content.ts
+ * Video content is fetched from the database via WebSocket hooks,
+ * falling back to hardcoded data in src/config/vidtube-content.ts
+ * when the DB has no content for this site.
+ *
  * Add thumbnails to public/images/vidtube/
  *
  * URL Routing:
@@ -17,6 +20,7 @@ import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
+import { useSiteContent, useSiteChannels, type SiteContentItem, type SiteChannel } from '../../../hooks/useSiteContent.js'
 import {
   VIDTUBE_VIDEOS,
   VIDTUBE_CHANNELS,
@@ -58,12 +62,45 @@ function parseRoute(path: string | null): { view: 'home' | 'watch' | 'channel'; 
   return { view: 'home', id: null }
 }
 
-/**
- * Find a video by its ID from the video list.
- */
-function findVideoById(id: string | null): Video | null {
-  if (!id) return null
-  return VIDTUBE_VIDEOS.find(v => v.id === id) || null
+// ============================================================================
+// DB-to-Local Adapters
+// ============================================================================
+
+/** Adapt DB content item to local Video interface */
+function dbToVideo(item: SiteContentItem): Video {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    channel: m.channel || '',
+    channelAvatar: m.channelAvatar || '',
+    channelVerified: m.channelVerified || false,
+    thumbnail: item.thumbnailUrl,
+    thumbnailEmoji: item.thumbnailEmoji || '🎬',
+    views: m.views || '0 views',
+    uploadedAt: m.uploadedAt || '',
+    duration: m.duration || '0:00',
+    description: item.body || item.summary || '',
+    likes: m.likes || '0',
+    dislikes: m.dislikes || '0',
+    comments: (m.comments || []) as VideoComment[],
+    category: item.category || 'All',
+    tags: item.tags,
+    transcript: m.transcript || '',
+  }
+}
+
+/** Adapt DB channel to local Channel interface */
+function dbToChannel(ch: SiteChannel): Channel {
+  return {
+    id: ch.slug,
+    name: ch.name,
+    avatar: ch.avatarUrl,
+    avatarEmoji: ch.avatarEmoji || '📺',
+    subscribers: ch.metadata?.subscribers || `${ch.followerCount}`,
+    verified: ch.metadata?.verified || false,
+    description: ch.description || '',
+  }
 }
 
 // ============================================================================
@@ -71,11 +108,32 @@ function findVideoById(id: string | null): Video | null {
 // ============================================================================
 
 export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('vidtube')
+  const { channels: dbChannels } = useSiteChannels('vidtube')
+
+  const videos = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToVideo)
+    return VIDTUBE_VIDEOS
+  }, [dbContent])
+
+  const channels = useMemo(() => {
+    if (dbChannels.length > 0) {
+      const map: Record<string, Channel> = {}
+      dbChannels.map(dbToChannel).forEach(ch => { map[ch.name] = ch })
+      return map
+    }
+    return VIDTUBE_CHANNELS
+  }, [dbChannels])
+
   // Parse the current route to determine what view to show
   const route = useMemo(() => parseRoute(path), [path])
 
-  // Find the selected video based on the route
-  const selectedVideo = useMemo(() => findVideoById(route.id), [route.id])
+  // Find the selected video based on the route (uses DB-aware videos array)
+  const selectedVideo = useMemo(() => {
+    if (!route.id) return null
+    return videos.find(v => v.id === route.id) || null
+  }, [route.id, videos])
 
   // Local UI state (not URL-based)
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -95,8 +153,8 @@ export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProp
   }
 
   const filteredVideos = selectedCategory === 'All'
-    ? VIDTUBE_VIDEOS
-    : VIDTUBE_VIDEOS.filter(v => v.category === selectedCategory)
+    ? videos
+    : videos.filter(v => v.category === selectedCategory)
 
   return (
     <div className="min-h-full" style={{ background: site.theme.background }}>
@@ -164,7 +222,7 @@ export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProp
         <VideoPlayer
           video={selectedVideo}
           onBack={navigateToHome}
-          allVideos={VIDTUBE_VIDEOS}
+          allVideos={videos}
           onSelectVideo={navigateToVideo}
           isLiked={isLiked}
           setIsLiked={setIsLiked}
@@ -172,7 +230,7 @@ export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProp
           setIsDisliked={setIsDisliked}
           isSubscribed={isSubscribed}
           setIsSubscribed={setIsSubscribed}
-          channels={VIDTUBE_CHANNELS}
+          channels={channels}
           onNavigate={onNavigate}
         />
       ) : (

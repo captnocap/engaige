@@ -10,10 +10,11 @@
  * Two hospitalizations (unrelated, she claims).
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.stationsushi
 
@@ -248,6 +249,31 @@ Gerald passed in 2023. He supported my passion, though his support often took th
 This is not a hobby. This is a service.`
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local SushiReview interface */
+function dbToSushiReview(item: SiteContentItem): SushiReview {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    stationName: m.stationName || item.subtitle || '',
+    stationNumber: m.stationNumber || '',
+    location: m.location || '',
+    pumpNumber: m.pumpNumber || 0,
+    date: m.date || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    rating: m.rating ?? 3,
+    title: item.title,
+    excerpt: item.summary || m.excerpt || '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    sushiType: m.sushiType || '',
+    price: m.price || '',
+    wouldReturnFor: m.wouldReturnFor || '',
+    geraldNote: m.geraldNote,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -416,6 +442,14 @@ function FullReview({ review, onBack }: { review: SushiReview; onBack: () => voi
 // ============================================================================
 
 export function StationSushiSite({ siteId }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('stationsushi')
+
+  const sushiReviews = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToSushiReview)
+    return SUSHI_REVIEWS
+  }, [dbContent])
+
   const [selectedReview, setSelectedReview] = useState<SushiReview | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -529,7 +563,7 @@ export function StationSushiSite({ siteId }: SiteProps) {
                     Big Mike from Tulsa witnesses my tears of joy. The pilgrimage continues.
                   </p>
                 </StyledCard>
-                {SUSHI_REVIEWS.map(review => (
+                {sushiReviews.map(review => (
                   <SushiReviewCard
                     key={review.id}
                     review={review}

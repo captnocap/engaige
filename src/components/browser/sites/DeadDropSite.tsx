@@ -6,8 +6,9 @@
  * Stark black/white/red aesthetic with "encryption theater" that doesn't actually encrypt anything.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Theme Configuration (inline since not in filler-sites yet)
@@ -586,6 +587,35 @@ She is.`,
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Thread interface */
+function dbToThread(item: SiteContentItem): Thread {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    content: item.body ?? item.summary ?? '',
+    category: (item.category ?? m.category ?? 'misc') as Category,
+    timestamp: m.timestamp ?? new Date((item.publishedAt || item.createdAt) * 1000).toISOString().slice(0, 19).replace('T', ' '),
+    lastActivity: m.lastActivity ?? m.last_activity ?? m.timestamp ?? '',
+    credibility: (m.credibility ?? 'unverified') as CredibilityLevel,
+    replies: (m.replies ?? []).map((r: any, i: number) => ({
+      id: r.id ?? `r_${i}`,
+      content: r.content ?? '',
+      timestamp: r.timestamp ?? '',
+      credibility: (r.credibility ?? 'unverified') as CredibilityLevel,
+      upvotes: r.upvotes ?? 0,
+      downvotes: r.downvotes ?? 0,
+    })),
+    replyCount: m.replyCount ?? m.reply_count ?? undefined,
+    views: item.viewCount ?? m.views ?? 0,
+    archived: m.archived ?? false,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -891,12 +921,20 @@ function DropForm({ onClose }: { onClose: () => void }) {
 // ============================================================================
 
 export function DeadDropSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded threads
+  const { content: dbContent } = useSiteContent('deaddrop')
+
+  const threads = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToThread)
+    return THREADS
+  }, [dbContent])
+
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [showDropForm, setShowDropForm] = useState(false)
   const [sortBy, setSortBy] = useState<'recent' | 'hot' | 'controversial'>('recent')
 
-  const filteredThreads = THREADS
+  const filteredThreads = threads
     .filter(t => !selectedCategory || t.category === selectedCategory)
     .sort((a, b) => {
       if (sortBy === 'recent') return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime()

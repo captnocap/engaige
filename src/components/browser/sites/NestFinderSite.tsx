@@ -5,12 +5,13 @@
  * Features realistic listings, suspicious deals, and comedic red flags.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
 import type { MetaRowItem } from '../../ui/shared/layout/MetaRow.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.realestate
 
@@ -376,6 +377,38 @@ const NEIGHBORHOODS = [
 ]
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local Listing interface */
+function dbToListing(item: SiteContentItem): Listing {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    address: m.address || '',
+    neighborhood: item.category || m.neighborhood || '',
+    price: m.price || 0,
+    priceType: m.priceType || 'rent',
+    beds: m.beds ?? 0,
+    baths: m.baths ?? 1,
+    sqft: m.sqft || 0,
+    type: m.type || 'apartment',
+    images: m.images || (item.thumbnailEmoji ? [item.thumbnailEmoji] : []),
+    description: item.body || item.summary || '',
+    amenities: m.amenities || [],
+    highlights: m.highlights || [],
+    redFlags: m.redFlags,
+    available: m.available || '',
+    posted: m.posted || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString(),
+    agent: m.agent,
+    petPolicy: m.petPolicy || '',
+    parking: m.parking || '',
+    laundry: m.laundry || '',
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -383,7 +416,7 @@ const NEIGHBORHOODS = [
  * Helper function to parse the current path and extract listing ID
  * Returns the listing object if viewing a detail page, null for homepage
  */
-function getListingFromPath(path: string | null): Listing | null {
+function getListingFromPath(path: string | null, allListings: Listing[]): Listing | null {
   if (!path || path === '/') {
     return null
   }
@@ -392,15 +425,23 @@ function getListingFromPath(path: string | null): Listing | null {
   const listingMatch = path.match(/^\/listing\/(.+)$/)
   if (listingMatch) {
     const listingId = listingMatch[1]
-    return SAMPLE_LISTINGS.find((l) => l.id === listingId) || null
+    return allListings.find((l) => l.id === listingId) || null
   }
 
   return null
 }
 
 export function NestFinderSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('nestfinder')
+
+  const allListings = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToListing)
+    return SAMPLE_LISTINGS
+  }, [dbContent])
+
   // Derive selected listing from URL path instead of local state
-  const selectedListing = getListingFromPath(path)
+  const selectedListing = getListingFromPath(path, allListings)
 
   const [filters, setFilters] = useState({
     neighborhood: 'All Neighborhoods',
@@ -426,7 +467,7 @@ export function NestFinderSite({ siteId, path, onNavigate, onPathChange }: SiteP
     onPathChange(null)
   }
 
-  const filteredListings = SAMPLE_LISTINGS.filter((listing) => {
+  const filteredListings = allListings.filter((listing) => {
     if (filters.neighborhood !== 'All Neighborhoods' && listing.neighborhood !== filters.neighborhood) {
       return false
     }

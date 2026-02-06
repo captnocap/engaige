@@ -13,10 +13,11 @@
  * The Underground, and other game lore elements.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.graintruth
 
@@ -421,6 +422,47 @@ const THREAT_LEVEL = {
 const VISITOR_COUNT = 847247;
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Article interface */
+function dbToArticle(item: SiteContentItem): Article {
+  const m = item.metadata || {}
+  // Body may be stored as a single string with paragraph breaks, or as JSON array
+  let contentParagraphs: string[] = []
+  if (m.content && Array.isArray(m.content)) {
+    contentParagraphs = m.content
+  } else if (item.body) {
+    contentParagraphs = item.body.split('\n\n').filter(Boolean)
+  }
+
+  return {
+    id: item.slug,
+    title: item.title,
+    date: m.date ?? (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown'),
+    classification: m.classification ?? 'DEVELOPING',
+    excerpt: item.summary ?? m.excerpt ?? '',
+    content: contentParagraphs,
+    sources: m.sources ?? [],
+    views: item.viewCount ?? m.views ?? 0,
+    comments: (m.comments ?? []).map((c: any, i: number) => ({
+      id: c.id ?? `c_${i}`,
+      username: c.username ?? 'Anonymous',
+      date: c.date ?? '',
+      content: c.content ?? '',
+      upvotes: c.upvotes ?? 0,
+      replies: (c.replies ?? []).map((r: any, j: number) => ({
+        id: r.id ?? `c_${i}_r_${j}`,
+        username: r.username ?? 'Anonymous',
+        date: r.date ?? '',
+        content: r.content ?? '',
+        upvotes: r.upvotes ?? 0,
+      })),
+    })),
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -648,6 +690,14 @@ function ArticleView({
 // ============================================================================
 
 export function GrainTruthSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded articles
+  const { content: dbContent } = useSiteContent('graintruth')
+
+  const articles = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToArticle)
+    return ARTICLES
+  }, [dbContent])
+
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [activeTab, setActiveTab] = useState<'evidence' | 'about' | 'network'>('evidence');
 
@@ -748,7 +798,7 @@ export function GrainTruthSite({ siteId }: SiteProps) {
                     </div>
 
                     {/* Article list */}
-                    {ARTICLES.map((article) => (
+                    {articles.map((article) => (
                       <ArticleCard
                         key={article.id}
                         article={article}

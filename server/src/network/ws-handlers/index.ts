@@ -31,6 +31,8 @@ import { groupChatHandlers } from './group-chat.js';
 import { hashtagsHandlers } from './hashtags.js';
 import { instasnapHandlers } from './instasnap.js';
 import { interactionHandlers } from './interaction.js';
+import { sitesHandlers } from './sites.js';
+import { newsHandlers } from './news.js';
 
 // Re-export broadcast functions for external use
 export { broadcastThought, broadcastDeliberationStarted, broadcastDeliberationCompleted } from './thoughts.js';
@@ -63,6 +65,8 @@ export const handlers = {
   ...hashtagsHandlers,
   ...instasnapHandlers,
   ...interactionHandlers,
+  ...sitesHandlers,
+  ...newsHandlers,
 };
 
 // Export individual handler maps for testing or selective imports
@@ -91,4 +95,6 @@ export {
   hashtagsHandlers,
   instasnapHandlers,
   interactionHandlers,
+  sitesHandlers,
+  newsHandlers,
 };

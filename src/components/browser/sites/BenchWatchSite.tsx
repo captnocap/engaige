@@ -6,10 +6,11 @@
  * to corporate fraud investigations. Peak "this is my calling" energy.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.benchwatch
 
@@ -234,6 +235,34 @@ That someone is me.
 Equipment I carry: Portable cushion pressure gauge, slat gap caliper, infrared thermometer, lumbar curvature template, moisture meter, and a folding chair (for comparison purposes).`
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local BenchReview interface */
+function dbToBenchReview(item: SiteContentItem): BenchReview {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    location: m.location || item.subtitle || '',
+    date: m.date || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    mciScore: m.mciScore ?? 0,
+    excerpt: item.summary || m.excerpt || '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    tags: item.tags.length > 0 ? item.tags : (m.tags || []),
+    measurements: m.measurements || {
+      slatWidth: 'Unknown',
+      backAngle: 'Unknown',
+      seatHeight: 'Unknown',
+      armrestPresent: false,
+      materialGrade: 'Unknown',
+    },
+    phantomSitterAlert: m.phantomSitterAlert || false,
+    fraudAlert: m.fraudAlert || false,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -402,6 +431,14 @@ function FullReview({ review, onBack }: { review: BenchReview; onBack: () => voi
 // ============================================================================
 
 export function BenchWatchSite({ siteId }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('benchwatch')
+
+  const reviews = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToBenchReview)
+    return BENCH_REVIEWS
+  }, [dbContent])
+
   const [selectedReview, setSelectedReview] = useState<BenchReview | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -507,7 +544,7 @@ export function BenchWatchSite({ siteId }: SiteProps) {
                     for that area are under verification. Trust nothing rated above 70 without photographic evidence.
                   </p>
                 </StyledCard>
-                {BENCH_REVIEWS.map(review => (
+                {reviews.map(review => (
                   <BenchReviewCard
                     key={review.id}
                     review={review}

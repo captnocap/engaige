@@ -5,10 +5,11 @@
  * everywhere EXCEPT your city. Maximum FOMO energy.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.bandsnotintown
 
@@ -203,6 +204,29 @@ const NOTIFICATIONS = [
 ]
 
 // ============================================================================
+// DB Adapters
+// ============================================================================
+
+/** Adapt a DB SiteContentItem to the local Concert interface */
+function dbToConcert(item: SiteContentItem): Concert {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    band: item.title,
+    bandEmoji: item.thumbnailEmoji || m.bandEmoji || '🎵',
+    venue: m.venue || '',
+    city: m.city || '',
+    date: m.date || new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString(),
+    time: m.time || '',
+    price: m.price || '',
+    soldOut: m.soldOut || false,
+    distance: m.distance || '',
+    reasonYouCantGo: m.reasonYouCantGo || item.summary || '',
+    ticketsLeft: m.ticketsLeft,
+  }
+}
+
+// ============================================================================
 // Components
 // ============================================================================
 
@@ -331,6 +355,26 @@ function BandCard({ band }: { band: Band }) {
 // ============================================================================
 
 export function BandsNotInTownSite({ siteId }: SiteProps) {
+  // Fetch from DB with fallback to hardcoded data
+  const { content: dbContent } = useSiteContent('bandsnotintown')
+
+  const upcomingConcerts = useMemo(() => {
+    if (dbContent.length > 0) {
+      // DB items with contentType 'concert' or category 'upcoming' map to upcoming concerts
+      const upcoming = dbContent.filter(i => i.contentType === 'concert' || i.category === 'upcoming' || !i.category)
+      if (upcoming.length > 0) return upcoming.map(dbToConcert)
+    }
+    return UPCOMING_CONCERTS
+  }, [dbContent])
+
+  const justMissed = useMemo(() => {
+    if (dbContent.length > 0) {
+      const missed = dbContent.filter(i => i.category === 'missed')
+      if (missed.length > 0) return missed.map(dbToConcert)
+    }
+    return JUST_MISSED
+  }, [dbContent])
+
   const [activeTab, setActiveTab] = useState<'upcoming' | 'missed' | 'tracked'>('upcoming')
   const [showNotification, setShowNotification] = useState(true)
 
@@ -401,8 +445,8 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto flex">
           {[
-            { id: 'upcoming', label: 'Upcoming (Not Here)', count: UPCOMING_CONCERTS.length },
-            { id: 'missed', label: 'Just Missed', count: JUST_MISSED.length },
+            { id: 'upcoming', label: 'Upcoming (Not Here)', count: upcomingConcerts.length },
+            { id: 'missed', label: 'Just Missed', count: justMissed.length },
             { id: 'tracked', label: 'Tracked Bands', count: TRACKED_BANDS.length },
           ].map(tab => (
             <button
@@ -436,13 +480,13 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
             >
               <h2 className="font-bold text-red-800 mb-2">😔 Bad News</h2>
               <p className="text-sm text-red-700">
-                We found {UPCOMING_CONCERTS.length} concerts from artists you like.
+                We found {upcomingConcerts.length} concerts from artists you like.
                 Unfortunately, none of them are convenient for you to attend.
                 Here they are anyway, to maximize your suffering.
               </p>
             </StyledCard>
 
-            {UPCOMING_CONCERTS.map(concert => (
+            {upcomingConcerts.map(concert => (
               <ConcertCard key={concert.id} concert={concert} />
             ))}
           </div>
@@ -467,7 +511,7 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
               </p>
             </StyledCard>
 
-            {JUST_MISSED.map(concert => (
+            {justMissed.map(concert => (
               <ConcertCard key={concert.id} concert={concert} />
             ))}
 

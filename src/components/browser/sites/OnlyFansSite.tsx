@@ -5,10 +5,11 @@
  * Nothing else. Why, what were YOU thinking?
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.onlyfans
 
@@ -443,15 +444,48 @@ function FanDetail({ fan, onBack }: { fan: Fan; onBack: () => void }) {
 // Main Site
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local Fan interface.
+ * Expects metadata to carry fan product fields (type, price, rating, features, etc.)
+ */
+function dbToFan(item: SiteContentItem): Fan {
+  return {
+    id: item.slug,
+    name: item.title,
+    type: (item.metadata?.type ?? item.category ?? 'desk') as Fan['type'],
+    price: item.metadata?.price ?? 0,
+    originalPrice: item.metadata?.originalPrice,
+    rating: item.metadata?.rating ?? 4.0,
+    reviews: item.commentCount ?? item.metadata?.reviews ?? 0,
+    emoji: item.thumbnailEmoji ?? '🌀',
+    description: item.body ?? item.summary ?? '',
+    features: item.metadata?.features ?? [],
+    inStock: item.metadata?.inStock ?? true,
+    isHot: item.metadata?.isHot ?? false,
+    isExclusive: item.metadata?.isExclusive ?? item.isFeatured ?? false,
+    cfm: item.metadata?.cfm,
+    bladeCount: item.metadata?.bladeCount,
+    noiseLevel: item.metadata?.noiseLevel,
+  }
+}
+
 export function OnlyFansSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded fans
+  const { content: dbContent } = useSiteContent('onlyfans')
+
+  const fans = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToFan)
+    return FANS
+  }, [dbContent])
+
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedFan, setSelectedFan] = useState<Fan | null>(null)
   const [showFAQ, setShowFAQ] = useState(false)
   const [ageVerified, setAgeVerified] = useState(false)
 
   const filteredFans = selectedCategory === 'all'
-    ? FANS
-    : FANS.filter(f => f.type === selectedCategory)
+    ? fans
+    : fans.filter(f => f.type === selectedCategory)
 
   // Age verification modal
   if (!ageVerified) {

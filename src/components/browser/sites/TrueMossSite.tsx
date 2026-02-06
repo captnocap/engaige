@@ -7,10 +7,11 @@
  * unhinged personal grievances against "Big Moss."
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.truemoss
 
@@ -370,7 +371,42 @@ function FullPost({ post, onBack }: { post: MossPost; onBack: () => void }) {
 // Main Site
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local MossPost interface.
+ * Expects metadata to carry post-specific fields (readTime, isExpose, mossEmoji, etc.)
+ */
+function dbToMossPost(item: SiteContentItem): MossPost {
+  // Body may be stored as a single string with paragraph breaks, or as JSON array in metadata
+  let contentParagraphs: string[] = []
+  if (item.metadata?.content && Array.isArray(item.metadata.content)) {
+    contentParagraphs = item.metadata.content
+  } else if (item.body) {
+    contentParagraphs = item.body.split('\n\n').filter(Boolean)
+  }
+
+  return {
+    id: item.slug,
+    title: item.title,
+    date: item.metadata?.date ?? (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown'),
+    excerpt: item.summary ?? '',
+    content: contentParagraphs,
+    tags: item.tags ?? [],
+    readTime: item.metadata?.readTime ?? '? min read',
+    comments: item.commentCount ?? item.metadata?.comments ?? 0,
+    isExpose: item.metadata?.isExpose ?? false,
+    mossEmoji: item.thumbnailEmoji ?? item.metadata?.mossEmoji,
+  }
+}
+
 export function TrueMossSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded posts
+  const { content: dbContent } = useSiteContent('truemoss')
+
+  const mossPosts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToMossPost)
+    return MOSS_POSTS
+  }, [dbContent])
+
   const [selectedPost, setSelectedPost] = useState<MossPost | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -500,7 +536,7 @@ export function TrueMossSite({ siteId }: SiteProps) {
                     Original lab notes obtained. Post coming this week.
                   </p>
                 </StyledCard>
-                {MOSS_POSTS.map(post => (
+                {mossPosts.map(post => (
                   <MossPostCard
                     key={post.id}
                     post={post}

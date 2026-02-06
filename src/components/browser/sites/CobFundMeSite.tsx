@@ -18,6 +18,7 @@
 import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.cobfundme
 
@@ -607,6 +608,45 @@ Please help.`,
 ]
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Campaign interface */
+function dbToCampaign(item: SiteContentItem): Campaign {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    organizer: m.organizer ?? { name: 'Unknown', location: 'Unknown', campaignsCreated: 0, profileImage: '🌽', bio: '', verified: false },
+    goal: m.goal ?? 0,
+    raised: m.raised ?? 0,
+    donors: (m.donors ?? []).map((d: any, i: number) => ({
+      id: d.id ?? `d_${i}`,
+      name: d.name ?? 'Anonymous',
+      amount: d.amount ?? 0,
+      comment: d.comment ?? '',
+      timestamp: d.timestamp ?? '',
+      isAnonymous: d.isAnonymous ?? d.is_anonymous ?? false,
+    })),
+    category: (item.category ?? m.category ?? 'Dreams') as Campaign['category'],
+    image: item.thumbnailEmoji ?? m.image ?? '🌽',
+    story: item.body ?? m.story ?? '',
+    updates: (m.updates ?? []).map((u: any, i: number) => ({
+      id: u.id ?? `u_${i}`,
+      date: u.date ?? '',
+      title: u.title ?? '',
+      content: u.content ?? '',
+    })),
+    shares: m.shares ?? 0,
+    daysActive: m.daysActive ?? m.days_active ?? 0,
+    verified: m.verified ?? item.isFeatured ?? false,
+    verifiedBadge: m.verifiedBadge ?? m.verified_badge ?? undefined,
+    featured: m.featured ?? item.isPinned ?? false,
+    stuckProgress: m.stuckProgress ?? m.stuck_progress ?? false,
+  }
+}
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -968,11 +1008,19 @@ function CampaignDetail({
 // ============================================================================
 
 export function CobFundMeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded campaigns
+  const { content: dbContent } = useSiteContent('cobfundme')
+
+  const campaigns = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToCampaign)
+    return CAMPAIGNS
+  }, [dbContent])
+
   // Parse the current route to determine what view to show
   const route = useMemo(() => parseRoute(path), [path])
 
   // Find the selected campaign based on the route
-  const selectedCampaign = useMemo(() => findCampaignById(route.id, CAMPAIGNS), [route.id])
+  const selectedCampaign = useMemo(() => findCampaignById(route.id, campaigns), [route.id, campaigns])
 
   // Determine selected category from route or default to 'all'
   const selectedCategory = route.view === 'category' && route.id ? route.id : 'all'
@@ -1009,7 +1057,7 @@ export function CobFundMeSite({ siteId, path, onNavigate, onPathChange }: SitePr
   }
 
   // Filter campaigns based on category and search
-  const filteredCampaigns = CAMPAIGNS.filter((campaign) => {
+  const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesCategory = selectedCategory === 'all' || campaign.category === selectedCategory
     const matchesSearch =
       searchQuery === '' ||
@@ -1019,7 +1067,7 @@ export function CobFundMeSite({ siteId, path, onNavigate, onPathChange }: SitePr
   })
 
   // Featured campaigns for hero section
-  const featuredCampaigns = CAMPAIGNS.filter((c) => c.featured)
+  const featuredCampaigns = campaigns.filter((c) => c.featured)
 
   // Render campaign detail view if a campaign is selected via URL
   if (route.view === 'campaign' && selectedCampaign) {

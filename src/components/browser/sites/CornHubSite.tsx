@@ -6,9 +6,10 @@
  * are purely coincidental. We are passionate about corn.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Types
@@ -630,15 +631,59 @@ function UserProfileView({ user, onBack }: { user: UserProfile; onBack: () => vo
 // Main Site
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local Recipe interface.
+ * Expects metadata to carry recipe-specific fields (duration, author, ingredients, steps, etc.)
+ */
+function dbToRecipe(item: SiteContentItem): Recipe {
+  return {
+    id: item.slug,
+    title: item.title,
+    thumbnail: item.thumbnailEmoji ?? '🌽',
+    duration: item.metadata?.duration ?? '0:00',
+    views: item.viewCount ?? item.metadata?.views ?? 0,
+    rating: item.metadata?.rating ?? 90,
+    author: item.metadata?.author ?? 'Anonymous',
+    authorAvatar: item.metadata?.authorAvatar ?? '👤',
+    authorVerified: item.metadata?.authorVerified ?? false,
+    category: item.category ?? item.metadata?.category ?? 'Homemade',
+    isPremium: item.metadata?.isPremium ?? false,
+    isHD: item.metadata?.isHD ?? true,
+    uploadedAgo: item.metadata?.uploadedAgo ?? (item.publishedAt ? formatTimeAgo(item.publishedAt) : 'Unknown'),
+    description: item.body ?? item.summary ?? '',
+    ingredients: item.metadata?.ingredients ?? [],
+    steps: item.metadata?.steps ?? [],
+    tags: item.tags ?? [],
+  }
+}
+
+/** Helper to format a timestamp into a relative time string */
+function formatTimeAgo(timestamp: number): string {
+  const diff = Date.now() - timestamp
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  if (days > 30) return `${Math.floor(days / 30)} months ago`
+  if (days > 7) return `${Math.floor(days / 7)} weeks ago`
+  if (days > 0) return `${days} days ago`
+  return 'Today'
+}
+
 export function CornHubSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded recipes
+  const { content: dbContent } = useSiteContent('cornhub')
+
+  const recipes = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToRecipe)
+    return RECIPES
+  }, [dbContent])
+
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
   const [ageVerified, setAgeVerified] = useState(false)
 
   const filteredRecipes = selectedCategory === 'all'
-    ? RECIPES
-    : RECIPES.filter(r => r.category.toLowerCase().includes(selectedCategory) || r.tags.includes(selectedCategory))
+    ? recipes
+    : recipes.filter(r => r.category.toLowerCase().includes(selectedCategory) || r.tags.includes(selectedCategory))
 
   // Age verification modal (the joke setup)
   if (!ageVerified) {
@@ -875,7 +920,7 @@ export function CornHubSite({ siteId }: SiteProps) {
                 <div>
                   <h3 className="text-white font-bold mb-3">Recommended For You</h3>
                   <div className="space-y-3">
-                    {RECIPES.slice(0, 5).map(recipe => (
+                    {recipes.slice(0, 5).map(recipe => (
                       <div
                         key={recipe.id}
                         className="flex gap-2 cursor-pointer group"

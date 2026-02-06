@@ -7,8 +7,9 @@
  * Every post title says "I'm over it" while clearly not being over it.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
 
@@ -248,6 +249,22 @@ const BLOG_POSTS: BlogPost[] = [
   },
 ]
 
+/** Adapts a DB SiteContentItem to the local BlogPost interface */
+function dbToBlogPost(item: SiteContentItem): BlogPost {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    date: m.date || (item.publishedAt ? new Date(item.publishedAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''),
+    excerpt: item.summary || m.excerpt || '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    tags: item.tags || [],
+    readTime: m.readTime || m.read_time || '',
+    comments: m.comments ?? item.commentCount ?? 0,
+    isClickbait: m.isClickbait ?? m.is_clickbait,
+  }
+}
+
 const SIDEBAR_RESOURCES = [
   { title: 'Quantum Widows Anonymous (Zoom)', icon: '💔' },
   { title: 'Divorce Support Books I Recommend', icon: '📚' },
@@ -380,6 +397,13 @@ function FullPost({ post, onBack }: { post: BlogPost; onBack: () => void }) {
 // ============================================================================
 
 export function JennifersBlogSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('blogs', { channelId: 'jennifer' })
+
+  const posts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToBlogPost)
+    return BLOG_POSTS
+  }, [dbContent])
+
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -485,7 +509,7 @@ export function JennifersBlogSite({ siteId }: SiteProps) {
                     ✨ <strong>Welcome!</strong> This is my safe space to process my healing journey. No judgment here—only growth, therapy speak, and the occasional honest moment about how I\'m definitely, absolutely not thinking about my ex.
                   </p>
                 </StyledCard>
-                {BLOG_POSTS.map(post => (
+                {posts.map(post => (
                   <BlogPostCard
                     key={post.id}
                     post={post}

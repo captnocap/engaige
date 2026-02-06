@@ -13,6 +13,7 @@ import { useState, useEffect, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget, InlineAd } from '../ads/index.js'
+import { useNewsArticles, useNewsArticle, type NewsArticle as DBNewsArticle } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.news
 
@@ -49,6 +50,8 @@ interface NewsArticle {
   content: string
   tags: string[]
   relatedArticles: string[]
+  /** URL-friendly slug, present on DB-sourced articles */
+  slug?: string
 }
 
 // ============================================================================
@@ -287,15 +290,32 @@ I will not be repeating this experiment.
   },
 ]
 
-const CATEGORIES = ['All', 'Local', 'Tech', 'Entertainment', 'Politics', 'Opinion']
-
 /**
- * Creates a map from article slug to article object for efficient lookup.
+ * Adapt a DB NewsArticle to the local NewsArticle interface.
+ * Computes readTime from word count and formats the date string.
  */
-const ARTICLES_BY_SLUG: Record<string, NewsArticle> = SAMPLE_ARTICLES.reduce((acc, article) => {
-  acc[createSlug(article.headline)] = article
-  return acc
-}, {} as Record<string, NewsArticle>)
+function dbToNewsArticle(a: DBNewsArticle): NewsArticle {
+  const wordCount = a.content ? a.content.split(/\s+/).length : 0
+  const readTime = Math.max(1, Math.round(wordCount / 250))
+  return {
+    id: a.id,
+    headline: a.headline,
+    subheadline: a.subheadline || '',
+    category: a.category,
+    author: a.author,
+    date: a.publishedAt
+      ? new Date(a.publishedAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      : '',
+    readTime,
+    image: a.imageEmoji || '📰',
+    content: a.content,
+    tags: a.tags,
+    relatedArticles: [],
+    slug: a.slug,
+  }
+}
+
+const CATEGORIES = ['All', 'Local', 'Tech', 'Entertainment', 'Politics', 'Opinion']
 
 const BREAKING_NEWS = [
   'BREAKING: Quantum cafe reports first case of "over-observed" coffee',
@@ -312,26 +332,49 @@ export function DailyBuzzSite({ siteId, path, onNavigate, onPathChange }: SitePr
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [breakingIndex, setBreakingIndex] = useState(0)
 
+  // Fetch articles from DB with fallback to hardcoded data
+  const { articles: dbArticles } = useNewsArticles({ limit: 50 })
+
+  const articles = useMemo(() => {
+    if (dbArticles.length > 0) return dbArticles.map(dbToNewsArticle)
+    return SAMPLE_ARTICLES
+  }, [dbArticles])
+
+  // Build a slug-to-article lookup from the active articles list
+  const articlesBySlug = useMemo(() => {
+    const map: Record<string, NewsArticle> = {}
+    for (const article of articles) {
+      const slug = article.slug || createSlug(article.headline)
+      map[slug] = article
+    }
+    return map
+  }, [articles])
+
+  // Extract slug from current path for single-article DB fetch
+  const currentSlug = useMemo(() => {
+    if (!path || path === '/') return null
+    const match = path.match(/^\/article\/(.+)$/)
+    return match ? match[1] : null
+  }, [path])
+
+  // Fetch single article from DB (used for detail view)
+  const { article: dbSingleArticle } = useNewsArticle(currentSlug)
+
   // Derive the selected article from the path prop
   // Path format: /article/{slug} or null/empty for main feed
   const selectedArticle = useMemo<NewsArticle | null>(() => {
-    if (!path || path === '/') return null
+    if (!currentSlug) return null
 
-    // Match /article/{slug} pattern
-    const articleMatch = path.match(/^\/article\/(.+)$/)
-    if (articleMatch) {
-      const slug = articleMatch[1]
-      return ARTICLES_BY_SLUG[slug] || null
-    }
-
-    return null
-  }, [path])
+    // Prefer DB single-article fetch, then fall back to local lookup
+    if (dbSingleArticle) return dbToNewsArticle(dbSingleArticle)
+    return articlesBySlug[currentSlug] || null
+  }, [currentSlug, dbSingleArticle, articlesBySlug])
 
   /**
    * Navigate to an article by updating the path
    */
   const handleSelectArticle = (article: NewsArticle) => {
-    const slug = createSlug(article.headline)
+    const slug = article.slug || createSlug(article.headline)
     onPathChange(`/article/${slug}`)
   }
 
@@ -351,11 +394,11 @@ export function DailyBuzzSite({ siteId, path, onNavigate, onPathChange }: SitePr
   }, [])
 
   const filteredArticles = selectedCategory === 'All'
-    ? SAMPLE_ARTICLES
-    : SAMPLE_ARTICLES.filter(a => a.category === selectedCategory)
+    ? articles
+    : articles.filter(a => a.category === selectedCategory)
 
-  const featuredArticle = SAMPLE_ARTICLES[0]
-  const otherArticles = filteredArticles.filter(a => a.id !== featuredArticle.id)
+  const featuredArticle = articles[0]
+  const otherArticles = filteredArticles.filter(a => a.id !== featuredArticle?.id)
 
   return (
     <div className="min-h-full" style={{ background: site.theme.background }}>
@@ -448,7 +491,7 @@ export function DailyBuzzSite({ siteId, path, onNavigate, onPathChange }: SitePr
             article={selectedArticle}
             onBack={handleBackToFeed}
             onSelectRelated={(title) => {
-              const found = SAMPLE_ARTICLES.find(a => a.headline.includes(title))
+              const found = articles.find(a => a.headline.includes(title))
               if (found) handleSelectArticle(found)
             }}
           />
@@ -490,7 +533,7 @@ export function DailyBuzzSite({ siteId, path, onNavigate, onPathChange }: SitePr
                   Trending Now
                 </div>
                 <div className="p-4">
-                  {SAMPLE_ARTICLES.slice(0, 5).map((article, i) => (
+                  {articles.slice(0, 5).map((article, i) => (
                     <button
                       key={article.id}
                       onClick={() => handleSelectArticle(article)}

@@ -7,10 +7,11 @@
  * The advice is technically correct but delivered with unhinged energy.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { StyledCard, Button } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 const site = FILLER_SITES.dominate
 
@@ -355,7 +356,42 @@ function FullPost({ post, onBack }: { post: MotivationalPost; onBack: () => void
 // Main Site
 // ============================================================================
 
+/**
+ * Adapter: maps SiteContentItem to local MotivationalPost interface.
+ * Expects metadata to carry post-specific fields (intensityLevel, category, readTime, etc.)
+ */
+function dbToMotivationalPost(item: SiteContentItem): MotivationalPost {
+  // Body may be stored as a single string with paragraph breaks, or as JSON array
+  let contentParagraphs: string[] = []
+  if (item.metadata?.content && Array.isArray(item.metadata.content)) {
+    contentParagraphs = item.metadata.content
+  } else if (item.body) {
+    contentParagraphs = item.body.split('\n\n').filter(Boolean)
+  }
+
+  return {
+    id: item.slug,
+    title: item.title,
+    date: item.metadata?.date ?? (item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown'),
+    excerpt: item.summary ?? '',
+    content: contentParagraphs,
+    intensityLevel: item.metadata?.intensityLevel ?? 3,
+    category: item.category ?? item.metadata?.category ?? 'UNCATEGORIZED',
+    readTime: item.metadata?.readTime ?? '? min read',
+    warriorsEngaged: item.viewCount ?? item.metadata?.warriorsEngaged ?? 0,
+    isPremiumContent: item.metadata?.isPremiumContent ?? false,
+  }
+}
+
 export function DominateSite({ siteId }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded posts
+  const { content: dbContent } = useSiteContent('dominate')
+
+  const posts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToMotivationalPost)
+    return MOTIVATIONAL_POSTS
+  }, [dbContent])
+
   const [selectedPost, setSelectedPost] = useState<MotivationalPost | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -474,7 +510,7 @@ export function DominateSite({ siteId }: SiteProps) {
                     NEW: The complete THUNDERCOACH ANTI-SLEEP PROTOCOL is now available. Stop WASTING 8 hours a day on UNCONSCIOUS QUITTING.
                   </p>
                 </StyledCard>
-                {MOTIVATIONAL_POSTS.map(post => (
+                {posts.map(post => (
                   <MotivationCard
                     key={post.id}
                     post={post}

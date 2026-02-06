@@ -9,8 +9,9 @@
  * and his denial that everything is fine.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 import { FILLER_SITES } from '../../../config/filler-sites.js'
 
 const site = FILLER_SITES.vexdrums
@@ -243,6 +244,21 @@ const BLOG_POSTS: BlogPost[] = [
   },
 ]
 
+/** Adapts a DB SiteContentItem to the local BlogPost interface */
+function dbToBlogPost(item: SiteContentItem): BlogPost {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    date: m.date || (item.publishedAt ? new Date(item.publishedAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''),
+    excerpt: item.summary || m.excerpt || '',
+    content: Array.isArray(m.content) ? m.content : (item.body ? item.body.split('\n\n') : []),
+    tags: item.tags || [],
+    readTime: m.readTime || m.read_time || '',
+    desperation: m.desperation,
+  }
+}
+
 const SIDEBAR_INFO = [
   { label: 'Band Status', value: 'On Hiatus (Temporary!)' },
   { label: 'Last Show', value: 'January 13, 2024 @ The Underground' },
@@ -362,6 +378,13 @@ function FullPost({ post, onBack }: { post: BlogPost; onBack: () => void }) {
 // ============================================================================
 
 export function VexDrumsBlogSite({ siteId }: SiteProps) {
+  const { content: dbContent } = useSiteContent('blogs', { channelId: 'vex' })
+
+  const posts = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToBlogPost)
+    return BLOG_POSTS
+  }, [dbContent])
+
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -468,7 +491,7 @@ export function VexDrumsBlogSite({ siteId }: SiteProps) {
                     nobody's talking to you.
                   </p>
                 </div>
-                {BLOG_POSTS.map(post => (
+                {posts.map(post => (
                   <BlogPostCard
                     key={post.id}
                     post={post}

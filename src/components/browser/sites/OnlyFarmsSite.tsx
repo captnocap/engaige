@@ -8,9 +8,10 @@
  * The joke: sounds like something else, but it is 100% wholesome farming.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { SiteProps } from '../BrowserSiteContainer.js'
 import { StyledCard, Button, MetaRow } from '../../ui/shared/index.js'
+import { useSiteContent, type SiteContentItem } from '../../../hooks/useSiteContent.js'
 
 // ============================================================================
 // Site Theme Configuration
@@ -513,10 +514,49 @@ const SUBSCRIPTION_TIERS = [
 const CATEGORIES = ['All', 'Tractors', 'Combines', 'Irrigation', 'Livestock Equipment', 'Exclusive Content']
 
 // ============================================================================
+// DB Adapter
+// ============================================================================
+
+/** Map a SiteContentItem from the DB to the local Listing interface */
+function dbToListing(item: SiteContentItem): Listing {
+  const m = item.metadata || {}
+  return {
+    id: item.slug,
+    title: item.title,
+    description: item.body ?? item.summary ?? '',
+    price: m.price ?? 0,
+    category: item.category ?? m.category ?? 'All',
+    condition: m.condition ?? 'Good',
+    image: item.thumbnailEmoji ?? m.image ?? '',
+    seller: m.seller ?? { id: 'unknown', username: 'Anonymous', displayName: 'Unknown', avatar: '🧑‍🌾', subscriberCount: 0, verified: false, bio: '', joinedDate: 'Unknown', totalListings: 0, rating: 0, specialties: [] },
+    views: item.viewCount ?? m.views ?? 0,
+    likes: item.likeCount ?? m.likes ?? 0,
+    posted: m.posted ?? new Date((item.publishedAt || item.createdAt) * 1000).toLocaleDateString(),
+    exclusive: m.exclusive ?? item.isFeatured ?? false,
+    comments: (m.comments ?? []).map((c: any, i: number) => ({
+      id: c.id ?? `c_${i}`,
+      author: c.author ?? 'Anonymous',
+      avatar: c.avatar ?? '🧑‍🌾',
+      text: c.text ?? c.content ?? '',
+      timestamp: c.timestamp ?? '',
+      likes: c.likes ?? 0,
+    })),
+  }
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
 export function OnlyFarmsSite({ onNavigate }: SiteProps) {
+  // Fetch DB content, falling back to hardcoded listings
+  const { content: dbContent } = useSiteContent('onlyfarms')
+
+  const listings = useMemo(() => {
+    if (dbContent.length > 0) return dbContent.map(dbToListing)
+    return LISTINGS
+  }, [dbContent])
+
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null)
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null)
@@ -524,8 +564,8 @@ export function OnlyFarmsSite({ onNavigate }: SiteProps) {
   const [activeTab, setActiveTab] = useState<'hot' | 'sellers' | 'tips'>('hot')
 
   const filteredListings = selectedCategory === 'All'
-    ? LISTINGS
-    : LISTINGS.filter(l => l.category === selectedCategory)
+    ? listings
+    : listings.filter(l => l.category === selectedCategory)
 
   const handleListingClick = (listing: Listing) => {
     if (listing.exclusive) {
@@ -610,7 +650,7 @@ export function OnlyFarmsSite({ onNavigate }: SiteProps) {
         ) : selectedSeller ? (
           <SellerProfile
             seller={selectedSeller}
-            listings={LISTINGS.filter(l => l.seller.id === selectedSeller.id)}
+            listings={listings.filter(l => l.seller.id === selectedSeller.id)}
             onBack={() => setSelectedSeller(null)}
             onListingClick={handleListingClick}
           />
