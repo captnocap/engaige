@@ -13,7 +13,7 @@ import { queuedGenerateNPCPost, Priority } from '../services/ai.js';
 import { getAllNPCs, type NPC } from '../services/npc.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { errorLogger } from '../services/error-logger.js';
-import { broadcast } from '../network/ws-server.js';
+import { broadcastToClients } from '../services/broadcast.js';
 
 // ============================================================================
 // Types
@@ -118,15 +118,12 @@ async function handleGeneratePost(task: BackgroundTask): Promise<void> {
     });
 
     // Broadcast to frontend
-    broadcast({
-      type: 'social:newPost',
-      payload: {
-        post_id: postId,
-        npc_id,
-        content,
-        platform,
-        timestamp: now(),
-      },
+    broadcastToClients('social:newPost', {
+      post_id: postId,
+      npc_id,
+      content,
+      platform,
+      timestamp: now(),
     });
 
     // Schedule reactions from other NPCs (with some randomness)
@@ -199,10 +196,7 @@ async function handleReactToPost(task: BackgroundTask): Promise<void> {
           post_id: postId,
         });
 
-        broadcast({
-          type: 'social:postLiked',
-          payload: { post_id: postId, npc_id },
-        });
+        broadcastToClients('social:postLiked', { post_id: postId, npc_id });
       }
 
     } else if (reactionType === 'comment') {
@@ -238,14 +232,11 @@ Be natural and conversational. React authentically based on your personality. Yo
           post_id: postId,
         });
 
-        broadcast({
-          type: 'social:newComment',
-          payload: {
-            post_id: postId,
-            comment_id: commentId,
-            npc_id,
-            content: commentContent,
-          },
+        broadcastToClients('social:newComment', {
+          post_id: postId,
+          comment_id: commentId,
+          npc_id,
+          content: commentContent,
         });
 
         console.log(`[SocialAutopilot] NPC ${npc_id} commented: "${commentContent.substring(0, 40)}..."`);

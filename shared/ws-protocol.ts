@@ -1,0 +1,904 @@
+/**
+ * WebSocket Message Protocol
+ *
+ * Defines all message types for client <-> server communication.
+ * All messages follow the format: { type: string, payload?: any, id?: string }
+ *
+ * The `id` field is optional and used for request-response correlation.
+ */
+
+// ============================================================================
+// Base Types
+// ============================================================================
+
+export interface WSMessage<T = unknown> {
+  type: string;
+  payload?: T;
+  id?: string; // For request-response correlation
+}
+
+export interface WSErrorPayload {
+  message: string;
+  code?: string;
+}
+
+// ============================================================================
+// Client -> Server Messages
+// ============================================================================
+
+// Budget
+export interface BudgetGetStatusMessage extends WSMessage {
+  type: 'budget:getStatus';
+}
+
+export interface BudgetGetConfigMessage extends WSMessage {
+  type: 'budget:getConfig';
+}
+
+export interface BudgetUpdateConfigMessage extends WSMessage<{
+  daily_budget_cents?: number;
+  monthly_budget_cents?: number;
+  category_allocations?: Record<string, number>;
+}> {
+  type: 'budget:updateConfig';
+}
+
+export interface BudgetGetLogsMessage extends WSMessage<{
+  category?: string;
+  limit?: number;
+  offset?: number;
+  startDate?: number;
+  endDate?: number;
+}> {
+  type: 'budget:getLogs';
+}
+
+// AI / Conversation
+export interface AISendMessageMessage extends WSMessage<{
+  npcId: string;
+  message: string;
+  conversationId?: string;
+  platform?: string;
+}> {
+  type: 'ai:sendMessage';
+}
+
+export interface AIGeneratePostMessage extends WSMessage<{
+  npcId: string;
+  platform: string;
+  prompt?: string;
+}> {
+  type: 'ai:generatePost';
+}
+
+// Direct Chat (cornGPT)
+export interface AIDirectChatMessage extends WSMessage<{
+  message: string;
+  conversationId?: string;
+  history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  modes?: string[];  // Mode prompt addendums
+}> {
+  type: 'ai:directChat';
+}
+
+// Proxy Configuration
+export interface ProxyGetConfigMessage extends WSMessage {
+  type: 'proxy:getConfig';
+}
+
+export interface ProxySetConfigMessage extends WSMessage<{
+  enabled: boolean;
+  type?: 'socks5' | 'socks4' | 'http' | 'https';
+  host?: string;
+  port?: number;
+  auth?: { username: string; password: string };
+}> {
+  type: 'proxy:setConfig';
+}
+
+// System
+export interface PingMessage extends WSMessage {
+  type: 'ping';
+}
+
+// Logs - Events
+export interface LogsGetEventsMessage extends WSMessage<{
+  category?: string;
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'logs:getEvents';
+}
+
+// Logs - Errors
+export interface LogsGetErrorsMessage extends WSMessage<{
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  unresolved?: boolean;
+  limit?: number;
+}> {
+  type: 'logs:getErrors';
+}
+
+export interface LogsResolveErrorMessage extends WSMessage<{
+  errorId: string;
+  notes?: string;
+}> {
+  type: 'logs:resolveError';
+}
+
+// Logs - Queue
+export interface LogsGetQueueMessage extends WSMessage {
+  type: 'logs:getQueue';
+}
+
+// NPC Thoughts
+export interface ThoughtsGetMessage extends WSMessage<{
+  npcId?: string;       // If provided, get thoughts for specific NPC
+  limit?: number;
+  thoughtType?: 'in_character' | 'meta_ai' | 'unknown' | 'all';
+  minConfidence?: number;
+  since?: number;       // Timestamp - get thoughts after this time
+}> {
+  type: 'thoughts:get';
+}
+
+export interface ThoughtsSubscribeMessage extends WSMessage<{
+  npcId?: string;       // If provided, subscribe to specific NPC's thoughts
+}> {
+  type: 'thoughts:subscribe';
+}
+
+export interface ThoughtsUnsubscribeMessage extends WSMessage {
+  type: 'thoughts:unsubscribe';
+}
+
+// AI Provider Configuration
+export interface AIProviderGetAllMessage extends WSMessage {
+  type: 'aiProvider:getAll';
+}
+
+export interface AIProviderGetActiveMessage extends WSMessage {
+  type: 'aiProvider:getActive';
+}
+
+export interface AIProviderCreateMessage extends WSMessage<{
+  name: string;
+  display_name: string;
+  provider_type: 'openai' | 'openai-compatible' | 'anthropic';
+  base_url?: string;
+  api_key?: string;
+  default_model: string;
+  is_enabled?: boolean;
+  supports_vision?: boolean;
+  supports_tools?: boolean;
+  max_context_tokens?: number;
+}> {
+  type: 'aiProvider:create';
+}
+
+export interface AIProviderUpdateMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+  display_name?: string;
+  provider_type?: 'openai' | 'openai-compatible' | 'anthropic';
+  base_url?: string;
+  api_key?: string;
+  default_model?: string;
+  is_enabled?: boolean;
+  supports_vision?: boolean;
+  supports_tools?: boolean;
+  max_context_tokens?: number;
+}> {
+  type: 'aiProvider:update';
+}
+
+export interface AIProviderDeleteMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:delete';
+}
+
+export interface AIProviderSetActiveMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:setActive';
+}
+
+export interface AIProviderTestMessage extends WSMessage<{
+  id?: string;
+  name?: string;
+}> {
+  type: 'aiProvider:test';
+}
+
+// Chess
+export interface ChessChallengeNPCMessage extends WSMessage<{
+  npc_id: string;
+}> {
+  type: 'chess:challengeNPC';
+}
+
+export interface ChessMakeMoveMessage extends WSMessage<{
+  match_id: string;
+  move: string;
+}> {
+  type: 'chess:makeMove';
+}
+
+export interface ChessResignMessage extends WSMessage<{
+  match_id: string;
+}> {
+  type: 'chess:resign';
+}
+
+export interface ChessGetLeaderboardMessage extends WSMessage<{
+  limit?: number;
+}> {
+  type: 'chess:getLeaderboard';
+}
+
+export interface ChessGetMatchMessage extends WSMessage<{
+  match_id: string;
+}> {
+  type: 'chess:getMatch';
+}
+
+export interface ChessGetActiveMatchesMessage extends WSMessage {
+  type: 'chess:getActiveMatches';
+}
+
+export interface ChessGetMatchHistoryMessage extends WSMessage<{
+  limit?: number;
+}> {
+  type: 'chess:getMatchHistory';
+}
+
+// World Map
+export interface WorldGetStateMessage extends WSMessage {
+  type: 'world:getState';
+}
+
+export interface WorldSubscribeMessage extends WSMessage {
+  type: 'world:subscribe';
+}
+
+export interface WorldUnsubscribeMessage extends WSMessage {
+  type: 'world:unsubscribe';
+}
+
+export interface WorldGetBackgroundNPCsMessage extends WSMessage<{
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}> {
+  type: 'world:getBackgroundNPCs';
+}
+
+export interface WorldPauseTimeMessage extends WSMessage {
+  type: 'world:pauseTime';
+}
+
+export interface WorldResumeTimeMessage extends WSMessage {
+  type: 'world:resumeTime';
+}
+
+export interface WorldSetTimeMultiplierMessage extends WSMessage<{
+  multiplier: number;
+}> {
+  type: 'world:setTimeMultiplier';
+}
+
+// Content Guardrails
+export interface GuardrailsGetRatingMessage extends WSMessage {
+  type: 'guardrails:getRating';
+}
+
+export interface GuardrailsSetRatingMessage extends WSMessage<{
+  rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+}> {
+  type: 'guardrails:setRating';
+}
+
+export interface GuardrailsGetConfigMessage extends WSMessage {
+  type: 'guardrails:getConfig';
+}
+
+// Social
+export interface SocialGetFeedMessage extends WSMessage<{
+  platform?: 'myface' | 'chirp' | 'instasnap';
+  limit?: number;
+}> {
+  type: 'social:getFeed';
+}
+
+export interface SocialGetPostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:getPost';
+}
+
+export interface SocialCreatePostMessage extends WSMessage<{
+  platform: 'myface' | 'chirp' | 'instasnap';
+  content: string;
+  mediaUrls?: string[];
+}> {
+  type: 'social:createPost';
+}
+
+export interface SocialLikePostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:likePost';
+}
+
+export interface SocialUnlikePostMessage extends WSMessage<{
+  postId: string;
+}> {
+  type: 'social:unlikePost';
+}
+
+export interface SocialAddCommentMessage extends WSMessage<{
+  postId: string;
+  content: string;
+  parentCommentId?: string;
+}> {
+  type: 'social:addComment';
+}
+
+export interface SocialMarkSeenMessage extends WSMessage<{
+  postIds: string[];
+}> {
+  type: 'social:markSeen';
+}
+
+export interface SocialGetUnseenMessage extends WSMessage<{
+  platform?: 'myface' | 'chirp' | 'instasnap';
+  limit?: number;
+}> {
+  type: 'social:getUnseen';
+}
+
+export interface SocialGetProfileMessage extends WSMessage<{
+  profileId: string;
+}> {
+  type: 'social:getProfile';
+}
+
+export interface SocialSubscribeMessage extends WSMessage {
+  type: 'social:subscribe';
+}
+
+export interface SocialUnsubscribeMessage extends WSMessage {
+  type: 'social:unsubscribe';
+}
+
+// Media
+export interface MediaGetMessage extends WSMessage<{
+  id: string;
+}> {
+  type: 'media:get';
+}
+
+export interface MediaGetAllMessage extends WSMessage<{
+  filters?: {
+    category?: string;
+    owner_type?: string;
+    npc_id?: string;
+    search?: string;
+  };
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'media:getAll';
+}
+
+// Studio (Creative Studio)
+export interface StudioGenerateImageMessage extends WSMessage<{
+  prompt: string;
+  style?: string;
+  mood?: string;
+  referenceImageIds?: string[];
+}> {
+  type: 'studio:generateImage';
+}
+
+export interface StudioGetBudgetMessage extends WSMessage {
+  type: 'studio:getBudget';
+}
+
+export interface StudioSaveVideoConfigMessage extends WSMessage<{
+  config: Record<string, unknown>;
+  intent?: Record<string, unknown>;
+  generateThumbnail?: boolean;
+}> {
+  type: 'studio:saveVideoConfig';
+}
+
+export interface StudioSaveCanvasMessage extends WSMessage<{
+  imageData: string;  // Base64 encoded PNG
+  filename?: string;
+}> {
+  type: 'studio:saveCanvas';
+}
+
+// Search
+export interface SearchQueryMessage extends WSMessage<{
+  query: string;
+  domain?: string;
+  contentType?: string;
+  limit?: number;
+  offset?: number;
+}> {
+  type: 'search:query';
+}
+
+export interface SearchAutocompleteMessage extends WSMessage<{
+  prefix: string;
+  limit?: number;
+}> {
+  type: 'search:autocomplete';
+}
+
+export interface SearchGetStatsMessage extends WSMessage {
+  type: 'search:getStats';
+}
+
+// Union of all client messages
+export type ClientMessage =
+  | BudgetGetStatusMessage
+  | BudgetGetConfigMessage
+  | BudgetUpdateConfigMessage
+  | BudgetGetLogsMessage
+  | AISendMessageMessage
+  | AIGeneratePostMessage
+  | AIDirectChatMessage
+  | ProxyGetConfigMessage
+  | ProxySetConfigMessage
+  | PingMessage
+  | LogsGetEventsMessage
+  | LogsGetErrorsMessage
+  | LogsResolveErrorMessage
+  | LogsGetQueueMessage
+  | AIProviderGetAllMessage
+  | AIProviderGetActiveMessage
+  | AIProviderCreateMessage
+  | AIProviderUpdateMessage
+  | AIProviderDeleteMessage
+  | AIProviderSetActiveMessage
+  | AIProviderTestMessage
+  | ThoughtsGetMessage
+  | ThoughtsSubscribeMessage
+  | ThoughtsUnsubscribeMessage
+  | ChessChallengeNPCMessage
+  | ChessMakeMoveMessage
+  | ChessResignMessage
+  | ChessGetLeaderboardMessage
+  | ChessGetMatchMessage
+  | ChessGetActiveMatchesMessage
+  | ChessGetMatchHistoryMessage
+  | WorldGetStateMessage
+  | WorldSubscribeMessage
+  | WorldUnsubscribeMessage
+  | WorldGetBackgroundNPCsMessage
+  | WorldPauseTimeMessage
+  | WorldResumeTimeMessage
+  | WorldSetTimeMultiplierMessage
+  | GuardrailsGetRatingMessage
+  | GuardrailsSetRatingMessage
+  | GuardrailsGetConfigMessage
+  | SocialGetFeedMessage
+  | SocialGetPostMessage
+  | SocialCreatePostMessage
+  | SocialLikePostMessage
+  | SocialUnlikePostMessage
+  | SocialAddCommentMessage
+  | SocialMarkSeenMessage
+  | SocialGetUnseenMessage
+  | SocialGetProfileMessage
+  | SocialSubscribeMessage
+  | SocialUnsubscribeMessage
+  | SearchQueryMessage
+  | SearchAutocompleteMessage
+  | SearchGetStatsMessage
+  | MediaGetMessage
+  | MediaGetAllMessage
+  | StudioGenerateImageMessage
+  | StudioGetBudgetMessage
+  | StudioSaveVideoConfigMessage
+  | StudioSaveCanvasMessage;
+
+// ============================================================================
+// Server -> Client Messages
+// ============================================================================
+
+// Responses (match request by id)
+export interface ResponseMessage<T = unknown> extends WSMessage<T> {
+  type: 'response';
+  success: boolean;
+  error?: string;
+}
+
+// Budget Events
+export interface BudgetStatusEvent extends WSMessage<{
+  daily_spent_cents: number;
+  daily_budget_cents: number;
+  monthly_spent_cents: number;
+  monthly_budget_cents: number;
+  remaining_daily_cents: number;
+  remaining_monthly_cents: number;
+}> {
+  type: 'budget:status';
+}
+
+// AI Events
+export interface AITypingEvent extends WSMessage<{
+  npcId: string;
+  isTyping: boolean;
+}> {
+  type: 'ai:typing';
+}
+
+export interface AIResponseEvent extends WSMessage<{
+  npcId: string;
+  message: string;
+  conversationId: string;
+}> {
+  type: 'ai:response';
+}
+
+export interface AIPostCreatedEvent extends WSMessage<{
+  npcId: string;
+  platform: string;
+  content: string;
+  postId: string;
+}> {
+  type: 'ai:postCreated';
+}
+
+export interface AIDirectChatResponseEvent extends WSMessage<{
+  message: string;
+  sources: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+    domain: string;
+  }>;
+  conversationId: string;
+  tokensUsed?: number;
+  costCents?: number;
+}> {
+  type: 'ai:directChatResponse';
+}
+
+// System Events
+export interface PongMessage extends WSMessage {
+  type: 'pong';
+}
+
+export interface ErrorEvent extends WSMessage<WSErrorPayload> {
+  type: 'error';
+}
+
+export interface ConnectedEvent extends WSMessage<{
+  sessionId: string;
+  serverVersion: string;
+}> {
+  type: 'connected';
+}
+
+// NPC Thoughts Events
+export interface ThoughtCapturedEvent extends WSMessage<{
+  thought_id: string;
+  npc_id: string;
+  npc_display_name: string;
+  content: string;
+  thought_type: 'in_character' | 'meta_ai' | 'unknown';
+  confidence: number;
+  context?: string;
+  conversation_id?: string;
+  created_at: number;
+}> {
+  type: 'thoughts:captured';
+}
+
+export interface DeliberationStartedEvent extends WSMessage<{
+  npc_id: string;
+  npc_display_name: string;
+  target_loops: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  reason: string;
+  conversation_id?: string;
+}> {
+  type: 'thoughts:deliberationStarted';
+}
+
+export interface DeliberationCompletedEvent extends WSMessage<{
+  npc_id: string;
+  npc_display_name: string;
+  loops_completed: number;
+  thinking_style: 'quick' | 'normal' | 'deliberate' | 'agonizing';
+  total_time_ms: number;
+  thought_count: number;
+  conversation_id?: string;
+}> {
+  type: 'thoughts:deliberationCompleted';
+}
+
+// Chess Events
+export interface ChessMatchStartedEvent extends WSMessage<{
+  match_id: string;
+  white_player_id: string;
+  black_player_id: string;
+  white_elo: number;
+  black_elo: number;
+}> {
+  type: 'chess:matchStarted';
+}
+
+export interface ChessMoveMadeEvent extends WSMessage<{
+  match_id: string;
+  player_id: string;
+  move_notation: string;
+  move_number: number;
+  is_check: boolean;
+  is_checkmate: boolean;
+  fen_after: string;
+}> {
+  type: 'chess:moveMade';
+}
+
+export interface ChessMatchEndedEvent extends WSMessage<{
+  match_id: string;
+  result: 'white_win' | 'black_win' | 'draw' | 'abandoned';
+  termination_reason: string;
+  white_elo_change: number;
+  black_elo_change: number;
+}> {
+  type: 'chess:matchEnded';
+}
+
+// World Map Events
+export interface WorldStateEvent extends WSMessage<{
+  city: {
+    name: string;
+    bounds: { minX: number; maxX: number; minY: number; maxY: number };
+    tileSize: number;
+    gridSize: { width: number; height: number };
+    districts: Array<{
+      id: string;
+      name: string;
+      type: string;
+      description: string;
+      bounds: { points: Array<[number, number]> };
+      color: string;
+      peakHours: number[];
+      vibe: string;
+    }>;
+    buildings: Array<{
+      id: string;
+      name: string;
+      type: string;
+      districtId: string;
+      position: { x: number; y: number };
+      size: { width: number; height: number };
+      spriteId: string;
+      capacity: number;
+      isResidential: boolean;
+      isWorkplace: boolean;
+    }>;
+    landmarks: Array<{
+      id: string;
+      name: string;
+      buildingId: string;
+      description: string;
+      keywords: string[];
+      isNotable: boolean;
+      iconEmoji?: string;
+    }>;
+  };
+  gameTime: {
+    hour: number;
+    minute: number;
+    dayOfWeek: number;
+    dayName: string;
+    isNight: boolean;
+    period: 'morning' | 'afternoon' | 'evening' | 'night';
+  };
+  timeMultiplier: number;
+  isPaused: boolean;
+  aiNPCs: Array<{
+    npcId: string;
+    position: { x: number; y: number };
+    buildingId?: string;
+    activity: string;
+    activityDescription?: string;
+  }>;
+  backgroundNPCCount: number;
+  playerHome?: {
+    buildingId: string;
+    position: { x: number; y: number };
+  };
+}> {
+  type: 'world:state';
+}
+
+export interface WorldNPCMovedEvent extends WSMessage<{
+  npcId: string;
+  isAI: boolean;
+  position: { x: number; y: number };
+  targetPosition?: { x: number; y: number };
+  buildingId?: string;
+  activity: string;
+  activityDescription?: string;
+}> {
+  type: 'world:npcMoved';
+}
+
+export interface WorldTimeUpdateEvent extends WSMessage<{
+  gameTime: {
+    hour: number;
+    minute: number;
+    dayOfWeek: number;
+    dayName: string;
+    isNight: boolean;
+    period: 'morning' | 'afternoon' | 'evening' | 'night';
+  };
+  formattedTime: string;
+  formattedDateTime: string;
+}> {
+  type: 'world:timeUpdate';
+}
+
+export interface WorldBackgroundNPCsEvent extends WSMessage<{
+  npcs: Array<{
+    id: string;
+    name: string;
+    appearanceSeed: number;
+    position: { x: number; y: number };
+    state: string;
+    activityLabel: string;
+  }>;
+  viewportBounds: { minX: number; maxX: number; minY: number; maxY: number };
+}> {
+  type: 'world:backgroundNPCs';
+}
+
+// Guardrails Events
+export interface GuardrailsRatingChangedEvent extends WSMessage<{
+  old_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  new_rating: 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none';
+  is_more_restrictive: boolean;
+}> {
+  type: 'guardrails:ratingChanged';
+}
+
+// Social Events (pushed to subscribed clients)
+export interface SocialPostCreatedEvent extends WSMessage<{
+  post: {
+    id: string;
+    authorId: string;
+    authorType: 'player' | 'npc';
+    platform: string;
+    content: string;
+    mediaUrls: string[];
+    likesCount: number;
+    commentsCount: number;
+    createdAt: number;
+  };
+}> {
+  type: 'social:postCreated';
+}
+
+export interface SocialPostLikedEvent extends WSMessage<{
+  postId: string;
+  likerId: string;
+  likerType: 'player' | 'npc';
+  newLikesCount: number;
+}> {
+  type: 'social:postLiked';
+}
+
+export interface SocialPostUnlikedEvent extends WSMessage<{
+  postId: string;
+  unlikerId: string;
+  newLikesCount: number;
+}> {
+  type: 'social:postUnliked';
+}
+
+export interface SocialCommentAddedEvent extends WSMessage<{
+  postId: string;
+  comment: {
+    id: string;
+    authorId: string;
+    authorType: 'player' | 'npc';
+    authorName: string;
+    content: string;
+    createdAt: number;
+  };
+  newCommentsCount: number;
+}> {
+  type: 'social:commentAdded';
+}
+
+// Union of all server messages
+export type ServerMessage =
+  | ResponseMessage
+  | BudgetStatusEvent
+  | AITypingEvent
+  | AIResponseEvent
+  | AIPostCreatedEvent
+  | AIDirectChatResponseEvent
+  | PongMessage
+  | ErrorEvent
+  | ConnectedEvent
+  | ThoughtCapturedEvent
+  | DeliberationStartedEvent
+  | DeliberationCompletedEvent
+  | ChessMatchStartedEvent
+  | ChessMoveMadeEvent
+  | ChessMatchEndedEvent
+  | WorldStateEvent
+  | WorldNPCMovedEvent
+  | WorldTimeUpdateEvent
+  | WorldBackgroundNPCsEvent
+  | GuardrailsRatingChangedEvent
+  | SocialPostCreatedEvent
+  | SocialPostLikedEvent
+  | SocialPostUnlikedEvent
+  | SocialCommentAddedEvent;
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+/**
+ * Create a response message for a request
+ */
+export function createResponse<T>(requestId: string | undefined, success: boolean, payload?: T, error?: string): ResponseMessage<T> {
+  return {
+    type: 'response',
+    id: requestId,
+    success,
+    payload,
+    error,
+  };
+}
+
+/**
+ * Create an error event
+ */
+export function createError(message: string, code?: string, requestId?: string): ErrorEvent {
+  return {
+    type: 'error',
+    id: requestId,
+    payload: { message, code },
+  };
+}
+
+/**
+ * Parse incoming message with validation
+ */
+export function parseMessage(data: string): WSMessage | null {
+  try {
+    const parsed = JSON.parse(data);
+
+    if (typeof parsed !== 'object' || !parsed.type) {
+      return null;
+    }
+
+    return parsed as WSMessage;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Serialize message for sending
+ */
+export function serializeMessage(message: WSMessage): string {
+  return JSON.stringify(message);
+}

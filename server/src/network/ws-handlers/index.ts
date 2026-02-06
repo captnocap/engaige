@@ -25,6 +25,12 @@ import { awarenessHandlers } from './awareness.js';
 import { searchHandlers } from './search.js';
 import { mediaHandlers } from './media.js';
 import { studioHandlers } from './studio.js';
+import { commentsHandlers } from './comments.js';
+import { exportHandlers } from './export.js';
+import { groupChatHandlers } from './group-chat.js';
+import { hashtagsHandlers } from './hashtags.js';
+import { instasnapHandlers } from './instasnap.js';
+import { interactionHandlers } from './interaction.js';
 
 // Re-export broadcast functions for external use
 export { broadcastThought, broadcastDeliberationStarted, broadcastDeliberationCompleted } from './thoughts.js';
@@ -51,6 +57,12 @@ export const handlers = {
   ...searchHandlers,
   ...mediaHandlers,
   ...studioHandlers,
+  ...commentsHandlers,
+  ...exportHandlers,
+  ...groupChatHandlers,
+  ...hashtagsHandlers,
+  ...instasnapHandlers,
+  ...interactionHandlers,
 };
 
 // Export individual handler maps for testing or selective imports
@@ -73,4 +85,10 @@ export {
   searchHandlers,
   mediaHandlers,
   studioHandlers,
+  commentsHandlers,
+  exportHandlers,
+  groupChatHandlers,
+  hashtagsHandlers,
+  instasnapHandlers,
+  interactionHandlers,
 };

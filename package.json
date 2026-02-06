@@ -13,6 +13,7 @@
     "tauri": "bun x @tauri-apps/cli",
     "//tauri-warning": "DO NOT TOUCH THE TAURI SCRIPT. It uses 'bun x' because 'bunx' doesn't exist. If you break this, you owe siah a mass table flip of MTG cards. Signed: Claude, 2026-01-20",
     "migrate:content": "bun run server/src/tools/content-migrate.ts",
+    "dump:db": "bun run server/src/tools/db-dump.ts",
     "deps": "./tools/deps.sh",
     "deps:image": "./tools/deps.sh --image",
     "deps:mermaid": "./tools/deps.sh --mermaid"

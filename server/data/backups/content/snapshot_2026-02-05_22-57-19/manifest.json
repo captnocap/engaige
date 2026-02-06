@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-02-05T22:57:19.828Z",
+  "tables": {
+    "site_channels": 25,
+    "site_content": 300,
+    "site_content_comments": 356,
+    "site_categories": 61
+  }
+}

@@ -48,6 +48,22 @@ const handlerContext: HandlerContext = {
   broadcast,
 };
 
+// ============================================================================
+// Event Bus Integration
+// ============================================================================
+
+// Listen for broadcast requests from services/agents
+// This allows agents to broadcast without importing ws-server directly
+eventBus.on(EventTypes.SYSTEM_BROADCAST_REQUESTED, (event) => {
+  const { message_type, payload } = event.payload as {
+    message_type: string;
+    payload: unknown;
+    options?: { npcId?: string; platforms?: string[]; sessionId?: string };
+  };
+
+  broadcast({ type: message_type, payload });
+});
+
 // Generate unique session ID
 function generateSessionId(): string {
   return `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;

@@ -145,7 +145,11 @@ function buildFullStackGraph(sources: SourceConfig[]): AnalysisResult {
         // Try to resolve within same source first
         const target = resolveImport(file, imp, files);
         if (target) {
-          resolved.add(`${source.name}/${target}`);
+          const targetGlobalPath = `${source.name}/${target}`;
+          // Filter out self-references (barrel file re-exports)
+          if (targetGlobalPath !== globalPath) {
+            resolved.add(targetGlobalPath);
+          }
         }
       }
 

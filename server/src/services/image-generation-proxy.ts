@@ -16,6 +16,7 @@ import {
 } from './image-gen-config.js';
 import { doorFetch } from '../network/door.js';
 import { type ContentRating, type GuardrailConfig, getPlayerContentRating, getGuardrailConfig } from './guardrails.js';
+import { prepareImageForAPI } from './image-compression.js';
 
 /**
  * Generate an image using the active provider.
@@ -69,8 +70,34 @@ export async function generateImage(
     throw new Error(`Image generation budget exceeded: ${budgetCheck.reason}`);
   }
 
-  // Build payload by injecting prompt (and reference images if provided)
-  const payload = buildPayload(provider, safePrompt, referenceImages);
+  // Compress reference images if provider supports img2img
+  let processedReferenceImages: string[] | undefined;
+  if (referenceImages?.length && provider.reference_images_key) {
+    console.log(`[Image Gen] Processing ${referenceImages.length} reference image(s) for img2img`);
+
+    processedReferenceImages = await Promise.all(
+      referenceImages.map(async (imageUrl, index) => {
+        // Skip if already a data URL (already base64)
+        if (imageUrl.startsWith('data:')) {
+          console.log(`[Image Gen] Reference image ${index + 1}: Already base64, skipping compression`);
+          return imageUrl;
+        }
+
+        try {
+          const compressed = await prepareImageForAPI(imageUrl, provider.name, 'base64');
+          console.log(`[Image Gen] Reference image ${index + 1}: Compressed successfully`);
+          return compressed;
+        } catch (err: any) {
+          console.error(`[Image Gen] Failed to compress reference image ${index + 1}:`, err.message);
+          // Return original URL as fallback - let the API fail gracefully if needed
+          return imageUrl;
+        }
+      })
+    );
+  }
+
+  // Build payload by injecting prompt (and compressed reference images if provided)
+  const payload = buildPayload(provider, safePrompt, processedReferenceImages || referenceImages);
 
   console.log(`[Image Gen] Request payload:`, JSON.stringify(payload, null, 2));
 

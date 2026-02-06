@@ -14,7 +14,7 @@ import { getAllNPCs, getNPCById, type NPC } from '../services/npc.js';
 import { getPlayerRelationship, getRelationshipStage } from '../services/relationships.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { errorLogger } from '../services/error-logger.js';
-import { broadcast } from '../network/ws-server.js';
+import { broadcastToClients } from '../services/broadcast.js';
 
 // ============================================================================
 // Types
@@ -177,18 +177,15 @@ Send a single opening message. Keep it natural and authentic to your personality
     });
 
     // Broadcast to frontend - this is how the player knows they got a message!
-    broadcast({
-      type: 'conversation:newMessage',
-      payload: {
-        conversation_id: conversationId,
-        message_id: messageId,
-        npc_id,
-        npc_name: npc.display_name,
-        content: messageContent,
-        platform,
-        timestamp: now(),
-        initiated_by_npc: true,
-      },
+    broadcastToClients('conversation:newMessage', {
+      conversation_id: conversationId,
+      message_id: messageId,
+      npc_id,
+      npc_name: npc.display_name,
+      content: messageContent,
+      platform,
+      timestamp: now(),
+      initiated_by_npc: true,
     });
 
   } catch (error: any) {
@@ -257,18 +254,15 @@ async function handleSendScheduledMessage(task: BackgroundTask): Promise<void> {
   console.log(`[ConversationInitiator] Scheduled message from ${npc.display_name}: "${messageContent.substring(0, 40)}..."`);
 
   // Broadcast
-  broadcast({
-    type: 'conversation:newMessage',
-    payload: {
-      conversation_id: convId,
-      message_id: messageId,
-      npc_id,
-      npc_name: npc.display_name,
-      content: messageContent,
-      platform,
-      timestamp: now(),
-      scheduled: true,
-    },
+  broadcastToClients('conversation:newMessage', {
+    conversation_id: convId,
+    message_id: messageId,
+    npc_id,
+    npc_name: npc.display_name,
+    content: messageContent,
+    platform,
+    timestamp: now(),
+    scheduled: true,
   });
 }
 
