@@ -73,6 +73,7 @@ interface SiteIndexPage {
   title: string
   type: string
   description: string
+  category?: string
 }
 
 interface SiteIndexEntry {
@@ -324,6 +325,201 @@ export function CornMazeSite({ onNavigateToUrl }: SiteComponentProps) {
 }
 
 // ============================================================================
+// Page List Component (flat or grouped by category)
+// ============================================================================
+
+/** Sites that should group pages by category in the index */
+const GROUPED_SITES: Record<string, { boardPrefix: string; threadPrefix: string; boardType: string }> = {
+  threadit: { boardPrefix: '/t/', threadPrefix: '/n/', boardType: 'board' },
+  forchan: { boardPrefix: '/', threadPrefix: '/thread/', boardType: 'board' },
+}
+
+interface PageListProps {
+  pages: SiteIndexPage[]
+  siteId: string
+  domain: string
+  onNavigate: (url: string) => void
+}
+
+function PageList({ pages, siteId, domain, onNavigate }: PageListProps) {
+  const groupConfig = GROUPED_SITES[siteId]
+
+  if (!groupConfig) {
+    // Flat rendering for most sites
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {pages.map((page, i) => (
+          <PageItem key={i} page={page} onNavigate={onNavigate} />
+        ))}
+      </div>
+    )
+  }
+
+  // Grouped rendering for threadit/forchan: group by category
+  const groups = new Map<string, SiteIndexPage[]>()
+  const ungrouped: SiteIndexPage[] = []
+
+  for (const page of pages) {
+    const cat = page.category
+    if (cat) {
+      if (!groups.has(cat)) groups.set(cat, [])
+      groups.get(cat)!.push(page)
+    } else {
+      ungrouped.push(page)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {Array.from(groups.entries()).map(([category, groupPages]) => {
+        // Extract the board path from the first page's URL
+        const firstUrl = groupPages[0]?.url || ''
+        const pathMatch = firstUrl.match(/www\.[^/]+(\/.*)?$/)
+        const fullPath = pathMatch?.[1] || '/'
+        // Get just the board segment (e.g., /t/QuantumCoffee from /t/QuantumCoffee/n/slug)
+        const boardPath = fullPath.split(groupConfig.threadPrefix)[0]
+
+        return (
+          <div key={category}>
+            {/* Board/category header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <span
+                style={{
+                  fontSize: '10px',
+                  padding: '2px 6px',
+                  borderRadius: '3px',
+                  background: `${getCategoryColor(groupConfig.boardType)}20`,
+                  color: getCategoryColor(groupConfig.boardType),
+                  textTransform: 'uppercase',
+                }}
+              >
+                {groupConfig.boardType}
+              </span>
+              <button
+                onClick={() => onNavigate(`www.${domain}${boardPath}`)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: THEME.accent,
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontFamily: 'inherit',
+                }}
+              >
+                {boardPath}
+              </button>
+              <span style={{ color: THEME.textDim, fontSize: '11px' }}>
+                {category} ({groupPages.length})
+              </span>
+            </div>
+            {/* Threads under this board */}
+            <div style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {groupPages.map((page, i) => {
+                // Show just the thread part of the path
+                const pm = page.url.match(/www\.[^/]+(\/.*)?$/)
+                const fp = pm?.[1] || '/'
+                const threadPart = fp.includes(groupConfig.threadPrefix)
+                  ? groupConfig.threadPrefix + fp.split(groupConfig.threadPrefix).pop()
+                  : fp
+
+                return (
+                  <div key={i}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '3px',
+                          background: `${getCategoryColor(page.type)}20`,
+                          color: getCategoryColor(page.type),
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {page.type}
+                      </span>
+                      <button
+                        onClick={() => onNavigate(page.url)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: THEME.link,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        {threadPart}
+                      </button>
+                    </div>
+                    <div style={{ color: THEME.text, fontSize: '12px' }}>
+                      {page.title}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+      {/* Ungrouped pages */}
+      {ungrouped.map((page, i) => (
+        <PageItem key={`u-${i}`} page={page} onNavigate={onNavigate} />
+      ))}
+    </div>
+  )
+}
+
+function PageItem({ page, onNavigate }: { page: SiteIndexPage; onNavigate: (url: string) => void }) {
+  const pathMatch = page.url.match(/www\.[^/]+(\/.*)?$/)
+  const displayPath = pathMatch?.[1] || '/'
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+        <span
+          style={{
+            fontSize: '10px',
+            padding: '2px 6px',
+            borderRadius: '3px',
+            background: `${getCategoryColor(page.type)}20`,
+            color: getCategoryColor(page.type),
+            textTransform: 'uppercase',
+          }}
+        >
+          {page.type}
+        </span>
+        <button
+          onClick={() => onNavigate(page.url)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: THEME.link,
+            fontSize: '13px',
+            cursor: 'pointer',
+            padding: 0,
+            fontFamily: 'inherit',
+          }}
+        >
+          {displayPath}
+        </button>
+      </div>
+      <div style={{ color: THEME.text, fontSize: '12px' }}>
+        {page.title}
+      </div>
+      {page.description && (
+        <div style={{ color: THEME.textDim, fontSize: '11px' }}>
+          {page.description.slice(0, 100)}
+          {page.description.length > 100 ? '...' : ''}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
 // Site Entry Component
 // ============================================================================
 
@@ -483,55 +679,12 @@ function SiteEntry({ manifest, pages, expanded, onToggle, onNavigate }: SiteEntr
 
           {/* DB-driven pages */}
           {pages.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {pages.map((page, i) => {
-                // Extract the path from the full URL (remove www.domain.corn prefix)
-                const pathMatch = page.url.match(/www\.[^/]+(\/.*)?$/)
-                const displayPath = pathMatch?.[1] || '/'
-
-                return (
-                  <div key={i}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                      <span
-                        style={{
-                          fontSize: '10px',
-                          padding: '2px 6px',
-                          borderRadius: '3px',
-                          background: `${getCategoryColor(page.type)}20`,
-                          color: getCategoryColor(page.type),
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {page.type}
-                      </span>
-                      <button
-                        onClick={() => onNavigate(page.url)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: THEME.link,
-                          fontSize: '13px',
-                          cursor: 'pointer',
-                          padding: 0,
-                          fontFamily: 'inherit',
-                        }}
-                      >
-                        {displayPath}
-                      </button>
-                    </div>
-                    <div style={{ color: THEME.text, fontSize: '12px' }}>
-                      {page.title}
-                    </div>
-                    {page.description && (
-                      <div style={{ color: THEME.textDim, fontSize: '11px' }}>
-                        {page.description.slice(0, 100)}
-                        {page.description.length > 100 ? '...' : ''}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+            <PageList
+              pages={pages}
+              siteId={manifest.id}
+              domain={manifest.domain}
+              onNavigate={onNavigate}
+            />
           )}
 
           {pages.length === 0 && (

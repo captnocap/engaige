@@ -22,6 +22,7 @@ import {
   type SearchResult,
   type SearchOptions,
 } from '../db/search-index.js';
+import { getGlobalDB } from '../db/global-db.js';
 import { getDB } from '../db/index.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { errorLogger } from './error-logger.js';
@@ -212,7 +213,6 @@ function buildSearchIndexFromDB(): IndexableContent[] {
   const items: IndexableContent[] = [];
 
   for (const row of rows) {
-    const url = buildContentUrl(row.site_id, row.content_type, row.slug, row.category);
     const domain = SITE_DOMAINS[row.site_id] || `${row.site_id}.corn`;
 
     let tags: string[] = [];
@@ -220,6 +220,14 @@ function buildSearchIndexFromDB(): IndexableContent[] {
 
     let metadata: Record<string, unknown> = {};
     try { metadata = JSON.parse(row.metadata || '{}'); } catch { /* ignore */ }
+
+    // For ForChan, use board short code from metadata instead of full category name
+    let effectiveCategory = row.category;
+    if (row.site_id === 'forchan' && metadata.board) {
+      effectiveCategory = String(metadata.board).replace(/\//g, '');
+    }
+
+    const url = buildContentUrl(row.site_id, row.content_type, row.slug, effectiveCategory);
 
     // Extract author from metadata if available
     const author = (metadata.author as string)
@@ -269,6 +277,10 @@ export async function initializeSearch(): Promise<void> {
     try {
       // Initialize FTS5 schema
       initializeSearchIndex();
+
+      // Clear stale static entries before re-indexing (IDs/URLs may have changed)
+      const globalDb = getGlobalDB();
+      globalDb.exec("DELETE FROM search_content WHERE source = 'static'");
 
       // Build index from site_content table
       const dbContent = buildSearchIndexFromDB();
@@ -434,11 +446,11 @@ export async function getSearchStats(): Promise<ReturnType<typeof getIndexStats>
  * Get all site content formatted as a site index (for CornMaze / manifests).
  * Groups content by site_id, builds proper URLs.
  */
-export function getSiteIndex(): Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string }> }> {
+export function getSiteIndex(): Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string; category?: string }> }> {
   const db = getDB('game');
 
   const rows = db.query(`
-    SELECT site_id, content_type, slug, category, title, summary
+    SELECT site_id, content_type, slug, category, title, summary, metadata
     FROM site_content
     WHERE is_archived = 0
     ORDER BY site_id, content_type, title
@@ -449,9 +461,10 @@ export function getSiteIndex(): Record<string, { domain: string; pages: Array<{ 
     category: string | null;
     title: string;
     summary: string | null;
+    metadata: string | null;
   }>;
 
-  const result: Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string }> }> = {};
+  const result: Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string; category?: string }> }> = {};
 
   for (const row of rows) {
     const domain = SITE_DOMAINS[row.site_id] || `${row.site_id}.corn`;
@@ -460,13 +473,23 @@ export function getSiteIndex(): Record<string, { domain: string; pages: Array<{ 
       result[row.site_id] = { domain, pages: [] };
     }
 
-    const url = buildContentUrl(row.site_id, row.content_type, row.slug, row.category);
+    // For ForChan, use board short code from metadata instead of full category name
+    let effectiveCategory = row.category;
+    if (row.site_id === 'forchan' && row.metadata) {
+      try {
+        const meta = JSON.parse(row.metadata);
+        if (meta.board) effectiveCategory = String(meta.board).replace(/\//g, '');
+      } catch { /* ignore */ }
+    }
+
+    const url = buildContentUrl(row.site_id, row.content_type, row.slug, effectiveCategory);
 
     result[row.site_id].pages.push({
       url,
       title: row.title,
       type: row.content_type,
       description: row.summary || '',
+      category: row.category || undefined,
     });
   }
 

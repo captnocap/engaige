@@ -171,8 +171,9 @@ export function useSiteContent(
       ...options,
     })
       .then((res) => {
-        setContent(res.content)
-        setCache(cacheKey, res.content)
+        const items = res?.content ?? []
+        setContent(items)
+        setCache(cacheKey, items)
         setLoading(false)
       })
       .catch((err) => {
