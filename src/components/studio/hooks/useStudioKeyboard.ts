@@ -58,6 +58,39 @@ export function useStudioKeyboard({ onUndo, onRedo, onSave, onPublish }: UseStud
       return;
     }
 
+    // Video mode shortcuts
+    if (state.activeMode === 'video' && !ctrl && !e.altKey) {
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          dispatch({ type: 'SET_VIDEO_PLAYING', payload: !state.videoComposition.isPlaying });
+          return;
+        case 'Home':
+        case '0':
+          e.preventDefault();
+          dispatch({ type: 'SET_VIDEO_TIME', payload: 0 });
+          return;
+        case 'End':
+          e.preventDefault();
+          dispatch({ type: 'SET_VIDEO_TIME', payload: state.videoComposition.duration });
+          return;
+        case 'ArrowLeft':
+          e.preventDefault();
+          dispatch({
+            type: 'SET_VIDEO_TIME',
+            payload: Math.max(0, state.videoComposition.currentTime - 1),
+          });
+          return;
+        case 'ArrowRight':
+          e.preventDefault();
+          dispatch({
+            type: 'SET_VIDEO_TIME',
+            payload: Math.min(state.videoComposition.duration, state.videoComposition.currentTime + 1),
+          });
+          return;
+      }
+    }
+
     // Tool shortcuts (only when not in input)
     if (!ctrl && !e.altKey) {
       const toolMap: Record<string, Tool> = {
@@ -77,7 +110,7 @@ export function useStudioKeyboard({ onUndo, onRedo, onSave, onPublish }: UseStud
         return;
       }
     }
-  }, [state.activeMode, dispatch, onUndo, onRedo, onSave, onPublish]);
+  }, [state.activeMode, state.videoComposition, dispatch, onUndo, onRedo, onSave, onPublish]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

@@ -268,3 +268,43 @@ export function ImageIcon(props: IconProps) {
     </svg>
   );
 }
+
+// ============================================================================
+// Video Icons
+// ============================================================================
+
+export function PlayIcon(props: IconProps) {
+  return (
+    <svg {...svgProps(props)}>
+      <polygon points="6,3 17,10 6,17" fill={props.color || 'currentColor'} stroke="none" />
+    </svg>
+  );
+}
+
+export function PauseIcon(props: IconProps) {
+  return (
+    <svg {...svgProps(props)}>
+      <rect x="5" y="3" width="3" height="14" rx="0.5" fill={props.color || 'currentColor'} stroke="none" />
+      <rect x="12" y="3" width="3" height="14" rx="0.5" fill={props.color || 'currentColor'} stroke="none" />
+    </svg>
+  );
+}
+
+export function LoopIcon(props: IconProps) {
+  return (
+    <svg {...svgProps(props)}>
+      <path d="M14 3l3 3-3 3" />
+      <path d="M3 10V8a3 3 0 013-3h11" />
+      <path d="M6 17l-3-3 3-3" />
+      <path d="M17 10v2a3 3 0 01-3 3H3" />
+    </svg>
+  );
+}
+
+export function SegmentIcon(props: IconProps) {
+  return (
+    <svg {...svgProps(props)}>
+      <rect x="3" y="7" width="14" height="6" rx="1" fill={props.color || 'currentColor'} stroke="none" />
+    </svg>
+  );
+}

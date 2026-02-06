@@ -88,8 +88,34 @@ export function StudioStatusBar({ assetCount = 0 }: StudioStatusBarProps) {
 
       {state.activeMode === 'video' && (
         <>
-          <span>Video Creator</span>
-          <span>Select a platform to begin</span>
+          <div className="flex items-center gap-4">
+            <span>Video Creator</span>
+            <span>
+              Platform: <strong style={{ color: 'var(--studio-text)' }}>
+                {state.videoComposition.platform.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+              </strong>
+            </span>
+            <span>
+              {(() => {
+                const aspects: Record<string, string> = {
+                  instasnap_story: '9:16', instasnap_reel: '9:16', vidtube_short: '9:16',
+                  vidtube_video: '16:9', myface_story: '9:16', myface_post: '1:1',
+                  instasnap_post: '1:1', threadit_embed: '16:9', thumbnail: '16:9',
+                };
+                return aspects[state.videoComposition.platform] || '9:16';
+              })()}
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span>
+              {Math.floor(state.videoComposition.currentTime / 60)}:{Math.floor(state.videoComposition.currentTime % 60).toString().padStart(2, '0')}
+              {' / '}
+              {Math.floor(state.videoComposition.duration / 60)}:{Math.floor(state.videoComposition.duration % 60).toString().padStart(2, '0')}
+            </span>
+            <span>
+              Loop: {state.videoComposition.loop ? 'On' : 'Off'}
+            </span>
+          </div>
         </>
       )}
 

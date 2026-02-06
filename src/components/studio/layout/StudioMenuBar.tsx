@@ -90,6 +90,16 @@ export function StudioMenuBar({
       items: [
         { label: 'Undo', shortcut: 'Ctrl+Z', action: () => { onUndo?.(); setOpenMenu(null); }, disabled: !canUndo },
         { label: 'Redo', shortcut: 'Ctrl+Shift+Z', action: () => { onRedo?.(); setOpenMenu(null); }, disabled: !canRedo },
+        ...(state.activeMode === 'video' ? [
+          { separator: true, label: '' },
+          {
+            label: 'Add Text Segment',
+            action: () => {
+              dispatch({ type: 'ADD_VIDEO_SEGMENT', payload: { id: String(Date.now()), text: '', start: Math.floor(state.videoComposition.currentTime), position: 'center' as const, effect: 'fade_in' as const } });
+              setOpenMenu(null);
+            },
+          },
+        ] : []),
       ],
     },
     {
@@ -100,6 +110,13 @@ export function StudioMenuBar({
         { label: 'Toggle History', action: () => togglePanel('history') },
         { label: 'Toggle Gallery', action: () => togglePanel('gallery') },
         { label: 'Toggle Library', action: () => togglePanel('library') },
+        ...(state.activeMode === 'video' ? [
+          { separator: true, label: '' },
+          { label: 'Toggle Intent Panel', action: () => togglePanel('videoIntent') },
+          { label: 'Toggle Style Panel', action: () => togglePanel('videoStyle') },
+          { label: 'Toggle Text Panel', action: () => togglePanel('videoText') },
+          { label: 'Toggle Platform Panel', action: () => togglePanel('videoPlatform') },
+        ] : []),
       ],
     },
     {

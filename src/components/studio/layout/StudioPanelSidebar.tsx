@@ -13,6 +13,10 @@ import { HistoryPanel } from '../panels/HistoryPanel.js';
 import { GeneratePanel } from '../panels/GeneratePanel.js';
 import { GalleryPanel } from '../panels/GalleryPanel.js';
 import { LibraryPanel } from '../panels/LibraryPanel.js';
+import { VideoIntentPanel } from '../panels/VideoIntentPanel.js';
+import { VideoStylePanel } from '../panels/VideoStylePanel.js';
+import { VideoTextPanel } from '../panels/VideoTextPanel.js';
+import { VideoPlatformPanel } from '../panels/VideoPlatformPanel.js';
 
 // ============================================================================
 // Panel Config Per Mode
@@ -37,7 +41,10 @@ const GENERATE_PANELS: PanelDef[] = [
 ];
 
 const VIDEO_PANELS: PanelDef[] = [
-  // Video mode uses its own full workspace, minimal panels
+  { id: 'videoPlatform', title: 'Platform', component: VideoPlatformPanel },
+  { id: 'videoIntent', title: 'Intent', component: VideoIntentPanel },
+  { id: 'videoStyle', title: 'Style', component: VideoStylePanel },
+  { id: 'videoText', title: 'Text & Timing', component: VideoTextPanel },
 ];
 
 const LIBRARY_PANELS: PanelDef[] = [

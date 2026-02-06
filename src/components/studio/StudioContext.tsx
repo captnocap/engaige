@@ -16,6 +16,15 @@ import {
   type Dispatch,
 } from 'react';
 
+import type {
+  PlatformHint,
+  IntentType,
+  BasePreset,
+  OverlayPreset,
+  TextStylePreset,
+  TextEffectType,
+} from '../ui/MediaRenderer/types.js';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -38,6 +47,36 @@ export interface StudioDraft {
   videoConfigId?: string;
   caption: string;
   platforms: ('myface' | 'chirp' | 'instasnap')[];
+}
+
+// ============================================================================
+// Video Composition Types
+// ============================================================================
+
+export type EnergyLevel = 'low' | 'medium' | 'high' | 'unhinged';
+
+export interface TextSegmentDraft {
+  id: string;
+  text: string;
+  start: number;
+  end?: number;
+  position: 'top' | 'center' | 'bottom';
+  effect: TextEffectType;
+}
+
+export interface VideoComposition {
+  platform: PlatformHint;
+  intent: IntentType;
+  energy: EnergyLevel;
+  basePreset: BasePreset;
+  overlayPreset: OverlayPreset;
+  textStylePreset: TextStylePreset;
+  segments: TextSegmentDraft[];
+  duration: number;
+  maxDuration: number;
+  isPlaying: boolean;
+  currentTime: number;
+  loop: boolean;
 }
 
 export interface PendingGeneration {
@@ -64,6 +103,10 @@ export interface PanelVisibility {
   details: boolean;
   platform: boolean;
   preview: boolean;
+  videoIntent: boolean;
+  videoStyle: boolean;
+  videoText: boolean;
+  videoPlatform: boolean;
 }
 
 export interface StudioState {
@@ -91,6 +134,9 @@ export interface StudioState {
 
   // Budget
   budget: StudioBudget | null;
+
+  // Video Composition
+  videoComposition: VideoComposition;
 }
 
 // ============================================================================
@@ -119,7 +165,14 @@ export type StudioAction =
   | { type: 'SET_PENDING_GENERATION'; payload: PendingGeneration | null }
   | { type: 'ADD_RECENT_GENERATION'; payload: string }
   | { type: 'SET_BUDGET'; payload: StudioBudget | null }
-  | { type: 'BATCH_UPDATE'; payload: Partial<StudioDraft> };
+  | { type: 'BATCH_UPDATE'; payload: Partial<StudioDraft> }
+  // Video composition actions
+  | { type: 'SET_VIDEO_COMPOSITION'; payload: Partial<VideoComposition> }
+  | { type: 'ADD_VIDEO_SEGMENT'; payload: TextSegmentDraft }
+  | { type: 'UPDATE_VIDEO_SEGMENT'; payload: { id: string; updates: Partial<TextSegmentDraft> } }
+  | { type: 'REMOVE_VIDEO_SEGMENT'; payload: string }
+  | { type: 'SET_VIDEO_PLAYING'; payload: boolean }
+  | { type: 'SET_VIDEO_TIME'; payload: number };
 
 // ============================================================================
 // Initial State
@@ -143,6 +196,25 @@ const DEFAULT_PANEL_VISIBILITY: PanelVisibility = {
   details: false,
   platform: true,
   preview: true,
+  videoIntent: true,
+  videoStyle: true,
+  videoText: true,
+  videoPlatform: true,
+};
+
+const DEFAULT_VIDEO_COMPOSITION: VideoComposition = {
+  platform: 'instasnap_story',
+  intent: 'share_joy',
+  energy: 'medium',
+  basePreset: 'chill_gradient',
+  overlayPreset: 'clean',
+  textStylePreset: 'tiktok_caption',
+  segments: [{ id: '1', text: '', start: 0, position: 'center', effect: 'fade_in' }],
+  duration: 10,
+  maxDuration: 15,
+  isPlaying: false,
+  currentTime: 0,
+  loop: true,
 };
 
 const initialState: StudioState = {
@@ -162,6 +234,7 @@ const initialState: StudioState = {
   pendingGeneration: null,
   recentGenerationIds: [],
   budget: null,
+  videoComposition: { ...DEFAULT_VIDEO_COMPOSITION },
 };
 
 // ============================================================================
@@ -277,6 +350,55 @@ function studioReducer(state: StudioState, action: StudioAction): StudioState {
       return {
         ...state,
         currentDraft: { ...state.currentDraft, ...action.payload },
+      };
+
+    // Video composition actions
+    case 'SET_VIDEO_COMPOSITION':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, ...action.payload },
+      };
+
+    case 'ADD_VIDEO_SEGMENT':
+      return {
+        ...state,
+        videoComposition: {
+          ...state.videoComposition,
+          segments: [...state.videoComposition.segments, action.payload],
+        },
+      };
+
+    case 'UPDATE_VIDEO_SEGMENT':
+      return {
+        ...state,
+        videoComposition: {
+          ...state.videoComposition,
+          segments: state.videoComposition.segments.map((s) =>
+            s.id === action.payload.id ? { ...s, ...action.payload.updates } : s
+          ),
+        },
+      };
+
+    case 'REMOVE_VIDEO_SEGMENT':
+      if (state.videoComposition.segments.length <= 1) return state;
+      return {
+        ...state,
+        videoComposition: {
+          ...state.videoComposition,
+          segments: state.videoComposition.segments.filter((s) => s.id !== action.payload),
+        },
+      };
+
+    case 'SET_VIDEO_PLAYING':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, isPlaying: action.payload },
+      };
+
+    case 'SET_VIDEO_TIME':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, currentTime: action.payload },
       };
 
     default:
