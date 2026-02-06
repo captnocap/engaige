@@ -267,6 +267,7 @@ export function Window({
           style={{ height: windowChrome.titleBarHeight }}
           onMouseDown={handleTitleBarMouseDown}
           onDoubleClick={handleMaximize}
+          onContextMenu={e => e.preventDefault()}
         >
           {/* Left side controls (Mac style) */}
           {showControls && windowChrome.buttonPosition === 'left' && (

@@ -39,6 +39,7 @@ export function Taskbar({
   return (
     <div
       onMouseDown={handleDragStart}
+      onContextMenu={e => e.preventDefault()}
       className={`
         relative z-40
         mx-1 mb-1 h-12 px-2

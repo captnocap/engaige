@@ -392,6 +392,7 @@ export function Browser({ onClose }: BrowserProps) {
       <div
         className="flex items-center gap-1 px-2 pt-2 pb-0"
         style={{ background: 'var(--color-bgSecondary)' }}
+        onContextMenu={e => e.preventDefault()}
       >
         <div className="flex-1 flex items-center gap-1 min-w-0 overflow-x-auto scrollbar-none">
           {tabs.map(tab => (
@@ -469,6 +470,7 @@ export function Browser({ onClose }: BrowserProps) {
       <div
         className="flex items-center gap-2 px-3 py-2"
         style={{ background: 'var(--color-bgSecondary)', borderBottom: '1px solid var(--color-border)' }}
+        onContextMenu={e => e.preventDefault()}
       >
         {/* Navigation buttons */}
         <div className="flex items-center gap-1">
@@ -758,6 +760,7 @@ export function Browser({ onClose }: BrowserProps) {
             background: 'var(--color-bgSecondary)',
             borderBottom: '1px solid var(--color-border)',
           }}
+          onContextMenu={e => e.preventDefault()}
         >
           {bookmarks
             .sort((a, b) => a.position - b.position)
