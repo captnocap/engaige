@@ -62,6 +62,19 @@ export function TaskbarVolumePanel({ anchorRect, onClose }: TaskbarVolumePanelPr
   const audio = useSettingsStore(s => s.audio)
   const setAudio = useSettingsStore(s => s.setAudio)
 
+  // Clamp panel within viewport after render
+  useEffect(() => {
+    if (!panelRef.current) return
+    const el = panelRef.current
+    const rect = el.getBoundingClientRect()
+    if (rect.right > window.innerWidth - 8) {
+      el.style.left = `${window.innerWidth - rect.width - 8}px`
+    }
+    if (rect.left < 8) {
+      el.style.left = '8px'
+    }
+  })
+
   // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -83,7 +96,7 @@ export function TaskbarVolumePanel({ anchorRect, onClose }: TaskbarVolumePanelPr
         p-3 animate-in fade-in slide-in-from-bottom-2 duration-150
       "
       style={{
-        left: Math.max(8, Math.min(anchorRect.left - 80, window.innerWidth - 232)),
+        left: anchorRect.left + anchorRect.width / 2 - 112,
         top: anchorRect.top - 8,
         transform: 'translateY(-100%)',
       }}

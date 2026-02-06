@@ -42,6 +42,19 @@ const LEVEL_LABELS: Record<string, { label: string; color: string }> = {
 export function TaskbarNPCPopup({ npc, anchorRect, onClose, onOpenConversation }: TaskbarNPCPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null)
 
+  // Clamp popup within viewport after render
+  useEffect(() => {
+    if (!popupRef.current) return
+    const el = popupRef.current
+    const rect = el.getBoundingClientRect()
+    if (rect.right > window.innerWidth - 8) {
+      el.style.left = `${window.innerWidth - rect.width - 8}px`
+    }
+    if (rect.left < 8) {
+      el.style.left = '8px'
+    }
+  })
+
   // Close when mouse leaves both the popup and the trigger
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -89,7 +102,7 @@ export function TaskbarNPCPopup({ npc, anchorRect, onClose, onOpenConversation }
         p-3 animate-in fade-in slide-in-from-bottom-2 duration-150
       "
       style={{
-        left: Math.max(8, Math.min(anchorRect.left + anchorRect.width / 2 - 112, window.innerWidth - 232)),
+        left: anchorRect.left + anchorRect.width / 2 - 112,
         top: anchorRect.top - 8,
         transform: 'translateY(-100%)',
       }}

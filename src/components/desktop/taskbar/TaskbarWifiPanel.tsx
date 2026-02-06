@@ -50,7 +50,7 @@ function SignalIcon({ strength }: { strength: 'strong' | 'medium' | 'weak' }) {
           width="2.5"
           height={(i + 1) * 3}
           rx="0.5"
-          fill={i < bars ? 'currentColor' : 'currentColor'}
+          fill="currentColor"
           opacity={i < bars ? 1 : 0.2}
         />
       ))}
@@ -78,6 +78,19 @@ export function TaskbarWifiPanel({ anchorRect, onClose }: TaskbarWifiPanelProps)
   const [connected, setConnected] = useState(true)
   const [connectingTo, setConnectingTo] = useState<string | null>(null)
 
+  // Clamp panel within viewport after render
+  useEffect(() => {
+    if (!panelRef.current) return
+    const el = panelRef.current
+    const rect = el.getBoundingClientRect()
+    if (rect.right > window.innerWidth - 8) {
+      el.style.left = `${window.innerWidth - rect.width - 8}px`
+    }
+    if (rect.left < 8) {
+      el.style.left = '8px'
+    }
+  })
+
   // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -92,14 +105,12 @@ export function TaskbarWifiPanel({ anchorRect, onClose }: TaskbarWifiPanelProps)
   const handleToggle = () => {
     if (connected) {
       setConnected(false)
-      // Pause game when "disconnected"
       if (isRunning && !isPaused) {
         pause()
       }
     } else {
       setConnected(true)
       setConnectingTo(null)
-      // Resume game when "reconnected"
       if (isRunning && isPaused) {
         resume()
       }
@@ -109,7 +120,6 @@ export function TaskbarWifiPanel({ anchorRect, onClose }: TaskbarWifiPanelProps)
   const handleConnectToNetwork = (networkName: string) => {
     if (!connected) return
     setConnectingTo(networkName)
-    // Fake connection attempt
     setTimeout(() => {
       setConnectingTo(null)
     }, 2000)
@@ -126,7 +136,7 @@ export function TaskbarWifiPanel({ anchorRect, onClose }: TaskbarWifiPanelProps)
         overflow-hidden
       "
       style={{
-        left: Math.max(8, Math.min(anchorRect.left - 100, window.innerWidth - 296)),
+        left: anchorRect.left + anchorRect.width / 2 - 144,
         top: anchorRect.top - 8,
         transform: 'translateY(-100%)',
       }}

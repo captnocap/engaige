@@ -19,6 +19,19 @@ export function TaskbarOverflowMenu({ windows, onWindowClick }: TaskbarOverflowM
   const buttonRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
+  // Clamp menu within viewport after render
+  useEffect(() => {
+    if (!open || !menuRef.current) return
+    const el = menuRef.current
+    const rect = el.getBoundingClientRect()
+    if (rect.right > window.innerWidth - 8) {
+      el.style.left = `${window.innerWidth - rect.width - 8}px`
+    }
+    if (rect.left < 8) {
+      el.style.left = '8px'
+    }
+  })
+
   // Close on outside click
   useEffect(() => {
     if (!open) return
@@ -66,7 +79,7 @@ export function TaskbarOverflowMenu({ windows, onWindowClick }: TaskbarOverflowM
             py-1 animate-in fade-in slide-in-from-bottom-2 duration-150
           "
           style={{
-            left: buttonRect.left,
+            left: buttonRect.left + buttonRect.width / 2 - 100,
             top: buttonRect.top - 8,
             transform: 'translateY(-100%)',
           }}

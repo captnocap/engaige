@@ -48,6 +48,19 @@ export function TaskbarSimsHub() {
 
   const plumbobGlow = isRunning && !isPaused
 
+  // Clamp panel within viewport after render
+  useEffect(() => {
+    if (!expanded || !panelRef.current) return
+    const el = panelRef.current
+    const rect = el.getBoundingClientRect()
+    if (rect.right > window.innerWidth - 8) {
+      el.style.left = `${window.innerWidth - rect.width - 8}px`
+    }
+    if (rect.left < 8) {
+      el.style.left = '8px'
+    }
+  })
+
   // Close on outside click
   useEffect(() => {
     if (!expanded) return
@@ -107,7 +120,7 @@ export function TaskbarSimsHub() {
             p-3 animate-in fade-in slide-in-from-bottom-2 duration-150
           "
           style={{
-            left: buttonRect.left,
+            left: buttonRect.left + buttonRect.width / 2 - 104,
             top: buttonRect.top - 8,
             transform: 'translateY(-100%)',
           }}
