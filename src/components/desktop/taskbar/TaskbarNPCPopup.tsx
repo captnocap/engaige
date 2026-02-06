@@ -36,7 +36,8 @@ const LEVEL_LABELS: Record<string, { label: string; color: string }> = {
   friend: { label: 'Friend', color: '#3b82f6' },
   close_friend: { label: 'Close Friend', color: '#22c55e' },
   best_friend: { label: 'Best Friend', color: '#a855f7' },
-  romantic: { label: 'Romantic', color: '#ec4899' },
+  romantic_interest: { label: 'Romantic Interest', color: '#f472b6' },
+  partner: { label: 'Partner', color: '#ec4899' },
 }
 
 export function TaskbarNPCPopup({ npc, anchorRect, onClose, onOpenConversation }: TaskbarNPCPopupProps) {

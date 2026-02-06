@@ -9,18 +9,20 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import { type AccessLevel, canContactViaApp, getAppsForAccessLevel } from '../config/app-registry.js'
+import { useWSStore } from './wsStore.js'
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export type RelationshipLevel =
-  | 'stranger'       // Never interacted
-  | 'acquaintance'   // Brief interaction, knows of player
-  | 'friend'         // Regular friend, frequent interaction
-  | 'close_friend'   // Inner circle, high trust
-  | 'best_friend'    // Closest friend, shares secrets
-  | 'romantic'       // Romantic interest or partner
+  | 'stranger'           // Never interacted
+  | 'acquaintance'       // Brief interaction, knows of player
+  | 'friend'             // Regular friend, frequent interaction
+  | 'close_friend'       // Inner circle, high trust
+  | 'best_friend'        // Closest friend, shares secrets
+  | 'romantic_interest'  // Romantic interest (server-authoritative)
+  | 'partner'            // Committed partner (server-authoritative)
 
 export interface NPCPersonality {
   // Core traits (0-100 scale)
@@ -504,6 +506,10 @@ interface NPCState {
   getNPCsOnDatingSite: (siteId: string) => NPC[]
   getDatingProfile: (npcId: string, siteId: string) => NPCDatingProfile | undefined
   updateRelationshipStatus: (npcId: string, status: NPCRelationshipStatus) => void
+
+  // Server relationship sync
+  subscribeToRelationshipUpdates: () => () => void
+  loadRelationshipsFromServer: () => Promise<void>
 }
 
 // ============================================================================
@@ -517,22 +523,9 @@ function relationshipToAccessLevel(level: RelationshipLevel): AccessLevel {
     case 'friend': return 'friend'
     case 'close_friend':
     case 'best_friend': return 'close_friend'
-    case 'romantic': return 'partner'
+    case 'romantic_interest':
+    case 'partner': return 'partner'
   }
-}
-
-function calculateRelationshipLevel(relationship: NPC['relationship']): RelationshipLevel {
-  const { trust, affinity, familiarity, romanticInterest } = relationship
-
-  // Average of all metrics
-  const avg = (trust + affinity + familiarity) / 3
-
-  if (romanticInterest && avg >= 80) return 'romantic'
-  if (avg >= 90) return 'best_friend'
-  if (avg >= 70) return 'close_friend'
-  if (avg >= 40) return 'friend'
-  if (avg >= 15) return 'acquaintance'
-  return 'stranger'
 }
 
 function createDefaultRelationship(): NPC['relationship'] {
@@ -586,9 +579,6 @@ export const useNPCStore = create<NPCState>()(
           if (!npc) return state
 
           const newRelationship = { ...npc.relationship, ...updates }
-
-          // Recalculate level based on metrics
-          newRelationship.level = calculateRelationshipLevel(newRelationship)
 
           return {
             npcs: {
@@ -717,6 +707,57 @@ export const useNPCStore = create<NPCState>()(
             },
           }
         })
+      },
+
+      subscribeToRelationshipUpdates: () => {
+        const { subscribe } = useWSStore.getState()
+
+        const unsub1 = subscribe('relationship:updated', (msg) => {
+          const { npc_id, trust, affinity, familiarity, stage } = msg.payload as any
+          if (!npc_id) return
+          get().updateRelationship(npc_id, {
+            ...(trust !== undefined && { trust }),
+            ...(affinity !== undefined && { affinity }),
+            ...(familiarity !== undefined && { familiarity }),
+            ...(stage !== undefined && { level: stage }),
+          })
+        })
+
+        const unsub2 = subscribe('relationship:stageChanged', (msg) => {
+          const { npc_id, new_stage, trust, affinity, familiarity } = msg.payload as any
+          if (!npc_id) return
+          get().updateRelationship(npc_id, {
+            level: new_stage,
+            ...(trust !== undefined && { trust }),
+            ...(affinity !== undefined && { affinity }),
+            ...(familiarity !== undefined && { familiarity }),
+          })
+        })
+
+        return () => { unsub1(); unsub2() }
+      },
+
+      loadRelationshipsFromServer: async () => {
+        try {
+          const { request } = useWSStore.getState()
+          const result = await request<undefined, { relationships: any[] }>('playerRelationship:getAll')
+          if (result?.relationships) {
+            for (const rel of result.relationships) {
+              get().updateRelationship(rel.npc_id, {
+                trust: rel.trust_level,
+                affinity: rel.affinity,
+                familiarity: rel.familiarity,
+                level: rel.relationship_stage,
+                totalMessages: rel.total_messages_sent + rel.total_messages_received,
+                lastInteraction: rel.last_interaction
+                  ? new Date(rel.last_interaction * 1000).toISOString()
+                  : null,
+              })
+            }
+          }
+        } catch (err) {
+          console.warn('[NPC Store] Failed to load relationships from server:', err)
+        }
       },
     }),
     {

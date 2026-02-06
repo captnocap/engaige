@@ -20,7 +20,8 @@ interface TaskbarNPCPortraitProps {
 }
 
 const MOOD_COLORS: Record<string, string> = {
-  romantic: '#ec4899',
+  partner: '#ec4899',
+  romantic_interest: '#f472b6',
   best_friend: '#a855f7',
   close_friend: '#22c55e',
   friend: '#3b82f6',

@@ -1,6 +1,7 @@
 import { getDB, generateId, now } from '../db/index.js';
 import { generateNPCResponse } from './ai.js';
 import { updateStatsForMessage } from './relationships.js';
+import { validateMessageAccess } from './message-access-validator.js';
 import { formatMessageForNPC } from './message-formatter.js';
 import type { CommunicationQuirks, MessagePatterns } from './npc-personality.js';
 import { eventBus, EventTypes } from '../events/index.js';
@@ -92,6 +93,12 @@ export function getOrCreateConversation(
   `).get(npcId, playerId, platform) as any;
 
   if (conv) return conv;
+
+  // Validate access before creating a new conversation
+  const access = validateMessageAccess(playerId, npcId, platform);
+  if (!access.allowed) {
+    throw new Error(`ACCESS_DENIED: ${access.reason}`);
+  }
 
   return createConversation(npcId, playerId, 'player', platform);
 }

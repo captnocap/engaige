@@ -262,7 +262,52 @@ async function handleNPCRelationshipGetPublicStatus(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────
+// Player-NPC Relationship Handlers
+// ─────────────────────────────────────────────────────────────────
+
+async function handlePlayerRelationshipGet(
+  ws: ServerWebSocket<ClientSession>,
+  message: WSMessage,
+  ctx: HandlerContext
+): Promise<void> {
+  try {
+    const { getRelationshipSummary } = await import('../../services/relationships.js');
+    const payload = message.payload as { npcId: string; playerId?: string };
+
+    if (!payload?.npcId) {
+      ctx.send(ws, createResponse(message.id, false, null, 'Missing npcId'));
+      return;
+    }
+
+    const summary = getRelationshipSummary(payload.playerId || 'player', payload.npcId);
+    ctx.send(ws, createResponse(message.id, true, summary));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handlePlayerRelationshipGet' });
+    ctx.send(ws, createError('Failed to get player relationship', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
+async function handlePlayerRelationshipGetAll(
+  ws: ServerWebSocket<ClientSession>,
+  message: WSMessage,
+  ctx: HandlerContext
+): Promise<void> {
+  try {
+    const { getPlayerRelationships } = await import('../../services/relationships.js');
+    const payload = message.payload as { playerId?: string } | undefined;
+
+    const relationships = getPlayerRelationships(payload?.playerId || 'player');
+    ctx.send(ws, createResponse(message.id, true, { relationships }));
+  } catch (error) {
+    errorLogger.log(error, { source: 'ws-server', operation: 'handlePlayerRelationshipGetAll' });
+    ctx.send(ws, createError('Failed to get player relationships', 'RELATIONSHIP_ERROR', message.id));
+  }
+}
+
 export const relationshipsHandlers: HandlerMap = {
+  'playerRelationship:get': handlePlayerRelationshipGet,
+  'playerRelationship:getAll': handlePlayerRelationshipGetAll,
   'npcRelationship:getAll': handleNPCRelationshipGetAll,
   'npcRelationship:get': handleNPCRelationshipGet,
   'npcRelationship:getBetween': handleNPCRelationshipGetBetween,

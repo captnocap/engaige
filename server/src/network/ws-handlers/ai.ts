@@ -18,6 +18,16 @@ async function handleAISendMessage(
     return;
   }
 
+  // Validate platform access if platform is specified
+  if (platform) {
+    const { validateMessageAccess } = await import('../../services/message-access-validator.js');
+    const access = validateMessageAccess('player', npcId, platform);
+    if (!access.allowed) {
+      ctx.send(ws, createResponse(message.id, false, null, `ACCESS_DENIED: ${access.reason}`));
+      return;
+    }
+  }
+
   // Send typing indicator
   ctx.send(ws, {
     type: 'ai:typing',

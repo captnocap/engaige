@@ -34,7 +34,7 @@ export function TaskbarSimsHub() {
 
   const romanticCount = npcArray.filter(n => {
     const rel = n.relationship
-    return rel && rel.level === 'romantic'
+    return rel && (rel.level === 'romantic_interest' || rel.level === 'partner')
   }).length
 
   const totalNPCs = npcArray.length

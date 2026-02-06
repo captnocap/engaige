@@ -666,6 +666,7 @@ export const EventTypes = {
   RELATIONSHIP_STAGE_CHANGED: 'relationship:stage_changed',
   RELATIONSHIP_FIRST_INTERACTION: 'relationship:first_interaction',
   RELATIONSHIP_MILESTONE: 'relationship:milestone',
+  RELATIONSHIP_ACCESS_DENIED: 'relationship:access_denied',
 
   // Social
   SOCIAL_POST_CREATED: 'social:post_created',

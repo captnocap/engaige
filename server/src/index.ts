@@ -64,6 +64,10 @@ import { initializeNPCRelationshipSchema, setupPreExistingDrama } from './servic
 initializeNPCRelationshipSchema();
 setupPreExistingDrama();
 
+// Initialize relationship broadcaster (pushes relationship updates to frontend)
+import { initRelationshipBroadcaster } from './services/relationship-broadcaster.js';
+initRelationshipBroadcaster();
+
 // Initialize drama engine (subscribes to relationship events, generates drama posts)
 import { initializeDramaEngine, startDramaEngine } from './services/drama-engine.js';
 initializeDramaEngine();

@@ -27,6 +27,20 @@ async function handleInteractionSendMessage(
       return;
     }
 
+    // Validate platform access if platform is specified
+    if (payload.platform) {
+      const { validateMessageAccess } = await import('../../services/message-access-validator.js');
+      const access = validateMessageAccess('player', payload.npcId, payload.platform);
+      if (!access.allowed) {
+        ctx.send(ws, createError(
+          access.reason || 'Access denied',
+          'ACCESS_DENIED',
+          message.id
+        ));
+        return;
+      }
+    }
+
     const response = await sendMessageToNPC(payload.npcId, payload.message, {
       imageUrl: payload.imageUrl,
       platform: payload.platform,

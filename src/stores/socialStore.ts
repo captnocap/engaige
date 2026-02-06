@@ -27,7 +27,7 @@ export interface SocialProfile {
   textColor?: string
   isOnline?: boolean
   lastSeen?: string
-  relationshipLevel?: 'stranger' | 'acquaintance' | 'friend' | 'close_friend' | 'best_friend' | 'romantic'
+  relationshipLevel?: 'stranger' | 'acquaintance' | 'friend' | 'close_friend' | 'best_friend' | 'romantic_interest' | 'partner'
 }
 
 /**

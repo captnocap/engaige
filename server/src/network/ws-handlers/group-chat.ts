@@ -80,6 +80,20 @@ async function handleGroupChatSendMessage(
       return;
     }
 
+    // Safety net: validate platform access for player messages
+    if (payload.senderType === 'player') {
+      const { validateMessageAccess } = await import('../../services/message-access-validator.js');
+      const access = validateMessageAccess(payload.senderId, '', 'groupchat');
+      if (!access.allowed) {
+        ctx.send(ws, createError(
+          access.reason || 'Access denied',
+          'ACCESS_DENIED',
+          message.id
+        ));
+        return;
+      }
+    }
+
     const result = await handleGroupChatMessage(
       payload.conversationId,
       payload.senderId,
