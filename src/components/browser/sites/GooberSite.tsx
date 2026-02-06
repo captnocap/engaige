@@ -2,7 +2,7 @@
  * Goober Site
  *
  * Google-style search engine for the .corn internet.
- * Features FTS5 full-text search with BM25 ranking and proximity boosting.
+ * Uses server-side FTS5 full-text search with BM25 ranking.
  *
  * URL Routing:
  * - Homepage: path = null or '/'
@@ -11,8 +11,6 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { SiteComponentProps } from '../../../router/types.js'
-import { getAllSearchEntries } from '../../../router/site-registry.js'
-import type { SearchIndexEntry } from '../../../router/types.js'
 import { useWSStore } from '../../../stores/wsStore.js'
 
 // ============================================================================
@@ -73,6 +71,11 @@ interface AutocompleteItem {
   contentType: string
 }
 
+interface AutocompleteResponse {
+  prefix: string
+  suggestions: AutocompleteItem[]
+}
+
 interface AIOverviewState {
   loading: boolean
   content: string | null
@@ -84,10 +87,6 @@ interface AIOverviewState {
 // Sponsored/Fallback Results
 // ============================================================================
 
-/**
- * Curated "sponsored" sites shown when search returns no results.
- * These are popular/useful sites that are always relevant.
- */
 const SPONSORED_SITES: Array<{
   url: string
   title: string
@@ -138,13 +137,7 @@ const SPONSORED_SITES: Array<{
   },
 ]
 
-/**
- * Get sponsored results for when search returns empty.
- * Can optionally filter based on the query for "did you mean" suggestions.
- */
-function getSponsoredResults(query: string): SearchResult[] {
-  // For now, just return all sponsored sites
-  // Could add fuzzy matching here for "did you mean" suggestions
+function getSponsoredResults(_query: string): SearchResult[] {
   return SPONSORED_SITES.map((site, i) => ({
     id: `sponsored-${i}`,
     url: site.url,
@@ -157,81 +150,16 @@ function getSponsoredResults(query: string): SearchResult[] {
     metadata: null,
     source: 'sponsored',
     createdAt: null,
-    rank: 100 - i, // Keep order
+    rank: 100 - i,
   }))
 }
 
-// ============================================================================
-// Client-Side Search (using site manifests)
-// ============================================================================
-
-/**
- * Get searchable content from site manifests.
- * This is called lazily to ensure manifests are registered first.
- */
-function getSearchableContent(): SearchIndexEntry[] {
-  return getAllSearchEntries()
-}
-
-/**
- * Client-side search function.
- * Searches through all registered site manifests.
- */
-function clientSearch(query: string): SearchResult[] {
-  if (!query.trim()) return []
-
-  const entries = getSearchableContent()
-  if (entries.length === 0) {
-    console.warn('[Goober] No entries in search index - manifests may not be registered')
-    return []
-  }
-
-  const terms = query.toLowerCase().split(/\s+/)
-
-  // Score and filter results
-  const allScored = entries.map(entry => {
-    const titleLower = entry.title.toLowerCase()
-    const snippetLower = entry.snippet.toLowerCase()
-    const keywordsLower = entry.keywords.join(' ').toLowerCase()
-
-    // Calculate match score
-    let score = 0
-    for (const term of terms) {
-      // Title matches are worth more
-      if (titleLower.includes(term)) score += 10
-      // Snippet matches
-      if (snippetLower.includes(term)) score += 5
-      // Keyword matches
-      if (keywordsLower.includes(term)) score += 3
-    }
-
-    // Apply SEO score as a multiplier
-    score = score * (entry.seoScore / 50)
-
-    return { entry, score }
-  })
-
-  const scored = allScored
-    .filter(({ score }) => score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 15)
-
-  // Convert to SearchResult format
-  return scored.map(({ entry, score }, i) => ({
-    id: entry.url,
-    url: entry.url,
-    siteDomain: entry.domain,
-    contentType: entry.category,
-    title: entry.title,
-    snippet: entry.snippet,
-    author: entry.author || null,
-    tags: entry.keywords.join(', ') || null,
-    metadata: null,
-    source: 'manifest',
-    createdAt: entry.indexedAt || null,
-    rank: score,
-  }))
-}
+// Random common search terms for "I'm Feeling Corny"
+const RANDOM_TERMS = [
+  'coffee', 'quantum', 'music', 'hartwell', 'trust fall',
+  'underground', 'corn', 'recipe', 'podcast', 'mystery',
+  'band', 'review', 'derek', 'building', 'floor 13',
+]
 
 // ============================================================================
 // Components
@@ -305,13 +233,7 @@ function AIOverview({ state, onSourceClick }: AIOverviewProps) {
     )
   }
 
-  if (state.error) {
-    return null // Don't show error state, just skip AI overview
-  }
-
-  if (!state.content) {
-    return null
-  }
+  if (state.error || !state.content) return null
 
   return (
     <div
@@ -323,7 +245,6 @@ function AIOverview({ state, onSourceClick }: AIOverviewProps) {
         background: `linear-gradient(135deg, ${THEME.surface} 0%, #e8f0fe 100%)`,
       }}
     >
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
         <div
           style={{
@@ -344,17 +265,13 @@ function AIOverview({ state, onSourceClick }: AIOverviewProps) {
         </span>
       </div>
 
-      {/* Content */}
       <div style={{ fontSize: '14px', lineHeight: 1.6, color: THEME.text, whiteSpace: 'pre-wrap' }}>
         {state.content}
       </div>
 
-      {/* Sources */}
       {state.sources.length > 0 && (
         <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: `1px solid ${THEME.border}` }}>
-          <div style={{ fontSize: '12px', color: THEME.textMuted, marginBottom: '8px' }}>
-            Sources
-          </div>
+          <div style={{ fontSize: '12px', color: THEME.textMuted, marginBottom: '8px' }}>Sources</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {state.sources.slice(0, 3).map((source, i) => (
               <button
@@ -383,10 +300,6 @@ function AIOverview({ state, onSourceClick }: AIOverviewProps) {
     </div>
   )
 }
-
-// ============================================================================
-// Components
-// ============================================================================
 
 function GooberLogo({ size = 'large' }: { size?: 'small' | 'large' }) {
   const fontSize = size === 'large' ? '92px' : '24px'
@@ -583,10 +496,8 @@ interface SearchResultCardProps {
 }
 
 function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
-  // Parse highlighted snippet
   const renderSnippet = () => {
     if (!result.snippet) return null
-    // Replace <mark> tags with styled spans
     const parts = result.snippet.split(/(<mark>|<\/mark>)/)
     let inMark = false
     return parts.map((part, i) => {
@@ -616,11 +527,16 @@ function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
     product: '🛒',
     repository: '📦',
     listing: '🏠',
+    show: '🎧',
+    recipe: '🍳',
+    market: '📈',
+    place: '📍',
+    board: '📋',
+    repo: '📦',
   }
 
   return (
     <div style={{ padding: '12px 0', borderBottom: `1px solid ${THEME.border}` }}>
-      {/* URL breadcrumb */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginBottom: '4px' }}>
         <span
           style={{
@@ -642,7 +558,6 @@ function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
         </div>
       </div>
 
-      {/* Title */}
       <button
         onClick={() => onNavigate(result.url)}
         style={{
@@ -663,12 +578,10 @@ function SearchResultCard({ result, onNavigate }: SearchResultCardProps) {
         {result.title}
       </button>
 
-      {/* Snippet */}
       <p style={{ fontSize: '14px', marginTop: '4px', lineHeight: 1.58, color: THEME.text }}>
         {renderSnippet()}
       </p>
 
-      {/* Metadata */}
       {(result.author || result.contentType) && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px', fontSize: '12px', color: THEME.textMuted }}>
           {result.author && <span>By {result.author}</span>}
@@ -697,10 +610,8 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
     error: null,
   })
 
-  // WebSocket for AI requests
   const ws = useWSStore()
 
-  // Parse path to determine view
   const parsedPath = useMemo(() => {
     if (!path || path === '/') {
       return { view: 'home' as const, query: '' }
@@ -712,7 +623,6 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
     return { view: 'home' as const, query: '' }
   }, [path, query])
 
-  // Sync searchInput state with URL
   useEffect(() => {
     if (parsedPath.query) {
       setSearchInput(parsedPath.query)
@@ -732,16 +642,23 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
     const startTime = Date.now()
 
     try {
-      const searchResults = clientSearch(searchQuery)
+      if (!ws.connected) {
+        throw new Error('Not connected')
+      }
 
-      if (searchResults.length === 0) {
+      const response = await ws.request<
+        { query: string; limit?: number },
+        SearchResponse
+      >('search:query', { query: searchQuery, limit: 20 })
+
+      if (response.results.length === 0) {
         setResults(getSponsoredResults(searchQuery))
         setShowingSponsored(true)
       } else {
-        setResults(searchResults)
+        setResults(response.results)
         setShowingSponsored(false)
       }
-      setSearchTime(Date.now() - startTime)
+      setSearchTime(response.took || (Date.now() - startTime))
     } catch (error) {
       console.error('[Goober] Search error:', error)
       setResults(getSponsoredResults(searchQuery))
@@ -749,19 +666,15 @@ export function GooberSite({ siteId, path, params, query, onNavigate, onPathChan
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [ws])
 
   // Request AI Overview when we have search results
   const requestAIOverview = useCallback(async (searchQuery: string, searchResults: SearchResult[]) => {
-    // Don't request for sponsored results or if not connected
-    if (showingSponsored || !ws.connected || searchResults.length === 0) {
-      return
-    }
+    if (showingSponsored || !ws.connected || searchResults.length === 0) return
 
     setAiOverview({ loading: true, content: null, sources: [], error: null })
 
     try {
-      // Build context from top results
       const topResults = searchResults.slice(0, 5)
       const context = topResults
         .map(r => `[${r.siteDomain}] ${r.title}: ${r.snippet}`)
@@ -782,7 +695,6 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
         history: [],
       })
 
-      // Extract sources from search results
       const sources = topResults.map(r => ({
         title: r.title,
         url: r.url,
@@ -834,33 +746,52 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
     onNavigateToUrl(item.url)
   }, [onNavigateToUrl])
 
-  const handleFeelingCorny = useCallback(() => {
-    // Navigate to a random result from site manifests
-    const entries = getSearchableContent()
-    const random = entries[Math.floor(Math.random() * entries.length)]
-    if (random && onNavigateToUrl) {
-      onNavigateToUrl(random.url)
-    }
-  }, [onNavigateToUrl])
+  const handleFeelingCorny = useCallback(async () => {
+    if (!ws.connected) return
+    try {
+      const term = RANDOM_TERMS[Math.floor(Math.random() * RANDOM_TERMS.length)]
+      const response = await ws.request<
+        { query: string; limit?: number },
+        SearchResponse
+      >('search:query', { query: term, limit: 10 })
 
-  // Generate autocomplete suggestions from site manifests
-  useEffect(() => {
-    if (searchInput.length >= 2) {
-      const entries = getSearchableContent()
-      const matching = entries.filter(entry =>
-        entry.title.toLowerCase().includes(searchInput.toLowerCase())
-      )
-      setSuggestions(
-        matching.slice(0, 5).map(entry => ({
-          title: entry.title,
-          url: entry.url,
-          contentType: entry.category,
-        }))
-      )
-    } else {
-      setSuggestions([])
+      if (response.results.length > 0) {
+        const random = response.results[Math.floor(Math.random() * response.results.length)]
+        onNavigateToUrl(random.url)
+      }
+    } catch (error) {
+      console.error('[Goober] Feeling Corny error:', error)
     }
-  }, [searchInput])
+  }, [ws, onNavigateToUrl])
+
+  // Server-side autocomplete
+  useEffect(() => {
+    if (searchInput.length < 2 || !ws.connected) {
+      setSuggestions([])
+      return
+    }
+
+    let cancelled = false
+    const timeout = setTimeout(async () => {
+      try {
+        const response = await ws.request<
+          { prefix: string; limit?: number },
+          AutocompleteResponse
+        >('search:autocomplete', { prefix: searchInput, limit: 5 })
+
+        if (!cancelled) {
+          setSuggestions(response.suggestions || [])
+        }
+      } catch {
+        if (!cancelled) setSuggestions([])
+      }
+    }, 150) // debounce
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeout)
+    }
+  }, [searchInput, ws])
 
   // -------------------------------------------------------------------------
   // Render
@@ -881,10 +812,8 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem', marginTop: '-5rem' }}>
-          {/* Logo */}
           <GooberLogo size="large" />
 
-          {/* Search Box */}
           <SearchBox
             value={searchInput}
             onChange={setSearchInput}
@@ -895,7 +824,6 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
             onSelectSuggestion={handleSelectSuggestion}
           />
 
-          {/* Buttons */}
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
             <button
               onClick={handleSearch}
@@ -943,7 +871,6 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
             </button>
           </div>
 
-          {/* Footer info */}
           <div style={{ fontSize: '14px', color: THEME.textMuted, marginTop: '3rem' }}>
             Searching the entire .corn internet
           </div>
@@ -955,7 +882,6 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
   // Results view
   return (
     <div style={{ position: 'absolute', inset: 0, background: THEME.background, overflow: 'auto' }}>
-      {/* Header */}
       <div
         style={{
           position: 'sticky',
@@ -983,23 +909,19 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
         </div>
       </div>
 
-      {/* Results */}
       <div style={{ maxWidth: '700px', padding: '16px 24px 16px 150px' }}>
-        {/* Stats */}
         {!isLoading && results.length > 0 && !showingSponsored && (
           <div style={{ fontSize: '14px', color: THEME.textMuted, marginBottom: '16px' }}>
             About {results.length} results ({(searchTime / 1000).toFixed(2)} seconds)
           </div>
         )}
 
-        {/* Loading */}
         {isLoading && (
           <div style={{ padding: '32px 0', textAlign: 'center', color: THEME.textMuted }}>
             Searching...
           </div>
         )}
 
-        {/* Sponsored results banner */}
         {!isLoading && showingSponsored && (
           <div
             style={{
@@ -1019,12 +941,10 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
           </div>
         )}
 
-        {/* AI Overview */}
         {!isLoading && !showingSponsored && (aiOverview.loading || aiOverview.content) && (
           <AIOverview state={aiOverview} onSourceClick={handleNavigateToResult} />
         )}
 
-        {/* Results list */}
         <div>
           {results.map((result) => (
             <SearchResultCard
@@ -1036,7 +956,6 @@ Respond naturally as if you're summarizing what you found. Don't mention that th
         </div>
       </div>
 
-      {/* Footer */}
       <div
         style={{
           borderTop: `1px solid ${THEME.border}`,

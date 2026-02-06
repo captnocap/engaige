@@ -32,11 +32,7 @@ export const MYFACE_MANIFEST: SiteManifest = {
     keywords: ['social network', 'friends', 'profile', 'top 8', 'bulletins', 'myspace'],
   },
   seoScore: 85,
-  pages: [
-    { path: '/browse', title: 'Browse MyFace Profiles', description: 'Discover new friends and browse profiles on MyFace', type: 'social', tags: ['browse', 'discover', 'profiles'] },
-    { path: '/messages', title: 'MyFace Messages', description: 'Message your friends on MyFace', type: 'social', tags: ['messages', 'chat', 'dm'] },
-    { path: '/dating', title: 'MyFace Dating', description: 'Find your special someone on MyFace Dating', type: 'social', tags: ['dating', 'romance', 'match'] },
-  ],
+  pages: [],
 }
 
 export const INSTASNAP_MANIFEST: SiteManifest = {
@@ -50,10 +46,7 @@ export const INSTASNAP_MANIFEST: SiteManifest = {
     keywords: ['photos', 'stories', 'reels', 'instagram', 'social', 'images'],
   },
   seoScore: 85,
-  pages: [
-    { path: '/explore', title: 'Explore InstaSnap', description: 'Discover trending photos and creators on InstaSnap', type: 'social', tags: ['explore', 'trending', 'discover'] },
-    { path: '/stories', title: 'InstaSnap Stories', description: '24-hour stories from people you follow', type: 'social', tags: ['stories', 'ephemeral'] },
-  ],
+  pages: [],
 }
 
 export const THREADIT_MANIFEST: SiteManifest = {
@@ -67,21 +60,7 @@ export const THREADIT_MANIFEST: SiteManifest = {
     keywords: ['forum', 'discussion', 'community', 'reddit', 'subreddit', 'threads'],
   },
   seoScore: 85,
-  pages: [
-    // Threadits (communities)
-    { path: '/t/QuantumCoffee', title: 't/QuantumCoffee - Threadit', description: 'The unofficial threadit for quantum coffee enthusiasts. Derek is a mod.', type: 'forum', tags: ['quantum coffee', 'derek', 'coffee'] },
-    { path: '/t/HartwellBuilding', title: 't/HartwellBuilding - Threadit', description: 'Theories, sightings, and investigations into the Hartwell Building mystery', type: 'forum', tags: ['hartwell', 'floor 13', 'mystery', 'conspiracy'] },
-    { path: '/t/TrustFallTim', title: 't/TrustFallTim - Threadit', description: 'Fan community for Trust Fall Tim. Fall statistics, meet-up planning, and The Incident discussions.', type: 'forum', tags: ['trust fall tim', 'fan', 'community'] },
-    { path: '/t/LocalMusic', title: 't/LocalMusic - Threadit', description: 'Local music scene discussion. Velvet Algorithms updates, Underground shows, Neon Requiem memorials.', type: 'forum', tags: ['music', 'local', 'velvet algorithms', 'neon requiem', 'underground'] },
-    { path: '/t/Cornfield', title: 't/Cornfield - Threadit', description: 'General discussion for Cornfield, KS residents and enthusiasts', type: 'forum', tags: ['local', 'cornfield', 'community'] },
-    { path: '/t/AskThreadit', title: 't/AskThreadit - Threadit', description: 'Ask and answer thought-provoking questions on any topic', type: 'forum', tags: ['questions', 'discussion', 'community'] },
-    // Needles (posts nested under threadits)
-    { path: '/t/HartwellBuilding/n/theory_floor_13_is_a_dimensional_pocket', title: '[THEORY] Floor 13 is a dimensional pocket', description: 'Conspiracy theory about the missing Hartwell Building floor.', type: 'forum', tags: ['hartwell', 'floor 13', 'conspiracy', 'theory'], parent: '/t/HartwellBuilding' },
-    { path: '/t/TrustFallTim/n/i_was_there_for_the_incident_ama', title: 'I was there for The Incident. AMA.', description: 'Eyewitness account of the infamous Trust Fall Tim incident.', type: 'forum', tags: ['trust fall tim', 'the incident', 'small kevin', 'ama'], parent: '/t/TrustFallTim' },
-    { path: '/t/QuantumCoffee/n/dr_martinez_clarification_about_her_study', title: 'Dr. Martinez clarification about her study', description: 'Derek posts about Dr. Martinez repeatedly clarifying her study was NOT about coffee.', type: 'forum', tags: ['martinez study', 'quantum coffee', 'derek'], parent: '/t/QuantumCoffee' },
-    { path: '/t/AskThreadit/n/whats_your_towns_open_secret', title: 'What\'s your town\'s open secret?', description: 'Viral thread about local secrets everyone knows but nobody talks about.', type: 'forum', tags: ['secrets', 'local', 'viral'], parent: '/t/AskThreadit' },
-    { path: '/t/LocalMusic/n/mars_banned_another_wonderwall_requester', title: 'Mars banned another Wonderwall requester', description: 'The Underground owner permanently bans yet another person for requesting Wonderwall.', type: 'forum', tags: ['mars', 'underground', 'wonderwall', 'banned'], parent: '/t/LocalMusic' },
-  ],
+  pages: [],
 }
 
 // ============================================================================
@@ -99,18 +78,7 @@ export const WIKIKNOW_MANIFEST: SiteManifest = {
     keywords: ['wiki', 'encyclopedia', 'reference', 'articles', 'knowledge'],
   },
   seoScore: 90,
-  pages: [
-    { path: '/wiki/Quantum_Coffee_Brewing', title: 'Quantum Coffee Brewing - WikiKnow', description: 'Controversial preparation method claiming to use quantum mechanics to enhance coffee extraction. Based on misinterpretation of the Martinez Study.', type: 'wiki', author: 'Various Contributors', tags: ['quantum coffee', 'coffee', 'pseudoscience', 'martinez study'] },
-    { path: '/wiki/Hartwell_Building', title: 'Hartwell Building - WikiKnow', description: 'Historic 14-story building in downtown notable for its "missing" 13th floor, strange mirror phenomena on Floor 7, and connection to Omnicorp Holdings. Built 1923.', type: 'wiki', tags: ['hartwell building', 'floor 13', 'omnicorp', 'architecture', 'mystery'] },
-    { path: '/wiki/Trust_Fall_Tim', title: 'Trust Fall Tim - WikiKnow', description: 'Timothy "Trust Fall Tim" Henderson, performance artist known for daily public trust falls since 2018. Has completed over 2,847 documented falls with 78.5% catch rate.', type: 'wiki', tags: ['trust fall tim', 'performance art', 'local celebrity'] },
-    { path: '/wiki/The_Underground_(venue)', title: 'The Underground (venue) - WikiKnow', description: 'Experimental music venue run by Marcus "Mars" Williams. Known for hosting avant-garde performances and permanent bans for Wonderwall requests.', type: 'wiki', tags: ['the underground', 'music venue', 'mars', 'local music'] },
-    { path: '/wiki/The_Velvet_Algorithms', title: 'The Velvet Algorithms - WikiKnow', description: 'Electronic music duo known for experimental sound and frequent show cancellations due to "existential crises." Currently on indefinite meditation hiatus.', type: 'wiki', tags: ['velvet algorithms', 'electronic music', 'experimental', 'band'] },
-    { path: '/wiki/Neon_Requiem', title: 'Neon Requiem - WikiKnow', description: 'Post-punk band that broke up January 2024 after legendary final show at The Underground. Drummer Vex still hasn\'t accepted it.', type: 'wiki', tags: ['neon requiem', 'post-punk', 'band', 'vex'] },
-    { path: '/wiki/The_Martinez_Study', title: 'The Martinez Study - WikiKnow', description: 'Physics paper by Dr. Elena Martinez, widely misinterpreted as validating quantum coffee brewing. Martinez has repeatedly clarified her paper was about subatomic particles, not beverages.', type: 'wiki', tags: ['martinez study', 'quantum', 'physics', 'misinterpretation'] },
-    { path: '/wiki/Small_Kevin', title: 'Small Kevin - WikiKnow', description: 'Kevin Smallwood, forever associated with "The Incident" during one of Trust Fall Tim\'s falls. Height: 5\'6". Currently running a redemption blog.', type: 'wiki', tags: ['small kevin', 'the incident', 'trust fall tim'] },
-    { path: '/wiki/Derek_(quantum_coffee_enthusiast)', title: 'Derek - WikiKnow', description: 'Local quantum coffee enthusiast and blogger. Divorced from Jennifer over his obsession. Has conducted 847 personal brewing trials.', type: 'wiki', tags: ['derek', 'quantum coffee', 'blogger'] },
-    { path: '/wiki/Omnicorp_Holdings', title: 'Omnicorp Holdings - WikiKnow', description: 'Mysterious corporation headquartered in the Hartwell Building. Little is known about their actual business. Patricia works in HR.', type: 'wiki', tags: ['omnicorp', 'corporation', 'hartwell building', 'mystery'] },
-  ],
+  pages: [],
 }
 
 export const DAILYBUZZ_MANIFEST: SiteManifest = {
@@ -124,14 +92,7 @@ export const DAILYBUZZ_MANIFEST: SiteManifest = {
     keywords: ['news', 'local', 'journalism', 'articles', 'breaking news'],
   },
   seoScore: 80,
-  pages: [
-    { path: '/article/quantum-cafe-opens', title: 'New Quantum Cafe Opens Downtown, Charges $47 Per Cup', description: 'Qubit Coffee opens in Hartwell Building with quantum brewing technology. Enthusiasts line up for hours; scientists remain skeptical.', type: 'news', author: 'Michael Torres', tags: ['quantum coffee', 'business', 'downtown', 'hartwell building'] },
-    { path: '/article/trust-fall-record', title: 'Local Man Breaks Trust Fall Record with 2,847 Consecutive Falls', description: 'Trust Fall Tim achieves 78.5% catch rate over eight-year experiment. "The Incident" with Small Kevin remains controversial.', type: 'news', author: 'Amanda Price', tags: ['trust fall tim', 'record', 'local'] },
-    { path: '/article/local-band-cancels-show', title: 'Local Band Cancels Show Due to "Ongoing Existential Crisis"', description: 'The Velvet Algorithms cite "fundamental questioning of musical purpose" as reason for cancellation at The Underground.', type: 'news', author: 'Sarah Chen', tags: ['velvet algorithms', 'music', 'the underground'] },
-    { path: '/article/hartwell-elevator-malfunction', title: 'Hartwell Building Elevator Skips Floor 13 Again, Tenants Concerned', description: 'Third reported "glitch" this month. Building management insists floor 13 does not exist. Elevator disagrees.', type: 'news', author: 'James Wilson', tags: ['hartwell building', 'floor 13', 'mystery'] },
-    { path: '/article/underground-bans-wonderwall', title: 'The Underground Issues 847th Wonderwall Ban', description: 'Gary becomes latest patron banned for requesting Oasis classic. Venue owner Mars unmoved by petition.', type: 'news', author: 'Sarah Chen', tags: ['the underground', 'wonderwall', 'gary', 'music'] },
-    { path: '/article/neon-requiem-breakup', title: 'Neon Requiem Announces Breakup After "Final" Show', description: 'Post-punk legends call it quits. Drummer Vex reportedly "still setting up for next practice."', type: 'news', author: 'Sarah Chen', tags: ['neon requiem', 'music', 'breakup'] },
-  ],
+  pages: [],
 }
 
 export const VIDTUBE_MANIFEST: SiteManifest = {
@@ -145,14 +106,7 @@ export const VIDTUBE_MANIFEST: SiteManifest = {
     keywords: ['video', 'streaming', 'youtube', 'upload', 'watch', 'creators'],
   },
   seoScore: 85,
-  pages: [
-    { path: '/watch/quantum_coffee_explained', title: 'I Tried $47 Quantum Coffee for 30 Days - Here\'s What Happened', description: 'Month-long experiment with quantum coffee from Qubit Coffee. Does it actually work?', type: 'video', author: 'ScienceBro', tags: ['quantum coffee', 'experiment', 'review'] },
-    { path: '/watch/hartwell_floor_13', title: 'We Snuck Into the Hartwell Building\'s Missing Floor 13 (GONE WRONG)', description: 'Urban exploration of the mysterious missing floor. What we found will... actually it was mostly empty offices.', type: 'video', author: 'ParanormalPatrol', tags: ['hartwell building', 'floor 13', 'urban exploration'] },
-    { path: '/watch/trust_fall_tim_best_fails', title: 'Trust Fall Tim\'s Most Epic Falls (21.5% Fail Rate Compilation)', description: 'Compilation of Trust Fall Tim\'s greatest misses including The Incident footage.', type: 'video', author: 'ViralMoments', tags: ['trust fall tim', 'compilation', 'fails'] },
-    { path: '/watch/velvet_algorithms_live', title: 'The Velvet Algorithms - Full Set at The Underground (Before Hiatus)', description: 'Complete recording of their last show before the existential crisis hiatus.', type: 'video', author: 'UndergroundRecordings', tags: ['velvet algorithms', 'live', 'concert', 'the underground'] },
-    { path: '/watch/neon_requiem_final_show', title: 'Neon Requiem - The Final Show (Full Concert)', description: 'The legendary last performance. Vex cried. We all cried.', type: 'video', author: 'UndergroundRecordings', tags: ['neon requiem', 'final show', 'concert'] },
-    { path: '/trending', title: 'Trending on VidTube', description: 'The most popular videos on VidTube right now', type: 'video', tags: ['trending', 'popular'] },
-  ],
+  pages: [],
 }
 
 export const FORCHAN_MANIFEST: SiteManifest = {
@@ -166,21 +120,7 @@ export const FORCHAN_MANIFEST: SiteManifest = {
     keywords: ['anonymous', 'imageboard', '4chan', 'memes', 'forum'],
   },
   seoScore: 40,
-  pages: [
-    // Boards
-    { path: '/b', title: '/b/ - Random', description: 'The random board. Rules: none. Expectations: adjust accordingly.', type: 'forum', tags: ['random', 'memes'] },
-    { path: '/g', title: '/g/ - Technology', description: 'Install Gentoo. Also quantum coffee machine debates.', type: 'forum', tags: ['technology', 'programming', 'hardware'] },
-    { path: '/mu', title: '/mu/ - Music', description: 'Music discussion. Velvet Algorithms tier list threads every hour.', type: 'forum', tags: ['music', 'discussion'] },
-    { path: '/ck', title: '/ck/ - Food & Cooking', description: 'How do I make pasta that doesn\'t taste like sadness?', type: 'forum', tags: ['food', 'cooking', 'recipes'] },
-    { path: '/x', title: '/x/ - Paranormal', description: 'Paranormal discussion. Hartwell Building threads pinned permanently.', type: 'forum', tags: ['paranormal', 'conspiracy', 'hartwell building'] },
-    { path: '/sci', title: '/sci/ - Science & Math', description: 'For the scientifically minded. Martinez study debates welcome.', type: 'forum', tags: ['science', 'math', 'physics'] },
-    { path: '/diy', title: '/diy/ - Do It Yourself', description: 'You can probably fix that yourself, right?', type: 'forum', tags: ['diy', 'repair', 'projects'] },
-    { path: '/adv', title: '/adv/ - Advice', description: 'Life lessons from anonymous strangers', type: 'forum', tags: ['advice', 'life', 'relationships'] },
-    // Notable threads (nested under boards in actual site navigation)
-    { path: '/g/thread/94817234', title: 'Quantum Coffee Machine General /qcg/', description: 'Sticky thread for quantum coffee machine discussion on /g/', type: 'forum', tags: ['quantum coffee', 'technology'], parent: '/g' },
-    { path: '/x/thread/94812456', title: 'Hartwell Building - New Evidence', description: 'Anonymous claims cousin found sealed documents about the Hartwell incident', type: 'forum', tags: ['hartwell', 'conspiracy', 'paranormal'], parent: '/x' },
-    { path: '/mu/thread/94815102', title: 'Velvet Algorithms Appreciation Thread', description: 'Discussion of the existential crisis show cancellation at The Underground', type: 'forum', tags: ['velvet algorithms', 'music', 'the underground'], parent: '/mu' },
-  ],
+  pages: [],
 }
 
 // ============================================================================
@@ -198,12 +138,7 @@ export const AMAIZE_MANIFEST: SiteManifest = {
     keywords: ['shopping', 'amazon', 'ecommerce', 'delivery', 'products'],
   },
   seoScore: 80,
-  pages: [
-    { path: '/product/quantum-coffee-maker', title: 'QuantumBrew Pro 3000 - Quantum Coffee Maker', description: 'The official quantum coffee maker. 847 entanglement settings. $299.99. Derek gave it 5 stars.', type: 'product', tags: ['quantum coffee', 'appliance', 'kitchen'] },
-    { path: '/product/trust-fall-mat', title: 'Professional Trust Fall Safety Mat', description: 'The same mat Trust Fall Tim uses (when he remembers). 78.5% softer landings guaranteed.', type: 'product', tags: ['trust fall', 'safety', 'fitness'] },
-    { path: '/product/floor-13-detector', title: 'Floor 13 EMF Detector', description: 'Detect anomalies in buildings with "missing" floors. 847 reviews, 4.7 stars.', type: 'product', tags: ['hartwell building', 'paranormal', 'detector'] },
-    { path: '/deals', title: 'Amaize Deals', description: 'Today\'s best deals on Amaize. Kernel Prime members save extra.', type: 'product', tags: ['deals', 'savings', 'sale'] },
-  ],
+  pages: [],
 }
 
 export const BARGAINBAY_MANIFEST: SiteManifest = {
@@ -217,11 +152,7 @@ export const BARGAINBAY_MANIFEST: SiteManifest = {
     keywords: ['classifieds', 'marketplace', 'craigslist', 'buy', 'sell', 'local'],
   },
   seoScore: 65,
-  pages: [
-    { path: '/for-sale', title: 'Items For Sale - BargainBay', description: 'Browse items for sale in your area', type: 'product', tags: ['for sale', 'listings'] },
-    { path: '/housing', title: 'Housing - BargainBay', description: 'Apartments and rooms for rent. Hartwell Building listings... questionable.', type: 'product', tags: ['housing', 'rent', 'apartments'] },
-    { path: '/jobs', title: 'Jobs - BargainBay', description: 'Job listings. Omnicorp is always hiring.', type: 'product', tags: ['jobs', 'employment'] },
-  ],
+  pages: [],
 }
 
 export const NESTFINDER_MANIFEST: SiteManifest = {
@@ -235,10 +166,7 @@ export const NESTFINDER_MANIFEST: SiteManifest = {
     keywords: ['real estate', 'apartments', 'houses', 'rent', 'buy', 'housing'],
   },
   seoScore: 70,
-  pages: [
-    { path: '/search', title: 'Search Listings - NestFinder', description: 'Search apartments and houses in your area', type: 'product', tags: ['search', 'listings', 'housing'] },
-    { path: '/listing/hartwell-building-floor-7', title: 'Hartwell Building Floor 7 - NestFinder', description: 'Spacious office space. Great natural light (from unknown source). Mirrors included. $847/month.', type: 'product', tags: ['hartwell building', 'office', 'rent'] },
-  ],
+  pages: [],
 }
 
 export const COBFUNDME_MANIFEST: SiteManifest = {
@@ -252,11 +180,7 @@ export const COBFUNDME_MANIFEST: SiteManifest = {
     keywords: ['crowdfunding', 'fundraiser', 'gofundme', 'donations', 'campaigns'],
   },
   seoScore: 55,
-  pages: [
-    { path: '/campaign/quantum-coffee-research', title: 'Fund Derek\'s Quantum Coffee Research', description: 'Help Derek prove quantum coffee is real science. $847 raised of $47,000 goal. Jennifer has declined to comment.', type: 'product', author: 'Derek', tags: ['quantum coffee', 'derek', 'research'] },
-    { path: '/campaign/trust-fall-tim-medical', title: 'Trust Fall Tim Medical Fund', description: 'Help cover Tim\'s medical bills from the 21.5% of falls that weren\'t caught. Goal: $8,470.', type: 'product', author: 'Carol Henderson', tags: ['trust fall tim', 'medical', 'fundraiser'] },
-    { path: '/campaign/save-the-underground', title: 'Save The Underground Venue', description: 'Help Mars keep the doors open. No Wonderwall requesters may donate.', type: 'product', author: 'Mars Williams', tags: ['the underground', 'music venue', 'fundraiser'] },
-  ],
+  pages: [],
 }
 
 export const VITALITYRX_MANIFEST: SiteManifest = {
@@ -316,12 +240,7 @@ export const ASKCORN_MANIFEST: SiteManifest = {
     keywords: ['questions', 'answers', 'qa', 'stackoverflow', 'help', 'programming'],
   },
   seoScore: 65,
-  pages: [
-    { path: '/question/is-quantum-coffee-worth-47', title: 'Is quantum coffee worth $47 per cup?', description: 'I keep hearing about Qubit Coffee and people have strong opinions. Is it worth it or a scam?', type: 'forum', author: 'CuriousCaffeineConsumer', tags: ['quantum coffee', 'review', 'advice'] },
-    { path: '/question/what-happened-to-floor-13-hartwell', title: 'What really happened to Floor 13 of the Hartwell Building?', description: 'The elevator skips it but there\'s a locked landing in the stairwell. Something is definitely there.', type: 'forum', author: 'HartwellTenant2019', tags: ['hartwell building', 'floor 13', 'mystery'] },
-    { path: '/question/why-does-trust-fall-tim-do-it', title: 'Why does Trust Fall Tim keep doing trust falls?', description: 'Serious question. 2,847 falls. 21.5% failure rate. Multiple injuries. WHY?', type: 'forum', author: 'GenuinelyConcerned', tags: ['trust fall tim', 'psychology'] },
-    { path: '/question/how-to-get-unbanned-underground', title: 'How do I get unbanned from The Underground?', description: 'I requested Wonderwall ONE TIME. It\'s been 3 years. Mars won\'t even look at me.', type: 'forum', author: 'Gary', tags: ['the underground', 'wonderwall', 'banned'] },
-  ],
+  pages: [],
 }
 
 export const HUSKREVIEWS_MANIFEST: SiteManifest = {
@@ -335,11 +254,7 @@ export const HUSKREVIEWS_MANIFEST: SiteManifest = {
     keywords: ['reviews', 'business', 'yelp', 'local', 'restaurants', 'ratings'],
   },
   seoScore: 60,
-  pages: [
-    { path: '/business/qubit-coffee', title: 'Qubit Coffee Reviews - HuskReviews', description: '$47 coffee shop in the Hartwell Building. Reviews range from "life-changing" to "expensive water."', type: 'blog', tags: ['quantum coffee', 'coffee shop', 'reviews'] },
-    { path: '/business/the-underground', title: 'The Underground Reviews - HuskReviews', description: 'Music venue. 4.8 stars average. Minus 1 star for the Wonderwall ban according to Gary.', type: 'blog', tags: ['the underground', 'music venue', 'reviews'] },
-    { path: '/business/hartwell-building-lobby-cafe', title: 'Hartwell Building Lobby Cafe Reviews - HuskReviews', description: 'Just a normal cafe. Nothing weird. Please don\'t ask about Floor 13.', type: 'blog', tags: ['hartwell building', 'cafe', 'reviews'] },
-  ],
+  pages: [],
 }
 
 // ============================================================================
@@ -357,11 +272,7 @@ export const COBHUB_MANIFEST: SiteManifest = {
     keywords: ['code', 'github', 'git', 'repository', 'programming', 'open source'],
   },
   seoScore: 70,
-  pages: [
-    { path: '/derek/quantum-coffee-calculator', title: 'derek/quantum-coffee-calculator - CobHub', description: 'Calculate optimal quantum entanglement ratios for coffee brewing. 847 stars. Derek\'s magnum opus.', type: 'wiki', author: 'derek', tags: ['quantum coffee', 'calculator', 'open source'] },
-    { path: '/paranormal-patrol/floor-13-detector', title: 'paranormal-patrol/floor-13-detector - CobHub', description: 'Arduino project to detect hidden floors in buildings. Uses EMF sensors and existential dread.', type: 'wiki', author: 'paranormal-patrol', tags: ['hartwell building', 'floor 13', 'arduino'] },
-    { path: '/trustfallstats/fall-tracker', title: 'trustfallstats/fall-tracker - CobHub', description: 'Open source trust fall tracking application. Logs fall attempts, catch rates, and injury severity.', type: 'wiki', author: 'trustfallstats', tags: ['trust fall tim', 'statistics', 'tracker'] },
-  ],
+  pages: [],
 }
 
 export const KERNELPODS_MANIFEST: SiteManifest = {
@@ -375,11 +286,7 @@ export const KERNELPODS_MANIFEST: SiteManifest = {
     keywords: ['podcast', 'audio', 'shows', 'episodes', 'listen'],
   },
   seoScore: 55,
-  pages: [
-    { path: '/show/quantum-coffee-confessions', title: 'Quantum Coffee Confessions - KernelPods', description: 'Weekly podcast about quantum coffee culture. Host: Derek. Guest: Usually just Derek.', type: 'entertainment', author: 'Derek', tags: ['quantum coffee', 'podcast', 'derek'] },
-    { path: '/show/hartwell-files-podcast', title: 'The Hartwell Files Podcast - KernelPods', description: 'Deep dives into the Hartwell Building mystery. Floor 13 special episodes. 847 subscribers.', type: 'entertainment', tags: ['hartwell building', 'mystery', 'podcast'] },
-    { path: '/show/trust-falls-with-tim', title: 'Trust Falls with Tim - KernelPods', description: 'Tim interviews people who caught him. And people who didn\'t. Emotional.', type: 'entertainment', author: 'Trust Fall Tim', tags: ['trust fall tim', 'interviews', 'podcast'] },
-  ],
+  pages: [],
 }
 
 export const PASTELIVE_MANIFEST: SiteManifest = {
@@ -411,11 +318,7 @@ export const CORNHUB_MANIFEST: SiteManifest = {
     keywords: ['corn', 'recipes', 'cooking', 'food', 'cornbread'],
   },
   seoScore: 65,
-  pages: [
-    { path: '/recipe/quantum-cornbread', title: 'Quantum Cornbread Recipe - CornHub', description: 'Cornbread made with quantum coffee. Derek\'s recipe. Jennifer rated it 1 star.', type: 'wiki', tags: ['cornbread', 'recipe', 'quantum coffee'] },
-    { path: '/recipe/classic-corn-cob', title: 'Classic Corn on the Cob - CornHub', description: 'The classic. Butter, salt, perfection.', type: 'wiki', tags: ['corn', 'recipe', 'classic'] },
-    { path: '/categories', title: 'Recipe Categories - CornHub', description: 'Browse corn recipes by category', type: 'wiki', tags: ['recipes', 'categories'] },
-  ],
+  pages: [],
 }
 
 export const ONLYFANS_MANIFEST: SiteManifest = {
@@ -429,10 +332,7 @@ export const ONLYFANS_MANIFEST: SiteManifest = {
     keywords: ['fans', 'ceiling fans', 'desk fans', 'cooling', 'appliances'],
   },
   seoScore: 50,
-  pages: [
-    { path: '/premium-ceiling', title: 'Premium Ceiling Fans - OnlyFans', description: 'Our exclusive collection of ceiling fans. Some with 8 blades. Some with 47.', type: 'product', tags: ['ceiling fan', 'premium'] },
-    { path: '/desk-collection', title: 'Desk Fan Collection - OnlyFans', description: 'Keep cool at work with our desk fans. Quiet operation. Powerful airflow.', type: 'product', tags: ['desk fan', 'office'] },
-  ],
+  pages: [],
 }
 
 export const ONLYFARMS_MANIFEST: SiteManifest = {
@@ -446,10 +346,7 @@ export const ONLYFARMS_MANIFEST: SiteManifest = {
     keywords: ['farming', 'tractors', 'agriculture', 'equipment', 'farm'],
   },
   seoScore: 50,
-  pages: [
-    { path: '/tractors', title: 'Tractors - OnlyFarms', description: 'Browse our selection of new and used tractors', type: 'product', tags: ['tractors', 'farming'] },
-    { path: '/combines', title: 'Combines - OnlyFarms', description: 'Combine harvesters for serious farmers', type: 'product', tags: ['combines', 'harvest'] },
-  ],
+  pages: [],
 }
 
 export const STRANGERZONE_MANIFEST: SiteManifest = {
@@ -463,9 +360,7 @@ export const STRANGERZONE_MANIFEST: SiteManifest = {
     keywords: ['chat', 'anonymous', 'strangers', 'random', 'omegle'],
   },
   seoScore: 45,
-  pages: [
-    { path: '/chat', title: 'Start Chatting - StrangerZone', description: 'Connect with a random stranger now', type: 'social', tags: ['chat', 'random'] },
-  ],
+  pages: [],
 }
 
 export const GRAINTRUTH_MANIFEST: SiteManifest = {
@@ -539,11 +434,7 @@ export const CORNGPT_MANIFEST: SiteManifest = {
     keywords: ['ai', 'chatgpt', 'assistant', 'closeai', 'omnicorp', 'chat', 'artificial intelligence'],
   },
   seoScore: 90,
-  pages: [
-    { path: '/chat', title: 'Chat with cornGPT', description: 'Start a conversation with cornGPT, the AI assistant that knows everything about the .corn internet.', type: 'website', tags: ['chat', 'ai', 'conversation'] },
-    { path: '/about', title: 'About cornGPT - CloseAI', description: 'Learn about cornGPT, the revolutionary AI from CloseAI. Trained on 847 petabytes of corn-adjacent data.', type: 'website', tags: ['about', 'closeai', 'ai'] },
-    { path: '/modes', title: 'cornGPT Fun Modes', description: 'Enable special modes like "Cheat On My Test", "Dunk Screenshot Mode", "Corporate Buzzword Generator", and more.', type: 'website', tags: ['modes', 'features', 'fun'] },
-  ],
+  pages: [],
 }
 
 export const STALKS_MANIFEST: SiteManifest = {
@@ -557,14 +448,7 @@ export const STALKS_MANIFEST: SiteManifest = {
     keywords: ['predictions', 'betting', 'markets', 'stocks', 'gambling', 'drama', 'polymarket'],
   },
   seoScore: 75,
-  pages: [
-    { path: '/market/trust-fall-tim-3000', title: 'Will Trust Fall Tim reach 3,000 falls?', description: 'Currently at 2,847 falls with 78.5% catch rate. Bet on whether Tim hits the milestone.', type: 'entertainment', tags: ['trust-fall-tim', 'prediction', 'betting'] },
-    { path: '/market/floor-13-confirmed', title: 'Will Floor 13 be confirmed to exist?', description: 'The Hartwell Building mystery. Building management says no, the elevator says maybe.', type: 'entertainment', tags: ['hartwell', 'floor-13', 'conspiracy', 'betting'] },
-    { path: '/market/derek-jennifer-reconciliation', title: 'Will Derek and Jennifer reconcile?', description: 'Jennifer left Derek over quantum coffee. Current odds: 8% YES. Derek remains optimistic.', type: 'entertainment', tags: ['derek', 'jennifer', 'relationship', 'betting'] },
-    { path: '/market/gary-underground-unban', title: 'Will Gary get unbanned from The Underground?', description: 'Gary requested Wonderwall ONE TIME. Mars has maintained the ban for 3+ years. Current odds: 3% YES.', type: 'entertainment', tags: ['gary', 'wonderwall', 'underground', 'betting'] },
-    { path: '/market/velvet-algorithms-hiatus-end', title: 'Will The Velvet Algorithms end their hiatus?', description: 'The electronic duo has been on meditation hiatus. Will they return to music?', type: 'entertainment', tags: ['velvet-algorithms', 'music', 'betting'] },
-    { path: '/market/neon-requiem-reunion', title: 'Will Neon Requiem play a reunion show?', description: 'The post-punk legends broke up. Vex still sets up for practice. Will they reunite?', type: 'entertainment', tags: ['neon-requiem', 'reunion', 'music', 'betting'] },
-  ],
+  pages: [],
 }
 
 export const CORNMAPS_MANIFEST: SiteManifest = {
@@ -578,11 +462,7 @@ export const CORNMAPS_MANIFEST: SiteManifest = {
     keywords: ['maps', 'directions', 'navigation', 'google maps', 'gps'],
   },
   seoScore: 70,
-  pages: [
-    { path: '/place/hartwell-building', title: 'Hartwell Building - CornMaps', description: '123 Main St. 14 floors. Definitely not 15. Reviews mention the elevator acting strangely.', type: 'website', tags: ['hartwell building', 'directions'] },
-    { path: '/place/the-underground', title: 'The Underground - CornMaps', description: 'Basement level, old Meridian Theater. No parking. No Wonderwall.', type: 'website', tags: ['the underground', 'directions'] },
-    { path: '/place/qubit-coffee', title: 'Qubit Coffee - CornMaps', description: 'Hartwell Building Lobby. Open 8am-6pm. Closed during quantum maintenance.', type: 'website', tags: ['qubit coffee', 'quantum coffee', 'directions'] },
-  ],
+  pages: [],
 }
 
 export const CORNMD_MANIFEST: SiteManifest = {
@@ -596,9 +476,7 @@ export const CORNMD_MANIFEST: SiteManifest = {
     keywords: ['medical', 'symptoms', 'health', 'webmd', 'doctor'],
   },
   seoScore: 60,
-  pages: [
-    { path: '/symptom-checker', title: 'Symptom Checker - CornMD', description: 'Enter your symptoms. We\'ll tell you it\'s corn-related.', type: 'website', tags: ['symptoms', 'diagnosis'] },
-  ],
+  pages: [],
 }
 
 export const LINKEDCORN_MANIFEST: SiteManifest = {
@@ -612,9 +490,7 @@ export const LINKEDCORN_MANIFEST: SiteManifest = {
     keywords: ['professional', 'networking', 'linkedin', 'jobs', 'career'],
   },
   seoScore: 65,
-  pages: [
-    { path: '/jobs', title: 'Corn Industry Jobs - LinkedCorn', description: 'Find your next opportunity in the corn industry', type: 'website', tags: ['jobs', 'career', 'corn'] },
-  ],
+  pages: [],
 }
 
 export const STALK_MANIFEST: SiteManifest = {
@@ -628,9 +504,7 @@ export const STALK_MANIFEST: SiteManifest = {
     keywords: ['streaming', 'live', 'twitch', 'gaming', 'creators'],
   },
   seoScore: 55,
-  pages: [
-    { path: '/directory', title: 'Browse Streams - Stalk', description: 'Find live streams to watch', type: 'entertainment', tags: ['streams', 'live', 'browse'] },
-  ],
+  pages: [],
 }
 
 export const CORNDR_MANIFEST: SiteManifest = {
@@ -704,10 +578,7 @@ export const QUANTUMBREWBLOG_MANIFEST: SiteManifest = {
     keywords: ['quantum coffee', 'derek', 'blog', 'coffee', 'obsession'],
   },
   seoScore: 55,
-  pages: [
-    { path: '/trial-847', title: 'Trial #847: The Breakthrough? - QuantumBrewBlog', description: 'Derek documents what he believes is his breakthrough trial. Jennifer\'s lawyer sent another letter.', type: 'blog', author: 'Derek', tags: ['quantum coffee', 'trial', 'experiment'] },
-    { path: '/martinez-study-analysis', title: 'My Analysis of the Martinez Study - QuantumBrewBlog', description: 'Why Derek believes Dr. Martinez is wrong about her own research.', type: 'blog', author: 'Derek', tags: ['martinez study', 'analysis', 'quantum coffee'] },
-  ],
+  pages: [],
 }
 
 export const TRUSTFALLTIM_MANIFEST: SiteManifest = {
@@ -721,11 +592,7 @@ export const TRUSTFALLTIM_MANIFEST: SiteManifest = {
     keywords: ['trust fall tim', 'fan site', 'archive', 'falls', 'the incident'],
   },
   seoScore: 55,
-  pages: [
-    { path: '/the-incident', title: 'The Incident - TrustFallTim Fan Archive', description: 'Full documentation of The Incident involving Small Kevin. Viewer discretion advised.', type: 'blog', tags: ['the incident', 'small kevin', 'trust fall tim'] },
-    { path: '/statistics', title: 'Trust Fall Statistics - TrustFallTim Fan Archive', description: '2,847 falls. 78.5% catch rate. Complete statistical analysis.', type: 'blog', tags: ['statistics', 'trust fall tim'] },
-    { path: '/carols-perspective', title: 'Carol\'s Letters (Tim\'s Mom) - TrustFallTim Fan Archive', description: 'Collection of concerned blog posts from Tim\'s mother Carol.', type: 'blog', author: 'Carol Henderson', tags: ['carol', 'mom', 'concern'] },
-  ],
+  pages: [],
 }
 
 export const HARTWELLFILES_MANIFEST: SiteManifest = {
@@ -739,12 +606,7 @@ export const HARTWELLFILES_MANIFEST: SiteManifest = {
     keywords: ['hartwell building', 'conspiracy', 'floor 13', 'mystery', 'omnicorp'],
   },
   seoScore: 50,
-  pages: [
-    { path: '/floor-13', title: 'Floor 13: The Evidence - Hartwell Files', description: 'Complete documentation of the missing floor. Architectural surveys, witness accounts, elevator anomalies.', type: 'blog', tags: ['floor 13', 'evidence', 'hartwell building'] },
-    { path: '/floor-7-mirrors', title: 'The Floor 7 Mirror Phenomenon - Hartwell Files', description: 'Reports of mirrors showing things that aren\'t there. Or aren\'t here. Or aren\'t anywhere.', type: 'blog', tags: ['floor 7', 'mirrors', 'hartwell building'] },
-    { path: '/omnicorp-investigation', title: 'Who is Omnicorp Holdings? - Hartwell Files', description: 'Investigation into the mysterious corporation. Patricia from HR declined to comment.', type: 'blog', tags: ['omnicorp', 'investigation', 'hartwell building'] },
-    { path: '/847-phenomenon', title: 'The 847 Phenomenon - Hartwell Files', description: 'Why does this number keep appearing? Trust Fall Tim: 2,847. Derek\'s trials: 847. Building address: 847 Main St.', type: 'blog', tags: ['847', 'numerology', 'pattern'] },
-  ],
+  pages: [],
 }
 
 export const CORNSTALKBLOG_MANIFEST: SiteManifest = {

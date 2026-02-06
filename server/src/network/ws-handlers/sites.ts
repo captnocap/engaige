@@ -162,10 +162,29 @@ async function handleSitesSearch(
   }
 }
 
+async function handleSitesGetSiteIndex(
+  ws: ServerWebSocket<ClientSession>,
+  message: WSMessage,
+  ctx: HandlerContext
+): Promise<void> {
+  try {
+    const { getSiteIndex } = await import('../../services/search.js');
+    const sites = getSiteIndex();
+    ctx.send(ws, createResponse(message.id, true, { sites }));
+  } catch (error) {
+    errorLogger.log(error, {
+      source: 'ws-server',
+      operation: 'handleSitesGetSiteIndex',
+    });
+    ctx.send(ws, createError('Failed to get site index', 'SITE_INDEX_ERROR', message.id));
+  }
+}
+
 export const sitesHandlers: HandlerMap = {
   'sites:getContent': handleSitesGetContent,
   'sites:getContentBySlug': handleSitesGetContentBySlug,
   'sites:getChannels': handleSitesGetChannels,
   'sites:getCategories': handleSitesGetCategories,
   'sites:search': handleSitesSearch,
+  'sites:getSiteIndex': handleSitesGetSiteIndex,
 };

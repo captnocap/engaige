@@ -5,7 +5,7 @@
  * Uses FTS5 with BM25 ranking and proximity boosting.
  *
  * Handles:
- * - Static content indexing (filler sites on startup)
+ * - DB-driven content indexing (site_content table on startup)
  * - Dynamic content indexing (NPC-generated content in real-time)
  * - Search queries with filters
  * - Autocomplete suggestions
@@ -22,6 +22,7 @@ import {
   type SearchResult,
   type SearchOptions,
 } from '../db/search-index.js';
+import { getDB } from '../db/index.js';
 import { eventBus, EventTypes } from '../events/index.js';
 import { errorLogger } from './error-logger.js';
 
@@ -59,329 +60,190 @@ export interface AutocompleteResponse {
 }
 
 // ============================================================================
-// Static Content (Core Lore)
+// URL Pattern Config: (site_id, content_type) → URL template
 // ============================================================================
 
-// TODO: This should be loaded from the site manifests (src/data/site-manifests.ts)
-// For now, this is a server-side copy of the core lore content.
-// The frontend uses the manifest system for client-side search.
-// When WebSocket search is enabled, this FTS5 index will be the source of truth.
-//
-// Future: Create a shared JSON file that both frontend and backend can consume,
-// or have the server load manifests from the frontend build output.
-const STATIC_CONTENT: IndexableContent[] = [
-  // DailyBuzz Articles
-  {
-    id: 'dailybuzz_article_1',
-    url: 'www.dailybuzz.corn/article/local-band-cancels-show',
-    siteDomain: 'dailybuzz.corn',
-    contentType: 'article',
-    title: 'Local Band Cancels Show Due to "Ongoing Existential Crisis"',
-    body: 'The Velvet Algorithms, the electronic duo known for their experimental sound and sold-out shows at The Underground, have cancelled tonight\'s highly anticipated performance, citing an "ongoing existential crisis" that has affected both band members.',
-    snippet: 'The Velvet Algorithms cite "fundamental questioning of musical purpose" as reason for postponement',
-    author: 'Sarah Chen',
-    tags: ['music', 'local', 'The Velvet Algorithms', 'The Underground'],
-  },
-  {
-    id: 'dailybuzz_article_2',
-    url: 'www.dailybuzz.corn/article/quantum-cafe-opens',
-    siteDomain: 'dailybuzz.corn',
-    contentType: 'article',
-    title: 'New Quantum Cafe Opens Downtown, Charges $47 Per Cup',
-    body: 'A new quantum coffee establishment opened its doors downtown this morning, becoming the city\'s first dedicated "Q-Cafe" and immediately attracting lines that wrapped around the block. Qubit Coffee, located in the former Hartwell Building lobby, offers what owner Dana Kim calls "the most scientifically advanced coffee experience available to consumers."',
-    snippet: 'Enthusiasts line up for hours; scientists remain skeptical',
-    author: 'Michael Torres',
-    tags: ['coffee', 'quantum', 'local business', 'downtown', 'Hartwell Building'],
-  },
-  {
-    id: 'dailybuzz_article_5',
-    url: 'www.dailybuzz.corn/article/trust-fall-record',
-    siteDomain: 'dailybuzz.corn',
-    contentType: 'article',
-    title: 'Local Man Breaks Trust Fall Record with 2,847 Consecutive Falls',
-    body: 'Tim Henderson, known locally as "Trust Fall Tim," has officially broken the world record for consecutive trust falls, completing his 2,847th fall yesterday at the downtown plaza. Henderson, 34, has been performing daily trust falls for the past eight years.',
-    snippet: 'Trust Fall Tim achieves 78.5% catch rate over eight-year experiment',
-    author: 'Amanda Price',
-    tags: ['local', 'record', 'Trust Fall Tim', 'human interest'],
-  },
+/**
+ * Maps (site_id, content_type) to URL path templates.
+ * {slug} is replaced with the content's slug.
+ * {category} is replaced with the content's category field.
+ */
+export const SITE_URL_PATTERNS: Record<string, Record<string, string>> = {
+  vidtube: { video: '/watch/{slug}' },
+  amaize: { product: '/product/{slug}' },
+  threadit: { thread: '/t/{category}/n/{slug}', board: '/t/{slug}' },
+  wikiknow: { article: '/wiki/{slug}' },
+  dailybuzz: { article: '/article/{slug}' },
+  askcorn: { question: '/question/{slug}' },
+  huskreviews: { business: '/business/{slug}' },
+  cobhub: { repo: '/{slug}' },
+  kernelpods: { show: '/show/{slug}' },
+  forchan: { thread: '/{category}/thread/{slug}', board: '/{slug}' },
+  cobfundme: { campaign: '/campaign/{slug}' },
+  nestfinder: { listing: '/listing/{slug}' },
+  bargainbay: { listing: '/{slug}' },
+  cornhub: { recipe: '/recipe/{slug}' },
+  onlyfans: { product: '/{slug}' },
+  onlyfarms: { product: '/{slug}' },
+  stalks: { market: '/market/{slug}' },
+  cornmaps: { place: '/place/{slug}' },
+  oddsoracle: { market: '/market/{slug}' },
+  vitalityrx: { product: '/product/{slug}' },
+  silkroad: { product: '/{slug}' },
+  stalk: { stream: '/stream/{slug}' },
+  benchwatch: { analysis: '/bench/{slug}' },
+  dominate: { lesson: '/lesson/{slug}' },
+  stationsushi: { review: '/review/{slug}' },
+  truemoss: { specimen: '/specimen/{slug}' },
+};
 
-  // WikiKnow Articles
-  {
-    id: 'wikiknow_quantum_coffee',
-    url: 'www.wikiknow.corn/wiki/Quantum_Coffee_Brewing',
-    siteDomain: 'wikiknow.corn',
-    contentType: 'article',
-    title: 'Quantum Coffee Brewing',
-    body: 'Quantum coffee brewing is a controversial preparation method that claims to use quantum mechanical principles to enhance the extraction of flavor compounds from coffee beans. The practice gained mainstream attention following the publication of the Martinez Study in 2024.',
-    snippet: 'Controversial preparation method claiming to use quantum mechanics to enhance coffee extraction',
-    tags: ['coffee', 'quantum', 'pseudoscience', 'Martinez Study'],
-  },
-  {
-    id: 'wikiknow_hartwell_building',
-    url: 'www.wikiknow.corn/wiki/Hartwell_Building',
-    siteDomain: 'wikiknow.corn',
-    contentType: 'article',
-    title: 'Hartwell Building',
-    body: 'The Hartwell Building is a 14-story commercial building located in downtown, notable for its controversial architectural history and the persistent urban legend surrounding its "missing" 13th floor. Built in 1923 by industrialist Edmund Hartwell.',
-    snippet: 'Historic downtown building notable for its "missing" 13th floor mystery',
-    tags: ['architecture', 'downtown', 'mystery', 'Floor 13'],
-  },
-  {
-    id: 'wikiknow_underground',
-    url: 'www.wikiknow.corn/wiki/The_Underground_(venue)',
-    siteDomain: 'wikiknow.corn',
-    contentType: 'article',
-    title: 'The Underground (venue)',
-    body: 'The Underground is a music venue located in the basement of the former Meridian Theater building. Founded in 2018 by Marcus "Mars" Williams, the venue has become known for hosting experimental electronic, post-punk, and avant-garde performances.',
-    snippet: 'Experimental music venue known for hosting avant-garde performances',
-    tags: ['music', 'venue', 'The Underground', 'Mars Williams'],
-  },
-  {
-    id: 'wikiknow_trust_fall_tim',
-    url: 'www.wikiknow.corn/wiki/Trust_Fall_Tim',
-    siteDomain: 'wikiknow.corn',
-    contentType: 'article',
-    title: 'Trust Fall Tim',
-    body: 'Timothy "Trust Fall Tim" Henderson is a local performance artist known for his ongoing project involving daily trust falls in public spaces. Since 2018, Henderson has performed over 2,847 documented trust falls.',
-    snippet: 'Performance artist known for daily public trust falls since 2018',
-    tags: ['performance art', 'Trust Fall Tim', 'local celebrity'],
-  },
-  {
-    id: 'wikiknow_velvet_algorithms',
-    url: 'www.wikiknow.corn/wiki/The_Velvet_Algorithms',
-    siteDomain: 'wikiknow.corn',
-    contentType: 'article',
-    title: 'The Velvet Algorithms',
-    body: 'The Velvet Algorithms are an electronic music duo known for their experimental sound and frequent cancellation of performances due to "philosophical crises."',
-    snippet: 'Experimental electronic duo known for philosophical performance cancellations',
-    tags: ['music', 'electronic', 'The Velvet Algorithms', 'experimental'],
-  },
+/**
+ * Maps site_id → .corn domain.
+ * Used to build full URLs for search results.
+ */
+const SITE_DOMAINS: Record<string, string> = {
+  myface: 'myface.corn',
+  instasnap: 'instasnap.corn',
+  threadit: 'threadit.corn',
+  wikiknow: 'wikiknow.corn',
+  dailybuzz: 'dailybuzz.corn',
+  vidtube: 'vidtube.corn',
+  forchan: 'forchan.corn',
+  amaize: 'amaize.corn',
+  bargainbay: 'bargainbay.corn',
+  nestfinder: 'nestfinder.corn',
+  cobfundme: 'cobfundme.corn',
+  vitalityrx: 'vitalityrx.corn',
+  oddsoracle: 'oddsoracle.corn',
+  wealthwisdom: 'wealthwisdom.corn',
+  askcorn: 'askcorn.corn',
+  huskreviews: 'huskreviews.corn',
+  cobhub: 'cobhub.corn',
+  kernelpods: 'kernelpods.corn',
+  pastelive: 'pastelive.corn',
+  cornhub: 'cornhub.corn',
+  onlyfans: 'onlyfans.corn',
+  onlyfarms: 'onlyfarms.corn',
+  strangerzone: 'strangerzone.corn',
+  graintruth: 'graintruth.corn',
+  bandsnotintown: 'bandsnotintown.corn',
+  cobcoin: 'cobcoin.corn',
+  goober: 'goober.corn',
+  cornmaze: 'maze.corn',
+  corngpt: 'corngpt.corn',
+  stalks: 'stalks.corn',
+  cornmaps: 'cornmaps.corn',
+  cornmd: 'cornmd.corn',
+  linkedcorn: 'linkedcorn.corn',
+  stalk: 'stalk.corn',
+  corndr: 'corndr.corn',
+  deaddrop: 'deaddrop.corn',
+  silkroad: 'silkroad.corn',
+  cornarchive: 'cornarchive.corn',
+  quantumbrewblog: 'quantumbrewblog.corn',
+  trustfalltim: 'trustfalltim.corn',
+  hartwellfiles: 'hartwellfiles.corn',
+  cornstalkblog: 'thoughtsfromtherow.corn',
+  jennifersblog: 'jenniferheals.corn',
+  elenasblog: 'elenasclarifies.corn',
+  venuepoetryblog: 'anonymousvenuepoet.corn',
+  timsmomsupport: 'carolstimupdate.corn',
+  smallkevinblog: 'smallkevinredemption.corn',
+  drmartinezblog: 'drmartinezclarifies.corn',
+  bigmikeblog: 'bigmikefromtulsa.corn',
+  vexdrums: 'vexdrumsblog.corn',
+  patriciablog: 'patriciasworkplacewellness.corn',
+  wonderwallwarrior: 'wonderwallwarrior.corn',
+  floor13blog: 'floor13exists.corn',
+  benchwatch: 'benchwatch.corn',
+  dominate: 'dominate.corn',
+  stationsushi: 'stationsushireview.corn',
+  truemoss: 'truemoss.corn',
+};
 
-  // VidTube Videos
-  {
-    id: 'vidtube_quantum_coffee_explained',
-    url: 'www.vidtube.corn/watch/quantum_coffee_explained',
-    siteDomain: 'vidtube.corn',
-    contentType: 'video',
-    title: 'I Tried $47 Quantum Coffee for 30 Days - Here\'s What Happened',
-    body: 'In this video, I document my experience drinking quantum coffee every day for 30 days. Does quantum coffee actually work? Is it worth the $47 price tag?',
-    snippet: 'Month-long experiment with $47 quantum coffee from Qubit Coffee',
-    author: 'ScienceBro',
-    tags: ['coffee', 'quantum', 'experiment', 'review'],
-  },
-  {
-    id: 'vidtube_floor_13_investigation',
-    url: 'www.vidtube.corn/watch/hartwell_floor_13',
-    siteDomain: 'vidtube.corn',
-    contentType: 'video',
-    title: 'We Snuck Into the Hartwell Building\'s Missing Floor 13 (GONE WRONG)',
-    body: 'The Hartwell Building claims not to have a 13th floor, but architectural surveys show 12 feet of unaccounted space. We got access to the building after hours and tried to find where Floor 13 should be.',
-    snippet: 'Urban exploration of the Hartwell Building\'s mysterious missing floor',
-    author: 'ParanormalPatrol',
-    tags: ['Hartwell Building', 'urban exploration', 'mystery', 'Floor 13'],
-  },
-  {
-    id: 'vidtube_trust_fall_compilation',
-    url: 'www.vidtube.corn/watch/trust_fall_tim_best_fails',
-    siteDomain: 'vidtube.corn',
-    contentType: 'video',
-    title: 'Trust Fall Tim\'s Most Epic Falls (21.5% Fail Rate Compilation)',
-    body: 'A compilation of Trust Fall Tim\'s most memorable falls, including the ones where nobody caught him.',
-    snippet: 'Compilation of Trust Fall Tim\'s greatest misses and the stories behind them',
-    author: 'ViralMoments',
-    tags: ['Trust Fall Tim', 'compilation', 'fails', 'viral'],
-  },
+/**
+ * Build a full URL for a piece of site content.
+ */
+export function buildContentUrl(siteId: string, contentType: string, slug: string, category?: string | null): string {
+  const domain = SITE_DOMAINS[siteId] || `${siteId}.corn`;
+  const patterns = SITE_URL_PATTERNS[siteId];
+  let pathTemplate = patterns?.[contentType] || `/${slug}`;
 
-  // AskCorn Questions
-  {
-    id: 'askcorn_quantum_coffee_worth',
-    url: 'www.askcorn.corn/question/is-quantum-coffee-worth-47',
-    siteDomain: 'askcorn.corn',
-    contentType: 'question',
-    title: 'Is quantum coffee worth $47 per cup?',
-    body: 'I keep hearing about this new quantum coffee place downtown (Qubit Coffee) and everyone seems to have strong opinions. Some people swear it\'s life-changing, others say it\'s a scam.',
-    snippet: 'Discussion about whether quantum coffee from Qubit Coffee is worth the price',
-    author: 'CuriousCaffeineConsumer',
-    tags: ['coffee', 'quantum', 'money', 'review'],
-  },
-  {
-    id: 'askcorn_floor_13_hartwell',
-    url: 'www.askcorn.corn/question/what-happened-to-floor-13-hartwell',
-    siteDomain: 'askcorn.corn',
-    contentType: 'question',
-    title: 'What really happened to Floor 13 of the Hartwell Building?',
-    body: 'I work in the Hartwell Building and I\'ve noticed some weird things. The elevator skips from 12 to 14, which is normal for superstition, but the stairwell has a landing between 12 and 14 that\'s always locked.',
-    snippet: 'Discussion about the mysterious missing floor in the Hartwell Building',
-    author: 'BuildingTenant2024',
-    tags: ['Hartwell Building', 'mystery', 'Floor 13', 'urban legend'],
-  },
+  let path = pathTemplate
+    .replace('{slug}', slug)
+    .replace('{category}', category || 'general');
 
-  // Threadit Threads
-  {
-    id: 'threadit_quantum_coffee_ama',
-    url: 'www.threadit.corn/t/quantum_coffee_ama',
-    siteDomain: 'threadit.corn',
-    contentType: 'thread',
-    title: 'I work at Qubit Coffee AMA - Ask me anything about quantum brewing',
-    body: 'I\'m the Quantum Sommelier at Qubit Coffee (yes, that\'s my real job title). I have a PhD in physics but I moonlight as a barista because student loans are real.',
-    snippet: 'AMA with Qubit Coffee\'s Quantum Sommelier about the reality of quantum brewing',
-    author: 'QuantumBarista',
-    tags: ['AMA', 'quantum coffee', 'Qubit Coffee', 'science'],
-  },
-  {
-    id: 'threadit_floor_13_theory',
-    url: 'www.threadit.corn/t/floor_13_theory',
-    siteDomain: 'threadit.corn',
-    contentType: 'thread',
-    title: '[THEORY] The Hartwell Building Floor 13 is a dimensional pocket',
-    body: 'Okay hear me out. The 12 feet of unaccounted space in the Hartwell Building isn\'t just a quirky architectural choice. I\'ve been researching Edmund Hartwell and found records showing he was involved in "experimental architecture" in the 1920s.',
-    snippet: 'Conspiracy theory about the true nature of the Hartwell Building\'s missing floor',
-    author: 'UrbanMysteryHunter',
-    tags: ['Hartwell Building', 'Floor 13', 'conspiracy', 'theory'],
-  },
+  return `www.${domain}${path}`;
+}
 
-  // HuskReviews Businesses
-  {
-    id: 'huskreviews_qubit_coffee',
-    url: 'www.huskreviews.corn/business/qubit-coffee',
-    siteDomain: 'huskreviews.corn',
-    contentType: 'business',
-    title: 'Qubit Coffee',
-    body: 'Downtown\'s first quantum coffee establishment. The $47 "Collapsing Wave" signature drink takes 45 minutes to prepare through what they call "quantum entanglement brewing."',
-    snippet: 'Downtown quantum coffee shop in the Hartwell Building, $47 signature drink',
-    tags: ['coffee', 'quantum', 'downtown', 'Hartwell Building'],
-  },
-  {
-    id: 'huskreviews_underground',
-    url: 'www.huskreviews.corn/business/the-underground',
-    siteDomain: 'huskreviews.corn',
-    contentType: 'business',
-    title: 'The Underground',
-    body: 'Basement music venue specializing in experimental and avant-garde performances. Owned by the legendary Mars Williams.',
-    snippet: 'Experimental music venue in a basement, 200-person capacity, great acoustics',
-    tags: ['music venue', 'The Underground', 'live music', 'Mars Williams'],
-  },
+// ============================================================================
+// DB-Driven Index Builder
+// ============================================================================
 
-  // CobFundMe Campaigns
-  {
-    id: 'cobfundme_quantum_research',
-    url: 'www.cobfundme.corn/campaign/quantum-coffee-research',
-    siteDomain: 'cobfundme.corn',
-    contentType: 'campaign',
-    title: 'Fund Derek\'s Quantum Coffee Research',
-    body: 'Hi, I\'m Derek, and I believe quantum coffee has changed my life. I\'ve been drinking it daily for 847 days (yes, I count) and I want to fund legitimate scientific research to prove that quantum brewing is real.',
-    snippet: 'Crowdfunding campaign to fund independent quantum coffee research',
-    author: 'Derek',
-    tags: ['quantum coffee', 'research', 'crowdfunding', 'Derek'],
-  },
-  {
-    id: 'cobfundme_trust_fall_tim',
-    url: 'www.cobfundme.corn/campaign/trust-fall-tim-medical',
-    siteDomain: 'cobfundme.corn',
-    contentType: 'campaign',
-    title: 'Trust Fall Tim Medical Fund',
-    body: 'As many of you know, my 21.5% miss rate has resulted in some injuries over the years. The most recent fall has left me with medical bills that my performance art income can\'t cover.',
-    snippet: 'Medical fund for Trust Fall Tim after performance art injuries',
-    author: 'Trust Fall Tim',
-    tags: ['Trust Fall Tim', 'medical', 'crowdfunding', 'community'],
-  },
+interface SiteContentDBRow {
+  id: string;
+  site_id: string;
+  content_type: string;
+  slug: string;
+  category: string | null;
+  title: string;
+  body: string | null;
+  summary: string | null;
+  tags: string;
+  metadata: string;
+  published_at: number | null;
+  created_at: number;
+}
 
-  // KernelPods Podcasts
-  {
-    id: 'kernelpods_hartwell_mystery',
-    url: 'www.kernelpods.corn/show/the-hartwell-files',
-    siteDomain: 'kernelpods.corn',
-    contentType: 'podcast',
-    title: 'The Hartwell Files',
-    body: 'A true crime/mystery podcast investigating the secrets of the Hartwell Building. Each episode digs into a different aspect: the missing Floor 13, Edmund Hartwell\'s occult connections, why Mars had to move The Underground.',
-    snippet: 'Investigative podcast about the mysteries of the Hartwell Building',
-    author: 'Sarah Chen',
-    tags: ['Hartwell Building', 'mystery', 'podcast', 'true crime'],
-  },
-  {
-    id: 'kernelpods_quantum_skeptic',
-    url: 'www.kernelpods.corn/show/quantum-skeptic',
-    siteDomain: 'kernelpods.corn',
-    contentType: 'podcast',
-    title: 'Quantum Skeptic',
-    body: 'Dr. Sarah Blackwell of MIT hosts this podcast debunking pseudoscientific claims, with a particular focus on "quantum" products that misuse physics terminology.',
-    snippet: 'MIT physicist debunks pseudoscience, especially quantum product claims',
-    author: 'Dr. Sarah Blackwell',
-    tags: ['science', 'skepticism', 'quantum', 'debunking'],
-  },
+/**
+ * Build search index content from the site_content table.
+ * Returns IndexableContent[] suitable for indexStaticContentBatch.
+ */
+function buildSearchIndexFromDB(): IndexableContent[] {
+  const db = getDB('game');
 
-  // Amaize Products
-  {
-    id: 'amaize_quantum_coffee_maker',
-    url: 'www.amaize.corn/product/quantum-coffee-maker',
-    siteDomain: 'amaize.corn',
-    contentType: 'product',
-    title: 'QuantumBrew Home Quantum Coffee System',
-    body: 'Experience quantum coffee at home! This consumer-grade quantum coffee brewing system uses patented WaveFunction technology to entangle water molecules for superior extraction.',
-    snippet: 'Home quantum coffee brewing system based on Martinez Study technology',
-    author: 'QuantumBrew',
-    tags: ['coffee', 'quantum', 'kitchen appliance', 'controversial'],
-  },
-  {
-    id: 'amaize_trust_fall_mat',
-    url: 'www.amaize.corn/product/trust-fall-training-mat',
-    siteDomain: 'amaize.corn',
-    contentType: 'product',
-    title: 'Trust Fall Tim Official Training Mat',
-    body: 'Practice trust falls safely with the official Trust Fall Tim Training Mat! This 4-inch thick foam mat provides a soft landing for when trust fails you.',
-    snippet: 'Official Trust Fall Tim branded training mat for safe trust fall practice',
-    author: 'Trust Fall Enterprises',
-    tags: ['Trust Fall Tim', 'training', 'safety', 'team building'],
-  },
+  const rows = db.query(`
+    SELECT id, site_id, content_type, slug, category, title, body, summary, tags, metadata, published_at, created_at
+    FROM site_content
+    WHERE is_archived = 0
+    ORDER BY site_id, content_type
+  `).all() as SiteContentDBRow[];
 
-  // CobHub Repositories
-  {
-    id: 'cobhub_quantum_coffee_api',
-    url: 'www.cobhub.corn/quantumbrew/quantum-coffee-api',
-    siteDomain: 'cobhub.corn',
-    contentType: 'repository',
-    title: 'quantum-coffee-api',
-    body: 'Open source API for quantum coffee brewing systems. Provides endpoints for entanglement status, brew cycle management, and molecular distribution analysis.',
-    snippet: 'Open source API for quantum coffee brewing system integration',
-    author: 'QuantumBrew',
-    tags: ['quantum', 'coffee', 'API', 'Rust', 'open source'],
-  },
-  {
-    id: 'cobhub_floor13_detector',
-    url: 'www.cobhub.corn/mysteries/floor13-detector',
-    siteDomain: 'cobhub.corn',
-    contentType: 'repository',
-    title: 'floor13-detector',
-    body: 'Mobile app that uses barometric pressure and GPS to detect "dimensional anomalies" like the Hartwell Building\'s missing Floor 13.',
-    snippet: 'Crowdsourced app for detecting dimensional anomalies like Floor 13',
-    author: 'UrbanMysteryHunter',
-    tags: ['mystery', 'Floor 13', 'Hartwell Building', 'React Native'],
-  },
+  const items: IndexableContent[] = [];
 
-  // NestFinder Listings
-  {
-    id: 'nestfinder_hartwell_office',
-    url: 'www.nestfinder.corn/listing/hartwell-floor-7',
-    siteDomain: 'nestfinder.corn',
-    contentType: 'listing',
-    title: '2,500 sqft Office Space - Hartwell Building Floor 7',
-    body: 'Prime office space in the historic Hartwell Building! 2,500 square feet on floor 7. Recently renovated with modern amenities. Unique features include original 1923 architecture.',
-    snippet: 'Historic office space in the Hartwell Building, interesting acoustics',
-    author: 'Hartwell Properties LLC',
-    tags: ['office', 'Hartwell Building', 'downtown', 'commercial'],
-  },
-  {
-    id: 'nestfinder_near_underground',
-    url: 'www.nestfinder.corn/listing/underground-adjacent',
-    siteDomain: 'nestfinder.corn',
-    contentType: 'listing',
-    title: 'Loft Apartment Above The Underground Music Venue',
-    body: 'Live above the city\'s most unique music venue! 1BR/1BA loft directly above The Underground. Features exposed brick, industrial aesthetic.',
-    snippet: 'Loft apartment above The Underground venue, live music included',
-    author: 'Arts District Realty',
-    tags: ['apartment', 'The Underground', 'loft', 'music'],
-  },
-];
+  for (const row of rows) {
+    const url = buildContentUrl(row.site_id, row.content_type, row.slug, row.category);
+    const domain = SITE_DOMAINS[row.site_id] || `${row.site_id}.corn`;
+
+    let tags: string[] = [];
+    try { tags = JSON.parse(row.tags || '[]'); } catch { /* ignore */ }
+
+    let metadata: Record<string, unknown> = {};
+    try { metadata = JSON.parse(row.metadata || '{}'); } catch { /* ignore */ }
+
+    // Extract author from metadata if available
+    const author = (metadata.author as string)
+      || (metadata.channel_name as string)
+      || (metadata.seller as string)
+      || undefined;
+
+    items.push({
+      id: `db_${row.id}`,
+      url,
+      siteDomain: domain,
+      contentType: row.content_type,
+      title: row.title,
+      body: row.body || row.summary || '',
+      snippet: row.summary || (row.body ? row.body.slice(0, 200) : ''),
+      author,
+      tags,
+      metadata,
+      createdAt: row.published_at || row.created_at,
+    });
+  }
+
+  return items;
+}
 
 // ============================================================================
 // Service State
@@ -395,7 +257,7 @@ let initializationPromise: Promise<void> | null = null;
 // ============================================================================
 
 /**
- * Initialize the search service and index static content
+ * Initialize the search service and index content from DB
  */
 export async function initializeSearch(): Promise<void> {
   if (isInitialized) return;
@@ -408,12 +270,18 @@ export async function initializeSearch(): Promise<void> {
       // Initialize FTS5 schema
       initializeSearchIndex();
 
-      // Index static content
-      const indexed = indexStaticContentBatch(STATIC_CONTENT);
+      // Build index from site_content table
+      const dbContent = buildSearchIndexFromDB();
+      let indexed = 0;
+
+      if (dbContent.length > 0) {
+        indexed = indexStaticContentBatch(dbContent);
+        console.log(`[search] Indexed ${indexed} items from site_content DB in ${Date.now() - startTime}ms`);
+      } else {
+        console.log('[search] No site_content in DB - search index empty (seed content first)');
+      }
 
       const took = Date.now() - startTime;
-
-      console.log(`[search] Indexed ${indexed} static content items in ${took}ms`);
 
       // Emit initialization event
       eventBus.fire(EventTypes.SYSTEM_STARTUP, {
@@ -562,6 +430,49 @@ export async function getSearchStats(): Promise<ReturnType<typeof getIndexStats>
   return getIndexStats();
 }
 
+/**
+ * Get all site content formatted as a site index (for CornMaze / manifests).
+ * Groups content by site_id, builds proper URLs.
+ */
+export function getSiteIndex(): Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string }> }> {
+  const db = getDB('game');
+
+  const rows = db.query(`
+    SELECT site_id, content_type, slug, category, title, summary
+    FROM site_content
+    WHERE is_archived = 0
+    ORDER BY site_id, content_type, title
+  `).all() as Array<{
+    site_id: string;
+    content_type: string;
+    slug: string;
+    category: string | null;
+    title: string;
+    summary: string | null;
+  }>;
+
+  const result: Record<string, { domain: string; pages: Array<{ url: string; title: string; type: string; description: string }> }> = {};
+
+  for (const row of rows) {
+    const domain = SITE_DOMAINS[row.site_id] || `${row.site_id}.corn`;
+
+    if (!result[row.site_id]) {
+      result[row.site_id] = { domain, pages: [] };
+    }
+
+    const url = buildContentUrl(row.site_id, row.content_type, row.slug, row.category);
+
+    result[row.site_id].pages.push({
+      url,
+      title: row.title,
+      type: row.content_type,
+      description: row.summary || '',
+    });
+  }
+
+  return result;
+}
+
 // ============================================================================
 // Exports
 // ============================================================================
@@ -572,6 +483,8 @@ export const searchService = {
   autocomplete: getAutocomplete,
   indexContent: indexDynamicContent,
   getStats: getSearchStats,
+  getSiteIndex,
+  buildContentUrl,
 };
 
 export default searchService;

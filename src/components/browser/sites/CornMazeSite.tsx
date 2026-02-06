@@ -3,14 +3,16 @@
  *
  * A raw index of all .corn sites and their content paths.
  * Like viewing the entire search index in a browsable sitemap format.
+ * Fetches page data from the server (sites:getSiteIndex).
  *
  * URL: corn:maze (special protocol, not www.maze.corn)
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { SiteComponentProps } from '../../../router/types.js'
 import { getAllManifests } from '../../../router/site-registry.js'
 import type { SiteManifest } from '../../../router/types.js'
+import { useWSStore } from '../../../stores/wsStore.js'
 
 // ============================================================================
 // Theme
@@ -44,10 +46,38 @@ const CATEGORY_COLORS: Record<string, string> = {
   blog: '#fbbf24',
   entertainment: '#e879f9',
   website: '#94a3b8',
+  article: '#60a5fa',
+  thread: '#fb923c',
+  question: '#a78bfa',
+  business: '#4ade80',
+  campaign: '#fbbf24',
+  show: '#e879f9',
+  recipe: '#f472b6',
+  market: '#34d399',
+  listing: '#f87171',
+  place: '#94a3b8',
+  repo: '#a78bfa',
+  board: '#fb923c',
 }
 
 function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] || THEME.textMuted
+}
+
+// ============================================================================
+// Types
+// ============================================================================
+
+interface SiteIndexPage {
+  url: string
+  title: string
+  type: string
+  description: string
+}
+
+interface SiteIndexEntry {
+  domain: string
+  pages: SiteIndexPage[]
 }
 
 // ============================================================================
@@ -57,43 +87,83 @@ function getCategoryColor(category: string): string {
 export function CornMazeSite({ onNavigateToUrl }: SiteComponentProps) {
   const [expandedSites, setExpandedSites] = useState<Set<string>>(new Set())
   const [filter, setFilter] = useState('')
+  const [serverIndex, setServerIndex] = useState<Record<string, SiteIndexEntry> | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Get all manifests
+  const ws = useWSStore()
+
+  // Get manifests for site identity (icon, name, seoScore, homepage)
   const manifests = useMemo(() => getAllManifests(), [])
+  const manifestMap = useMemo(() => {
+    const map = new Map<string, SiteManifest>()
+    for (const m of manifests) {
+      map.set(m.id, m)
+      // Also index by domain for matching
+      map.set(m.domain, m)
+    }
+    return map
+  }, [manifests])
 
-  // Filter manifests based on search
-  const filteredManifests = useMemo(() => {
-    if (!filter.trim()) return manifests
+  // Fetch DB-driven page data from server
+  useEffect(() => {
+    if (!ws.connected) return
+
+    let cancelled = false
+
+    ws.request<{}, { sites: Record<string, SiteIndexEntry> }>('sites:getSiteIndex', {})
+      .then(response => {
+        if (!cancelled) {
+          setServerIndex(response.sites)
+          setLoading(false)
+        }
+      })
+      .catch(err => {
+        console.error('[CornMaze] Failed to fetch site index:', err)
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [ws.connected])
+
+  // Merge manifests with server page data
+  const siteEntries = useMemo(() => {
+    return manifests.map(manifest => {
+      const serverData = serverIndex?.[manifest.id]
+      const pages = serverData?.pages || []
+      return { manifest, pages }
+    })
+  }, [manifests, serverIndex])
+
+  // Filter
+  const filteredEntries = useMemo(() => {
+    if (!filter.trim()) return siteEntries
 
     const searchTerm = filter.toLowerCase()
-    return manifests.filter(manifest => {
-      // Check domain
+    return siteEntries.filter(({ manifest, pages }) => {
       if (manifest.domain.toLowerCase().includes(searchTerm)) return true
-      // Check homepage title
       if (manifest.homepage.title.toLowerCase().includes(searchTerm)) return true
-      // Check any page titles
-      if (manifest.pages.some(p => p.title.toLowerCase().includes(searchTerm))) return true
+      if (pages.some(p => p.title.toLowerCase().includes(searchTerm))) return true
       return false
     })
-  }, [manifests, filter])
+  }, [siteEntries, filter])
 
   // Stats
   const stats = useMemo(() => {
     let totalPages = 0
-    const categories = new Set<string>()
+    const contentTypes = new Set<string>()
 
-    for (const manifest of manifests) {
-      totalPages += manifest.pages.length + 1 // +1 for homepage
-      categories.add('website')
-      manifest.pages.forEach(p => categories.add(p.type))
+    for (const { pages } of siteEntries) {
+      totalPages += pages.length + 1 // +1 for homepage
+      for (const p of pages) contentTypes.add(p.type)
     }
+    contentTypes.add('website') // homepages
 
     return {
-      sites: manifests.length,
+      sites: siteEntries.length,
       pages: totalPages,
-      categories: categories.size,
+      categories: contentTypes.size,
     }
-  }, [manifests])
+  }, [siteEntries])
 
   const toggleSite = (domain: string) => {
     setExpandedSites(prev => {
@@ -144,6 +214,11 @@ export function CornMazeSite({ onNavigateToUrl }: SiteComponentProps) {
           <span style={{ color: THEME.textDim, fontSize: '14px' }}>
             .corn internet index
           </span>
+          {loading && (
+            <span style={{ color: THEME.accent, fontSize: '12px', opacity: 0.7 }}>
+              loading pages...
+            </span>
+          )}
         </div>
 
         {/* Stats Bar */}
@@ -211,16 +286,17 @@ export function CornMazeSite({ onNavigateToUrl }: SiteComponentProps) {
 
       {/* Site List */}
       <div style={{ padding: '16px 24px' }}>
-        {filteredManifests.length === 0 ? (
+        {filteredEntries.length === 0 ? (
           <div style={{ color: THEME.textMuted, padding: '32px', textAlign: 'center' }}>
             No sites match "{filter}"
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {filteredManifests.map(manifest => (
+            {filteredEntries.map(({ manifest, pages }) => (
               <SiteEntry
                 key={manifest.domain}
                 manifest={manifest}
+                pages={pages}
                 expanded={expandedSites.has(manifest.domain)}
                 onToggle={() => toggleSite(manifest.domain)}
                 onNavigate={onNavigateToUrl}
@@ -253,12 +329,13 @@ export function CornMazeSite({ onNavigateToUrl }: SiteComponentProps) {
 
 interface SiteEntryProps {
   manifest: SiteManifest
+  pages: SiteIndexPage[]
   expanded: boolean
   onToggle: () => void
   onNavigate: (url: string) => void
 }
 
-function SiteEntry({ manifest, expanded, onToggle, onNavigate }: SiteEntryProps) {
+function SiteEntry({ manifest, pages, expanded, onToggle, onNavigate }: SiteEntryProps) {
   return (
     <div
       style={{
@@ -337,7 +414,7 @@ function SiteEntry({ manifest, expanded, onToggle, onNavigate }: SiteEntryProps)
             borderRadius: '4px',
           }}
         >
-          {manifest.pages.length + 1} pages
+          {pages.length + 1} pages
         </span>
 
         {/* SEO Score */}
@@ -404,146 +481,62 @@ function SiteEntry({ manifest, expanded, onToggle, onNavigate }: SiteEntryProps)
             </div>
           </div>
 
-          {/* Pages - hierarchical display */}
-          {manifest.pages.length > 0 && (
+          {/* DB-driven pages */}
+          {pages.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {/* Top-level pages (no parent) */}
-              {manifest.pages
-                .filter(page => !page.parent)
-                .map((page, i) => {
-                  // Find child pages for this parent
-                  const children = manifest.pages.filter(p => p.parent === page.path)
+              {pages.map((page, i) => {
+                // Extract the path from the full URL (remove www.domain.corn prefix)
+                const pathMatch = page.url.match(/www\.[^/]+(\/.*)?$/)
+                const displayPath = pathMatch?.[1] || '/'
 
-                  return (
-                    <div key={i}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                        <span
-                          style={{
-                            fontSize: '10px',
-                            padding: '2px 6px',
-                            borderRadius: '3px',
-                            background: `${getCategoryColor(page.type)}20`,
-                            color: getCategoryColor(page.type),
-                            textTransform: 'uppercase',
-                          }}
-                        >
-                          {page.type}
-                        </span>
-                        <button
-                          onClick={() => onNavigate(`www.${manifest.domain}${page.path}`)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: THEME.link,
-                            fontSize: '13px',
-                            cursor: 'pointer',
-                            padding: 0,
-                            fontFamily: 'inherit',
-                          }}
-                        >
-                          {page.path}
-                        </button>
-                      </div>
-                      <div style={{ color: THEME.text, fontSize: '12px' }}>
-                        {page.title}
-                      </div>
-                      {page.description && (
-                        <div style={{ color: THEME.textDim, fontSize: '11px' }}>
-                          {page.description.slice(0, 100)}
-                          {page.description.length > 100 ? '...' : ''}
-                        </div>
-                      )}
-
-                      {/* Nested child pages */}
-                      {children.length > 0 && (
-                        <div style={{
-                          marginTop: '8px',
-                          marginLeft: '16px',
-                          paddingLeft: '12px',
-                          borderLeft: `2px solid ${THEME.border}`,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '8px',
-                        }}>
-                          {children.map((child, j) => (
-                            <div key={j}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                                <span
-                                  style={{
-                                    fontSize: '9px',
-                                    padding: '1px 4px',
-                                    borderRadius: '2px',
-                                    background: `${THEME.textDim}20`,
-                                    color: THEME.textDim,
-                                    textTransform: 'uppercase',
-                                  }}
-                                >
-                                  thread
-                                </span>
-                                <button
-                                  onClick={() => onNavigate(`www.${manifest.domain}${child.path}`)}
-                                  style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    color: THEME.link,
-                                    fontSize: '12px',
-                                    cursor: 'pointer',
-                                    padding: 0,
-                                    fontFamily: 'inherit',
-                                  }}
-                                >
-                                  {child.path}
-                                </button>
-                              </div>
-                              <div style={{ color: THEME.textMuted, fontSize: '11px' }}>
-                                {child.title}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-
-              {/* Pages without a parent that aren't parents themselves (orphan pages) */}
-              {manifest.pages
-                .filter(page => page.parent && !manifest.pages.some(p => p.path === page.parent))
-                .map((page, i) => (
-                  <div key={`orphan-${i}`} style={{ marginLeft: '16px', opacity: 0.7 }}>
+                return (
+                  <div key={i}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                       <span
                         style={{
-                          fontSize: '9px',
-                          padding: '1px 4px',
-                          borderRadius: '2px',
-                          background: `${THEME.textDim}20`,
-                          color: THEME.textDim,
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '3px',
+                          background: `${getCategoryColor(page.type)}20`,
+                          color: getCategoryColor(page.type),
                           textTransform: 'uppercase',
                         }}
                       >
                         {page.type}
                       </span>
                       <button
-                        onClick={() => onNavigate(`www.${manifest.domain}${page.path}`)}
+                        onClick={() => onNavigate(page.url)}
                         style={{
                           background: 'none',
                           border: 'none',
                           color: THEME.link,
-                          fontSize: '12px',
+                          fontSize: '13px',
                           cursor: 'pointer',
                           padding: 0,
                           fontFamily: 'inherit',
                         }}
                       >
-                        {page.path}
+                        {displayPath}
                       </button>
                     </div>
-                    <div style={{ color: THEME.textMuted, fontSize: '11px' }}>
+                    <div style={{ color: THEME.text, fontSize: '12px' }}>
                       {page.title}
                     </div>
+                    {page.description && (
+                      <div style={{ color: THEME.textDim, fontSize: '11px' }}>
+                        {page.description.slice(0, 100)}
+                        {page.description.length > 100 ? '...' : ''}
+                      </div>
+                    )}
                   </div>
-                ))}
+                )
+              })}
+            </div>
+          )}
+
+          {pages.length === 0 && (
+            <div style={{ color: THEME.textDim, fontSize: '12px', fontStyle: 'italic' }}>
+              Homepage only
             </div>
           )}
         </div>
