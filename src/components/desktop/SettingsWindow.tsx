@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   SidebarNav,
   DisplaySettings,
@@ -42,8 +42,21 @@ const sectionComponents: Record<SettingsTab, React.ComponentType> = {
   'developer': DeveloperSettings,
 }
 
-export function SettingsWindow() {
+interface SettingsWindowProps {
+  /** Navigate to a specific tab. Cleared after handled. */
+  requestedTab?: string | null
+  onTabHandled?: () => void
+}
+
+export function SettingsWindow({ requestedTab, onTabHandled }: SettingsWindowProps = {}) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('display')
+
+  useEffect(() => {
+    if (requestedTab && requestedTab in sectionComponents) {
+      setActiveTab(requestedTab as SettingsTab)
+      onTabHandled?.()
+    }
+  }, [requestedTab, onTabHandled])
 
   const ActiveSection = sectionComponents[activeTab]
 

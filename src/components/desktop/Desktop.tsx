@@ -81,6 +81,7 @@ export function Desktop() {
   const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set())
   const [phoneVisible, setPhoneVisible] = useState(false)
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
+  const [settingsRequestedTab, setSettingsRequestedTab] = useState<string | null>(null)
 
   // Context menu state
   const desktopCtx = useContextMenu<{ type: 'desktop' } | { type: 'icon'; iconId: string }>()
@@ -148,7 +149,7 @@ export function Desktop() {
       id: 'settings',
       title: 'Settings',
       icon: '⚙️',
-      component: <SettingsWindow />,
+      component: <SettingsWindow requestedTab={settingsRequestedTab} onTabHandled={() => setSettingsRequestedTab(null)} />,
       defaultState: { x: 300, y: 100, width: 1000, height: 700 },
     },
     {
@@ -492,7 +493,7 @@ export function Desktop() {
     if (desktopCtx.data.type === 'desktop') {
       return desktopEmptyPreset({
         onRefresh: () => window.location.reload(),
-        onChangeWallpaper: () => openWindow('settings'),
+        onChangeWallpaper: () => { setSettingsRequestedTab('wallpaper'); openWindow('settings') },
         onOpenSettings: () => openWindow('settings'),
       })
     }
