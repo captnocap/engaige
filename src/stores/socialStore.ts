@@ -2,8 +2,8 @@
  * Social Feed Store
  *
  * Manages social media posts, likes, comments for MyFace and other platforms.
- * Fetches data from server via WebSocket, falls back to mock data when server
- * returns empty or is unavailable.
+ * All data is fetched from the server via WebSocket. The database is the single
+ * source of truth -- if the server returns nothing, the store stays empty.
  */
 
 import { create } from 'zustand'
@@ -98,381 +98,16 @@ interface SocialState {
   removeNPCLike: (postId: string, npcId: string) => void
 }
 
-// Mock NPC profiles for development
-const MOCK_PROFILES: Record<string, SocialProfile> = {
-  'npc_sarah': {
-    id: 'npc_sarah',
-    name: 'Sarah',
-    username: 'xX_SarahBear_Xx',
-    avatar: '👧',
-    bio: '✨ living my best life ✨ photography | coffee | adventures',
-    mood: 'excited',
-    moodEmoji: '🎉',
-    location: 'Los Angeles, CA',
-    interests: ['photography', 'coffee', 'hiking', 'music'],
-    music: 'currently obsessed with indie pop',
-    topFriends: ['npc_jake', 'npc_emily', 'npc_mike'],
-    backgroundColor: '#FFE4E1',
-    textColor: '#8B4513',
-    isOnline: true,
-    relationshipLevel: 'friend',
-  },
-  'npc_jake': {
-    id: 'npc_jake',
-    name: 'Jake',
-    username: 'JakeTheSnake99',
-    avatar: '🧑',
-    bio: 'gamer | skater | pizza enthusiast 🍕',
-    mood: 'chill',
-    moodEmoji: '😎',
-    location: 'Austin, TX',
-    interests: ['gaming', 'skateboarding', 'music', 'pizza'],
-    music: 'punk rock forever',
-    topFriends: ['npc_sarah', 'npc_mike'],
-    backgroundColor: '#2F4F4F',
-    textColor: '#00FF00',
-    isOnline: false,
-    lastSeen: '2 hours ago',
-    relationshipLevel: 'acquaintance',
-  },
-  'npc_emily': {
-    id: 'npc_emily',
-    name: 'Emily',
-    username: 'EmilyMelody',
-    avatar: '👩',
-    bio: '🎵 singer/songwriter | dreamer | cat mom 🐱',
-    mood: 'creative',
-    moodEmoji: '🎨',
-    location: 'Nashville, TN',
-    interests: ['music', 'songwriting', 'cats', 'poetry'],
-    music: 'check out my new song on my profile!',
-    topFriends: ['npc_sarah', 'npc_alex'],
-    backgroundColor: '#E6E6FA',
-    textColor: '#4B0082',
-    isOnline: true,
-    relationshipLevel: 'friend',
-  },
-  'npc_mike': {
-    id: 'npc_mike',
-    name: 'Mike',
-    username: 'MikeD_Beats',
-    avatar: '👨',
-    bio: 'DJ | Producer | Night owl 🦉',
-    mood: 'tired',
-    moodEmoji: '😴',
-    location: 'Miami, FL',
-    interests: ['DJing', 'production', 'nightlife', 'vinyl'],
-    music: 'house, techno, everything electronic',
-    topFriends: ['npc_jake', 'npc_alex'],
-    backgroundColor: '#1a1a2e',
-    textColor: '#00FFFF',
-    isOnline: false,
-    lastSeen: '5 hours ago',
-    relationshipLevel: 'stranger',
-  },
-  'npc_alex': {
-    id: 'npc_alex',
-    name: 'Alex',
-    username: 'AlexWonders',
-    avatar: '🧑‍🎤',
-    bio: 'artist | free spirit | collector of sunsets 🌅',
-    mood: 'peaceful',
-    moodEmoji: '☮️',
-    location: 'Portland, OR',
-    interests: ['art', 'nature', 'meditation', 'travel'],
-    music: 'ambient and lo-fi beats',
-    topFriends: ['npc_emily', 'npc_mike'],
-    backgroundColor: '#FFF8DC',
-    textColor: '#556B2F',
-    isOnline: true,
-    relationshipLevel: 'acquaintance',
-  },
-  'npc_marcus': {
-    id: 'npc_marcus',
-    name: 'Marcus',
-    username: 'MarcusNightOwl',
-    avatar: '🦉',
-    bio: 'late night thoughts | insomnia crew | 3am philosophy',
-    mood: 'contemplative',
-    moodEmoji: '🌙',
-    location: 'Chicago, IL',
-    interests: ['philosophy', 'night walks', 'jazz', 'coffee'],
-    music: 'lo-fi beats to contemplate existence to',
-    topFriends: ['npc_sarah', 'npc_luna'],
-    backgroundColor: '#1a1a2e',
-    textColor: '#9370DB',
-    isOnline: false,
-    lastSeen: 'online at 3am',
-    relationshipLevel: 'acquaintance',
-  },
-  'npc_luna': {
-    id: 'npc_luna',
-    name: 'Luna',
-    username: 'LunaStardust',
-    avatar: '🌙',
-    bio: '✨ vibes only ✨ astrology girlie | tarot reader | crystal collector',
-    mood: 'mystical',
-    moodEmoji: '🔮',
-    location: 'Sedona, AZ',
-    interests: ['astrology', 'tarot', 'crystals', 'yoga'],
-    music: 'ethereal ambient and meditation sounds',
-    topFriends: ['npc_emily', 'npc_marcus', 'npc_sarah'],
-    backgroundColor: '#2d1b4e',
-    textColor: '#E6E6FA',
-    isOnline: true,
-    relationshipLevel: 'friend',
-  },
-}
-
-// Mock posts for development
-// Note: seenBy is initially empty - posts become "seen" when viewed in feed
-const MOCK_POSTS: Omit<Post, 'author'>[] = [
-  // MyFace posts
-  {
-    id: 'post_1',
-    authorId: 'npc_sarah',
-    content: 'just got new pics up!! check my profile 📸 had the best photoshoot today omg',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    likes: ['npc_jake', 'npc_emily'],
-    comments: [
-      {
-        id: 'comment_1',
-        authorId: 'npc_jake',
-        author: MOCK_PROFILES['npc_jake'],
-        content: 'fire pics!! 🔥',
-        timestamp: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-        likes: ['npc_sarah'],
-      },
-    ],
-    shares: 2,
-    platform: 'myface',
-    seenBy: [], // Likes/comments imply seeing - NPC awareness handled by awarenessStore
-  },
-  {
-    id: 'post_2',
-    authorId: 'npc_jake',
-    content: 'who wants to hang out this weekend?? thinking skate park then pizza 🛹🍕',
-    timestamp: new Date(Date.now() - 23 * 60 * 1000).toISOString(),
-    likes: ['npc_mike'],
-    comments: [],
-    shares: 0,
-    platform: 'myface',
-    seenBy: [],
-  },
-  {
-    id: 'post_3',
-    authorId: 'npc_emily',
-    content: 'new song on my profile!! tell me what u think! been working on this one for weeks 🎵✨',
-    timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-    likes: ['npc_sarah', 'npc_alex', 'npc_mike'],
-    comments: [
-      {
-        id: 'comment_2',
-        authorId: 'npc_sarah',
-        author: MOCK_PROFILES['npc_sarah'],
-        content: 'omg this is SO good!! ur voice is amazing 😍',
-        timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-        likes: ['npc_emily'],
-      },
-      {
-        id: 'comment_3',
-        authorId: 'npc_alex',
-        author: MOCK_PROFILES['npc_alex'],
-        content: 'beautiful vibes ✨ the bridge gave me chills',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        likes: ['npc_emily', 'npc_sarah'],
-      },
-    ],
-    shares: 5,
-    platform: 'myface',
-    seenBy: [],
-  },
-  {
-    id: 'post_4',
-    authorId: 'npc_mike',
-    content: 'last night was INSANE 🎧 dropped my new track and the crowd went crazy',
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_jake'],
-    comments: [],
-    shares: 1,
-    platform: 'myface',
-    seenBy: [],
-  },
-  {
-    id: 'post_5',
-    authorId: 'npc_alex',
-    content: 'caught the most beautiful sunset today 🌅 sometimes you just gotta stop and appreciate the little things',
-    images: ['sunset.jpg'],
-    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_emily', 'npc_sarah'],
-    comments: [
-      {
-        id: 'comment_4',
-        authorId: 'npc_emily',
-        author: MOCK_PROFILES['npc_emily'],
-        content: 'this is stunning!! where is this?',
-        timestamp: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
-        likes: [],
-      },
-    ],
-    shares: 3,
-    platform: 'myface',
-    seenBy: [],
-  },
-  // InstaSnap posts
-  {
-    id: 'insta_1',
-    authorId: 'npc_sarah',
-    content: 'golden hour never misses ✨ #goldenhour #photography #aesthetic',
-    images: ['https://picsum.photos/seed/sarah_insta1/600/600'],
-    timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    likes: ['npc_emily', 'npc_luna', 'npc_alex', 'npc_jake'],
-    comments: [
-      {
-        id: 'insta_comment_1',
-        authorId: 'npc_emily',
-        author: MOCK_PROFILES['npc_emily'],
-        content: 'obsessed with this!! 😍',
-        timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-        likes: ['npc_sarah'],
-      },
-      {
-        id: 'insta_comment_2',
-        authorId: 'npc_luna',
-        author: MOCK_PROFILES['npc_luna'],
-        content: 'the lighting is everything ✨',
-        timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
-        likes: ['npc_sarah', 'npc_emily'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-  {
-    id: 'insta_2',
-    authorId: 'npc_luna',
-    content: 'new moon, new intentions 🌙 what are you manifesting this month? #newmoon #manifestation #spirituality',
-    images: ['https://picsum.photos/seed/luna_insta1/600/600'],
-    timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-    likes: ['npc_sarah', 'npc_emily', 'npc_alex'],
-    comments: [
-      {
-        id: 'insta_comment_3',
-        authorId: 'npc_alex',
-        author: MOCK_PROFILES['npc_alex'],
-        content: 'abundance and peace 🙏',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        likes: ['npc_luna'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-  {
-    id: 'insta_3',
-    authorId: 'npc_jake',
-    content: 'landed it finally 🛹 #skateboarding #kickflip #progress',
-    images: ['https://picsum.photos/seed/jake_insta1/600/600'],
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_mike', 'npc_sarah'],
-    comments: [
-      {
-        id: 'insta_comment_4',
-        authorId: 'npc_mike',
-        author: MOCK_PROFILES['npc_mike'],
-        content: 'clean! 🔥',
-        timestamp: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
-        likes: ['npc_jake'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-  {
-    id: 'insta_4',
-    authorId: 'npc_emily',
-    content: 'studio vibes 🎵 new song dropping soon... #music #songwriter #studio #comingsoon',
-    images: ['https://picsum.photos/seed/emily_insta1/600/600'],
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_sarah', 'npc_alex', 'npc_luna', 'npc_mike', 'npc_jake'],
-    comments: [
-      {
-        id: 'insta_comment_5',
-        authorId: 'npc_sarah',
-        author: MOCK_PROFILES['npc_sarah'],
-        content: 'CANT WAIT 😭😭',
-        timestamp: new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString(),
-        likes: ['npc_emily'],
-      },
-      {
-        id: 'insta_comment_6',
-        authorId: 'npc_alex',
-        author: MOCK_PROFILES['npc_alex'],
-        content: 'your music is always so healing',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        likes: ['npc_emily', 'npc_sarah'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-  {
-    id: 'insta_5',
-    authorId: 'npc_alex',
-    content: 'morning light in the studio 🎨 #art #painting #morninglight #creative',
-    images: ['https://picsum.photos/seed/alex_insta1/600/600'],
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_emily', 'npc_luna', 'npc_sarah'],
-    comments: [
-      {
-        id: 'insta_comment_7',
-        authorId: 'npc_luna',
-        author: MOCK_PROFILES['npc_luna'],
-        content: 'the energy in this photo ✨',
-        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-        likes: ['npc_alex'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-  {
-    id: 'insta_6',
-    authorId: 'npc_marcus',
-    content: '3am thoughts and city lights 🌃 #latenight #cityscape #insomnia #nightowl',
-    images: ['https://picsum.photos/seed/marcus_insta1/600/600'],
-    timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
-    likes: ['npc_luna', 'npc_mike'],
-    comments: [
-      {
-        id: 'insta_comment_8',
-        authorId: 'npc_luna',
-        author: MOCK_PROFILES['npc_luna'],
-        content: 'the quiet hours hit different',
-        timestamp: new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString(),
-        likes: ['npc_marcus'],
-      },
-    ],
-    shares: 0,
-    platform: 'instasnap',
-    seenBy: [],
-  },
-]
-
-// Player's default profile
+/**
+ * Default player profile shape -- minimal placeholder until the server
+ * provides real player data. Keeps the store in a valid state on init.
+ */
 const DEFAULT_PLAYER_PROFILE: SocialProfile = {
   id: 'player',
   name: 'Player',
   username: 'Player',
   avatar: '👤',
-  bio: 'Living my best life!',
-  mood: 'happy',
-  moodEmoji: '😊',
+  bio: '',
   isOnline: true,
 }
 
@@ -499,7 +134,7 @@ function serverToClientComment(c: any): Comment {
     authorId: c.authorId || c.author_id,
     author: c.author
       ? serverToClientProfile(c.author)
-      : MOCK_PROFILES[c.authorId || c.author_id] || {
+      : {
           id: c.authorId || c.author_id,
           name: 'Unknown',
           username: 'unknown',
@@ -519,10 +154,11 @@ function serverToClientComment(c: any): Comment {
 function serverToClientPost(serverPost: any): Post {
   const authorProfile: SocialProfile = serverPost.author
     ? serverToClientProfile(serverPost.author)
-    : MOCK_PROFILES[serverPost.authorId] || {
-        id: serverPost.authorId,
+    : {
+        id: serverPost.authorId || serverPost.author_id,
         name: 'Unknown',
         username: 'unknown',
+        avatar: '👤',
       }
 
   return {
@@ -555,9 +191,9 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   isLoading: false,
 
   /**
-   * Initialize the social feed.
-   * Attempts to fetch posts from the server via WebSocket first.
-   * Falls back to MOCK data if the server is unavailable or returns empty.
+   * Initialize the social feed from the server via WebSocket.
+   * If the server is unavailable or returns empty, the store stays empty.
+   * The database is the single source of truth.
    */
   initialize: async () => {
     const { posts } = get()
@@ -566,7 +202,6 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
     set({ isLoading: true })
 
     try {
-      // Try fetching from server via WebSocket
       const { request, connected } = useWSStore.getState()
       if (connected) {
         const feedResult = await request<any, { posts: any[] }>('social:getFeed', { limit: 50 })
@@ -575,8 +210,8 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
           // Map server posts to client Post shape
           const mappedPosts = feedResult.posts.map(serverToClientPost)
 
-          // Build profiles map from post authors, seeded with mock profiles as fallback
-          const profileMap: Record<string, SocialProfile> = { ...MOCK_PROFILES }
+          // Build profiles map exclusively from server-provided post authors
+          const profileMap: Record<string, SocialProfile> = {}
           for (const post of feedResult.posts) {
             if (post.author && !profileMap[post.author.id]) {
               profileMap[post.author.id] = serverToClientProfile(post.author)
@@ -588,20 +223,11 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
         }
       }
     } catch (err) {
-      console.warn('[SocialStore] Server fetch failed, using mock data:', err)
+      console.warn('[SocialStore] Server fetch failed, store will remain empty:', err)
     }
 
-    // Fallback to mock data when server is unavailable or returned no posts
-    const hydratedPosts = MOCK_POSTS.map(post => ({
-      ...post,
-      author: MOCK_PROFILES[post.authorId],
-    }))
-
-    set({
-      profiles: MOCK_PROFILES,
-      posts: hydratedPosts,
-      isLoading: false,
-    })
+    // No server data available -- store stays empty, that is correct behavior
+    set({ isLoading: false })
   },
 
   /**

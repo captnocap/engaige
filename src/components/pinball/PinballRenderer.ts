@@ -104,9 +104,6 @@ export function render(
   // Score popups
   drawScorePopups(ctx, state.scoreEvents);
 
-  // HUD
-  drawHUD(ctx, state, benchmark);
-
   ctx.restore();
 }
 
@@ -400,54 +397,6 @@ function drawScorePopups(ctx: CanvasRenderingContext2D, events: ScoreEvent[]) {
   }
 }
 
-function drawHUD(ctx: CanvasRenderingContext2D, state: PhysicsState, benchmark: number) {
-  // Score display (LED-style)
-  ctx.save();
-
-  // Background panel
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(10, 10, 340, 50);
-  ctx.strokeStyle = '#334';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(10, 10, 340, 50);
-
-  // Score
-  ctx.fillStyle = '#00ff88';
-  ctx.font = 'bold 22px monospace';
-  ctx.textAlign = 'left';
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur = 6;
-  ctx.fillText(state.score.toLocaleString(), 20, 40);
-
-  // Balls remaining
-  ctx.fillStyle = '#ff8844';
-  ctx.font = '12px monospace';
-  ctx.textAlign = 'right';
-  for (let i = 0; i < state.ballsRemaining; i++) {
-    ctx.beginPath();
-    ctx.arc(330 - i * 16, 28, 5, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Benchmark target
-  ctx.fillStyle = '#888';
-  ctx.font = '9px monospace';
-  ctx.textAlign = 'right';
-  ctx.shadowBlur = 0;
-  ctx.fillText(`TARGET: ${benchmark.toLocaleString()}`, 340, 52);
-
-  // Combo indicator
-  if (state.combo > 1) {
-    ctx.fillStyle = '#ffff00';
-    ctx.font = 'bold 11px monospace';
-    ctx.textAlign = 'left';
-    ctx.shadowColor = '#ffff00';
-    ctx.shadowBlur = 4;
-    ctx.fillText(`${state.combo}x COMBO`, 20, 55);
-  }
-
-  ctx.restore();
-}
 
 export function clearTrail() {
   ballTrail.length = 0;

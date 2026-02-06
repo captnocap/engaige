@@ -71,88 +71,7 @@ interface Comment {
 }
 
 // Cryptocurrency data - all values are intentionally absurd
-const CRYPTOCURRENCIES: Cryptocurrency[] = [
-  {
-    id: 'cob',
-    symbol: 'COB',
-    name: 'CobCoin',
-    price: 0.00118,
-    change24h: -12.4,
-    change7d: -94.7,
-    marketCap: '$2.3M',
-    volume24h: '$847K',
-    icon: '🌽',
-    description: 'The original corn-based cryptocurrency. 847 COB = 1 USD.',
-    launchDate: 'March 2023',
-  },
-  {
-    id: 'krnl',
-    symbol: 'KRNL',
-    name: 'KernelToken',
-    price: 0.000047,
-    change24h: -28.3,
-    change7d: -84.7,
-    marketCap: '$847K',
-    volume24h: '$23K',
-    icon: '🫛',
-    description: 'Built on quantum entanglement technology. The whitepaper is 847 pages.',
-    launchDate: 'June 2023',
-  },
-  {
-    id: 'silk',
-    symbol: 'SILK',
-    name: 'SilkCoin',
-    price: 0.0034,
-    change24h: -5.2,
-    change7d: -67.8,
-    marketCap: '$1.2M',
-    volume24h: '$156K',
-    icon: '🧵',
-    description: 'Derived from corn silk. Eco-friendly and biodegradable blockchain.',
-    launchDate: 'August 2023',
-  },
-  {
-    id: 'husk',
-    symbol: 'HUSK',
-    name: 'HuskChain',
-    price: 0.0089,
-    change24h: +3.2,
-    change7d: -23.4,
-    marketCap: '$4.7M',
-    volume24h: '$890K',
-    icon: '🥬',
-    description: 'The protective layer of DeFi. Omnicorp Holdings is rumored to be accumulating.',
-    launchDate: 'October 2023',
-  },
-  {
-    id: 'trust',
-    symbol: 'TRUST',
-    name: 'TrustToken',
-    price: 0.0000001,
-    change24h: -99.2,
-    change7d: -99.97,
-    marketCap: '$847',
-    volume24h: '$12',
-    icon: '🙆',
-    description: 'Launched by Trust Fall Tim. "Just trust me bro." Fell backwards immediately.',
-    launchDate: 'Last Tuesday',
-    isRugPull: true,
-    rugPullWarning: 'DO NOT BUY - Tim literally fell and took the liquidity with him',
-  },
-  {
-    id: 'pop',
-    symbol: 'POP',
-    name: 'PopCorn Protocol',
-    price: 0.0023,
-    change24h: -18.7,
-    change7d: -56.3,
-    marketCap: '$890K',
-    volume24h: '$67K',
-    icon: '🍿',
-    description: 'Explosive growth potential. Currently just exploding.',
-    launchDate: 'December 2023',
-  },
-]
+// Hardcoded CRYPTOCURRENCIES removed -- DB is the sole source of truth
 
 // Portfolio holdings (showing massive losses)
 const PORTFOLIO_HOLDINGS: PortfolioHolding[] = [
@@ -164,140 +83,10 @@ const PORTFOLIO_HOLDINGS: PortfolioHolding[] = [
 ]
 
 // News feed
-const NEWS_ITEMS: NewsItem[] = [
-  {
-    id: '1',
-    title: 'BREAKING: KernelToken Whitepaper Mentions "Quantum Entanglement" 847 Times',
-    source: 'CornCrypto Daily',
-    timestamp: '2 hours ago',
-    sentiment: 'bullish',
-    content: 'Experts are baffled by the excessive use of quantum terminology. Lead developer Derek says this is "completely normal" and that KRNL will "revolutionize coffee brewing."',
-  },
-  {
-    id: '2',
-    title: 'Trust Fall Tim\'s TRUST Token Crashes 99.97% - "I Didn\'t Expect Anyone to Catch Me"',
-    source: 'CobCoin News',
-    timestamp: '4 hours ago',
-    sentiment: 'scam',
-    content: 'In an exclusive interview, Tim explained that the token was meant to be "a metaphor for trust in financial systems." It was not.',
-  },
-  {
-    id: '3',
-    title: 'Omnicorp Holdings Rumored to Be Mining Crypto on Hartwell Building\'s Missing 13th Floor',
-    source: 'The Hartwell Files',
-    timestamp: '6 hours ago',
-    sentiment: 'neutral',
-    content: 'Anonymous sources claim the "missing" floor 13 houses 847 ASIC miners. Omnicorp denies the building even has a 13th floor, which is technically true.',
-  },
-  {
-    id: '4',
-    title: 'HODLer Claims COB Will Hit $847 by End of Year, Sources: "Trust Me Bro"',
-    source: 'Threadit r/CobCoinBets',
-    timestamp: '8 hours ago',
-    sentiment: 'bullish',
-    content: 'Local investor with 0.003 BTC in savings is "absolutely certain" that CobCoin will moon. When pressed for analysis, they showed us a chart that looked like corn.',
-  },
-  {
-    id: '5',
-    title: 'Derek Invests Entire Quantum Coffee Budget Into KRNL, Down 84.7%',
-    source: 'WealthWisdom',
-    timestamp: '12 hours ago',
-    sentiment: 'bearish',
-    content: 'Derek reportedly told friends, "The quantum technology will make this coffee budget investment superimposed with wealth." He now drinks regular coffee.',
-  },
-  {
-    id: '6',
-    title: 'SilkCoin Developers Announce "Biodegradable Blockchain" - Network Already Decomposing',
-    source: 'CornCrypto Daily',
-    timestamp: '1 day ago',
-    sentiment: 'bearish',
-    content: 'The eco-friendly blockchain is working as intended, say developers. Users report transactions "composting" before confirmation.',
-  },
-  {
-    id: '7',
-    title: 'HuskChain Forms Partnership with The Underground Venue - Mars "Cautiously Confused"',
-    source: 'BandsNotInTown',
-    timestamp: '1 day ago',
-    sentiment: 'neutral',
-    content: 'The Underground will now accept HUSK for cover charges. Owner Mars says, "I don\'t understand it, but the kids seem to like it."',
-  },
-]
+// Hardcoded NEWS_ITEMS removed -- DB is the sole source of truth
 
 // Delusional investor comments
-const COMMENTS: Comment[] = [
-  {
-    id: '1',
-    author: 'DiamondHandsDerek',
-    avatar: '💎',
-    timestamp: '23 min ago',
-    content: 'Just bought another 100K KRNL at the dip! When this quantum entanglement tech is understood by the masses, we\'re all gonna be rich! This is basically early Bitcoin but with CORN! 847 COB = lambo soon!',
-    upvotes: 847,
-    isDelusional: true,
-  },
-  {
-    id: '2',
-    author: 'CobHODLer69',
-    avatar: '🌽',
-    timestamp: '1 hour ago',
-    content: 'My wife left me and took the kids but I\'m NOT selling. Paper hands don\'t deserve generational wealth. COB to the MOON! Who needs family when you have decentralized corn?',
-    upvotes: 423,
-    isDelusional: true,
-  },
-  {
-    id: '3',
-    author: 'RationalInvestor',
-    avatar: '📊',
-    timestamp: '2 hours ago',
-    content: 'Guys, this is clearly a Ponzi scheme. The whitepaper literally has "definitely not a scam" as a section header. Please do your research.',
-    upvotes: -47,
-    isDelusional: false,
-  },
-  {
-    id: '4',
-    author: 'TrustMeBro',
-    avatar: '🙆',
-    timestamp: '3 hours ago',
-    content: 'TRUST is still a buy at these levels! Tim just needs to practice his falls more. The fundamentals are STRONG. Also I may or may not be Tim using a burner account.',
-    upvotes: 12,
-    isDelusional: true,
-  },
-  {
-    id: '5',
-    author: 'QuantumCoffeeEnthusiast',
-    avatar: '☕',
-    timestamp: '4 hours ago',
-    content: 'KRNL isn\'t just a token, it\'s a MOVEMENT. Derek\'s vision of quantum-brewed coffee powered by blockchain is the future. I\'ve refinanced my house twice for this. No regrets (yet).',
-    upvotes: 234,
-    isDelusional: true,
-  },
-  {
-    id: '6',
-    author: 'FloorThirteenAnon',
-    avatar: '🏚️',
-    timestamp: '5 hours ago',
-    content: 'I work at Hartwell Building maintenance. The 13th floor EXISTS. I\'ve seen the mining rigs. Omnicorp pays us to stay quiet. Buy HUSK before the truth comes out.',
-    upvotes: 847,
-    isDelusional: true,
-  },
-  {
-    id: '7',
-    author: 'PaperHandsPatricia',
-    avatar: '🐿️',
-    timestamp: '6 hours ago',
-    content: 'Sold all my COB at -94% to buy savings bonds. My husband says I have no vision but at least I can afford socks now.',
-    upvotes: -23,
-    isDelusional: false,
-  },
-  {
-    id: '8',
-    author: 'SigmaCryptoChad',
-    avatar: '🐺',
-    timestamp: '7 hours ago',
-    content: 'While you were sleeping, I was accumulating HUSK. While you were partying, I was analyzing corn futures. The grindset never stops. Portfolio down 67% but MENTAL GAINS are through the roof.',
-    upvotes: 567,
-    isDelusional: true,
-  },
-]
+// Hardcoded COMMENTS removed -- DB is the sole source of truth
 
 // Trading pairs
 const TRADING_PAIRS = [
@@ -363,25 +152,16 @@ function dbToComment(item: SiteContentItem): Comment {
 }
 
 export function CobCoinSite({ siteId, onNavigate }: SiteProps) {
-  // Fetch DB content for each content type, falling back to hardcoded arrays
+  // Fetch DB content for each content type -- no fallback, DB is the sole source of truth
   const { content: dbCryptos } = useSiteContent('cobcoin', { contentType: 'crypto' })
   const { content: dbNews } = useSiteContent('cobcoin', { contentType: 'news' })
   const { content: dbComments } = useSiteContent('cobcoin', { contentType: 'comment' })
 
-  const cryptos = useMemo(() => {
-    if (dbCryptos.length > 0) return dbCryptos.map(dbToCryptocurrency)
-    return CRYPTOCURRENCIES
-  }, [dbCryptos])
+  const cryptos = useMemo(() => dbCryptos.map(dbToCryptocurrency), [dbCryptos])
 
-  const newsItems = useMemo(() => {
-    if (dbNews.length > 0) return dbNews.map(dbToNewsItem)
-    return NEWS_ITEMS
-  }, [dbNews])
+  const newsItems = useMemo(() => dbNews.map(dbToNewsItem), [dbNews])
 
-  const comments = useMemo(() => {
-    if (dbComments.length > 0) return dbComments.map(dbToComment)
-    return COMMENTS
-  }, [dbComments])
+  const comments = useMemo(() => dbComments.map(dbToComment), [dbComments])
 
   const [view, setView] = useState<'market' | 'portfolio' | 'trade' | 'news'>('market')
   const [selectedCrypto, setSelectedCrypto] = useState<Cryptocurrency | null>(null)

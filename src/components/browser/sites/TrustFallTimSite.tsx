@@ -50,59 +50,6 @@ const CAREER_STATS = {
   totalTimeFalling: '14 hours, 23 minutes',
 }
 
-const RECENT_FALLS: FallRecord[] = [
-  {
-    id: 'TF-2847',
-    date: 'January 18, 2026',
-    location: 'Downtown Farmers Market',
-    caught: true,
-    catcher: 'Unnamed produce vendor',
-    height: '4 feet',
-    style: 'Classic Arms-Out',
-    notes: 'Vendor seemed confused but committed. Tim gave him a signed tomato.',
-  },
-  {
-    id: 'TF-2846',
-    date: 'January 15, 2026',
-    location: 'The Underground (before show)',
-    caught: true,
-    catcher: 'Mars (venue owner)',
-    height: '3.5 feet',
-    style: 'The Majestic Eagle',
-    notes: 'Mars caught him one-handed while holding a drink. Legendary.',
-    legendary: true,
-  },
-  {
-    id: 'TF-2845',
-    date: 'January 12, 2026',
-    location: 'Local Starbucks',
-    caught: false,
-    height: '4 feet',
-    style: 'Classic Arms-Out',
-    notes: 'Barista did not understand the assignment. Tim hit the floor. Got free drink out of pity.',
-  },
-  {
-    id: 'TF-2844',
-    date: 'January 10, 2026',
-    location: 'City Bus #42',
-    caught: true,
-    catcher: 'Elderly woman (hero)',
-    height: '3 feet (seated)',
-    style: 'The Bus Lean',
-    notes: 'Executed on a moving bus. The elderly woman had surprisingly strong arms.',
-    legendary: true,
-  },
-  {
-    id: 'TF-2843',
-    date: 'January 8, 2026',
-    location: 'Quantum Coffee Co.',
-    caught: true,
-    catcher: 'Derek (regular customer)',
-    height: '4 feet',
-    style: 'Classic Arms-Out',
-    notes: 'Derek was mid-rant about wave functions. Still caught Tim. Good sport.',
-  },
-]
 
 const SIGNATURE_MOVES = [
   { name: 'Classic Arms-Out', difficulty: '★', description: 'The fundamental. Arms extended, eyes closed, pure trust.' },
@@ -214,10 +161,7 @@ function FallRecordCard({ fall }: { fall: FallRecord }) {
 export function TrustFallTimSite({ siteId }: SiteProps) {
   const { content: dbContent } = useSiteContent('trustfalltim')
 
-  const recentFalls = useMemo(() => {
-    if (dbContent.length > 0) return dbContent.map(dbToFallRecord)
-    return RECENT_FALLS
-  }, [dbContent])
+  const recentFalls = useMemo(() => dbContent.map(dbToFallRecord), [dbContent])
 
   const [activeTab, setActiveTab] = useState<'home' | 'stats' | 'gallery' | 'faq'>('home')
 

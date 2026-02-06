@@ -30,6 +30,10 @@ interface PlayerProfile {
   benchmark: number;
 }
 
+/**
+ * PinballHistory - Cabinet-style game history
+ * Dark DMD aesthetic with amber/orange text
+ */
 export function PinballHistory() {
   const { request } = useWSRequest();
   const [history, setHistory] = useState<PinballGame[]>([]);
@@ -66,118 +70,115 @@ export function PinballHistory() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-[var(--color-textMuted)]">Loading history...</div>
+      <div className="h-full flex items-center justify-center" style={cabinetBg}>
+        <div style={{ ...dmdText, color: '#604010' }}>LOADING...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Stats summary */}
+    <div className="h-full flex flex-col overflow-hidden" style={cabinetBg}>
+      {/* Stats DMD panel */}
       {profile && (
-        <div
-          className="shrink-0 px-6 py-4"
-          style={{ borderBottom: '1px solid var(--color-border)' }}
-        >
-          <div className="grid grid-cols-5 gap-4">
-            <StatCard label="ELO" value={profile.elo_rating.toString()} sub={`Peak: ${profile.peak_elo}`} />
-            <StatCard label="High Score" value={profile.high_score.toLocaleString()} sub={`Target: ${profile.benchmark.toLocaleString()}`} />
-            <StatCard label="Record" value={`${profile.wins}-${profile.losses}`} sub={`${profile.win_rate}% win rate`} />
-            <StatCard label="Games" value={profile.total_games.toString()} sub={`${profile.wins} wins`} />
-            <StatCard label="Streak" value={profile.current_streak.toString()} sub={`Best: ${profile.best_streak}`} />
+        <div className="shrink-0 px-4 py-3" style={{ borderBottom: '1px solid #1a1608' }}>
+          <div className="grid grid-cols-5 gap-2">
+            <StatBlock label="ELO" value={profile.elo_rating.toString()} sub={`PK ${profile.peak_elo}`} />
+            <StatBlock label="BEST" value={formatScore(profile.high_score)} sub={`TGT ${formatScore(profile.benchmark)}`} />
+            <StatBlock label="W-L" value={`${profile.wins}-${profile.losses}`} sub={`${profile.win_rate}%`} />
+            <StatBlock label="GAMES" value={profile.total_games.toString()} sub={`${profile.wins}W`} />
+            <StatBlock label="STREAK" value={profile.current_streak.toString()} sub={`BT ${profile.best_streak}`} />
           </div>
         </div>
       )}
 
-      {/* Filter bar */}
-      <div className="shrink-0 px-6 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-border)' }}>
-        <h3 className="text-lg font-semibold text-[var(--color-text)]">Game History</h3>
-        <div className="flex gap-2">
-          <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
-          <FilterButton active={filter === 'wins'} onClick={() => setFilter('wins')}>Wins</FilterButton>
-          <FilterButton active={filter === 'losses'} onClick={() => setFilter('losses')}>Losses</FilterButton>
-        </div>
+      {/* Filter toggles */}
+      <div className="shrink-0 px-4 py-2 flex items-center gap-2" style={{ borderBottom: '1px solid #1a1608' }}>
+        <FilterToggle active={filter === 'all'} onClick={() => setFilter('all')}>ALL</FilterToggle>
+        <FilterToggle active={filter === 'wins'} onClick={() => setFilter('wins')}>WINS</FilterToggle>
+        <FilterToggle active={filter === 'losses'} onClick={() => setFilter('losses')}>LOSSES</FilterToggle>
       </div>
 
-      {/* History list */}
-      <div className="flex-1 overflow-y-auto px-6 pb-6">
+      {/* Game list */}
+      <div className="flex-1 overflow-y-auto">
         {filteredHistory.length === 0 && (
-          <div className="text-center py-12 text-[var(--color-textMuted)]">
-            {filter === 'all'
-              ? 'No completed games yet. Start playing!'
-              : `No ${filter} yet.`}
+          <div className="text-center py-12" style={{ ...dmdText, color: '#403010' }}>
+            {filter === 'all' ? 'NO GAMES YET' : `NO ${filter.toUpperCase()} YET`}
           </div>
         )}
 
-        <div className="space-y-2 mt-4">
-          {filteredHistory.map(game => (
+        {filteredHistory.map(game => {
+          const isWin = game.result === 'win';
+          const isLoss = game.result === 'loss';
+
+          return (
             <div
               key={game.id}
-              className="p-4 rounded-lg bg-[var(--color-bgSecondary)]"
-              style={{ border: '1px solid var(--color-border)' }}
+              className="px-4 py-2"
+              style={{ borderBottom: '1px solid rgba(26,22,8,0.5)' }}
             >
-              <div className="flex items-center justify-between mb-2">
+              {/* Top line: result + score + ELO change */}
+              <div className="flex items-center justify-between" style={{ ...dmdText, fontSize: 12 }}>
                 <div className="flex items-center gap-3">
-                  <div className={`
-                    px-3 py-1 rounded-full text-sm font-semibold
-                    ${game.result === 'win' ? 'bg-green-500 text-white' : ''}
-                    ${game.result === 'loss' ? 'bg-red-500 text-white' : ''}
-                    ${game.result === 'abandoned' ? 'bg-gray-500 text-white' : ''}
-                  `}>
-                    {game.result === 'win' && 'WIN'}
-                    {game.result === 'loss' && 'LOSS'}
-                    {game.result === 'abandoned' && 'DNF'}
-                  </div>
-
-                  <div className="text-sm font-mono text-[var(--color-text)]">
-                    {game.score.toLocaleString()} pts
-                  </div>
-
+                  <span
+                    className="font-bold"
+                    style={{
+                      color: isWin ? '#40d040' : isLoss ? '#d04040' : '#808080',
+                      textShadow: isWin
+                        ? '0 0 4px rgba(64,208,64,0.4)'
+                        : isLoss
+                          ? '0 0 4px rgba(208,64,64,0.4)'
+                          : 'none',
+                      width: 32,
+                      display: 'inline-block',
+                    }}
+                  >
+                    {isWin ? 'WIN' : isLoss ? 'LOSS' : 'DNF'}
+                  </span>
+                  <span style={{ color: '#f0a030' }}>
+                    {game.score.toLocaleString()}
+                  </span>
                   {game.elo_change !== 0 && (
-                    <div className={`text-sm font-medium ${game.elo_change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {game.elo_change > 0 ? '+' : ''}{game.elo_change} ELO
-                    </div>
+                    <span style={{ color: game.elo_change > 0 ? '#40d040' : '#d04040', fontSize: 11 }}>
+                      {game.elo_change > 0 ? '+' : ''}{game.elo_change}
+                    </span>
                   )}
                 </div>
-
-                <div className="text-sm text-[var(--color-textMuted)]">
+                <span style={{ color: '#403010', fontSize: 10 }}>
                   {game.completed_at
                     ? new Date(game.completed_at * 1000).toLocaleDateString()
                     : new Date(game.started_at * 1000).toLocaleDateString()
                   }
-                </div>
+                </span>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-[var(--color-textMuted)]">
-                <div className="flex gap-4">
-                  <span>Benchmark: {game.benchmark_score.toLocaleString()}</span>
-                  <span>Combo: {game.max_combo}x</span>
-                  <span>{Math.floor(game.duration_seconds / 60)}:{(game.duration_seconds % 60).toString().padStart(2, '0')}</span>
-                </div>
-                <div>
-                  ELO: {game.elo_before} → {game.elo_after}
-                </div>
+              {/* Bottom line: details */}
+              <div className="flex items-center gap-4 mt-0.5" style={{ ...dmdText, color: '#504020', fontSize: 10 }}>
+                <span>BM:{game.benchmark_score.toLocaleString()}</span>
+                <span>CMB:{game.max_combo}x</span>
+                <span>{Math.floor(game.duration_seconds / 60)}:{(game.duration_seconds % 60).toString().padStart(2, '0')}</span>
+                <span>{game.elo_before}\u2192{game.elo_after}</span>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+function StatBlock({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div className="text-center">
-      <div className="text-xs text-[var(--color-textMuted)] mb-1">{label}</div>
-      <div className="text-lg font-bold text-[var(--color-text)]">{value}</div>
-      <div className="text-xs text-[var(--color-textMuted)]">{sub}</div>
+      <div style={{ ...dmdText, color: '#504020', fontSize: 9 }}>{label}</div>
+      <div style={{ ...dmdText, color: '#f0a030', fontSize: 14, fontWeight: 'bold', textShadow: '0 0 4px rgba(240,160,48,0.3)' }}>
+        {value}
+      </div>
+      <div style={{ ...dmdText, color: '#403010', fontSize: 9 }}>{sub}</div>
     </div>
   );
 }
 
-function FilterButton({
+function FilterToggle({
   active,
   onClick,
   children,
@@ -189,15 +190,36 @@ function FilterButton({
   return (
     <button
       onClick={onClick}
-      className={`
-        px-3 py-1 rounded text-sm font-medium transition-colors
-        ${active
-          ? 'bg-[var(--color-primary)] text-white'
-          : 'bg-[var(--color-bgSecondary)] text-[var(--color-textMuted)] hover:bg-[var(--color-bgTertiary)]'
-        }
-      `}
+      style={{
+        ...dmdText,
+        fontSize: 10,
+        padding: '2px 8px',
+        borderRadius: 3,
+        background: active ? 'rgba(240,160,48,0.12)' : 'transparent',
+        border: active ? '1px solid #f0a03040' : '1px solid #222',
+        color: active ? '#f0a030' : '#504020',
+        cursor: 'pointer',
+        letterSpacing: 1,
+      }}
     >
       {children}
     </button>
   );
 }
+
+function formatScore(n: number): string {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+  return n.toString();
+}
+
+const cabinetBg: React.CSSProperties = {
+  background: '#080604',
+  backgroundImage: 'radial-gradient(circle, rgba(255,170,40,0.02) 1px, transparent 1px)',
+  backgroundSize: '4px 4px',
+};
+
+const dmdText: React.CSSProperties = {
+  fontFamily: 'monospace',
+  letterSpacing: 1,
+};

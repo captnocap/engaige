@@ -72,129 +72,6 @@ const CATEGORIES: Category[] = [
   { id: 'food-drink', name: 'Food & Drink', viewers: 42000, emoji: '🍽️' },
 ]
 
-// Featured streams with world lore integration
-const STREAMS: Stream[] = [
-  {
-    id: 'derek-brews',
-    username: 'Derek_Brews',
-    displayName: 'Derek Observerson',
-    title: 'Day 847: The perfect quantum cup - OBSERVATION MARATHON',
-    category: 'Quantum Coffee Brewing',
-    viewers: 847,
-    stalkers: 847,
-    thumbnailEmoji: '☕',
-    isLive: true,
-    isPartner: true,
-    tags: ['English', 'Quantum', 'Coffee'],
-    description: 'Former IT consultant. Current quantum coffee researcher. Divorced. Day 847 of documenting my journey to the perfect cup.',
-    chatMessages: [
-      { id: 'd1', username: 'QuantumFan42', message: 'KEKW quantum coffee KEKW', badges: ['sub'], color: '#9146FF' },
-      { id: 'd2', username: 'CoffeeCritic', message: 'Has anyone actually TASTED the difference??', badges: [], color: '#00FF7F' },
-      { id: 'd3', username: 'SkepticalSam', message: 'bro this is just regular coffee with extra steps', badges: [], color: '#1E90FF' },
-      { id: 'd4', username: 'JustHereForCat', message: 'WHERE IS MR WHISKERS', badges: ['sub'], color: '#FF69B4' },
-    ],
-  },
-  {
-    id: 'trustfalltim',
-    username: 'TrustFallTimOfficial',
-    displayName: 'Trust Fall Tim',
-    title: 'TRUST FALL MARATHON - 24 HOUR STREAM - Fall #2848',
-    category: 'IRL',
-    viewers: 2847,
-    stalkers: 28470,
-    thumbnailEmoji: '🙆‍♂️',
-    isLive: true,
-    isPartner: true,
-    tags: ['English', 'Trust', 'IRL'],
-    description: '2,847 documented falls. 78.5% catch rate. Will YOU catch me?',
-    chatMessages: [
-      { id: 't1', username: 'BigKevin', message: 'READY TO CATCH KING', badges: ['mod'], color: '#FF4500' },
-      { id: 't2', username: 'TrustIssues', message: 'TRUST FALL IN CHAT', badges: ['sub'], color: '#9146FF' },
-      { id: 't3', username: 'MarsTheOwner', message: 'coming by Underground tonight?', badges: ['vip'], color: '#FFD700' },
-      { id: 't4', username: 'TheIncidentSurvivor', message: 'we dont talk about march 2022', badges: ['sub'], color: '#FF69B4' },
-    ],
-  },
-  {
-    id: 'floor13cam',
-    username: 'Floor13Cam',
-    displayName: 'FLOOR 13 OFFICIAL',
-    title: '[24/7] Hartwell Building - Elevator between 12 and 14',
-    category: 'Floor 13 Watch',
-    viewers: 13,
-    stalkers: 13,
-    thumbnailEmoji: '🏚️',
-    isLive: true,
-    isPartner: false,
-    tags: ['Mystery', 'Paranormal', '24/7'],
-    description: 'Static camera. Floor that does not exist. Sometimes the numbers... change.',
-    chatMessages: [
-      { id: 'f1', username: 'HartwellWatcher', message: 'Has anyone seen floor 13 guy move?', badges: ['sub'], color: '#FF4500' },
-      { id: 'f2', username: 'ParanormalPete', message: 'I swear I saw someone in the Hartwell stream', badges: [], color: '#9146FF' },
-      { id: 'f3', username: 'MirrorWatcher', message: 'THE MIRRORS ARE DOORS', badges: ['sub'], color: '#FF0000' },
-      { id: 'f4', username: 'OmnicorpBot', message: 'Nothing to see here. Move along.', badges: ['mod'], color: '#808080' },
-    ],
-  },
-  {
-    id: 'underground-stream',
-    username: 'UndergroundVenueStream',
-    displayName: 'The Underground Official',
-    title: 'LIVE FROM THE UNDERGROUND - Open Mic Night',
-    category: 'Music',
-    viewers: 420,
-    stalkers: 4200,
-    thumbnailEmoji: '🎵',
-    isLive: true,
-    isPartner: true,
-    tags: ['Music', 'Live', 'Local'],
-    description: 'Official stream from The Underground venue. Owner: Mars. Acoustics: Questionable. Vibes: Immaculate.',
-    chatMessages: [
-      { id: 'u1', username: 'MarsTheOwner', message: 'drink specials all night stalkers', badges: ['broadcaster'], color: '#FFD700' },
-      { id: 'u2', username: 'VelvetFan', message: 'any word on Velvet Algorithms returning??', badges: ['sub'], color: '#9146FF' },
-      { id: 'u3', username: 'NeonRequiemRIP', message: 'still not over that final show...', badges: ['sub'], color: '#FF69B4' },
-      { id: 'u4', username: 'TrustFallTimOfficial', message: 'be there in 20 for trust fall intermission', badges: ['vip'], color: '#EA580C' },
-    ],
-  },
-  {
-    id: 'mildred-eats',
-    username: 'MildredEats',
-    displayName: 'Mildred Gasketsworth',
-    title: 'Rating gas station sushi LIVE - Flying J #847',
-    category: 'Food & Drink',
-    viewers: 847,
-    stalkers: 8470,
-    thumbnailEmoji: '🍣',
-    isLive: true,
-    isPartner: true,
-    tags: ['Food', 'Sushi', 'Reviews'],
-    description: '8,470 gas stations. 25,000+ sushi samples. Zero food poisoning incidents (publicly confirmed).',
-    chatMessages: [
-      { id: 'm1', username: 'SushiSkeptic', message: 'mildred please this cannot be safe', badges: [], color: '#1E90FF' },
-      { id: 'm2', username: 'GasStationGourmet', message: 'QUEEN OF THE PUMPS', badges: ['sub'], color: '#FF69B4' },
-      { id: 'm3', username: 'FDAWatcher', message: 'this has to violate SOMETHING', badges: [], color: '#FF4500' },
-      { id: 'm4', username: 'TruckStopConnoisseur', message: 'Flying J #847 is elite tier actually', badges: ['sub'], color: '#FFD700' },
-    ],
-  },
-  {
-    id: 'omnicorp',
-    username: 'OmnicorpHoldings',
-    displayName: 'Omnicorp Holdings',
-    title: '[INTERNAL] Q4 Compliance Training - DO NOT DISTRIBUTE',
-    category: 'Just Chatting',
-    viewers: 1,
-    stalkers: 1,
-    thumbnailEmoji: '🏢',
-    isLive: true,
-    isPartner: false,
-    tags: ['Corporate', 'Training'],
-    description: 'Official Omnicorp Holdings channel. Unauthorized viewing may result in review.',
-    chatMessages: [
-      { id: 'o1', username: 'Employee_7734', message: 'why is this public??', badges: [], color: '#808080' },
-      { id: 'o2', username: 'OmnicorpBot', message: 'Please remain in your designated viewing area.', badges: ['mod'], color: '#808080' },
-      { id: 'o3', username: 'GlitchWatcher', message: 'did anyone else see that?', badges: [], color: '#FF0000' },
-      { id: 'o4', username: 'HartwellWatcher', message: 'this is definitely related to floor 13', badges: [], color: '#9146FF' },
-    ],
-  },
-]
 
 // Subscription tiers with corn-themed names
 const SUB_TIERS = [
@@ -251,10 +128,7 @@ function dbToStream(item: SiteContentItem): Stream {
 
 export function StalkSite({ siteId, onNavigate }: SiteProps) {
   const { content: dbContent } = useSiteContent('stalk')
-  const streams = useMemo(() => {
-    if (dbContent.length > 0) return dbContent.map(dbToStream)
-    return STREAMS
-  }, [dbContent])
+  const streams = useMemo(() => dbContent.map(dbToStream), [dbContent])
 
   const [selectedStream, setSelectedStream] = useState<Stream | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)

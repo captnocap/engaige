@@ -59,198 +59,7 @@ interface UserProfile {
 // Sample Data
 // ============================================================================
 
-const RECIPES: Recipe[] = [
-  {
-    id: 'classic-cornbread',
-    title: 'Classic Southern Cornbread - Made It For My Husband',
-    thumbnail: '🌽🍞',
-    duration: '45:23',
-    views: 8470000,
-    rating: 98,
-    author: 'SouthernBelle_Bakes',
-    authorAvatar: '👩‍🍳',
-    authorVerified: true,
-    category: 'Amateur Cornbread',
-    isPremium: false,
-    isHD: true,
-    uploadedAgo: '2 weeks ago',
-    description: 'My grandmother taught me this recipe. Now I make it for my husband every Sunday. He says it reminds him of home. The secret is the buttermilk.',
-    ingredients: ['2 cups yellow cornmeal', '1 cup all-purpose flour', '1 cup buttermilk', '2 eggs', '1/3 cup melted butter', '1 tbsp sugar', '1 tsp salt', '1 tsp baking powder'],
-    steps: ['Preheat oven to 425F', 'Mix dry ingredients in large bowl', 'Whisk wet ingredients separately', 'Combine and stir until just mixed', 'Pour into greased cast iron skillet', 'Bake 20-25 minutes until golden'],
-    tags: ['cornbread', 'southern', 'homemade', 'cast iron', 'family recipe'],
-  },
-  {
-    id: 'elote-street',
-    title: 'ELOTE Mexican Street Corn - Hot and Messy',
-    thumbnail: '🌽🔥',
-    duration: '12:47',
-    views: 15200000,
-    rating: 99,
-    author: 'ChefMiguel_Official',
-    authorAvatar: '👨‍🍳',
-    authorVerified: true,
-    category: 'Professional Chefs',
-    isPremium: true,
-    isHD: true,
-    uploadedAgo: '3 days ago',
-    description: 'The authentic way to make elote. Warning: this gets messy. Very messy. The mayo drips everywhere. You will need napkins.',
-    ingredients: ['4 ears of corn', '1/2 cup mayo', '1/2 cup crumbled cotija cheese', '1 tbsp chili powder', '2 limes', 'Fresh cilantro', 'Butter'],
-    steps: ['Grill corn until charred', 'Spread mayo generously', 'Roll in cotija cheese', 'Dust with chili powder', 'Squeeze lime juice', 'Garnish with cilantro'],
-    tags: ['elote', 'mexican', 'street food', 'spicy', 'grilled'],
-  },
-  {
-    id: 'creamed-corn',
-    title: 'Thick Creamy Corn - My First Time Making It',
-    thumbnail: '🌽🥛',
-    duration: '18:34',
-    views: 4300000,
-    rating: 94,
-    author: 'NervousNewbie_Cooks',
-    authorAvatar: '🧑‍🍳',
-    authorVerified: false,
-    category: 'Homemade',
-    isPremium: false,
-    isHD: false,
-    uploadedAgo: '1 month ago',
-    description: 'I have never made creamed corn before. My hands were shaking the whole time. Please be gentle in the comments.',
-    ingredients: ['4 cups fresh corn kernels', '1 cup heavy cream', '2 tbsp butter', '1 tbsp flour', 'Salt and pepper', 'Pinch of sugar'],
-    steps: ['Cut corn from cob', 'Melt butter in saucepan', 'Add flour, stir 1 minute', 'Pour in cream slowly', 'Add corn, simmer 10 minutes', 'Season to taste'],
-    tags: ['creamed corn', 'beginner', 'comfort food', 'creamy'],
-  },
-  {
-    id: 'corn-chowder',
-    title: 'She Said She Wanted Corn Chowder So I Made Her Corn Chowder',
-    thumbnail: '🌽🍲',
-    duration: '34:12',
-    views: 2100000,
-    rating: 97,
-    author: 'GoodHusband_Gary',
-    authorAvatar: '👨',
-    authorVerified: false,
-    category: 'Homemade',
-    isPremium: false,
-    isHD: true,
-    uploadedAgo: '5 days ago',
-    description: 'My wife mentioned she was craving corn chowder. I had never made soup before. This is my journey. She cried when she tasted it.',
-    ingredients: ['6 ears of corn', '4 slices bacon', '1 onion diced', '3 potatoes cubed', '4 cups chicken broth', '1 cup heavy cream', 'Fresh thyme'],
-    steps: ['Crisp bacon, set aside', 'Saute onion in bacon fat', 'Add potatoes and broth', 'Simmer until potatoes tender', 'Add corn and cream', 'Garnish with bacon and thyme'],
-    tags: ['chowder', 'soup', 'comfort', 'romantic', 'homemade'],
-  },
-  {
-    id: 'popcorn-gourmet',
-    title: 'Gourmet Popcorn 3 Ways - White Cheddar Explosion',
-    thumbnail: '🍿✨',
-    duration: '22:15',
-    views: 7800000,
-    rating: 96,
-    author: 'SnackQueen_Premium',
-    authorAvatar: '👸',
-    authorVerified: true,
-    category: 'Professional Chefs',
-    isPremium: true,
-    isHD: true,
-    uploadedAgo: '1 week ago',
-    description: 'Three incredible popcorn flavors that will make you forget movie theater popcorn exists. The white cheddar is absolutely sinful.',
-    ingredients: ['1 cup popcorn kernels', '1/2 cup white cheddar powder', '2 tbsp truffle oil', '1/4 cup parmesan', 'Rosemary', 'Cayenne pepper'],
-    steps: ['Pop kernels in hot oil', 'Divide into three bowls', 'Toss with white cheddar powder', 'Drizzle truffle oil on second', 'Season third with cayenne and parmesan', 'Serve immediately'],
-    tags: ['popcorn', 'gourmet', 'snack', 'party', 'cheddar'],
-  },
-  {
-    id: 'corn-fritters',
-    title: 'Hot Corn Fritters Fresh From the Oil - Caught on Camera',
-    thumbnail: '🌽🫓',
-    duration: '15:47',
-    views: 3400000,
-    rating: 95,
-    author: 'FryDaddy_Frank',
-    authorAvatar: '🧔',
-    authorVerified: true,
-    category: 'Homemade',
-    isPremium: false,
-    isHD: true,
-    uploadedAgo: '2 weeks ago',
-    description: 'Caught my first batch of corn fritters on camera. Look at how golden they are. Listen to that sizzle. ASMR warning.',
-    ingredients: ['2 cups corn', '1 cup flour', '1 egg', '1/2 cup milk', '1 tsp baking powder', 'Oil for frying', 'Honey for drizzling'],
-    steps: ['Mix flour, baking powder, salt', 'Add egg and milk', 'Fold in corn kernels', 'Heat oil to 375F', 'Drop spoonfuls into oil', 'Fry until golden, drain on paper towels'],
-    tags: ['fritters', 'fried', 'appetizer', 'asmr', 'crispy'],
-  },
-  {
-    id: 'quantum-corn-pudding',
-    title: 'Quantum Corn Pudding - Derek\'s Wife Left But The Recipe Stayed',
-    thumbnail: '🌽☕',
-    duration: '847:00',
-    views: 847000,
-    rating: 100,
-    author: 'QuantumDerek',
-    authorAvatar: '🔬',
-    authorVerified: true,
-    category: 'Experimental',
-    isPremium: true,
-    isHD: true,
-    uploadedAgo: '847 days ago',
-    description: 'Jennifer said I spent too much on quantum coffee AND corn recipes. She took the kids, Derek Jr. and little Quanta. But she couldn\'t take this recipe. The corn exists in a superposition of sweet and savory until observed.',
-    ingredients: ['3 cups corn (observed)', '1 cup quantum coffee', '2 eggs (Schrodinger-approved)', '1 cup cream', 'Sugar and salt (superposition)', 'Tears (optional)'],
-    steps: ['Do not observe the corn until ready', 'Mix wet ingredients without looking directly', 'Fold in corn while questioning reality', 'Bake at 350F for 45 minutes or until you feel it', 'Serve to no one because you are alone now', 'Call Jennifer. She won\'t answer.'],
-    tags: ['quantum', 'experimental', 'corn pudding', 'derek', 'existential'],
-  },
-  {
-    id: 'corn-on-cob-butter',
-    title: 'Buttered Corn on the Cob - Slow and Sensual',
-    thumbnail: '🌽🧈',
-    duration: '08:22',
-    views: 12400000,
-    rating: 97,
-    author: 'ButterLover_BB',
-    authorAvatar: '🧈',
-    authorVerified: true,
-    category: 'Amateur Cornbread',
-    isPremium: false,
-    isHD: true,
-    uploadedAgo: '4 days ago',
-    description: 'Sometimes simple is best. Just corn. Just butter. Just... taking your time. No rush. Let the butter melt slowly.',
-    ingredients: ['4 ears fresh corn', '1/2 cup salted butter softened', 'Sea salt', 'Fresh cracked pepper'],
-    steps: ['Boil water with pinch of sugar', 'Add corn, cook 4-5 minutes', 'Remove and rest 1 minute', 'Apply butter generously, slowly', 'Rotate corn, cover every kernel', 'Season with salt and pepper'],
-    tags: ['simple', 'butter', 'classic', 'summer', 'slow'],
-  },
-  {
-    id: 'corn-salsa',
-    title: 'EXPLOSIVE Fresh Corn Salsa - Roommate Walked In',
-    thumbnail: '🌽🍅',
-    duration: '11:33',
-    views: 5600000,
-    rating: 93,
-    author: 'ChipDipper_Carlos',
-    authorAvatar: '😎',
-    authorVerified: false,
-    category: 'Homemade',
-    isPremium: false,
-    isHD: false,
-    uploadedAgo: '3 weeks ago',
-    description: 'Making corn salsa when my roommate walked in. His reaction was priceless. Now he wants me to make it every weekend.',
-    ingredients: ['2 cups grilled corn', '1 cup diced tomatoes', '1/2 red onion diced', '1 jalapeno minced', 'Cilantro', 'Lime juice', 'Garlic'],
-    steps: ['Char corn on grill or in pan', 'Cut kernels from cob', 'Combine with tomatoes and onion', 'Add jalapeno to taste', 'Mix in cilantro, lime, and garlic', 'Let flavors meld 30 minutes'],
-    tags: ['salsa', 'fresh', 'summer', 'party', 'spicy'],
-  },
-  {
-    id: 'corn-ice-cream',
-    title: 'Sweet Corn Ice Cream - Unexpected But So Good',
-    thumbnail: '🌽🍦',
-    duration: '28:45',
-    views: 1900000,
-    rating: 91,
-    author: 'Dessert_Deviant',
-    authorAvatar: '🍨',
-    authorVerified: true,
-    category: 'Experimental',
-    isPremium: true,
-    isHD: true,
-    uploadedAgo: '2 months ago',
-    description: 'I know what you\'re thinking. Corn? In ice cream? Trust me. TRUST ME. Your taste buds will thank you.',
-    ingredients: ['2 cups sweet corn', '2 cups heavy cream', '1 cup whole milk', '3/4 cup sugar', '5 egg yolks', 'Vanilla extract', 'Pinch of salt'],
-    steps: ['Steep corn in warm cream 1 hour', 'Strain, pressing to extract flavor', 'Heat corn-infused cream', 'Temper egg yolks with cream', 'Cook to 170F', 'Chill and churn in ice cream maker'],
-    tags: ['ice cream', 'dessert', 'sweet', 'unusual', 'summer'],
-  },
-]
+// Hardcoded RECIPES removed -- DB is the sole source of truth
 
 const CATEGORIES = [
   { id: 'all', name: 'All Recipes', count: 847000 },
@@ -380,7 +189,7 @@ function RecipeCard({ recipe, onClick }: { recipe: Recipe; onClick: () => void }
   )
 }
 
-function RecipeDetail({ recipe, onBack }: { recipe: Recipe; onBack: () => void }) {
+function RecipeDetail({ recipe, onBack, allRecipes }: { recipe: Recipe; onBack: () => void; allRecipes: Recipe[] }) {
   const [liked, setLiked] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -552,7 +361,7 @@ function RecipeDetail({ recipe, onBack }: { recipe: Recipe; onBack: () => void }
           </Button>
 
           <h3 className="text-white font-bold">Recommended For You</h3>
-          {RECIPES.filter(r => r.id !== recipe.id).slice(0, 5).map(r => (
+          {allRecipes.filter(r => r.id !== recipe.id).slice(0, 5).map(r => (
             <div key={r.id} className="flex gap-2 cursor-pointer group">
               <div className="w-40 aspect-video bg-gradient-to-br from-orange-100 to-orange-200 rounded flex items-center justify-center text-2xl shrink-0 relative">
                 {r.thumbnail}
@@ -573,8 +382,8 @@ function RecipeDetail({ recipe, onBack }: { recipe: Recipe; onBack: () => void }
   )
 }
 
-function UserProfileView({ user, onBack }: { user: UserProfile; onBack: () => void }) {
-  const userRecipes = RECIPES.filter(r => r.author === user.name)
+function UserProfileView({ user, onBack, allRecipes }: { user: UserProfile; onBack: () => void; allRecipes: Recipe[] }) {
+  const userRecipes = allRecipes.filter(r => r.author === user.name)
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -668,13 +477,10 @@ function formatTimeAgo(timestamp: number): string {
 }
 
 export function CornHubSite({ siteId }: SiteProps) {
-  // Fetch DB content, falling back to hardcoded recipes
+  // Fetch from DB -- no fallback, DB is the sole source of truth
   const { content: dbContent } = useSiteContent('cornhub')
 
-  const recipes = useMemo(() => {
-    if (dbContent.length > 0) return dbContent.map(dbToRecipe)
-    return RECIPES
-  }, [dbContent])
+  const recipes = useMemo(() => dbContent.map(dbToRecipe), [dbContent])
 
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -825,9 +631,9 @@ export function CornHubSite({ siteId }: SiteProps) {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
         {selectedUser ? (
-          <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} />
+          <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} allRecipes={recipes} />
         ) : selectedRecipe ? (
-          <RecipeDetail recipe={selectedRecipe} onBack={() => setSelectedRecipe(null)} />
+          <RecipeDetail recipe={selectedRecipe} onBack={() => setSelectedRecipe(null)} allRecipes={recipes} />
         ) : (
           <>
             {/* Premium Banner */}

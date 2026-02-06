@@ -4,6 +4,8 @@
  * A Q&A site where questions range from technical to unhinged.
  * Features corn kernels as reputation points and lore-integrated questions.
  *
+ * All Q&A content is fetched exclusively from the database.
+ *
  * URL: www.askcorn.corn
  */
 
@@ -22,7 +24,7 @@ const SITE_THEME = {
   name: 'AskCorn',
   tagline: 'Where Every Question Pops',
   url: 'www.askcorn.corn',
-  icon: '🌽',
+  icon: '\u{1F33D}',
   primary: '#F48024',      // Stack Overflow orange
   secondary: '#0077CC',    // Stack Overflow blue
   background: '#f8f9f9',   // Light grey
@@ -155,565 +157,7 @@ function dbToUser(item: SiteContentItem): User {
 }
 
 // ============================================================================
-// Sample Data - Questions (hardcoded fallback)
-// ============================================================================
-
-const SAMPLE_QUESTIONS: Question[] = [
-  {
-    id: 'q_derek_coffee',
-    title: 'How do I tell my wife I spent $3000 on a quantum coffee maker?',
-    content: `I need some relationship advice here. I've been researching quantum coffee for 8 months now and finally took the plunge on a QuBrew Pro 3000.
-
-The thing is, Jennifer (my wife) doesn't believe in quantum coffee. She thinks it's "pseudoscience" and that regular coffee is "fine." She doesn't understand that the Martinez Study clearly shows improved molecular cohesion when beans are observed during the brewing process.
-
-I used our joint savings. It was supposed to be for a vacation to see her parents but I figured this was more important for our long-term happiness. Better coffee = better mornings = better marriage, right?
-
-She comes home tomorrow and the machine takes up most of the kitchen counter. I've already done 12 test brews and the cat seems happier, which is scientific evidence in my opinion.
-
-How do I explain to her that this was a sound investment? I've prepared a PowerPoint but I'm not sure if that will help or hurt my case.
-
-UPDATE: She saw my credit card statement before I could explain. She's staying at her sister's place. Mr. Whiskers and I are drinking excellent coffee though.
-
-UPDATE 2: Jennifer wants a divorce. Still worth it. This coffee is transcendent.`,
-    author: 'quantum_derek_847',
-    authorRep: 847,
-    votes: 2847,
-    views: 84723,
-    answerCount: 156,
-    timestamp: '6 months ago',
-    tags: ['relationship-advice', 'quantum-coffee', 'marriage', 'budgeting'],
-    answers: [
-      {
-        id: 'a1_derek',
-        author: 'jennifer_was_right',
-        authorRep: 12453,
-        content: `I cannot stress this enough: **You cannot explain this because it was not a sound investment.**
-
-You spent $3,000 of joint savings on a coffee maker without discussing it with your partner. The fact that it's a quantum coffee maker is almost irrelevant - the issue is you made a major financial decision unilaterally.
-
-That said, I own a QuBrew Pro 3000 and it's fantastic. The molecular cohesion really is noticeable. But I discussed it with my partner first like a functional adult.`,
-        votes: 4521,
-        isAccepted: false,
-        timestamp: '6 months ago',
-        comments: [
-          { author: 'quantum_derek_847', content: 'She doesn\'t understand science though', timestamp: '6 months ago' },
-          { author: 'jennifer_was_right', content: 'Neither do you, my guy. Neither do you.', timestamp: '6 months ago' },
-        ],
-      },
-      {
-        id: 'a2_derek',
-        author: 'MartinezStudyCited',
-        authorRep: 8934,
-        content: `The Martinez Study you're citing was preliminary and has not been replicated. I say this as someone who worked in Dr. Martinez's lab.
-
-Also, your cat seeming happier is not scientific evidence. Your cat cannot observe the quantum state.
-
-Your marriage problems are not a coffee problem. They are a you problem.`,
-        votes: 3892,
-        isAccepted: false,
-        timestamp: '6 months ago',
-      },
-      {
-        id: 'a3_derek',
-        author: 'quantum_defender_99',
-        authorRep: 567,
-        content: `Ignore the haters. Quantum coffee is real, Jennifer was holding you back, and Mr. Whiskers knows the truth.
-
-I've been divorced twice over quantum coffee purchases and I regret nothing.`,
-        votes: -234,
-        isAccepted: true,
-        timestamp: '6 months ago',
-        comments: [
-          { author: 'concerned_moderator', content: 'This should not be the accepted answer', timestamp: '6 months ago' },
-          { author: 'quantum_derek_847', content: 'Finally someone who gets it', timestamp: '6 months ago' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'q_hartwell_floor',
-    title: 'Why does my building skip floor 13?',
-    content: `I just moved into the Hartwell Building downtown. Great rent, beautiful architecture, very spacious units. But I noticed something weird when I was in the elevator:
-
-The floors go 11, 12, 14, 15...
-
-There's no 13th floor button. I assumed this was a superstition thing - lots of old buildings skip 13. But then I found some old photographs from 1952 and the building clearly has 13 floors in the pictures.
-
-I asked the building manager and he just said "there is no 13th floor" in this really flat voice and walked away.
-
-I tried to find the stairwell to floor 13 but the door between 12 and 14 is welded shut. Not locked. Welded.
-
-Also my neighbor on floor 7 says I shouldn't look at the mirrors for too long. What does that mean??
-
-The rent is really cheap though so I'm not sure if I should be concerned or just enjoy the deal.`,
-    author: 'new_tenant_confused',
-    authorRep: 134,
-    votes: 1847,
-    views: 34129,
-    answerCount: 89,
-    timestamp: '3 months ago',
-    tags: ['hartwell-building', 'architecture', 'real-estate', 'unexplained'],
-    answers: [
-      {
-        id: 'a1_hartwell',
-        author: 'omnicorp_official',
-        authorRep: 1,
-        content: `The Hartwell Building has always had 12 floors. The photographs you found must be doctored. There is nothing unusual about the building. Please do not investigate further.
-
-The mirrors are normal mirrors.
-
-Your rent is correct.
-
-Have a pleasant day.`,
-        votes: -847,
-        isAccepted: false,
-        timestamp: '3 months ago',
-        comments: [
-          { author: 'new_tenant_confused', content: 'Who are you and how did you find this post so fast?', timestamp: '3 months ago' },
-          { author: 'definitely_not_omnicorp', content: 'Do not ask questions about Omnicorp Holdings.', timestamp: '3 months ago' },
-        ],
-      },
-      {
-        id: 'a2_hartwell',
-        author: 'hartwell_researcher',
-        authorRep: 8472,
-        content: `Oh boy, you moved into THAT building.
-
-Let me break it down:
-- **1923**: Magnus Hartwell builds the building with 13 floors
-- **1931**: Magnus disappears. Body never found. Building sold.
-- **1952**: Photos clearly show 13 floors
-- **1967**: UFO sighting above building (officially "weather balloon")
-- **1984**: Floor 7 "renovated." 13th floor no longer accessible.
-- **Present**: Omnicorp Holdings owns it through 7 shell companies
-
-The mirrors on floor 7 allegedly show things that aren't there. Multiple tenants have reported seeing a figure in formal 1920s attire. The figure is always facing away.
-
-My advice: don't look at the mirrors after midnight, don't take the stairs between 12 and 14, and if you hear static that sounds like it's breathing, that's normal.
-
-Also check out www.hartwellfiles.corn for more info. We have a whole community.`,
-        votes: 3421,
-        isAccepted: true,
-        timestamp: '3 months ago',
-        comments: [
-          { author: 'new_tenant_confused', content: 'This is not reassuring', timestamp: '3 months ago' },
-          { author: 'floor_7_resident', content: 'The mirrors are fine. Everything is fine. I am fine.', timestamp: '3 months ago' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'q_trustfall_roommate',
-    title: 'Is it normal for my roommate to practice trust falls alone?',
-    content: `My roommate (let's call him "Tim") has been doing this thing for the past 3 months where he stands in the living room, announces "TRUST FALL," and then just... falls backwards.
-
-He does this whether anyone is there to catch him or not. I've seen him do it at least 2,847 times now. Sometimes I catch him, sometimes I don't. He seems equally happy either way.
-
-He's started doing it at parties too. He just walks up to strangers, yells "TRUST FALL," and falls. Some people catch him, some don't. He has a spreadsheet tracking his "catch rate" (currently 78.5%).
-
-Last week he fell at a concert (at The Underground) and the venue owner caught him one-handed while holding a beer. Tim said it was "the best fall of his life."
-
-Is this normal? Should I be concerned? He seems really happy but also has a lot of bruises.`,
-    author: 'concerned_roommate_24',
-    authorRep: 567,
-    votes: 5621,
-    views: 847291,
-    answerCount: 342,
-    timestamp: '8 months ago',
-    tags: ['trust-falls', 'roommates', 'lifestyle', 'the-underground'],
-    answers: [
-      {
-        id: 'a1_trustfall',
-        author: 'TrustFallTim',
-        authorRep: 28471,
-        content: `Hey, it's me! Your roommate! I found your post!
-
-First off, I'm not "practicing" - I'm LIVING. Every fall is an authentic expression of human vulnerability and connection.
-
-Second, my catch rate is actually 78.6% now. I had a good week.
-
-Third, you're a great roommate. You've caught me 847 times and only missed 12. That's elite catching.
-
-The Underground incident was indeed the best fall of my life. Mars is a legend among catchers. One hand!
-
-To answer your question: yes, this is normal. For me. Everyone's normal is different. My normal just involves more falling.
-
-P.S. - I'm going to do a trust fall in 30 seconds. Please be ready.`,
-        votes: 12453,
-        isAccepted: true,
-        timestamp: '8 months ago',
-        comments: [
-          { author: 'concerned_roommate_24', content: 'TIM WHAT THE HECK', timestamp: '8 months ago' },
-          { author: 'MarsTheUnderground', content: 'I did catch him one-handed. Can confirm.', timestamp: '8 months ago' },
-          { author: 'big_kevin_catcher', content: 'Tim you\'re an inspiration', timestamp: '8 months ago' },
-        ],
-      },
-      {
-        id: 'a2_trustfall',
-        author: 'small_kevin_reformed',
-        authorRep: 23,
-        content: `Please tell Tim I'm sorry about The Incident. I've been practicing my catching form. I'm ready for another chance.`,
-        votes: -156,
-        isAccepted: false,
-        timestamp: '8 months ago',
-        comments: [
-          { author: 'TrustFallTim', content: 'Not yet, Kevin. Not yet.', timestamp: '8 months ago' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'q_cobcoin',
-    title: 'How to convert CobCoin to real money?',
-    content: `I invested my life savings into CobCoin last year because my cousin said it was "the corn-based cryptocurrency revolution." He showed me a whitepaper about how blockchain technology could revolutionize the corn supply chain.
-
-I now have 847,000 CobCoin but I can't find any exchange that will accept them. The CobCoin website just says "Coming Soon" and has for 14 months.
-
-My cousin says to "HODL" but I need to pay rent. Is there any way to convert this to actual money?
-
-Also the "CobWallet" app keeps sending me notifications about "staking opportunities" but when I click them it just shows a picture of a corn cob wearing sunglasses.`,
-    author: 'invested_in_corn',
-    authorRep: 12,
-    votes: 892,
-    views: 23456,
-    answerCount: 67,
-    timestamp: '2 months ago',
-    tags: ['crypto', 'scam', 'cobcoin', 'help'],
-    isClosed: true,
-    closeReason: 'Duplicate',
-    isDuplicate: true,
-    duplicateOf: 'q_cobcoin_original',
-    answers: [
-      {
-        id: 'a1_cobcoin',
-        author: 'crypto_skeptic',
-        authorRep: 9823,
-        content: `I'm sorry to tell you this, but CobCoin is not a real cryptocurrency. It was a scam that made the rounds last year.
-
-The whitepaper you mentioned was literally copy-pasted from the Bitcoin whitepaper with "Bitcoin" replaced with "Corn" and "blockchain" replaced with "cornchain."
-
-Your cousin either also got scammed or was in on it. Either way, those 847,000 CobCoin are worth exactly $0.
-
-The corn cob with sunglasses is named "Chad Cob" and he is the mascot of your lost money.`,
-        votes: 2341,
-        isAccepted: false,
-        timestamp: '2 months ago',
-      },
-    ],
-  },
-  {
-    id: 'q_corn_sentience',
-    title: 'Can corn develop sentience?',
-    content: `This is a serious philosophical and scientific question. Given that:
-
-1. Corn has been selectively bred by humans for thousands of years
-2. Some plants demonstrate forms of chemical communication
-3. Quantum coffee suggests that observation affects matter
-4. The corn lobby seems suspiciously powerful
-
-Is it possible that corn has or could develop sentience? And if so, what are the ethical implications of eating it?
-
-I've been staring at a cob of corn for 3 hours and I swear it moved.`,
-    author: 'corn_philosopher_99',
-    authorRep: 45,
-    votes: -156,
-    views: 8472,
-    answerCount: 23,
-    timestamp: '1 month ago',
-    tags: ['corn', 'philosophy', 'sentience', 'ethics'],
-    isClosed: true,
-    closeReason: 'Off-topic: This question is not about a practical, answerable problem.',
-    answers: [
-      {
-        id: 'a1_corn',
-        author: 'actual_botanist',
-        authorRep: 15672,
-        content: `No. Corn cannot develop sentience. Plants do not have nervous systems. The "chemical communication" you're referring to is a stress response, not thought.
-
-Quantum coffee has nothing to do with this. The observation effect in quantum mechanics applies to subatomic particles, not corn.
-
-The corn lobby is powerful because corn is a massive agricultural commodity, not because corn is secretly intelligent.
-
-Please seek help. 3 hours of staring at corn is concerning behavior.`,
-        votes: 4521,
-        isAccepted: false,
-        timestamp: '1 month ago',
-        comments: [
-          { author: 'corn_philosopher_99', content: 'That\'s what the corn wants you to think', timestamp: '1 month ago' },
-          { author: 'graintruth_editor', content: 'Actually there\'s a lot of evidence that... [comment removed by moderator]', timestamp: '1 month ago' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'q_coworker_time',
-    title: 'My coworker disappeared for 3 days and claims only 5 minutes passed',
-    content: `I work in an office on floor 7 of a building downtown (I'd rather not say which one). My coworker Dave went to use the bathroom on Tuesday at 2:15 PM.
-
-He came back on Friday at 2:20 PM.
-
-From his perspective, he walked to the bathroom, used it, washed his hands, and walked back. He says it took about 5 minutes. But for the rest of us, 3 days had passed. We filed a missing persons report. His wife was devastated.
-
-Dave has no memory of the gap. His phone still shows Tuesday's date. His lunch was still warm.
-
-HR is not being helpful. They said this "happens sometimes" and asked us to fill out incident report form 847-B. The form has a checkbox for "temporal displacement" which seems very specific.
-
-Has anyone else experienced this? What should we do?
-
-EDIT: I'm not supposed to mention the mirrors but Dave says when he was in the bathroom he thought his reflection moved "wrong." He's refusing to elaborate.`,
-    author: 'concerned_coworker_f7',
-    authorRep: 234,
-    votes: 3892,
-    views: 67234,
-    answerCount: 145,
-    timestamp: '2 weeks ago',
-    tags: ['hartwell-building', 'hr', 'workplace', 'time-anomaly'],
-    answers: [
-      {
-        id: 'a1_time',
-        author: 'former_floor7_employee',
-        authorRep: 4521,
-        content: `You work on floor 7 of the Hartwell Building. I don't even need you to confirm it.
-
-This is documented. It happens about once every 2-3 months. The building management knows. HR knows. Omnicorp knows.
-
-Here's what you need to do:
-1. Fill out form 847-B completely and accurately
-2. Do NOT look at any mirrors on that floor for at least a week
-3. Dave should drink quantum coffee - for some reason it seems to help stabilize temporal discrepancies
-4. If Dave starts speaking in a language he doesn't know, contact the building immediately
-5. Most importantly: do not discuss this outside of work
-
-Dave will be fine. Probably. Most people who experience temporal displacement recover fully. The ones who don't are... well, you don't need to worry about that.
-
-The reflection moving "wrong" is concerning but not unusual. Tell Dave to avoid mirrors entirely for now.`,
-        votes: 5823,
-        isAccepted: true,
-        timestamp: '2 weeks ago',
-        comments: [
-          { author: 'concerned_coworker_f7', content: 'This is terrifying but also somehow reassuring?', timestamp: '2 weeks ago' },
-          { author: 'omnicorp_official', content: 'This post contains misinformation. Please disregard.', timestamp: '2 weeks ago' },
-          { author: 'definitely_not_dave', content: 'I feel fine. The mirrors are fine. Floor 7 is fine.', timestamp: '2 weeks ago' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'q_trustfall_catching',
-    title: 'Best practices for catching someone 2,847 times?',
-    content: `I've become the designated catcher for a local trust fall enthusiast (you might know him - he's kind of famous in the downtown scene). Over the past 2 years, I've successfully caught him 2,847 times with only a handful of misses.
-
-My question is about technique optimization. I've developed what I call the "Reliable Kevin Stance":
-- Feet shoulder-width apart
-- Knees slightly bent
-- Arms ready at chest height
-- Core engaged
-
-But after 2,847 catches, I'm starting to feel some strain in my lower back. Are there any exercises or modifications I should consider?
-
-Also, he's started doing surprise trust falls where he doesn't announce himself. Any tips for staying ready 24/7?
-
-For context: the falls happen at various locations but most commonly at The Underground (great venue, questionable acoustics). The venue owner Mars is also an elite catcher - he once caught the guy one-handed while holding a full beer. I aspire to that level.`,
-    author: 'BigKevin_Catcher',
-    authorRep: 8472,
-    votes: 4892,
-    views: 56721,
-    answerCount: 89,
-    timestamp: '4 months ago',
-    tags: ['trust-falls', 'exercise', 'technique', 'the-underground'],
-    answers: [
-      {
-        id: 'a1_catching',
-        author: 'TrustFallTim',
-        authorRep: 28471,
-        content: `Kevin! My favorite catcher! Let me address your concerns:
-
-**On the "Reliable Kevin Stance"**: It's beautiful. It's textbook. I feel safe every time I fall into your arms. However, I've noticed you've been favoring your left side lately. Consider switching your lead foot occasionally to distribute the load.
-
-**On lower back strain**: I recommend deadlifts and core strengthening. Also, I'll try to angle my falls to reduce impact on your lower back. This is a partnership.
-
-**On surprise falls**: The secret is to always be ready. I do this by never fully relaxing. You should too. Trust can happen at any moment.
-
-**On Mars**: He is the GOAT of catchers. I've been trying to get him to drop something during a catch but his grip strength is inhuman. The one-handed beer catch is my most treasured fall memory.
-
-Thank you for your service, Kevin. You're one of the good ones.
-
-P.S. - Small Kevin, if you're reading this, you're still not forgiven for The Incident. March 2022. 6-foot drop. Concussion. I haven't forgotten.`,
-        votes: 8934,
-        isAccepted: true,
-        timestamp: '4 months ago',
-        comments: [
-          { author: 'BigKevin_Catcher', content: 'This is genuinely helpful, thank you Tim', timestamp: '4 months ago' },
-          { author: 'small_kevin_reformed', content: 'It was one time...', timestamp: '4 months ago' },
-          { author: 'MarsTheUnderground', content: 'The grip strength comes from years of changing kegs. Also, Tim, you\'re falling tonight at 9pm. Be there.', timestamp: '4 months ago' },
-        ],
-      },
-      {
-        id: 'a2_catching',
-        author: 'sports_medicine_doc',
-        authorRep: 12453,
-        content: `I'm a sports medicine doctor and I have questions.
-
-2,847 catches is... a lot. The forces involved in repeatedly catching a falling adult are significant. I'd recommend:
-
-1. **Core exercises**: Planks, dead bugs, bird dogs
-2. **Hip strengthening**: Squats, lunges, hip hinges
-3. **Upper back work**: Rows, face pulls
-4. **Regular stretching**: Hip flexors especially
-
-Also please see a physical therapist. This is not a normal amount of catching.`,
-        votes: 3421,
-        isAccepted: false,
-        timestamp: '4 months ago',
-      },
-    ],
-  },
-  {
-    id: 'q_quantum_side_effects',
-    title: 'Is it normal to see my future self in quantum coffee reflections?',
-    content: `I've been drinking quantum coffee daily for about 4 months now (QuBrew Pro 3000, properly calibrated, observing for full 45 minutes).
-
-Starting about 2 weeks ago, when I look at the surface of the coffee before drinking, I sometimes see... myself? But older. And doing things I haven't done yet.
-
-Last week I saw myself getting a promotion at work. Then I got the promotion on Friday.
-
-Yesterday I saw myself crying at what looked like a funeral. I don't know whose funeral.
-
-Is this a known side effect of quantum coffee? I checked the Martinez Study but it doesn't mention anything about temporal precognition.
-
-I should also mention I live in the Hartwell Building (floor 3, not floor 7). Could that be related?`,
-    author: 'quantum_seer_confused',
-    authorRep: 567,
-    votes: 1892,
-    views: 34521,
-    answerCount: 78,
-    timestamp: '1 week ago',
-    tags: ['quantum-coffee', 'side-effects', 'hartwell-building', 'precognition'],
-    answers: [
-      {
-        id: 'a1_vision',
-        author: 'quantum_derek_847',
-        authorRep: 847,
-        content: `Welcome to the club.
-
-Yes, this happens. No, the Martinez Study doesn't cover it because Dr. Martinez refuses to acknowledge it. I've emailed her 847 times about this phenomenon.
-
-My theory: the quantum observation process creates a localized field of probability awareness. Your consciousness, focused on the coffee, briefly accesses adjacent timeline information. It's not precognition - it's probability perception.
-
-The Hartwell Building location is definitely relevant. That building has... unusual properties that may amplify the effect.
-
-As for the funeral vision - I saw something similar before my cat Mr. Whiskers got sick. He recovered, but only after I changed his diet based on what I saw. So consider it a warning, not a certainty.
-
-Check out my blog at www.quantumbrewblog.corn for more information on this and other quantum coffee phenomena.
-
-Also, your QuBrew Pro 3000 is a solid choice. Worth every penny of the divorce.`,
-        votes: 2341,
-        isAccepted: false,
-        timestamp: '1 week ago',
-        comments: [
-          { author: 'quantum_seer_confused', content: 'This is both helpful and concerning', timestamp: '1 week ago' },
-          { author: 'dr_martinez_official', content: 'I have never received 847 emails from this person. Also this is not how quantum mechanics works.', timestamp: '1 week ago' },
-          { author: 'quantum_derek_847', content: 'Check your spam folder, Elena', timestamp: '1 week ago' },
-        ],
-      },
-    ],
-  },
-]
-
-// Additional questions for the list view (hardcoded fallback)
-const ADDITIONAL_QUESTIONS: Partial<Question>[] = [
-  {
-    id: 'q_velvet_algorithms',
-    title: 'Why did Velvet Algorithms cancel their show for "existential reasons"?',
-    votes: 423,
-    answerCount: 87,
-    views: 12453,
-    tags: ['velvet-algorithms', 'concerts', 'the-underground'],
-    timestamp: '3 weeks ago',
-  },
-  {
-    id: 'q_neon_requiem_reunion',
-    title: 'Will Neon Requiem ever reunite? Their final show changed my life',
-    votes: 1234,
-    answerCount: 234,
-    views: 45672,
-    tags: ['neon-requiem', 'concerts', 'reunion'],
-    timestamp: '2 months ago',
-  },
-  {
-    id: 'q_quantumil',
-    title: 'Has anyone else experienced "recursive existence anxiety" from QUANTUMIL?',
-    votes: 567,
-    answerCount: 89,
-    views: 23451,
-    tags: ['quantum-coffee', 'medication', 'side-effects'],
-    timestamp: '5 days ago',
-  },
-  {
-    id: 'q_gas_station_sushi',
-    title: 'Is Flying J #847 really the best gas station sushi? Planning a pilgrimage',
-    votes: 892,
-    answerCount: 156,
-    views: 34521,
-    tags: ['food', 'travel', 'gas-station-sushi'],
-    timestamp: '1 month ago',
-  },
-  {
-    id: 'q_corn_allergy',
-    title: 'Can you be allergic to quantum-observed corn specifically?',
-    votes: 234,
-    answerCount: 45,
-    views: 8923,
-    tags: ['corn-allergy', 'quantum-coffee', 'medical'],
-    timestamp: '2 weeks ago',
-  },
-]
-
-// ============================================================================
-// Sample Data - Tags (hardcoded fallback)
-// ============================================================================
-
-const POPULAR_TAGS_FALLBACK: Tag[] = [
-  { name: 'quantum-coffee', count: 8472 },
-  { name: 'hartwell-building', count: 3421 },
-  { name: 'trust-falls', count: 2847 },
-  { name: 'relationship-advice', count: 15672 },
-  { name: 'corn-allergy', count: 1234 },
-  { name: 'the-underground', count: 892 },
-  { name: 'crypto', count: 4521 },
-  { name: 'scam', count: 3892 },
-]
-
-// ============================================================================
-// Sample Data - Users (hardcoded fallback)
-// ============================================================================
-
-const SAMPLE_USERS_FALLBACK: Record<string, User> = {
-  'quantum_derek_847': {
-    username: 'quantum_derek_847',
-    reputation: 847,
-    badges: { gold: 0, silver: 8, bronze: 47 },
-    about: 'IT consultant (between contracts). Quantum coffee enthusiast. Divorced. My cat Mr. Whiskers understands me.',
-    topTags: ['quantum-coffee', 'relationship-advice', 'hartwell-building'],
-  },
-  'TrustFallTim': {
-    username: 'TrustFallTim',
-    reputation: 28471,
-    badges: { gold: 2, silver: 84, bronze: 7 },
-    about: 'Professional trust faller. 2,847 documented falls. 78.5% catch rate. The Incident was not my fault.',
-    topTags: ['trust-falls', 'exercise', 'the-underground'],
-  },
-  'hartwell_researcher': {
-    username: 'hartwell_researcher',
-    reputation: 8472,
-    badges: { gold: 1, silver: 23, bronze: 56 },
-    about: 'Documenting the truth about the Hartwell Building since 2019. The mirrors are doors.',
-    topTags: ['hartwell-building', 'unexplained', 'omnicorp'],
-  },
-}
-
-// ============================================================================
-// Hot Network Questions (Sidebar) - always hardcoded
+// Hot Network Questions (Sidebar) - static UI config
 // ============================================================================
 
 const HOT_NETWORK_QUESTIONS = [
@@ -730,43 +174,28 @@ const HOT_NETWORK_QUESTIONS = [
 // ============================================================================
 
 export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
-  // Fetch from DB with fallback to hardcoded data
+  // Fetch from DB (database is the sole source of truth)
   const { content: dbContent } = useSiteContent('askcorn')
   const { content: dbUserContent } = useSiteContent('askcorn', { contentType: 'user' })
   const { categories: dbCategories } = useSiteCategories('askcorn')
 
-  // Derive questions from DB content, falling back to hardcoded data
+  // Derive questions from DB content (database is the sole source of truth)
   const questions = useMemo(() => {
-    // Filter to only question-type content (exclude user-type)
     const questionContent = dbContent.filter(item => item.contentType !== 'user')
-    if (questionContent.length > 0) return questionContent.map(dbToQuestion)
-    return SAMPLE_QUESTIONS
+    return questionContent.map(dbToQuestion)
   }, [dbContent])
 
-  // Derive additional questions stub list for the combined listing
-  const additionalQuestions = useMemo((): Partial<Question>[] => {
-    // When DB content is available, all questions are in `questions` already
-    if (dbContent.filter(item => item.contentType !== 'user').length > 0) return []
-    return ADDITIONAL_QUESTIONS
-  }, [dbContent])
+  // Derive tags from DB categories (database is the sole source of truth)
+  const popularTags = useMemo(() => dbCategories.map(dbCategoryToTag), [dbCategories])
 
-  // Derive tags from DB categories, falling back to hardcoded data
-  const popularTags = useMemo(() => {
-    if (dbCategories.length > 0) return dbCategories.map(dbCategoryToTag)
-    return POPULAR_TAGS_FALLBACK
-  }, [dbCategories])
-
-  // Derive users from DB user-type content, falling back to hardcoded data
+  // Derive users from DB user-type content (database is the sole source of truth)
   const sampleUsers = useMemo((): Record<string, User> => {
-    if (dbUserContent.length > 0) {
-      const map: Record<string, User> = {}
-      for (const item of dbUserContent) {
-        const user = dbToUser(item)
-        map[user.username] = user
-      }
-      return map
+    const map: Record<string, User> = {}
+    for (const item of dbUserContent) {
+      const user = dbToUser(item)
+      map[user.username] = user
     }
-    return SAMPLE_USERS_FALLBACK
+    return map
   }, [dbUserContent])
 
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null)
@@ -863,17 +292,8 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
     }))
   }
 
-  // Combine full questions with additional question stubs for listing
-  const allQuestionsForList = useMemo(() => [
-    ...questions,
-    ...additionalQuestions.map(q => ({
-      ...q,
-      author: 'anonymous_user',
-      authorRep: Math.floor(Math.random() * 1000),
-      content: '',
-      answers: [],
-    } as Question)),
-  ], [questions, additionalQuestions])
+  // All questions for listing (DB provides the full set)
+  const allQuestionsForList = questions
 
   // Filter questions by selected tag if applicable
   const filteredQuestions = selectedTag
@@ -962,18 +382,18 @@ export function AskCornSite({ siteId, path, onNavigate, onPathChange }: SiteProp
           {/* Left Sidebar */}
           <aside className="w-40 shrink-0 hidden lg:block">
             <nav className="space-y-1">
-              <SidebarLink label="Home" isActive icon="🏠" onClick={handleBackToHome} />
-              <SidebarLink label="Questions" icon="❓" onClick={() => setActiveTab('questions')} />
-              <SidebarLink label="Tags" icon="🏷️" onClick={() => setActiveTab('tags')} />
-              <SidebarLink label="Users" icon="👥" onClick={() => setActiveTab('users')} />
+              <SidebarLink label="Home" isActive icon="\u{1F3E0}" onClick={handleBackToHome} />
+              <SidebarLink label="Questions" icon="\u{2753}" onClick={() => setActiveTab('questions')} />
+              <SidebarLink label="Tags" icon="\u{1F3F7}\u{FE0F}" onClick={() => setActiveTab('tags')} />
+              <SidebarLink label="Users" icon="\u{1F465}" onClick={() => setActiveTab('users')} />
               <div className="pt-4 pb-2">
                 <span className="text-xs font-semibold uppercase" style={{ color: SITE_THEME.textMuted }}>
                   Collectives
                 </span>
               </div>
-              <SidebarLink label="Quantum Coffee" icon="☕" />
-              <SidebarLink label="Hartwell Research" icon="🏚️" />
-              <SidebarLink label="Trust Fall Network" icon="🙆‍♂️" />
+              <SidebarLink label="Quantum Coffee" icon="\u{2615}" />
+              <SidebarLink label="Hartwell Research" icon="\u{1F3DA}\u{FE0F}" />
+              <SidebarLink label="Trust Fall Network" icon="\u{1F646}\u{200D}\u{2642}\u{FE0F}" />
             </nav>
           </aside>
 
@@ -1690,7 +1110,7 @@ function TagFilterView({ tagName, questions, popularTags, onBack, onSelectQuesti
         textColor={SITE_THEME.secondary}
         className="mb-4"
       >
-        ← Back to all questions
+        &larr; Back to all questions
       </Button>
 
       <div className="flex items-center gap-3 mb-4 pb-4" style={{ borderBottom: `1px solid ${SITE_THEME.border}` }}>
@@ -1767,13 +1187,13 @@ function UsersList({ users, onSelectUser }: UsersListProps) {
             </div>
             <div className="flex gap-2">
               <span className="text-xs" style={{ color: SITE_THEME.gold }}>
-                ● {user.badges.gold}
+                {'\u25CF'} {user.badges.gold}
               </span>
               <span className="text-xs" style={{ color: SITE_THEME.silver }}>
-                ● {user.badges.silver}
+                {'\u25CF'} {user.badges.silver}
               </span>
               <span className="text-xs" style={{ color: SITE_THEME.bronze }}>
-                ● {user.badges.bronze}
+                {'\u25CF'} {user.badges.bronze}
               </span>
             </div>
           </button>
@@ -1807,7 +1227,7 @@ function UserProfile({ user, questions, onBack, onSelectQuestion }: UserProfileP
         textColor={SITE_THEME.secondary}
         className="mb-4"
       >
-        ← Back to questions
+        &larr; Back to questions
       </Button>
 
       {/* Profile Header */}
@@ -1828,13 +1248,13 @@ function UserProfile({ user, questions, onBack, onSelectQuestion }: UserProfileP
             </span>
             <div className="flex gap-2">
               <span style={{ color: SITE_THEME.gold }}>
-                ● {user.badges.gold} gold
+                {'\u25CF'} {user.badges.gold} gold
               </span>
               <span style={{ color: SITE_THEME.silver }}>
-                ● {user.badges.silver} silver
+                {'\u25CF'} {user.badges.silver} silver
               </span>
               <span style={{ color: SITE_THEME.bronze }}>
-                ● {user.badges.bronze} bronze
+                {'\u25CF'} {user.badges.bronze} bronze
               </span>
             </div>
           </div>

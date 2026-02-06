@@ -195,10 +195,10 @@ export function Desktop() {
     },
     {
       id: 'pinball',
-      title: 'Space Cadet Pinball',
+      title: 'Cob Cadet Pinball',
       icon: '🪩',
       component: () => <PinballWindow />,
-      defaultState: { x: 150, y: 20, width: 650, height: 800 },
+      defaultState: { x: 200, y: 10, width: 460, height: 880 },
     },
   ]
 
@@ -212,7 +212,7 @@ export function Desktop() {
     { id: 'logs', icon: '📊', label: 'Logs', opensWindow: 'logs' },
     { id: 'studio', icon: '🎨', label: 'Creative Suite', opensWindow: 'studio' },
     { id: 'cobhub-ide', icon: '🌽', label: 'CobHub IDE', opensWindow: 'cobhub-ide' },
-    { id: 'pinball', icon: '🪩', label: 'Pinball', opensWindow: 'pinball' },
+    { id: 'pinball', icon: '🪩', label: 'Cob Cadet', opensWindow: 'pinball' },
   ]
 
   // Build start menu app list from desktop icons

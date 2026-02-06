@@ -48,160 +48,13 @@ interface Band {
 
 const YOUR_CITY = 'Your City'
 
-const UPCOMING_CONCERTS: Concert[] = [
-  {
-    id: '1',
-    band: 'The Velvet Algorithms',
-    bandEmoji: '🎸',
-    venue: 'The Somewhere Else Arena',
-    city: 'Literally Anywhere But Here',
-    date: 'Tomorrow',
-    time: '8:00 PM',
-    price: '$25',
-    soldOut: false,
-    distance: '847 miles away',
-    reasonYouCantGo: 'It\'s tomorrow and 847 miles away',
-    ticketsLeft: 12,
-  },
-  {
-    id: '2',
-    band: 'Neon Requiem',
-    bandEmoji: '💀',
-    venue: 'The Underground',
-    city: YOUR_CITY,
-    date: 'Last Week',
-    time: '9:00 PM',
-    price: '$30',
-    soldOut: true,
-    distance: '0 miles',
-    reasonYouCantGo: 'You missed it. It was last week. Everyone said it was amazing.',
-  },
-  {
-    id: '3',
-    band: 'Quantum Entanglement',
-    bandEmoji: '⚛️',
-    venue: 'Madison Square Garden',
-    city: 'New York, NY',
-    date: 'March 15, 2026',
-    time: '7:30 PM',
-    price: '$450',
-    soldOut: false,
-    distance: '2,847 miles away',
-    reasonYouCantGo: 'Tickets are $450 and it\'s across the country',
-    ticketsLeft: 3,
-  },
-  {
-    id: '4',
-    band: 'The Existential Dread',
-    bandEmoji: '😰',
-    venue: 'Wembley Stadium',
-    city: 'London, UK',
-    date: 'April 20, 2026',
-    time: '6:00 PM',
-    price: '£85',
-    soldOut: false,
-    distance: '5,000+ miles away',
-    reasonYouCantGo: 'It\'s in another country',
-    ticketsLeft: 2847,
-  },
-  {
-    id: '5',
-    band: 'Schrödinger\'s Cats',
-    bandEmoji: '🐱',
-    venue: 'The Tiny Venue',
-    city: 'Town Next To Yours',
-    date: 'This Saturday',
-    time: '10:00 PM',
-    price: '$15',
-    soldOut: true,
-    distance: '12 miles away',
-    reasonYouCantGo: 'Sold out in 0.3 seconds. You didn\'t even know about it.',
-  },
-  {
-    id: '6',
-    band: 'Trust Fall Tim & The Catchers',
-    bandEmoji: '🙆‍♂️',
-    venue: 'Community Center',
-    city: YOUR_CITY,
-    date: 'Your Birthday',
-    time: '7:00 PM',
-    price: '$20',
-    soldOut: true,
-    distance: '0 miles',
-    reasonYouCantGo: 'It\'s on your birthday and you already have plans you can\'t cancel',
-  },
-  {
-    id: '7',
-    band: 'Derek\'s Wave Function',
-    bandEmoji: '☕',
-    venue: 'Coffee Shop Basement',
-    city: 'Portland, OR',
-    date: 'Every Tuesday',
-    time: '11:00 PM',
-    price: 'Free',
-    soldOut: false,
-    distance: '1,200 miles away',
-    reasonYouCantGo: 'It\'s every Tuesday in Portland. You don\'t live in Portland.',
-    ticketsLeft: 847,
-  },
-  {
-    id: '8',
-    band: 'The Hartwell Hauntings',
-    bandEmoji: '🏚️',
-    venue: 'Hartwell Building Basement',
-    city: YOUR_CITY,
-    date: 'TBD',
-    time: '???',
-    price: 'Your Soul',
-    soldOut: false,
-    distance: '0 miles',
-    reasonYouCantGo: 'The venue doesn\'t technically exist. Or does it?',
-  },
-]
+// Hardcoded UPCOMING_CONCERTS removed -- DB is the sole source of truth
 
-const JUST_MISSED: Concert[] = [
-  { id: 'jm1', band: 'The Velvet Algorithms', bandEmoji: '🎸', venue: 'Your Favorite Venue', city: YOUR_CITY, date: '2 days ago', time: '8:00 PM', price: '$25', soldOut: true, distance: '0 miles', reasonYouCantGo: 'You were sick that day' },
-  { id: 'jm2', band: 'Neon Requiem', bandEmoji: '💀', venue: 'The Underground', city: YOUR_CITY, date: 'Last month', time: '9:00 PM', price: '$30', soldOut: true, distance: '0 miles', reasonYouCantGo: 'You didn\'t check your email' },
-  { id: 'jm3', band: 'Quantum Entanglement', bandEmoji: '⚛️', venue: 'Secret Location', city: YOUR_CITY, date: 'Yesterday', time: '11:00 PM', price: 'Free', soldOut: true, distance: '0 miles', reasonYouCantGo: 'It was a secret show. You weren\'t cool enough to know.' },
-]
+// Hardcoded JUST_MISSED removed -- DB is the sole source of truth
 
-const TRACKED_BANDS: Band[] = [
-  {
-    name: 'The Velvet Algorithms',
-    emoji: '🎸',
-    genre: 'Electronic / Existential',
-    followers: '847,293',
-    lastInYourCity: '2 days ago (you missed it)',
-    nextInYourCity: 'Maybe 2027? They\'re "taking a break"',
-    tours: UPCOMING_CONCERTS.filter(c => c.band === 'The Velvet Algorithms'),
-  },
-  {
-    name: 'Neon Requiem',
-    emoji: '💀',
-    genre: 'Post-Punk Revival',
-    followers: '234,567',
-    lastInYourCity: 'Last week',
-    nextInYourCity: 'Unknown - they broke up after the show',
-    tours: UPCOMING_CONCERTS.filter(c => c.band === 'Neon Requiem'),
-  },
-  {
-    name: 'Schrödinger\'s Cats',
-    emoji: '🐱',
-    genre: 'Quantum Jazz',
-    followers: '50,000 (maybe)',
-    lastInYourCity: 'They both did and didn\'t play here',
-    nextInYourCity: 'Uncertain',
-    tours: UPCOMING_CONCERTS.filter(c => c.band === 'Schrödinger\'s Cats'),
-  },
-]
+// Hardcoded TRACKED_BANDS removed -- DB is the sole source of truth
 
-const NOTIFICATIONS = [
-  '🎸 The Velvet Algorithms just announced a tour! (No dates in your area)',
-  '💀 Neon Requiem played a secret show in your city last night!',
-  '⚛️ Quantum Entanglement tickets ON SALE NOW (sold out)',
-  '🙆‍♂️ Trust Fall Tim is playing your city! (It\'s on your wedding day)',
-  '🎵 Your favorite band is playing 3,000 miles away tomorrow!',
-]
+// Hardcoded NOTIFICATIONS removed -- DB is the sole source of truth
 
 // ============================================================================
 // DB Adapters
@@ -355,25 +208,43 @@ function BandCard({ band }: { band: Band }) {
 // ============================================================================
 
 export function BandsNotInTownSite({ siteId }: SiteProps) {
-  // Fetch from DB with fallback to hardcoded data
+  // Fetch from DB -- no fallback, DB is the sole source of truth
   const { content: dbContent } = useSiteContent('bandsnotintown')
 
   const upcomingConcerts = useMemo(() => {
-    if (dbContent.length > 0) {
-      // DB items with contentType 'concert' or category 'upcoming' map to upcoming concerts
-      const upcoming = dbContent.filter(i => i.contentType === 'concert' || i.category === 'upcoming' || !i.category)
-      if (upcoming.length > 0) return upcoming.map(dbToConcert)
-    }
-    return UPCOMING_CONCERTS
+    const upcoming = dbContent.filter(i => i.contentType === 'concert' || i.category === 'upcoming' || !i.category)
+    return upcoming.map(dbToConcert)
   }, [dbContent])
 
   const justMissed = useMemo(() => {
-    if (dbContent.length > 0) {
-      const missed = dbContent.filter(i => i.category === 'missed')
-      if (missed.length > 0) return missed.map(dbToConcert)
-    }
-    return JUST_MISSED
+    return dbContent.filter(i => i.category === 'missed').map(dbToConcert)
   }, [dbContent])
+
+  // Derive tracked bands from concert data (was hardcoded TRACKED_BANDS array)
+  const trackedBands: Band[] = useMemo(() => {
+    const bandNames = [...new Set(upcomingConcerts.map(c => c.band))]
+    return bandNames.slice(0, 6).map(name => {
+      const bandConcerts = upcomingConcerts.filter(c => c.band === name)
+      const first = bandConcerts[0]
+      return {
+        name,
+        emoji: first?.bandEmoji || '🎵',
+        genre: 'Various',
+        followers: '---',
+        lastInYourCity: 'Unknown',
+        nextInYourCity: 'Check back soon',
+        tours: bandConcerts,
+      }
+    })
+  }, [upcomingConcerts])
+
+  // Derive notifications from concert data (was hardcoded NOTIFICATIONS array)
+  const notifications = useMemo(() => {
+    if (upcomingConcerts.length === 0) return ['No upcoming concerts found']
+    return upcomingConcerts.slice(0, 5).map(c =>
+      `${c.bandEmoji} ${c.band} is playing ${c.venue} (${c.reasonYouCantGo})`
+    )
+  }, [upcomingConcerts])
 
   const [activeTab, setActiveTab] = useState<'upcoming' | 'missed' | 'tracked'>('upcoming')
   const [showNotification, setShowNotification] = useState(true)
@@ -432,7 +303,7 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
         <div className="bg-yellow-100 border-b border-yellow-300 py-2 px-4">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <p className="text-sm text-yellow-800">
-              {NOTIFICATIONS[Math.floor(Math.random() * NOTIFICATIONS.length)]}
+              {notifications[Math.floor(Math.random() * notifications.length)]}
             </p>
             <button onClick={() => setShowNotification(false)} className="text-yellow-600 hover:text-yellow-800">
               ✕
@@ -447,7 +318,7 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
           {[
             { id: 'upcoming', label: 'Upcoming (Not Here)', count: upcomingConcerts.length },
             { id: 'missed', label: 'Just Missed', count: justMissed.length },
-            { id: 'tracked', label: 'Tracked Bands', count: TRACKED_BANDS.length },
+            { id: 'tracked', label: 'Tracked Bands', count: trackedBands.length },
           ].map(tab => (
             <button
               key={tab.id}
@@ -600,7 +471,7 @@ export function BandsNotInTownSite({ siteId }: SiteProps) {
             </StyledCard>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {TRACKED_BANDS.map(band => (
+              {trackedBands.map(band => (
                 <BandCard key={band.name} band={band} />
               ))}
             </div>

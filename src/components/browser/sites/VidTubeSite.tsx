@@ -4,9 +4,8 @@
  * YouTube clone for the engAIge browser.
  * Features video thumbnails, comments, channels, and recommendations.
  *
- * Video content is fetched from the database via WebSocket hooks,
- * falling back to hardcoded data in src/config/vidtube-content.ts
- * when the DB has no content for this site.
+ * Video content is fetched from the database via WebSocket hooks.
+ * The database is the sole source of truth -- no hardcoded fallback.
  *
  * Add thumbnails to public/images/vidtube/
  *
@@ -22,8 +21,6 @@ import { FILLER_SITES } from '../../../config/filler-sites.js'
 import { SidebarAdWidget } from '../ads/index.js'
 import { useSiteContent, useSiteChannels, type SiteContentItem, type SiteChannel } from '../../../hooks/useSiteContent.js'
 import {
-  VIDTUBE_VIDEOS,
-  VIDTUBE_CHANNELS,
   VIDTUBE_CATEGORIES,
   getVideoThumbnail,
   getChannelAvatar,
@@ -108,22 +105,16 @@ function dbToChannel(ch: SiteChannel): Channel {
 // ============================================================================
 
 export function VidTubeSite({ siteId, path, onNavigate, onPathChange }: SiteProps) {
-  // Fetch from DB with fallback to hardcoded data
+  // Fetch from DB -- database is the only source of truth
   const { content: dbContent } = useSiteContent('vidtube')
   const { channels: dbChannels } = useSiteChannels('vidtube')
 
-  const videos = useMemo(() => {
-    if (dbContent.length > 0) return dbContent.map(dbToVideo)
-    return VIDTUBE_VIDEOS
-  }, [dbContent])
+  const videos = useMemo(() => dbContent.map(dbToVideo), [dbContent])
 
   const channels = useMemo(() => {
-    if (dbChannels.length > 0) {
-      const map: Record<string, Channel> = {}
-      dbChannels.map(dbToChannel).forEach(ch => { map[ch.name] = ch })
-      return map
-    }
-    return VIDTUBE_CHANNELS
+    const map: Record<string, Channel> = {}
+    dbChannels.map(dbToChannel).forEach(ch => { map[ch.name] = ch })
+    return map
   }, [dbChannels])
 
   // Parse the current route to determine what view to show

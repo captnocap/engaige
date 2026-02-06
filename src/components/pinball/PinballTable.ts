@@ -1,5 +1,5 @@
 /**
- * PinballTable - Table geometry data for Space Cadet Pinball
+ * PinballTable - Table geometry data for Cob Cadet Pinball
  *
  * Defines all static geometry in a 400x700 unit space.
  * Physics engine and renderer consume this data to build the table.
@@ -61,7 +61,7 @@ export const plunger = {
   height: 30,
   minY: 660,
   maxY: 690,
-  launchForceMultiplier: 0.035,
+  launchForceMultiplier: 0.15,
 };
 
 // Ball spawn position (in plunger lane)

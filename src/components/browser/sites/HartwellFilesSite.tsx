@@ -50,129 +50,6 @@ const TIMELINE: TimelineEvent[] = [
   { year: '2025', event: 'NestFinder listing appears and disappears within 6 hours. We have screenshots.', significance: 'major' },
 ]
 
-const EVIDENCE_FILES: Evidence[] = [
-  {
-    id: 'HW-001',
-    title: 'The Missing Floor',
-    date: '2023-11-15',
-    type: 'photo',
-    classification: 'verified',
-    content: [
-      'We have obtained photographs from 1952 showing the Hartwell Building with 13 floors. Current blueprints show 12.',
-      'The city planning office claims this is a "documentation error." We reached out for comment. They stopped returning our calls.',
-      'Where did Floor 13 go? More importantly: what was on it?',
-      '[IMAGE: Grainy black and white photo showing building exterior. Red circle around what appears to be 13th floor windows.]',
-      'Note: Three separate photography experts have verified this image has not been altered. Two of them have since asked us to stop contacting them.',
-    ],
-    relatedFiles: ['HW-007', 'HW-012'],
-  },
-  {
-    id: 'HW-002',
-    title: 'Interview: Former Janitor (Identity Protected)',
-    date: '2023-08-22',
-    type: 'testimony',
-    classification: 'unverified',
-    content: [
-      'Subject worked at Hartwell Building 2001-2003. Left abruptly. Now lives three states away.',
-      '"I cleaned that building for two years. Every night, same routine. Except... some nights there were doors that weren\'t there before."',
-      '"The mirrors in the bathroom on floor 7. Don\'t look at them too long. I made that mistake once."',
-      '"What did you see?"',
-      '"[Subject becomes agitated] I didn\'t see anything. You understand? Nothing. Tell them I said nothing."',
-      'Subject ended interview. Has not responded to follow-up contact.',
-    ],
-    relatedFiles: ['HW-008', 'HW-015'],
-  },
-  {
-    id: 'HW-003',
-    title: 'The Hartwell Symbol',
-    date: '2024-02-03',
-    type: 'document',
-    classification: 'leaked',
-    content: [
-      'Documents obtained from [REDACTED] show a recurring symbol in Magnus Hartwell\'s personal correspondence.',
-      'The symbol appears to be: A circle, containing a triangle, containing an eye, containing... another smaller building?',
-      'This same symbol appears:',
-      '• On the building\'s original cornerstone (since covered by renovation)',
-      '• In the background of 3 separate employee photos',
-      '• Etched into a mirror on the 7th floor (reported by Source HW-002)',
-      '• In the coffee foam at the cafe across the street (this one might be coincidence)',
-      'We are consulting with occult historians. Results pending.',
-    ],
-    relatedFiles: ['HW-001', 'HW-011'],
-  },
-  {
-    id: 'HW-004',
-    title: 'Audio Recording: Night Security Shift',
-    date: '2024-06-17',
-    type: 'audio',
-    classification: 'suppressed',
-    content: [
-      'Duration: 4 hours, 23 minutes. Recorded by security guard [NAME WITHHELD] on unauthorized personal device.',
-      'Notable timestamps:',
-      '01:23:45 - Footsteps in empty hallway. Guard investigates. Nothing found.',
-      '02:15:00 - Elevator moves from floor 6 to floor 8. Skips 7. Guard did not call it.',
-      '02:47:33 - Whispering audible. Too faint to transcribe. Audio analysis suggests "multiple voices."',
-      '03:01:12 - Guard: "What the f***?" Sound of running. Heavy breathing.',
-      '03:15:00 - Recording ends abruptly.',
-      'Guard resigned the following morning. Would not provide statement.',
-      '[Audio file mysteriously corrupted 3 days after we obtained it. We have backups.]',
-    ],
-    relatedFiles: ['HW-002', 'HW-009'],
-  },
-  {
-    id: 'HW-005',
-    title: 'THEORY: Hartwell is a Beacon',
-    date: '2024-09-30',
-    type: 'theory',
-    classification: 'unverified',
-    content: [
-      'Connecting the dots:',
-      '1. The building was constructed in 1923, on a site that was previously a church (burned down 1921)',
-      '2. Magnus Hartwell was a known associate of Aleister Crowley (unconfirmed but likely)',
-      '3. The building\'s architecture incorporates sacred geometry that matches no known style',
-      '4. Every major "incident" occurs at night, during specific lunar phases',
-      'CONCLUSION: The Hartwell Building is not just a building. It\'s a beacon. A lighthouse. Something is being called.',
-      'The question is: has it arrived yet?',
-      'UPDATE 2025-01-10: Cross-referencing with the Quantum Coffee research community. They report "temporal anomalies" near the building. THE PIECES ARE CONNECTING.',
-    ],
-    relatedFiles: ['HW-001', 'HW-003', 'HW-011'],
-  },
-  {
-    id: 'HW-006',
-    title: 'The Velvet Algorithms Connection',
-    date: '2024-12-01',
-    type: 'document',
-    classification: 'unverified',
-    content: [
-      'Why did local band Velvet Algorithms refuse to play at The Underground when the venue was located near the Hartwell Building?',
-      'Band member quote from deleted Threadit post: "We don\'t play there anymore. The acoustics are wrong. The whole BUILDING is wrong."',
-      'The Underground moved locations in 2020. Velvet Algorithms resumed playing there in 2021.',
-      'Coincidence? The building affects sound. Music. Frequencies.',
-      'Are they hiding something? Or protecting us?',
-      'Note: Band has not responded to our 47 email inquiries.',
-    ],
-    relatedFiles: ['HW-005'],
-  },
-  {
-    id: 'HW-007',
-    title: 'NestFinder Listing Analysis',
-    date: '2025-01-05',
-    type: 'document',
-    classification: 'verified',
-    content: [
-      'On January 3, 2025, a listing appeared on NestFinder for "Luxury Condo - Hartwell Building."',
-      'The listing was removed within 6 hours. We captured screenshots.',
-      'Notable details from listing:',
-      '• Listed on floor 7 (matches our "problem floor" hypothesis)',
-      '• Price: $0/month (error or... invitation?)',
-      '• Description included phrase: "Perfect for those who don\'t mind watching"',
-      '• Photos showed interior that matches NO KNOWN FLOOR PLAN',
-      '• One photo shows a mirror. In the reflection: a figure that isn\'t in the foreground.',
-      'NestFinder support claims listing was "spam." We know better.',
-    ],
-    relatedFiles: ['HW-001', 'HW-002'],
-  },
-]
 
 const QUICK_FACTS = [
   'The building has no floor 13, but photographs from 1952 show 13 floors',
@@ -331,10 +208,7 @@ function EvidenceDetail({ evidence, onBack }: { evidence: Evidence; onBack: () =
 export function HartwellFilesSite({ siteId }: SiteProps) {
   const { content: dbContent } = useSiteContent('hartwellfiles')
 
-  const evidenceFiles = useMemo(() => {
-    if (dbContent.length > 0) return dbContent.map(dbToEvidence)
-    return EVIDENCE_FILES
-  }, [dbContent])
+  const evidenceFiles = useMemo(() => dbContent.map(dbToEvidence), [dbContent])
 
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null)
   const [activeTab, setActiveTab] = useState<'files' | 'timeline' | 'about'>('files')
