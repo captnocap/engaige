@@ -65,7 +65,7 @@ export function TaskbarNPCPortrait({ npc, unreadCount, onOpenConversation, onUnp
     <>
       <button
         ref={portraitRef}
-        onClick={onOpenConversation}
+        onClick={() => setShowPopup(prev => !prev)}
         onContextMenu={ctx.show}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
