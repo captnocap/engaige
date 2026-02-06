@@ -1,48 +1,47 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSettingsStore } from '../../../stores/settingsStore.js'
 import { Select } from '../../ui/Select.js'
-import { open } from '@tauri-apps/plugin-dialog'
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { SettingsCard } from '../components/SettingsCard.js'
+
+const MAX_FILE_SIZE = 8 * 1024 * 1024 // 8 MB
+const ACCEPTED_TYPES = 'image/png,image/jpeg,image/webp,image/gif,image/bmp,image/svg+xml'
 
 export default function WallpaperSettings() {
   const { wallpaper, setWallpaper } = useSettingsStore()
   const [inputMethod, setInputMethod] = useState<'file' | 'url'>('file')
   const [urlInput, setUrlInput] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = async () => {
-    try {
-      const file = await open({
-        multiple: false,
-        filters: [
-          {
-            name: 'Images',
-            extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'svg'],
-          },
-        ],
-      })
+  const handleFileSelect = () => {
+    fileInputRef.current?.click()
+  }
 
-      if (file && typeof file === 'string') {
-        const assetUrl = convertFileSrc(file)
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-        // Check file size (warn if > 5MB)
-        const fileSize = new Blob([file]).size
-        if (fileSize > 5 * 1024 * 1024) {
-          console.warn('File size is large, may impact performance')
-        }
+    // Reset input so re-selecting the same file triggers change
+    e.target.value = ''
 
-        setWallpaper({
-          type: 'custom',
-          customPath: assetUrl,
-          customSource: 'file',
-        })
-        setError(null)
-      }
-    } catch (err) {
-      console.error('Error selecting file:', err)
-      setError('Failed to select file')
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Max ${MAX_FILE_SIZE / 1024 / 1024} MB.`)
+      return
     }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setWallpaper({
+        type: 'custom',
+        customPath: reader.result as string,
+        customSource: 'file',
+      })
+      setError(null)
+    }
+    reader.onerror = () => {
+      setError('Failed to read file')
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleUrlSubmit = (url: string) => {
@@ -136,17 +135,26 @@ export default function WallpaperSettings() {
 
               {/* File upload */}
               {inputMethod === 'file' && (
-                <button
-                  onClick={handleFileSelect}
-                  className="w-full py-8 border-2 border-dashed rounded hover:border-primary transition-colors"
-                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
-                >
-                  <div className="text-4xl mb-2">🖼️</div>
-                  <div className="font-medium">Click to select image</div>
-                  <div className="text-xs" style={{ color: 'var(--color-textMuted)' }}>
-                    PNG, JPG, WEBP, GIF, SVG supported
-                  </div>
-                </button>
+                <>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={ACCEPTED_TYPES}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={handleFileSelect}
+                    className="w-full py-8 border-2 border-dashed rounded hover:border-primary transition-colors"
+                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+                  >
+                    <div className="text-4xl mb-2">🖼️</div>
+                    <div className="font-medium">Click to select image</div>
+                    <div className="text-xs" style={{ color: 'var(--color-textMuted)' }}>
+                      PNG, JPG, WEBP, GIF, SVG supported (max 8 MB)
+                    </div>
+                  </button>
+                </>
               )}
 
               {/* URL input */}
