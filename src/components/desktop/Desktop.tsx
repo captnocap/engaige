@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { Window, type WindowState } from './Window'
-import { Taskbar, type TaskbarWindow } from './Taskbar'
+import { Taskbar, type TaskbarWindow } from './taskbar'
 import { DesktopIcon } from './DesktopIcon'
 import { Onboarding, type OnboardingData } from '../onboarding'
 import { useOnboardingStore } from '../../stores/onboardingStore'
@@ -458,14 +458,23 @@ export function Desktop() {
     else minimizeWindow(windowId)
   }, [windowStates, activeWindow, focusWindow, minimizeWindow])
 
+  // Count open windows per base type for display numbering
+  const openWindowsByType = new Map<string, string[]>()
+  Array.from(openWindows).forEach(id => {
+    const baseType = id.replace(/-\d+$/, '')
+    const list = openWindowsByType.get(baseType) ?? []
+    list.push(id)
+    openWindowsByType.set(baseType, list)
+  })
+
   const taskbarWindows: TaskbarWindow[] = Array.from(openWindows).map(id => {
     const baseType = id.replace(/-\d+$/, '')
     const config = windows.find(w => w.id === baseType)
     const state = windowStates[id]
 
-    const instanceMatch = id.match(/-(\d+)$/)
-    const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
-    const title = instanceNum && instanceNum > 1 ? `${config?.title ?? baseType} (${instanceNum})` : (config?.title ?? baseType)
+    const siblings = openWindowsByType.get(baseType) ?? []
+    const siblingIndex = siblings.indexOf(id)
+    const title = siblings.length > 1 ? `${config?.title ?? baseType} (${siblingIndex + 1})` : (config?.title ?? baseType)
 
     return {
       id,
@@ -559,11 +568,11 @@ export function Desktop() {
           if (!config) return null
           const state = windowStates[windowId]
 
-          const instanceMatch = windowId.match(/-(\d+)$/)
-          const instanceNum = instanceMatch ? parseInt(instanceMatch[1]) : null
-          const title = instanceNum && instanceNum > 1 ? `${config.title} (${instanceNum})` : config.title
+          const siblings = openWindowsByType.get(baseType) ?? []
+          const siblingIndex = siblings.indexOf(windowId)
+          const title = siblings.length > 1 ? `${config.title} (${siblingIndex + 1})` : config.title
 
-          const positionOffset = instanceNum ? (instanceNum - 1) * 30 : 0
+          const positionOffset = siblingIndex > 0 ? siblingIndex * 30 : 0
           const adjustedDefaultState = {
             ...config.defaultState,
             x: (config.defaultState.x ?? 50) + positionOffset,
@@ -601,9 +610,14 @@ export function Desktop() {
       <Taskbar
         windows={taskbarWindows}
         onWindowClick={handleTaskbarWindowClick}
+        onWindowClose={closeWindow}
         onStartClick={() => console.log('Start menu')}
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
+        onOpenNPCConversation={(npcId) => {
+          setPhoneVisible(true)
+          console.log('[Desktop] Open conversation with NPC:', npcId)
+        }}
       />
 
       {/* Server Connection Overlay - Blocks entire game when disconnected */}

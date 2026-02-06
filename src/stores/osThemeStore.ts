@@ -31,6 +31,8 @@ export interface TaskbarConfig {
   height: number
   showHub: boolean
   hubPosition: 'left' | 'right'
+  pinnedNPCIds: string[]
+  showNPCStrip: boolean
 }
 
 export interface OSThemeState {
@@ -50,6 +52,9 @@ export interface OSThemeState {
   // Actions
   setOverrideOS: (os: OSType | null) => void
   resetToDetected: () => void
+  pinNPC: (id: string) => void
+  unpinNPC: (id: string) => void
+  reorderPinnedNPCs: (ids: string[]) => void
 }
 
 // ============================================================================
@@ -103,18 +108,24 @@ const TASKBAR_PRESETS: Record<OSType, TaskbarConfig> = {
     height: 48,
     showHub: true,
     hubPosition: 'left',
+    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    showNPCStrip: true,
   },
   windows: {
     position: 'bottom',
     height: 48,
     showHub: true,
     hubPosition: 'left',
+    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    showNPCStrip: true,
   },
   linux: {
     position: 'bottom',
     height: 48,
     showHub: true,
     hubPosition: 'left',
+    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    showNPCStrip: true,
   },
 }
 
@@ -136,21 +147,54 @@ export const useOSThemeStore = create<OSThemeState>()(
 
         setOverrideOS: (os) => {
           const effectiveOS = os || get().detectedOS
+          const currentTaskbar = get().taskbar
           set({
             overrideOS: os,
             currentOS: effectiveOS,
             windowChrome: WINDOW_CHROME_PRESETS[effectiveOS],
-            taskbar: TASKBAR_PRESETS[effectiveOS],
+            taskbar: {
+              ...TASKBAR_PRESETS[effectiveOS],
+              pinnedNPCIds: currentTaskbar.pinnedNPCIds,
+              showNPCStrip: currentTaskbar.showNPCStrip,
+            },
           })
         },
 
         resetToDetected: () => {
           const detected = get().detectedOS
+          const currentTaskbar = get().taskbar
           set({
             overrideOS: null,
             currentOS: detected,
             windowChrome: WINDOW_CHROME_PRESETS[detected],
-            taskbar: TASKBAR_PRESETS[detected],
+            taskbar: {
+              ...TASKBAR_PRESETS[detected],
+              pinnedNPCIds: currentTaskbar.pinnedNPCIds,
+              showNPCStrip: currentTaskbar.showNPCStrip,
+            },
+          })
+        },
+
+        pinNPC: (id) => {
+          const current = get().taskbar.pinnedNPCIds
+          if (current.includes(id) || current.length >= 5) return
+          set({
+            taskbar: { ...get().taskbar, pinnedNPCIds: [...current, id] },
+          })
+        },
+
+        unpinNPC: (id) => {
+          set({
+            taskbar: {
+              ...get().taskbar,
+              pinnedNPCIds: get().taskbar.pinnedNPCIds.filter(npcId => npcId !== id),
+            },
+          })
+        },
+
+        reorderPinnedNPCs: (ids) => {
+          set({
+            taskbar: { ...get().taskbar, pinnedNPCIds: ids.slice(0, 5) },
           })
         },
       }
@@ -159,6 +203,7 @@ export const useOSThemeStore = create<OSThemeState>()(
       name: 'os-theme-storage',
       partialize: (state) => ({
         overrideOS: state.overrideOS,
+        pinnedNPCIds: state.taskbar.pinnedNPCIds,
       }),
       onRehydrate: (state) => () => {
         // After rehydration, recalculate currentOS and configs
@@ -166,7 +211,11 @@ export const useOSThemeStore = create<OSThemeState>()(
           const effectiveOS = state.overrideOS || state.detectedOS
           state.currentOS = effectiveOS
           state.windowChrome = WINDOW_CHROME_PRESETS[effectiveOS]
-          state.taskbar = TASKBAR_PRESETS[effectiveOS]
+          state.taskbar = {
+            ...TASKBAR_PRESETS[effectiveOS],
+            // Restore persisted pinned NPCs
+            pinnedNPCIds: (state as unknown as { pinnedNPCIds?: string[] }).pinnedNPCIds ?? [],
+          }
         }
       },
     }
