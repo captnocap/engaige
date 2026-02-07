@@ -8,7 +8,7 @@ import { useOnboardingStore } from '../../stores/onboardingStore'
 import { useAccountStore } from '../../stores/accountStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useSettingsStore, type IconPosition } from '../../stores/settingsStore.js'
-import { ICON_SIZE, TASKBAR_RESERVE, getDefaultIconPosition, reflowIcons } from './iconReflow.js'
+import { ICON_SIZE, TASKBAR_RESERVE, getDefaultIconPosition, reflowIcons, normalizedToPixel, pixelToNormalized, getBreakpointKey } from './iconReflow.js'
 import { useAwarenessStore } from '../../stores/awarenessStore.js'
 import { useSocialStore } from '../../stores/socialStore.js'
 import { FilesWindow } from './FilesWindow'
@@ -69,7 +69,7 @@ export function Desktop() {
   const { completed: legacyOnboardingCompleted, setCompleted } = useOnboardingStore()
   const { activeAccountId, accounts, markOnboardingComplete } = useAccountStore()
   const { currentTheme } = useThemeStore()
-  const { wallpaper, developer, desktopLayout, setIconPositions } = useSettingsStore()
+  const { wallpaper, developer, desktopLayout, setDesktopLayout } = useSettingsStore()
 
   // Check if current account has completed onboarding
   const activeAccount = accounts.find((a) => a.id === activeAccountId)
@@ -85,6 +85,11 @@ export function Desktop() {
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
   const [settingsRequestedTab, setSettingsRequestedTab] = useState<string | null>(null)
   const [messengerTargetNPC, setMessengerTargetNPC] = useState<string | null>(null)
+
+  // Physics-based icon layout: pixel positions derived from normalized store coords
+  const [iconPixelPositions, setIconPixelPositions] = useState<Record<string, IconPosition>>({})
+  // Ephemeral pixel overrides during drag (not persisted until drag-end)
+  const [dragPixelOverrides, setDragPixelOverrides] = useState<Record<string, IconPosition>>({})
 
   // Sticky notes state
   const [stickyNotes, setStickyNotes] = useState<StickyNote[]>(() => {
@@ -345,24 +350,57 @@ export function Desktop() {
     label: icon.label,
   }))
 
-  // Get icon position from store or use default
+  // Get icon pixel position: drag override > physics cache > default
   const getIconPosition = useCallback((iconId: string, index: number): IconPosition => {
-    return desktopLayout.iconPositions[iconId] ?? getDefaultIconPosition(index)
-  }, [desktopLayout.iconPositions])
+    return dragPixelOverrides[iconId] ?? iconPixelPositions[iconId] ?? getDefaultIconPosition(index)
+  }, [dragPixelOverrides, iconPixelPositions])
 
-  // On mount: reflow icons that may be out of bounds from a different viewport size
+  // On mount: compute pixel positions from normalized store coords via physics reflow
   useEffect(() => {
+    const { desktopLayout: layout } = useSettingsStore.getState()
     const allIconIds = desktopIcons.map(i => i.id)
-    const currentPositions: Record<string, IconPosition> = {}
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const breakpoint = getBreakpointKey(vw)
+    const snapshot = layout.snapshots?.[breakpoint]
+
+    // Ensure all icons have canonical positions (fill in defaults for new icons)
+    const canonical = { ...layout.iconPositions }
+    let canonicalUpdated = false
     allIconIds.forEach((id, index) => {
-      currentPositions[id] = desktopLayout.iconPositions[id] ?? getDefaultIconPosition(index)
+      if (!canonical[id]) {
+        canonical[id] = pixelToNormalized(getDefaultIconPosition(index, vw, vh), vw, vh)
+        canonicalUpdated = true
+      }
     })
-    const result = reflowIcons(currentPositions, allIconIds, window.innerWidth, window.innerHeight)
-    if (result) setIconPositions(result)
+
+    const { pixelPositions, autoGridNormalized } = reflowIcons(canonical, allIconIds, vw, vh, snapshot)
+    setIconPixelPositions(pixelPositions)
+
+    // Persist canonical updates and snapshot
+    if (autoGridNormalized) {
+      // Auto-grid: update canonical, clear all snapshots, save fresh one for this breakpoint
+      const snapshotData: Record<string, IconPosition> = {}
+      allIconIds.forEach(id => {
+        snapshotData[id] = pixelToNormalized(pixelPositions[id], vw, vh)
+      })
+      setDesktopLayout({ iconPositions: autoGridNormalized, snapshots: { [breakpoint]: snapshotData } })
+    } else {
+      // Save canonical updates (if any) and snapshot for this breakpoint
+      const snapshotData: Record<string, IconPosition> = {}
+      allIconIds.forEach(id => {
+        snapshotData[id] = pixelToNormalized(pixelPositions[id], vw, vh)
+      })
+      const updates: Partial<typeof layout> = {
+        snapshots: { ...layout.snapshots, [breakpoint]: snapshotData },
+      }
+      if (canonicalUpdated) updates.iconPositions = canonical
+      setDesktopLayout(updates)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run only on mount
   }, [])
 
-  // On viewport resize: reflow out-of-bounds icons (debounced)
+  // On viewport resize: physics-based reflow (debounced)
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null
     const handleResize = () => {
@@ -370,12 +408,26 @@ export function Desktop() {
       timeoutId = setTimeout(() => {
         const { desktopLayout: layout } = useSettingsStore.getState()
         const allIconIds = desktopIcons.map(i => i.id)
-        const currentPositions: Record<string, IconPosition> = {}
-        allIconIds.forEach((id, index) => {
-          currentPositions[id] = layout.iconPositions[id] ?? getDefaultIconPosition(index)
-        })
-        const result = reflowIcons(currentPositions, allIconIds, window.innerWidth, window.innerHeight)
-        if (result) setIconPositions(result)
+        const vw = window.innerWidth
+        const vh = window.innerHeight
+        const breakpoint = getBreakpointKey(vw)
+        const snapshot = layout.snapshots?.[breakpoint]
+
+        const { pixelPositions, autoGridNormalized } = reflowIcons(
+          layout.iconPositions, allIconIds, vw, vh, snapshot,
+        )
+        setIconPixelPositions(pixelPositions)
+
+        if (autoGridNormalized) {
+          setDesktopLayout({ iconPositions: autoGridNormalized, snapshots: {} })
+        } else {
+          // Save settled layout as snapshot for this breakpoint
+          const snapshotData: Record<string, IconPosition> = {}
+          allIconIds.forEach(id => {
+            snapshotData[id] = pixelToNormalized(pixelPositions[id], vw, vh)
+          })
+          setDesktopLayout({ snapshots: { ...layout.snapshots, [breakpoint]: snapshotData } })
+        }
       }, 150)
     }
     window.addEventListener('resize', handleResize)
@@ -383,7 +435,7 @@ export function Desktop() {
       window.removeEventListener('resize', handleResize)
       if (timeoutId) clearTimeout(timeoutId)
     }
-  }, [desktopIcons, setIconPositions])
+  }, [desktopIcons, setDesktopLayout])
 
   const openWindow = useCallback((windowId: string) => {
     setOpenWindows(prev => new Set([...prev, windowId]))
@@ -575,25 +627,25 @@ export function Desktop() {
         }
 
         if (isDragging) {
-          // Update positions of all selected icons
+          // Update ephemeral pixel overrides for dragged icons (not persisted)
           const iconsToMove = selectedIcons.size > 0 && selectedIcons.has(dragInitiatorRef.current)
             ? selectedIcons
             : new Set([dragInitiatorRef.current])
 
           const maxX = window.innerWidth - ICON_SIZE
           const maxY = window.innerHeight - TASKBAR_RESERVE - ICON_SIZE
-          const newPositions: Record<string, IconPosition> = {}
+          const overrides: Record<string, IconPosition> = {}
           iconsToMove.forEach(iconId => {
             const originalPos = dragStartRef.current!.iconPositions[iconId]
             if (originalPos) {
-              newPositions[iconId] = {
+              overrides[iconId] = {
                 x: Math.min(maxX, Math.max(0, originalPos.x + dx)),
                 y: Math.min(maxY, Math.max(0, originalPos.y + dy)),
               }
             }
           })
 
-          setIconPositions(newPositions)
+          setDragPixelOverrides(overrides)
         }
       }
 
@@ -608,8 +660,37 @@ export function Desktop() {
     }
 
     const handleMouseUp = () => {
-      // End icon dragging
+      // End icon dragging — flush to normalized store + physics settle
       if (isDragging) {
+        const vw = window.innerWidth
+        const vh = window.innerHeight
+        const { desktopLayout: layout } = useSettingsStore.getState()
+        const allIconIds = desktopIcons.map(i => i.id)
+
+        // Merge drag overrides into pixel positions, convert all to normalized
+        const updatedCanonical = { ...layout.iconPositions }
+        const mergedPixels = { ...iconPixelPositions }
+        for (const [id, pos] of Object.entries(dragPixelOverrides)) {
+          mergedPixels[id] = pos
+          updatedCanonical[id] = pixelToNormalized(pos, vw, vh)
+        }
+
+        // Run physics settle to resolve any overlaps from drag
+        const breakpoint = getBreakpointKey(vw)
+        const { pixelPositions } = reflowIcons(updatedCanonical, allIconIds, vw, vh)
+        setIconPixelPositions(pixelPositions)
+
+        // Update canonical + save snapshot
+        const snapshotData: Record<string, IconPosition> = {}
+        allIconIds.forEach(id => {
+          snapshotData[id] = pixelToNormalized(pixelPositions[id], vw, vh)
+        })
+        setDesktopLayout({
+          iconPositions: updatedCanonical,
+          snapshots: { ...layout.snapshots, [breakpoint]: snapshotData },
+        })
+
+        setDragPixelOverrides({})
         setIsDragging(false)
       }
       dragStartRef.current = null
@@ -663,7 +744,7 @@ export function Desktop() {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging, selectionBox, selectedIcons, desktopIcons, getIconPosition, setIconPositions])
+  }, [isDragging, selectionBox, selectedIcons, desktopIcons, getIconPosition, setDesktopLayout, iconPixelPositions, dragPixelOverrides])
 
   const handleDesktopClick = useCallback((e: React.MouseEvent) => {
     // Only clear selection if clicking on empty desktop (not on icon)
@@ -803,6 +884,9 @@ export function Desktop() {
                 position: 'absolute',
                 left: pos.x,
                 top: pos.y,
+                transition: isDragging && selectedIcons.has(icon.id)
+                  ? 'none'
+                  : 'left 200ms ease-out, top 200ms ease-out',
               }}
             />
           )

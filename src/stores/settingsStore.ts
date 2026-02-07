@@ -49,8 +49,9 @@ export interface IconPosition {
 }
 
 export interface DesktopLayoutSettings {
-  iconPositions: Record<string, IconPosition>
-  viewportRef: { width: number; height: number } | null
+  iconPositions: Record<string, IconPosition>  // normalized 0-1 coords
+  snapshots: Record<string, Record<string, IconPosition>>  // breakpoint hint layouts
+  layoutVersion: number  // 2 = normalized coords
 }
 
 export type ContentRating = 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none'
@@ -133,7 +134,8 @@ const defaultContentRating: ContentRatingSettings = {
 
 const defaultDesktopLayout: DesktopLayoutSettings = {
   iconPositions: {},
-  viewportRef: null,
+  snapshots: {},
+  layoutVersion: 2,
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -195,7 +197,6 @@ export const useSettingsStore = create<SettingsState>()(
               ...state.desktopLayout.iconPositions,
               [iconId]: position,
             },
-            viewportRef: { width: window.innerWidth, height: window.innerHeight },
           },
         }))
       },
@@ -208,7 +209,6 @@ export const useSettingsStore = create<SettingsState>()(
               ...state.desktopLayout.iconPositions,
               ...positions,
             },
-            viewportRef: { width: window.innerWidth, height: window.innerHeight },
           },
         }))
       },
@@ -246,6 +246,31 @@ export const useSettingsStore = create<SettingsState>()(
         if (error) {
           console.error('Failed to rehydrate settings:', error)
         } else if (state) {
+          // Migrate pixel-based icon positions to normalized 0-1 coords
+          const layout = state.desktopLayout
+          if (!layout.layoutVersion || layout.layoutVersion < 2) {
+            const oldViewport = (layout as any).viewportRef as { width: number; height: number } | null
+            const vw = oldViewport?.width ?? 1920
+            const vh = oldViewport?.height ?? 1080
+            const migrated: Record<string, IconPosition> = {}
+            for (const [id, pos] of Object.entries(layout.iconPositions)) {
+              migrated[id] = {
+                x: Math.max(0, Math.min(1, pos.x / vw)),
+                y: Math.max(0, Math.min(1, pos.y / vh)),
+              }
+            }
+            state.desktopLayout = {
+              iconPositions: migrated,
+              snapshots: {},
+              layoutVersion: 2,
+            }
+            console.log('[Settings] Migrated icon positions from pixels to normalized coords')
+          }
+          // Ensure snapshots field exists for older v2 stores
+          if (!layout.snapshots) {
+            state.desktopLayout = { ...state.desktopLayout, snapshots: {} }
+          }
+
           // Apply settings on load
           applyWallpaperSettings(state.wallpaper)
           applyAudioSettings(state.audio)
