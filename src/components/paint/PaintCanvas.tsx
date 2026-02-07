@@ -41,6 +41,9 @@ export function PaintCanvas({
       canvas.height = rect.height
     }
 
+    // Guard against zero-size canvas (window not yet visible)
+    if (canvas.width < 1 || canvas.height < 1) return
+
     // White background
     ctx.fillStyle = '#ffffff'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
