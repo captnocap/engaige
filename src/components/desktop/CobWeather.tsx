@@ -55,6 +55,13 @@ export function CobWeather() {
     fetchWeather()
   }, [fetchWeather])
 
+  const handleCopyConditions = useCallback(() => {
+    if (!weather) return
+    const { current, location } = weather
+    const text = `${location}: ${current.temp}°F, ${current.condition} (Feels like ${current.feelsLike}°F, Humidity: ${current.humidity}%, Wind: ${current.windSpeed} mph)`
+    navigator.clipboard.writeText(text).catch(() => {})
+  }, [weather])
+
   if (loading || !weather) {
     return (
       <div className="flex items-center justify-center h-full bg-[var(--color-bg)]">
@@ -64,11 +71,6 @@ export function CobWeather() {
   }
 
   const { current, forecast, location } = weather
-
-  const handleCopyConditions = useCallback(() => {
-    const text = `${location}: ${current.temp}°F, ${current.condition} (Feels like ${current.feelsLike}°F, Humidity: ${current.humidity}%, Wind: ${current.windSpeed} mph)`
-    navigator.clipboard.writeText(text).catch(() => {})
-  }, [current, location])
 
   return (
     <div className="flex flex-col h-full overflow-hidden" onContextMenu={(e) => ctx.show(e)}>
