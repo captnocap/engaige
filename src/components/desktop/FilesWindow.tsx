@@ -41,7 +41,13 @@ export function FilesWindow() {
     if (!connected) return;
     setLoading(true);
     request<void, FilesystemData>('media:filesystem')
-      .then(data => { setFilesystem(data); setLoading(false); })
+      .then(data => {
+        setFilesystem({
+          myFiles: data?.myFiles ?? [],
+          npcs: data?.npcs ?? [],
+        });
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, [connected, request]);
 
