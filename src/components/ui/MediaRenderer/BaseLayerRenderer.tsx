@@ -7,6 +7,7 @@
 
 import { useRef, useEffect, useCallback } from 'react';
 import type { BaseLayer, BaseEffectType } from './types.js';
+import { GenArtRenderer } from './GenArtRenderer.js';
 
 interface BaseLayerRendererProps {
   layer: BaseLayer;
@@ -67,6 +68,19 @@ export function BaseLayerRenderer({
   // Render placeholder (stub)
   if (layer.type === 'placeholder') {
     return <PlaceholderRenderer placeholder={layer.placeholder} time={time} />;
+  }
+
+  // Render generative art
+  if (layer.type === 'genart') {
+    return (
+      <GenArtRenderer
+        config={layer.config}
+        width={width}
+        height={height}
+        isPlaying={!isPaused}
+        currentTime={time}
+      />
+    );
   }
 
   // Render animated gradient or canvas effect

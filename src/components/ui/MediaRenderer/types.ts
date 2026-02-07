@@ -138,7 +138,8 @@ export type BaseLayer =
   | { type: 'image'; image_id: string }
   | { type: 'image_url'; url: string }
   | { type: 'effect'; effect: BaseEffectType; params?: Record<string, unknown> }
-  | { type: 'placeholder'; placeholder: PlaceholderType };
+  | { type: 'placeholder'; placeholder: PlaceholderType }
+  | { type: 'genart'; config: import('../../../lib/genart/types.js').GenArtConfig };
 
 // ============================================================================
 // OVERLAY LAYER

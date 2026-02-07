@@ -25,6 +25,9 @@ import type {
   TextEffectType,
 } from '../ui/MediaRenderer/types.js';
 
+import type { TunerParams, EnergyCurveType, Keyframe } from '../../lib/genart/types.js';
+import { DEFAULT_TUNER_PARAMS } from '../../lib/genart/types.js';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -77,6 +80,14 @@ export interface VideoComposition {
   isPlaying: boolean;
   currentTime: number;
   loop: boolean;
+
+  // GenArt fields
+  mode: string;
+  tunerParams: TunerParams;
+  energyCurve: EnergyCurveType;
+  bpm: number;
+  pitch: number;
+  keyframes: Keyframe[];
 }
 
 // ============================================================================
@@ -120,6 +131,9 @@ export interface PanelVisibility {
   videoStyle: boolean;
   videoText: boolean;
   videoPlatform: boolean;
+  videoMode: boolean;
+  videoTuner: boolean;
+  videoEnergy: boolean;
 }
 
 export interface StudioState {
@@ -185,7 +199,16 @@ export type StudioAction =
   | { type: 'UPDATE_VIDEO_SEGMENT'; payload: { id: string; updates: Partial<TextSegmentDraft> } }
   | { type: 'REMOVE_VIDEO_SEGMENT'; payload: string }
   | { type: 'SET_VIDEO_PLAYING'; payload: boolean }
-  | { type: 'SET_VIDEO_TIME'; payload: number };
+  | { type: 'SET_VIDEO_TIME'; payload: number }
+  // GenArt actions
+  | { type: 'SET_GENART_MODE'; payload: string }
+  | { type: 'SET_TUNER_PARAMS'; payload: Partial<TunerParams> }
+  | { type: 'SET_ENERGY_CURVE'; payload: EnergyCurveType }
+  | { type: 'SET_BPM'; payload: number }
+  | { type: 'SET_PITCH'; payload: number }
+  | { type: 'ADD_KEYFRAME'; payload: Keyframe }
+  | { type: 'UPDATE_KEYFRAME'; payload: { index: number; keyframe: Keyframe } }
+  | { type: 'REMOVE_KEYFRAME'; payload: number };
 
 // ============================================================================
 // Initial State
@@ -213,6 +236,9 @@ const DEFAULT_PANEL_VISIBILITY: PanelVisibility = {
   videoStyle: true,
   videoText: true,
   videoPlatform: true,
+  videoMode: true,
+  videoTuner: true,
+  videoEnergy: true,
 };
 
 const DEFAULT_VIDEO_COMPOSITION: VideoComposition = {
@@ -228,6 +254,14 @@ const DEFAULT_VIDEO_COMPOSITION: VideoComposition = {
   isPlaying: false,
   currentTime: 0,
   loop: true,
+
+  // GenArt defaults
+  mode: 'constellation',
+  tunerParams: { ...DEFAULT_TUNER_PARAMS },
+  energyCurve: 'steady',
+  bpm: 120,
+  pitch: 0.5,
+  keyframes: [],
 };
 
 const initialState: StudioState = {
@@ -412,6 +446,68 @@ function studioReducer(state: StudioState, action: StudioAction): StudioState {
       return {
         ...state,
         videoComposition: { ...state.videoComposition, currentTime: action.payload },
+      };
+
+    // GenArt actions
+    case 'SET_GENART_MODE':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, mode: action.payload },
+      };
+
+    case 'SET_TUNER_PARAMS':
+      return {
+        ...state,
+        videoComposition: {
+          ...state.videoComposition,
+          tunerParams: { ...state.videoComposition.tunerParams, ...action.payload },
+        },
+      };
+
+    case 'SET_ENERGY_CURVE':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, energyCurve: action.payload },
+      };
+
+    case 'SET_BPM':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, bpm: action.payload },
+      };
+
+    case 'SET_PITCH':
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, pitch: action.payload },
+      };
+
+    case 'ADD_KEYFRAME': {
+      const newKeyframes = [...state.videoComposition.keyframes, action.payload]
+        .sort((a, b) => a.time - b.time);
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, keyframes: newKeyframes },
+      };
+    }
+
+    case 'UPDATE_KEYFRAME': {
+      const updatedKeyframes = state.videoComposition.keyframes.map((kf, i) =>
+        i === action.payload.index ? action.payload.keyframe : kf
+      ).sort((a, b) => a.time - b.time);
+      return {
+        ...state,
+        videoComposition: { ...state.videoComposition, keyframes: updatedKeyframes },
+      };
+    }
+
+    case 'REMOVE_KEYFRAME':
+      return {
+        ...state,
+        videoComposition: {
+          ...state.videoComposition,
+          keyframes: state.videoComposition.keyframes.filter((_, i) => i !== action.payload),
+        },
       };
 
     default:

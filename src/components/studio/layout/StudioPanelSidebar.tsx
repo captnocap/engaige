@@ -17,6 +17,9 @@ import { VideoIntentPanel } from '../panels/VideoIntentPanel.js';
 import { VideoStylePanel } from '../panels/VideoStylePanel.js';
 import { VideoTextPanel } from '../panels/VideoTextPanel.js';
 import { VideoPlatformPanel } from '../panels/VideoPlatformPanel.js';
+import { ModeSelector } from '../panels/ModeSelector.js';
+import { TunerPanel } from '../panels/TunerPanel.js';
+import { EnergyPanel } from '../panels/EnergyPanel.js';
 
 // ============================================================================
 // Panel Config Per Mode
@@ -43,7 +46,10 @@ const GENERATE_PANELS: PanelDef[] = [
 const VIDEO_PANELS: PanelDef[] = [
   { id: 'videoPlatform', title: 'Platform', component: VideoPlatformPanel },
   { id: 'videoIntent', title: 'Intent', component: VideoIntentPanel },
-  { id: 'videoStyle', title: 'Style', component: VideoStylePanel },
+  { id: 'videoMode', title: 'Visual Mode', component: ModeSelector },
+  { id: 'videoTuner', title: 'Tuner', component: TunerPanel, defaultCollapsed: true },
+  { id: 'videoEnergy', title: 'Energy', component: EnergyPanel },
+  { id: 'videoStyle', title: 'Overlay & Text Style', component: VideoStylePanel },
   { id: 'videoText', title: 'Text & Timing', component: VideoTextPanel },
 ];
 

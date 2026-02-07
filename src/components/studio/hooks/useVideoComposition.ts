@@ -9,7 +9,7 @@
 import { useMemo, useCallback, useRef, useEffect } from 'react';
 import { useStudio, type TextSegmentDraft, type VideoComposition } from '../StudioContext.js';
 import { useWSStore } from '../../../stores/wsStore.js';
-import { BASE_PRESETS, OVERLAY_PRESETS, TEXT_STYLE_PRESETS, INTENT_STYLE_SUGGESTIONS } from '../../ui/MediaRenderer/presets.js';
+import { OVERLAY_PRESETS, TEXT_STYLE_PRESETS, INTENT_STYLE_SUGGESTIONS } from '../../ui/MediaRenderer/presets.js';
 import type {
   RenderConfig,
   ContentIntent,
@@ -17,6 +17,7 @@ import type {
   AspectRatio,
   PlatformHint,
 } from '../../ui/MediaRenderer/types.js';
+import type { TunerParams, EnergyCurveType, Keyframe } from '../../../lib/genart/types.js';
 
 // ============================================================================
 // Platform Defaults
@@ -75,7 +76,17 @@ export function useVideoComposition() {
       duration: vc.duration,
       loop: vc.loop,
       layers: {
-        base: BASE_PRESETS[vc.basePreset],
+        base: {
+          type: 'genart',
+          config: {
+            mode: vc.mode,
+            tunerParams: vc.tunerParams,
+            energyCurve: vc.energyCurve,
+            bpm: vc.bpm,
+            pitch: vc.pitch,
+            keyframes: vc.keyframes.length > 0 ? vc.keyframes : undefined,
+          },
+        },
         overlay: OVERLAY_PRESETS[vc.overlayPreset].effects.length > 0
           ? OVERLAY_PRESETS[vc.overlayPreset]
           : undefined,
@@ -87,7 +98,7 @@ export function useVideoComposition() {
           : undefined,
       },
     };
-  }, [vc.segments, vc.basePreset, vc.overlayPreset, vc.textStylePreset, vc.duration, vc.loop, vc.platform, platformDefaults.aspect]);
+  }, [vc.segments, vc.mode, vc.tunerParams, vc.energyCurve, vc.bpm, vc.pitch, vc.keyframes, vc.overlayPreset, vc.textStylePreset, vc.duration, vc.loop, vc.platform, platformDefaults.aspect]);
 
   const contentIntent = useMemo((): ContentIntent => ({
     primary: vc.intent,
@@ -211,13 +222,48 @@ export function useVideoComposition() {
       dispatch({
         type: 'SET_VIDEO_COMPOSITION',
         payload: {
-          basePreset: suggestion.base,
           overlayPreset: suggestion.overlay,
           textStylePreset: suggestion.text,
         },
       });
     }
   }, [dispatch, vc.intent]);
+
+  // ---- GenArt setters ----
+
+  const setGenArtMode = useCallback((mode: string) => {
+    dispatch({ type: 'SET_GENART_MODE', payload: mode });
+  }, [dispatch]);
+
+  const setTunerParams = useCallback((params: Partial<TunerParams>) => {
+    dispatch({ type: 'SET_TUNER_PARAMS', payload: params });
+  }, [dispatch]);
+
+  const setEnergyCurve = useCallback((curve: EnergyCurveType) => {
+    dispatch({ type: 'SET_ENERGY_CURVE', payload: curve });
+  }, [dispatch]);
+
+  const setBPM = useCallback((bpm: number) => {
+    dispatch({ type: 'SET_BPM', payload: bpm });
+  }, [dispatch]);
+
+  const setPitch = useCallback((pitch: number) => {
+    dispatch({ type: 'SET_PITCH', payload: pitch });
+  }, [dispatch]);
+
+  // ---- Keyframe CRUD ----
+
+  const addKeyframe = useCallback((keyframe: Keyframe) => {
+    dispatch({ type: 'ADD_KEYFRAME', payload: keyframe });
+  }, [dispatch]);
+
+  const updateKeyframe = useCallback((index: number, keyframe: Keyframe) => {
+    dispatch({ type: 'UPDATE_KEYFRAME', payload: { index, keyframe } });
+  }, [dispatch]);
+
+  const removeKeyframe = useCallback((index: number) => {
+    dispatch({ type: 'REMOVE_KEYFRAME', payload: index });
+  }, [dispatch]);
 
   // ---- Publish ----
 
@@ -259,6 +305,18 @@ export function useVideoComposition() {
     setPlaying,
     setTime,
     togglePlayPause,
+
+    // GenArt setters
+    setGenArtMode,
+    setTunerParams,
+    setEnergyCurve,
+    setBPM,
+    setPitch,
+
+    // Keyframe CRUD
+    addKeyframe,
+    updateKeyframe,
+    removeKeyframe,
 
     // Segment CRUD
     addSegment,

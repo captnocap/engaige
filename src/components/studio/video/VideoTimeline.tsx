@@ -21,6 +21,7 @@ const COLORS = {
   base: '#4a6cf7',
   overlay: '#9b59b6',
   text: '#e67e22',
+  keyframe: '#2ecc71',
   playhead: '#ff0000',
   ruler: 'var(--studio-panel, #252525)',
   bg: 'var(--studio-bg-darkest, #1a1a1a)',
@@ -39,6 +40,8 @@ export function VideoTimeline() {
     setComposition,
     updateSegment,
     addSegment,
+    addKeyframe,
+    removeKeyframe,
   } = useVideoComposition();
 
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -151,6 +154,39 @@ export function VideoTimeline() {
             opacity: 0.7,
           }} />
         </LayerRow>
+
+        {/* Keyframe Track */}
+        {composition.keyframes.length > 0 && (
+          <LayerRow label="Keyframes" color={COLORS.keyframe}>
+            {composition.keyframes.map((kf, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: `calc(${timeToPercent(kf.time)}% - 5px)`,
+                  top: 4,
+                  width: 10,
+                  height: 10,
+                  background: COLORS.keyframe,
+                  transform: 'rotate(45deg)',
+                  borderRadius: 1,
+                  cursor: 'pointer',
+                  zIndex: 2,
+                }}
+                title={`Keyframe at ${kf.time.toFixed(1)}s`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTime(kf.time);
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  removeKeyframe(i);
+                }}
+              />
+            ))}
+          </LayerRow>
+        )}
 
         {/* Overlay Layer */}
         {showOverlay && (
