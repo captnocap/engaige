@@ -27,40 +27,49 @@ export function PaintCanvas({
 
   const getCtx = useCallback(() => canvasRef.current?.getContext('2d') ?? null, [canvasRef])
 
-  // Initialize canvas once container has valid dimensions
+  // Initialize canvas — retry until the container has real dimensions
   const initializedRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (initializedRef.current) return
     const canvas = canvasRef.current
-    const container = canvas?.parentElement
+    const container = containerRef.current
     if (!canvas || !container) return
 
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0]
-      if (!entry) return
-      const { width, height } = entry.contentRect
-      if (width < 1 || height < 1) return
-
-      if (!initializedRef.current) {
-        // First valid size — initialize canvas
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-
-        ctx.fillStyle = '#ffffff'
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-        historyRef.current = [ctx.getImageData(0, 0, canvas.width, canvas.height)]
-        historyIndexRef.current = 0
-        onHistoryChange()
-        initializedRef.current = true
+    const tryInit = () => {
+      if (initializedRef.current) return
+      const rect = container.getBoundingClientRect()
+      const w = Math.floor(rect.width)
+      const h = Math.floor(rect.height)
+      if (w < 1 || h < 1) {
+        requestAnimationFrame(tryInit)
+        return
       }
-    })
 
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [])
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, w, h)
+
+      // Sync preview canvas
+      const preview = previewCanvasRef.current
+      if (preview) {
+        preview.width = w
+        preview.height = h
+      }
+
+      historyRef.current = [ctx.getImageData(0, 0, w, h)]
+      historyIndexRef.current = 0
+      onHistoryChange()
+      initializedRef.current = true
+    }
+
+    requestAnimationFrame(tryInit)
+  })
 
   const saveToHistory = useCallback(() => {
     const ctx = getCtx()
@@ -286,7 +295,7 @@ export function PaintCanvas({
   const cursor = tool === 'eraser' ? 'cell' : tool === 'fill' ? 'crosshair' : tool === 'text' ? 'text' : 'crosshair'
 
   return (
-    <div className="flex-1 relative overflow-hidden bg-[#e5e5e5]" style={{ cursor }}>
+    <div ref={containerRef} className="flex-1 relative overflow-hidden bg-[#e5e5e5]" style={{ cursor }}>
       <canvas
         ref={canvasRef}
         onMouseDown={handleMouseDown}
