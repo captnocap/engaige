@@ -416,8 +416,10 @@ export const useConversationStore = create<ConversationState>()(
         if (ws.connected) {
           try {
             const conversations = await ws.request<void, Conversation[]>('conversations:list')
-            set({ conversations, isLoading: false })
-            return
+            if (Array.isArray(conversations)) {
+              set({ conversations, isLoading: false })
+              return
+            }
           } catch {
             console.warn('[Conversation] Failed to fetch from server, using mock data')
           }
@@ -573,8 +575,14 @@ async function simulateMessageSend(
 // Selectors
 // ============================================================================
 
+// Guard: persisted state may have conversations as non-array (corrupt localStorage)
+function ensureArray(conversations: unknown): Conversation[] {
+  return Array.isArray(conversations) ? conversations : []
+}
+
 export function useConversations(platform?: Conversation['platform']) {
-  const conversations = useConversationStore(state => state.conversations)
+  const raw = useConversationStore(state => state.conversations)
+  const conversations = ensureArray(raw)
 
   if (!platform) return conversations
   return conversations.filter(c => c.platform === platform && !c.isArchived)
@@ -582,7 +590,8 @@ export function useConversations(platform?: Conversation['platform']) {
 
 export function useActiveConversation() {
   const activeId = useConversationStore(state => state.activeConversationId)
-  const conversations = useConversationStore(state => state.conversations)
+  const raw = useConversationStore(state => state.conversations)
+  const conversations = ensureArray(raw)
 
   return activeId ? conversations.find(c => c.id === activeId) : null
 }
@@ -596,7 +605,8 @@ export function useConversationMessages(conversationId: string | null) {
 
 export function useTypingIndicator(conversationId: string | null) {
   const typingNpcs = useConversationStore(state => state.typingNpcs)
-  const conversations = useConversationStore(state => state.conversations)
+  const raw = useConversationStore(state => state.conversations)
+  const conversations = ensureArray(raw)
 
   if (!conversationId) return null
 
@@ -608,7 +618,8 @@ export function useTypingIndicator(conversationId: string | null) {
 }
 
 export function useTotalUnreadCount(platform?: Conversation['platform']) {
-  const conversations = useConversationStore(state => state.conversations)
+  const raw = useConversationStore(state => state.conversations)
+  const conversations = ensureArray(raw)
 
   return conversations
     .filter(c => !platform || c.platform === platform)
