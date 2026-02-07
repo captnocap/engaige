@@ -108,7 +108,7 @@ const TASKBAR_PRESETS: Record<OSType, TaskbarConfig> = {
     height: 48,
     showHub: true,
     hubPosition: 'left',
-    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    pinnedNPCIds: ['derek_observerson', 'mars_chen', 'trust_fall_tim'],
     showNPCStrip: true,
   },
   windows: {
@@ -116,7 +116,7 @@ const TASKBAR_PRESETS: Record<OSType, TaskbarConfig> = {
     height: 48,
     showHub: true,
     hubPosition: 'left',
-    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    pinnedNPCIds: ['derek_observerson', 'mars_chen', 'trust_fall_tim'],
     showNPCStrip: true,
   },
   linux: {
@@ -124,7 +124,7 @@ const TASKBAR_PRESETS: Record<OSType, TaskbarConfig> = {
     height: 48,
     showHub: true,
     hubPosition: 'left',
-    pinnedNPCIds: ['npc_sarah', 'npc_jake', 'npc_emily'],
+    pinnedNPCIds: ['derek_observerson', 'mars_chen', 'trust_fall_tim'],
     showNPCStrip: true,
   },
 }
@@ -201,21 +201,24 @@ export const useOSThemeStore = create<OSThemeState>()(
     },
     {
       name: 'os-theme-storage',
+      version: 2,
+      migrate: () => ({ overrideOS: null, pinnedNPCIds: ['derek_observerson', 'mars_chen', 'trust_fall_tim'] }),
       partialize: (state) => ({
         overrideOS: state.overrideOS,
         pinnedNPCIds: state.taskbar.pinnedNPCIds,
       }),
-      onRehydrate: (state) => () => {
-        // After rehydration, recalculate currentOS and configs
-        if (state) {
-          const effectiveOS = state.overrideOS || state.detectedOS
-          state.currentOS = effectiveOS
-          state.windowChrome = WINDOW_CHROME_PRESETS[effectiveOS]
-          state.taskbar = {
+      merge: (persisted, current) => {
+        const p = persisted as Partial<{ overrideOS: OSType | null; pinnedNPCIds: string[] }> | undefined
+        const effectiveOS = p?.overrideOS || current.detectedOS
+        return {
+          ...current,
+          overrideOS: p?.overrideOS ?? null,
+          currentOS: effectiveOS,
+          windowChrome: WINDOW_CHROME_PRESETS[effectiveOS],
+          taskbar: {
             ...TASKBAR_PRESETS[effectiveOS],
-            // Restore persisted pinned NPCs
-            pinnedNPCIds: (state as unknown as { pinnedNPCIds?: string[] }).pinnedNPCIds ?? [],
-          }
+            pinnedNPCIds: p?.pinnedNPCIds ?? current.taskbar.pinnedNPCIds,
+          },
         }
       },
     }
