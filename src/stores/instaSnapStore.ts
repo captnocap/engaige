@@ -8,6 +8,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SocialProfile } from './socialStore.js'
+import { useWSStore } from './wsStore.js'
+import { useNPCStore } from './npcStore.js'
 
 // ============================================================================
 // Types
@@ -73,133 +75,40 @@ interface InstaSnapState {
   getTrendingHashtags: (limit?: number) => TrendingHashtag[]
   searchByHashtag: (tag: string) => string[] // Returns post IDs
 
-  // Mock data initialization
-  initialize: () => void
+  // Server data initialization
+  initialize: () => Promise<void>
 }
 
 // ============================================================================
-// Mock Data
+// Helpers
 // ============================================================================
 
-const MOCK_PROFILES: Record<string, SocialProfile> = {
-  'npc_sarah': {
-    id: 'npc_sarah',
-    name: 'Sarah',
-    username: 'sarah.bear',
-    avatar: '👧',
-  },
-  'npc_jake': {
-    id: 'npc_jake',
-    name: 'Jake',
-    username: 'jake_the_snake',
-    avatar: '🧑',
-  },
-  'npc_emily': {
-    id: 'npc_emily',
-    name: 'Emily',
-    username: 'emily.melody',
-    avatar: '👩',
-  },
-  'npc_luna': {
-    id: 'npc_luna',
-    name: 'Luna',
-    username: 'lunastardust',
-    avatar: '🌙',
-  },
-  'npc_alex': {
-    id: 'npc_alex',
-    name: 'Alex',
-    username: 'alex.wonders',
-    avatar: '🧑‍🎤',
-  },
+/** Map a server story to the client InstaSnapStory shape */
+function serverToClientStory(s: any): InstaSnapStory {
+  const npc = useNPCStore.getState().getNPC(s.author_id)
+  const author: SocialProfile = npc
+    ? { id: npc.id, name: npc.name, username: npc.username, avatar: npc.avatar }
+    : { id: s.author_id, name: s.author_id, username: s.author_id, avatar: '\u{1F464}' }
+
+  return {
+    id: s.id,
+    authorId: s.author_id,
+    authorType: s.author_type || 'npc',
+    author,
+    mediaUrl: s.media_url,
+    mediaType: s.media_type || 'image',
+    caption: s.caption || undefined,
+    filterApplied: s.filter_applied || undefined,
+    createdAt: typeof s.created_at === 'number'
+      ? new Date(s.created_at * 1000).toISOString()
+      : s.created_at,
+    expiresAt: typeof s.expires_at === 'number'
+      ? new Date(s.expires_at * 1000).toISOString()
+      : s.expires_at,
+    viewCount: s.view_count || 0,
+    viewedBy: [],
+  }
 }
-
-const createMockStories = (): InstaSnapStory[] => {
-  const now = Date.now()
-  const HOUR = 60 * 60 * 1000
-  const DAY = 24 * HOUR
-
-  return [
-    {
-      id: 'story_1',
-      authorId: 'npc_sarah',
-      authorType: 'npc',
-      author: MOCK_PROFILES['npc_sarah'],
-      mediaUrl: 'https://picsum.photos/seed/sarah1/400/700',
-      mediaType: 'image',
-      caption: 'golden hour vibes ✨',
-      createdAt: new Date(now - 2 * HOUR).toISOString(),
-      expiresAt: new Date(now + 22 * HOUR).toISOString(),
-      viewCount: 42,
-      viewedBy: ['npc_jake', 'npc_emily'],
-    },
-    {
-      id: 'story_2',
-      authorId: 'npc_sarah',
-      authorType: 'npc',
-      author: MOCK_PROFILES['npc_sarah'],
-      mediaUrl: 'https://picsum.photos/seed/sarah2/400/700',
-      mediaType: 'image',
-      caption: 'coffee break ☕',
-      createdAt: new Date(now - 1 * HOUR).toISOString(),
-      expiresAt: new Date(now + 23 * HOUR).toISOString(),
-      viewCount: 28,
-      viewedBy: ['npc_emily'],
-    },
-    {
-      id: 'story_3',
-      authorId: 'npc_luna',
-      authorType: 'npc',
-      author: MOCK_PROFILES['npc_luna'],
-      mediaUrl: 'https://picsum.photos/seed/luna1/400/700',
-      mediaType: 'image',
-      caption: 'crystals charged under the full moon 🔮',
-      createdAt: new Date(now - 5 * HOUR).toISOString(),
-      expiresAt: new Date(now + 19 * HOUR).toISOString(),
-      viewCount: 89,
-      viewedBy: ['npc_sarah', 'npc_emily', 'npc_alex'],
-    },
-    {
-      id: 'story_4',
-      authorId: 'npc_jake',
-      authorType: 'npc',
-      author: MOCK_PROFILES['npc_jake'],
-      mediaUrl: 'https://picsum.photos/seed/jake1/400/700',
-      mediaType: 'image',
-      caption: 'new trick landed 🛹',
-      createdAt: new Date(now - 8 * HOUR).toISOString(),
-      expiresAt: new Date(now + 16 * HOUR).toISOString(),
-      viewCount: 156,
-      viewedBy: ['npc_sarah', 'npc_mike'],
-    },
-    {
-      id: 'story_5',
-      authorId: 'npc_emily',
-      authorType: 'npc',
-      author: MOCK_PROFILES['npc_emily'],
-      mediaUrl: 'https://picsum.photos/seed/emily1/400/700',
-      mediaType: 'image',
-      caption: 'studio session 🎵',
-      createdAt: new Date(now - 3 * HOUR).toISOString(),
-      expiresAt: new Date(now + 21 * HOUR).toISOString(),
-      viewCount: 67,
-      viewedBy: ['npc_sarah', 'npc_alex'],
-    },
-  ]
-}
-
-const MOCK_HASHTAGS: TrendingHashtag[] = [
-  { tag: 'photography', usageCount: 234, trendingScore: 0.95 },
-  { tag: 'sunset', usageCount: 189, trendingScore: 0.88 },
-  { tag: 'foodie', usageCount: 167, trendingScore: 0.82 },
-  { tag: 'travel', usageCount: 156, trendingScore: 0.79 },
-  { tag: 'aesthetic', usageCount: 143, trendingScore: 0.75 },
-  { tag: 'vibes', usageCount: 128, trendingScore: 0.71 },
-  { tag: 'coffee', usageCount: 112, trendingScore: 0.68 },
-  { tag: 'nature', usageCount: 98, trendingScore: 0.64 },
-  { tag: 'music', usageCount: 87, trendingScore: 0.60 },
-  { tag: 'art', usageCount: 76, trendingScore: 0.56 },
-]
 
 // ============================================================================
 // Store Implementation
@@ -213,14 +122,21 @@ export const useInstaSnapStore = create<InstaSnapState>()(
       trendingHashtags: [],
       viewedStoryIds: [],
 
-      initialize: () => {
+      initialize: async () => {
         const { stories } = get()
-        if (stories.length > 0) return // Already initialized
+        if (stories.length > 0) return // Already populated
 
-        set({
-          stories: createMockStories(),
-          trendingHashtags: MOCK_HASHTAGS,
-        })
+        try {
+          const { request, connected } = useWSStore.getState()
+          if (!connected) return
+
+          const result = await request<any, { stories: any[] }>('instasnap:getStories', {})
+          if (result?.stories && result.stories.length > 0) {
+            set({ stories: result.stories.map(serverToClientStory) })
+          }
+        } catch (err) {
+          console.warn('[InstaSnap] Server fetch failed, store will remain empty:', err)
+        }
       },
 
       // ========================================================================
@@ -375,6 +291,8 @@ export const useInstaSnapStore = create<InstaSnapState>()(
     }),
     {
       name: 'engaige-instasnap',
+      version: 2,
+      migrate: () => ({ stories: [], savedPosts: [], trendingHashtags: [], viewedStoryIds: [] }),
       partialize: (state) => ({
         stories: state.stories,
         savedPosts: state.savedPosts,

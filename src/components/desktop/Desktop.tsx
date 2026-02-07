@@ -11,6 +11,7 @@ import { useSettingsStore, type IconPosition } from '../../stores/settingsStore.
 import { ICON_SIZE, TASKBAR_RESERVE, getDefaultIconPosition, reflowIcons, normalizedToPixel, pixelToNormalized, getBreakpointKey } from './iconReflow.js'
 import { useAwarenessStore } from '../../stores/awarenessStore.js'
 import { useSocialStore } from '../../stores/socialStore.js'
+import { useNPCStore } from '../../stores/npcStore.js'
 import { FilesWindow } from './FilesWindow'
 import { SettingsWindow } from './SettingsWindow'
 import { WalletWindow } from './WalletWindow'
@@ -151,10 +152,11 @@ export function Desktop() {
   // Initialize drama automation stores
   useEffect(() => {
     if (onboardingCompleted) {
-      console.log('[Desktop] Initializing drama automation stores...')
+      console.log('[Desktop] Initializing stores...')
+      useNPCStore.getState().initialize()
       useAwarenessStore.getState().initialize()
       useSocialStore.getState().initialize()
-      console.log('[Desktop] Drama automation stores initialized')
+      console.log('[Desktop] Stores initialized')
     }
   }, [onboardingCompleted])
 

@@ -7,8 +7,9 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { MessageData, MessageAuthor } from '../components/ui/Message'
+import type { MessageData } from '../components/ui/Message'
 import { useWSStore } from './wsStore.js'
+import { useNPCStore } from './npcStore.js'
 
 // ============================================================================
 // Types
@@ -58,92 +59,6 @@ interface WSMessageStatusUpdate {
   conversationId: string
   messageId: string
   status: 'sent' | 'delivered' | 'read'
-}
-
-// ============================================================================
-// Mock Data
-// ============================================================================
-
-const MOCK_PLAYER: MessageAuthor = {
-  id: 'player',
-  name: 'You',
-  avatar: undefined,
-}
-
-const MOCK_NPCS: ConversationParticipant[] = [
-  { id: 'npc_sarah', name: 'Sarah', avatar: '👧', isOnline: true },
-  { id: 'npc_jake', name: 'Jake', avatar: '🧑', isOnline: false },
-  { id: 'npc_emily', name: 'Emily', avatar: '👩', isOnline: true },
-  { id: 'npc_marcus', name: 'Marcus', avatar: '👨', isOnline: false },
-  { id: 'npc_luna', name: 'Luna', avatar: '👩‍🎤', isOnline: true },
-]
-
-function createMockConversations(): Conversation[] {
-  return MOCK_NPCS.map((npc, i) => ({
-    id: `conv_${npc.id}`,
-    platform: 'messages' as const,
-    participants: [npc],
-    lastMessage: {
-      id: `msg_last_${i}`,
-      content: getRandomLastMessage(i),
-      timestamp: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
-      senderId: i % 2 === 0 ? npc.id : 'player',
-    },
-    unreadCount: i % 3 === 0 ? Math.floor(Math.random() * 5) + 1 : 0,
-    isPinned: i === 0,
-    createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
-  }))
-}
-
-function getRandomLastMessage(seed: number): string {
-  const messages = [
-    'Hey! How are you doing?',
-    'That sounds great!',
-    'Let me know what you think',
-    'haha yeah totally',
-    'See you later!',
-  ]
-  return messages[seed % messages.length]
-}
-
-function createMockMessages(conversationId: string): MessageData[] {
-  const npcId = conversationId.replace('conv_', '')
-  const npc = MOCK_NPCS.find(n => n.id === npcId) || MOCK_NPCS[0]
-
-  const messages: MessageData[] = []
-  const now = Date.now()
-
-  // Generate a conversation history
-  const exchanges = [
-    { sender: npc.id, content: `Hey there! 👋` },
-    { sender: 'player', content: `Hi ${npc.name}! How's it going?` },
-    { sender: npc.id, content: `Pretty good! Just been busy with work lately. You?` },
-    { sender: 'player', content: `Same here. Been trying to find time to relax.` },
-    { sender: npc.id, content: `I feel that. We should hang out sometime!` },
-    { sender: 'player', content: `Definitely! What did you have in mind?` },
-    { sender: npc.id, content: `Maybe grab coffee this weekend? ☕` },
-    { sender: 'player', content: `That sounds perfect. Saturday work for you?` },
-    { sender: npc.id, content: `Saturday is great! Let's do it 😊` },
-  ]
-
-  exchanges.forEach((exchange, i) => {
-    const isOwn = exchange.sender === 'player'
-    messages.push({
-      id: `msg_${conversationId}_${i}`,
-      author: isOwn ? MOCK_PLAYER : {
-        id: npc.id,
-        name: npc.name,
-        avatar: npc.avatar,
-        isOnline: npc.isOnline,
-      },
-      content: exchange.content,
-      timestamp: new Date(now - (exchanges.length - i) * 5 * 60 * 1000).toISOString(),
-      status: isOwn ? 'read' : undefined,
-    })
-  })
-
-  return messages
 }
 
 // ============================================================================
@@ -222,16 +137,7 @@ export const useConversationStore = create<ConversationState>()(
       },
 
       getMessages: (conversationId) => {
-        const { messages } = get()
-
-        // Return existing messages or generate mock ones
-        // Note: Don't call set() here - it causes "Cannot update while rendering" errors
-        // Mock messages are regenerated each call, but that's fine for demo data
-        if (!messages[conversationId]) {
-          return createMockMessages(conversationId)
-        }
-
-        return messages[conversationId] || []
+        return get().messages[conversationId] || []
       },
 
       sendMessage: async (conversationId, content) => {
@@ -241,7 +147,7 @@ export const useConversationStore = create<ConversationState>()(
 
         const newMessage: MessageData = {
           id: `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-          author: MOCK_PLAYER,
+          author: { id: 'player', name: 'You' },
           content: content.trim(),
           timestamp: new Date().toISOString(),
           status: 'sending',
@@ -256,6 +162,7 @@ export const useConversationStore = create<ConversationState>()(
         }))
 
         // Update conversation's last message
+        const ts = newMessage.timestamp as string
         set(state => ({
           conversations: state.conversations.map(c =>
             c.id === conversationId
@@ -264,16 +171,16 @@ export const useConversationStore = create<ConversationState>()(
                   lastMessage: {
                     id: newMessage.id,
                     content: newMessage.content,
-                    timestamp: newMessage.timestamp,
+                    timestamp: ts,
                     senderId: 'player',
                   },
-                  updatedAt: newMessage.timestamp,
+                  updatedAt: ts,
                 }
               : c
           )
         }))
 
-        // Try to send via WebSocket
+        // Send via WebSocket
         const ws = useWSStore.getState()
         if (ws.connected) {
           try {
@@ -282,15 +189,17 @@ export const useConversationStore = create<ConversationState>()(
               content: content.trim(),
               clientMessageId: newMessage.id,
             })
-            // Server will send back status updates via WS
           } catch {
-            // If WS fails, fall back to local simulation
-            console.warn('[Conversation] WS send failed, using local simulation')
-            await simulateMessageSend(conversationId, newMessage.id, get, set)
+            console.warn('[Conversation] WS send failed, marking as failed')
+            set(state => ({
+              messages: {
+                ...state.messages,
+                [conversationId]: state.messages[conversationId]?.map(m =>
+                  m.id === newMessage.id ? { ...m, status: 'sent' } : m
+                ) || []
+              }
+            }))
           }
-        } else {
-          // No WS connection, use local simulation
-          await simulateMessageSend(conversationId, newMessage.id, get, set)
         }
 
         set({ isSending: false })
@@ -313,8 +222,15 @@ export const useConversationStore = create<ConversationState>()(
       createConversation: async (platform, participantIds) => {
         const id = `conv_${Date.now()}`
 
-        // For now, use mock participants
-        const participants = MOCK_NPCS.filter(n => participantIds.includes(n.id))
+        // Look up participants from the NPC store
+        const npcStore = useNPCStore.getState()
+        const participants: ConversationParticipant[] = []
+        for (const pid of participantIds) {
+          const npc = npcStore.getNPC(pid)
+          if (npc) {
+            participants.push({ id: npc.id, name: npc.name, avatar: npc.avatar, isOnline: npcStore.isNPCOnline(pid) })
+          }
+        }
 
         const newConversation: Conversation = {
           id,
@@ -421,16 +337,12 @@ export const useConversationStore = create<ConversationState>()(
               return
             }
           } catch {
-            console.warn('[Conversation] Failed to fetch from server, using mock data')
+            console.warn('[Conversation] Server fetch failed, store will remain empty')
           }
         }
 
-        // Fall back to mock data
-        const mockConversations = createMockConversations()
-        set({
-          conversations: mockConversations,
-          isLoading: false,
-        })
+        // No server data available -- store stays empty
+        set({ isLoading: false })
       },
 
       setupWSSubscriptions: () => {
@@ -478,8 +390,9 @@ export const useConversationStore = create<ConversationState>()(
     }),
     {
       name: 'engaige-conversations',
+      version: 2,
+      migrate: () => ({ conversations: [], messages: {} }),
       partialize: (state) => ({
-        // Only persist essential data, not UI state
         conversations: state.conversations,
         messages: state.messages,
       }),
@@ -496,90 +409,6 @@ export const useConversationStore = create<ConversationState>()(
     }
   )
 )
-
-// ============================================================================
-// Helper: Simulate message send (used when WS is not available)
-// ============================================================================
-
-async function simulateMessageSend(
-  conversationId: string,
-  messageId: string,
-  get: () => ConversationState,
-  set: (partial: Partial<ConversationState> | ((state: ConversationState) => Partial<ConversationState>)) => void
-) {
-  // Simulate send delay and mark as sent
-  await new Promise(resolve => setTimeout(resolve, 300))
-
-  set(state => ({
-    messages: {
-      ...state.messages,
-      [conversationId]: state.messages[conversationId]?.map(m =>
-        m.id === messageId ? { ...m, status: 'sent' } : m
-      ) || []
-    }
-  }))
-
-  // Simulate delivery
-  await new Promise(resolve => setTimeout(resolve, 500))
-
-  set(state => ({
-    messages: {
-      ...state.messages,
-      [conversationId]: state.messages[conversationId]?.map(m =>
-        m.id === messageId ? { ...m, status: 'delivered' } : m
-      ) || []
-    }
-  }))
-
-  // Simulate NPC reading
-  await new Promise(resolve => setTimeout(resolve, 1000))
-
-  set(state => ({
-    messages: {
-      ...state.messages,
-      [conversationId]: state.messages[conversationId]?.map(m =>
-        m.id === messageId ? { ...m, status: 'read' } : m
-      ) || []
-    }
-  }))
-
-  // Simulate NPC response after a delay
-  const conversation = get().conversations.find(c => c.id === conversationId)
-  if (conversation) {
-    // Show typing indicator
-    const npc = conversation.participants[0]
-    set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: true } }))
-
-    // Simulate typing delay (1-3 seconds)
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
-
-    // Hide typing indicator
-    set(state => ({ typingNpcs: { ...state.typingNpcs, [npc.id]: false } }))
-
-    // Add NPC response
-    const responses = [
-      'That\'s interesting!',
-      'I see what you mean.',
-      'Haha, right?',
-      'Sounds good to me!',
-      'Let me think about that...',
-    ]
-
-    const npcResponse: MessageData = {
-      id: `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      author: {
-        id: npc.id,
-        name: npc.name,
-        avatar: npc.avatar,
-        isOnline: npc.isOnline,
-      },
-      content: responses[Math.floor(Math.random() * responses.length)],
-      timestamp: new Date().toISOString(),
-    }
-
-    get().handleIncomingMessage(conversationId, npcResponse)
-  }
-}
 
 // ============================================================================
 // Selectors

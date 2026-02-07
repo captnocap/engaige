@@ -17,6 +17,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useSocialStore, type Post } from './socialStore.js'
+import { useWSStore } from './wsStore.js'
 
 // ============================================================================
 // Types
@@ -71,8 +72,8 @@ interface AwarenessState {
   // Actions
   // ========================================================================
 
-  // Initialize with default habits for preset NPCs
-  initialize: () => void
+  // Initialize from server
+  initialize: () => Promise<void>
 
   // Update when an NPC checks social media
   npcChecksSocialMedia: (npcId: string, platform: string) => Post[]
@@ -83,83 +84,6 @@ interface AwarenessState {
   // Update NPC habits
   setHabits: (npcId: string, habits: Partial<NPCSocialHabits>) => void
 }
-
-// ============================================================================
-// Default NPC Social Habits
-// ============================================================================
-
-const DEFAULT_NPC_HABITS: NPCSocialHabits[] = [
-  {
-    npcId: 'sarah',
-    platforms: ['myface', 'chirp', 'instasnap'],
-    checkFrequencyHours: 1,  // Very active - checks hourly
-    batchSize: 15,
-    activeHoursStart: 8,
-    activeHoursEnd: 23,
-    traits: {
-      isHeavyScroller: true,
-      checksNotifications: true,
-      lateNightScroller: false,
-      reactsOften: true,
-    },
-  },
-  {
-    npcId: 'jake',
-    platforms: ['myface', 'chirp'],
-    checkFrequencyHours: 4,  // Casual user - every 4 hours
-    batchSize: 5,
-    activeHoursStart: 10,
-    activeHoursEnd: 22,
-    traits: {
-      isHeavyScroller: false,
-      checksNotifications: false,
-      lateNightScroller: false,
-      reactsOften: false,
-    },
-  },
-  {
-    npcId: 'emily',
-    platforms: ['myface', 'instasnap'],
-    checkFrequencyHours: 2,
-    batchSize: 10,
-    activeHoursStart: 9,
-    activeHoursEnd: 24,  // 24 = midnight
-    traits: {
-      isHeavyScroller: true,
-      checksNotifications: true,
-      lateNightScroller: true,
-      reactsOften: true,
-    },
-  },
-  {
-    npcId: 'marcus',
-    platforms: ['myface', 'chirp'],
-    checkFrequencyHours: 6,  // Sporadic - checks late at night
-    batchSize: 8,
-    activeHoursStart: 20,  // 8pm
-    activeHoursEnd: 3,     // 3am
-    traits: {
-      isHeavyScroller: false,
-      checksNotifications: false,
-      lateNightScroller: true,
-      reactsOften: false,
-    },
-  },
-  {
-    npcId: 'luna',
-    platforms: ['instasnap', 'myface'],
-    checkFrequencyHours: 3,
-    batchSize: 12,
-    activeHoursStart: 7,
-    activeHoursEnd: 21,
-    traits: {
-      isHeavyScroller: true,
-      checksNotifications: true,
-      lateNightScroller: false,
-      reactsOften: true,
-    },
-  },
-]
 
 // ============================================================================
 // Store Implementation
@@ -244,11 +168,21 @@ export const useAwarenessStore = create<AwarenessState>()(
       // Actions
       // ========================================================================
 
-      initialize: () => {
+      initialize: async () => {
         const { habits } = get()
-        if (habits.length > 0) return // Already initialized
+        if (habits.length > 0) return // Already populated
 
-        set({ habits: DEFAULT_NPC_HABITS })
+        try {
+          const { request, connected } = useWSStore.getState()
+          if (!connected) return
+
+          const result = await request<any, { habits: NPCSocialHabits[] }>('awareness:getAllHabits', {})
+          if (result?.habits && result.habits.length > 0) {
+            set({ habits: result.habits })
+          }
+        } catch (err) {
+          console.warn('[Awareness] Server fetch failed, store will remain empty:', err)
+        }
       },
 
       npcChecksSocialMedia: (npcId, platform) => {
@@ -331,6 +265,8 @@ export const useAwarenessStore = create<AwarenessState>()(
     }),
     {
       name: 'engaige-awareness',
+      version: 2,
+      migrate: () => ({ lastChecked: [], habits: [] }),
       partialize: (state) => ({
         lastChecked: state.lastChecked,
         habits: state.habits,

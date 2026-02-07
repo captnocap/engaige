@@ -140,7 +140,7 @@ export interface NPC {
 }
 
 // ============================================================================
-// NPC Templates
+// Defaults & Mapping
 // ============================================================================
 
 const DEFAULT_PERSONALITY: NPCPersonality = {
@@ -158,320 +158,104 @@ const DEFAULT_PERSONALITY: NPCPersonality = {
   allCaps: false,
 }
 
-// Predefined NPCs for development/demo
-const PRESET_NPCS: Omit<NPC, 'relationship' | 'createdAt'>[] = [
-  {
-    id: 'npc_sarah',
-    name: 'Sarah',
-    username: 'xX_SarahBear_Xx',
-    avatar: '👧',
-    age: 24,
-    gender: 'female',
-    pronouns: 'she/her',
-    bio: '✨ living my best life ✨ photography | coffee | adventures',
-    occupation: 'Photographer',
-    location: 'Los Angeles, CA',
-    interests: ['photography', 'coffee', 'hiking', 'music', 'travel'],
-    music: 'currently obsessed with indie pop',
-    personality: {
-      ...DEFAULT_PERSONALITY,
-      extraversion: 75,
-      openness: 80,
-      emojiUsage: 'heavy',
-      verbosity: 'medium',
-    },
-    apps: [
-      { appId: 'myface', username: 'xX_SarahBear_Xx', isActive: true, joinedAt: '2023-01-15' },
-      { appId: 'myface-chat', username: 'xX_SarahBear_Xx', isActive: true, joinedAt: '2023-01-15' },
-      { appId: 'instasnap', username: 'sarahsnaps', isActive: true, joinedAt: '2023-03-20' },
-      { appId: 'chirp', username: 'sarahbear', isActive: true, joinedAt: '2023-02-10' },
-      { appId: 'messages', username: 'sarah', isActive: true, joinedAt: '2024-01-01' },
-    ],
-    datingProfiles: [
-      {
-        siteId: 'spark',
-        bio: 'Looking for someone to explore the world with 🌎 Let\'s grab coffee and see where it goes!',
-        photos: ['👧', '📸', '☕', '🏔️'],
-        lookingFor: 'Something real, no games',
-        promptAnswers: [
-          { prompt: "A perfect first date is...", answer: "Coffee and a spontaneous adventure!" },
-          { prompt: "I'm looking for...", answer: "Someone who makes me laugh and isn't afraid of trying new things" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-      {
-        siteId: 'myface-dating',
-        bio: 'Your friendly neighborhood photographer ✨ Swipe right if you appreciate golden hour!',
-        photos: ['👧', '📸'],
-        lookingFor: 'Connection and good vibes',
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-    ],
+/**
+ * Map a server NPC (from npc:getAll) to the client NPC shape.
+ * The server returns snake_case DB fields; the client expects camelCase with
+ * nested sub-objects for personality, relationship, apps, etc.
+ */
+function serverToClientNPC(s: any): NPC {
+  // Parse personality from personality_traits + communication_quirks
+  const traits = s.personality_traits || {}
+  const comms = s.communication_quirks || {}
+  const flags = s.personality_flags || {}
+
+  const verbosityMap: Record<string, NPCPersonality['verbosity']> = {
+    terse: 'short', average: 'medium', verbose: 'long',
+  }
+  const emojiMap: Record<string, NPCPersonality['emojiUsage']> = {
+    none: 'none', light: 'minimal', moderate: 'moderate', heavy: 'heavy',
+  }
+  const formalityMap: Record<string, NPCPersonality['formality']> = {
+    casual: 'casual', neutral: 'normal', formal: 'formal',
+  }
+
+  const personality: NPCPersonality = {
+    openness: Math.round((traits.openness ?? 0.5) * 100),
+    conscientiousness: Math.round((traits.conscientiousness ?? 0.5) * 100),
+    extraversion: Math.round((traits.warmth ?? 0.5) * 100), // warmth as proxy
+    agreeableness: Math.round((traits.agreeableness ?? 0.5) * 100),
+    neuroticism: Math.round((traits.neuroticism ?? 0.5) * 100),
+    verbosity: verbosityMap[comms.verbosity] || 'medium',
+    emojiUsage: emojiMap[comms.emoji_usage] || 'moderate',
+    formality: formalityMap[comms.formality] || 'casual',
+    sarcasm: flags.is_sarcastic ? 'heavy' : 'none',
+    typos: false,
+    slang: (comms.formality || 'casual') === 'casual',
+    allCaps: false,
+  }
+
+  // Build app presence from social_media_handles
+  const handles: Record<string, string> = s.social_media_handles || {}
+  const joinedAt = s.created_at
+    ? new Date(s.created_at * 1000).toISOString()
+    : new Date().toISOString()
+
+  const apps: NPCAppPresence[] = Object.entries(handles).map(([platform, handle]) => ({
+    appId: platform,
+    username: handle as string,
+    isActive: true,
+    joinedAt,
+  }))
+  // Ensure messages + myface-chat entries if they have myface
+  if (handles.myface && !apps.some(a => a.appId === 'myface-chat')) {
+    apps.push({ appId: 'myface-chat', username: handles.myface, isActive: true, joinedAt })
+  }
+  if (!apps.some(a => a.appId === 'messages')) {
+    apps.push({ appId: 'messages', username: s.username, isActive: true, joinedAt })
+  }
+
+  // Parse active hours from behavior_flags
+  const bf = s.behavior_flags || {}
+  const [startHour, endHour] = (bf.active_hours || '8-22').split('-').map(Number)
+
+  // Derive pronouns from gender
+  const pronounsMap: Record<string, string> = {
+    female: 'she/her', male: 'he/him', nonbinary: 'they/them',
+  }
+
+  return {
+    id: s.id,
+    name: s.display_name || s.username,
+    username: s.username,
+    avatar: s.avatar_url || '\u{1F464}',
+    age: s.age || 25,
+    gender: s.gender === 'nonbinary' ? 'non-binary' : (s.gender || 'other') as NPC['gender'],
+    pronouns: pronounsMap[s.gender] || 'they/them',
+    bio: s.bio || '',
+    occupation: s.occupation || '',
+    location: s.location || '',
+    interests: s.interests || [],
+    music: '',
+    personality,
+    relationship: createDefaultRelationship(),
+    apps,
+    datingProfiles: [],
     relationshipStatus: 'single',
-    profileCustomization: {
-      backgroundColor: '#FFE4E1',
-      textColor: '#8B4513',
+    activeHours: {
+      start: isNaN(startHour) ? 8 : startHour,
+      end: isNaN(endHour) ? 22 : endHour,
+      timezone: 'America/New_York',
     },
-    activeHours: { start: 8, end: 23, timezone: 'America/Los_Angeles' },
     flags: {
-      canInitiateConversations: true,
-      canPostFreely: true,
-      canSendImages: true,
+      canInitiateConversations: bf.can_initiate_conversations ?? true,
+      canPostFreely: bf.is_enabled_to_post_freely ?? true,
+      canSendImages: bf.can_send_images ?? false,
       isActiveHoursAware: true,
     },
+    createdAt: joinedAt,
     isGenerated: false,
-  },
-  {
-    id: 'npc_jake',
-    name: 'Jake',
-    username: 'JakeTheSnake99',
-    avatar: '🧑',
-    age: 26,
-    gender: 'male',
-    pronouns: 'he/him',
-    bio: 'gamer | skater | pizza enthusiast 🍕',
-    occupation: 'Game Developer',
-    location: 'Austin, TX',
-    interests: ['gaming', 'skateboarding', 'music', 'pizza', 'coding'],
-    music: 'punk rock forever',
-    personality: {
-      ...DEFAULT_PERSONALITY,
-      extraversion: 45,
-      agreeableness: 70,
-      verbosity: 'short',
-      emojiUsage: 'minimal',
-      slang: true,
-    },
-    apps: [
-      { appId: 'myface', username: 'JakeTheSnake99', isActive: true, joinedAt: '2022-06-01' },
-      { appId: 'myface-chat', username: 'JakeTheSnake99', isActive: true, joinedAt: '2022-06-01' },
-      { appId: 'chirp', username: 'jakesnake', isActive: true, joinedAt: '2022-08-15' },
-    ],
-    datingProfiles: [
-      {
-        siteId: 'spark',
-        bio: 'Chill dude looking for someone to game with and get pizza 🍕🎮',
-        photos: ['🧑', '🎮', '🛹'],
-        lookingFor: 'Someone laid back who doesn\'t take life too seriously',
-        promptAnswers: [
-          { prompt: "My ideal Sunday is...", answer: "Gaming marathon followed by pizza delivery" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-      {
-        siteId: 'gamercrush',
-        bio: 'Looking for player 2 🎮 I main support but can flex',
-        photos: ['🧑', '🎮'],
-        lookingFor: 'Someone to duo queue with IRL',
-        promptAnswers: [
-          { prompt: "What game are you playing right now?", answer: "Probably Elden Ring for the 5th time" },
-          { prompt: "Console, PC, or both?", answer: "PC master race but I won't judge" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-    ],
-    relationshipStatus: 'single',
-    profileCustomization: {
-      backgroundColor: '#2F4F4F',
-      textColor: '#00FF00',
-    },
-    activeHours: { start: 12, end: 3, timezone: 'America/Chicago' }, // Night owl
-    flags: {
-      canInitiateConversations: true,
-      canPostFreely: true,
-      canSendImages: false,
-      isActiveHoursAware: true,
-    },
-    isGenerated: false,
-  },
-  {
-    id: 'npc_emily',
-    name: 'Emily',
-    username: 'EmilyMelody',
-    avatar: '👩',
-    age: 23,
-    gender: 'female',
-    pronouns: 'she/her',
-    bio: '🎵 singer/songwriter | dreamer | cat mom 🐱',
-    occupation: 'Musician',
-    location: 'Nashville, TN',
-    interests: ['music', 'songwriting', 'cats', 'poetry', 'concerts'],
-    music: 'check out my new song on my profile!',
-    personality: {
-      ...DEFAULT_PERSONALITY,
-      openness: 90,
-      agreeableness: 85,
-      neuroticism: 60,
-      verbosity: 'long',
-      emojiUsage: 'moderate',
-      formality: 'casual',
-    },
-    apps: [
-      { appId: 'myface', username: 'EmilyMelody', isActive: true, joinedAt: '2021-09-01' },
-      { appId: 'myface-chat', username: 'EmilyMelody', isActive: true, joinedAt: '2021-09-01' },
-      { appId: 'instasnap', username: 'emilymelody', isActive: true, joinedAt: '2022-01-10' },
-      { appId: 'chirp', username: 'emilymelody', isActive: true, joinedAt: '2022-03-05' },
-      { appId: 'messages', username: 'emily', isActive: true, joinedAt: '2024-01-01' },
-    ],
-    datingProfiles: [
-      {
-        siteId: 'spark',
-        bio: 'Songwriter looking for my muse 🎵 Let me write a song about you',
-        photos: ['👩', '🎵', '🎸', '🐱'],
-        lookingFor: 'A deep connection and late night conversations',
-        promptAnswers: [
-          { prompt: "The way to my heart is...", answer: "Through music, poetry, or really good tacos" },
-          { prompt: "I'm looking for...", answer: "Someone who appreciates the little moments" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-      {
-        siteId: 'myface-dating',
-        bio: 'Dreamer with a guitar and too many cats 🎸🐱',
-        photos: ['👩', '🎵'],
-        lookingFor: 'My person',
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-    ],
-    relationshipStatus: 'single',
-    profileCustomization: {
-      backgroundColor: '#E6E6FA',
-      textColor: '#4B0082',
-      profileSong: 'Dreamer - Emily',
-    },
-    activeHours: { start: 10, end: 1, timezone: 'America/Chicago' },
-    flags: {
-      canInitiateConversations: true,
-      canPostFreely: true,
-      canSendImages: true,
-      isActiveHoursAware: false,
-    },
-    isGenerated: false,
-  },
-  {
-    id: 'npc_marcus',
-    name: 'Marcus',
-    username: 'MikeD_Beats',
-    avatar: '👨',
-    age: 28,
-    gender: 'male',
-    pronouns: 'he/him',
-    bio: 'DJ | Producer | Night owl 🦉',
-    occupation: 'DJ / Producer',
-    location: 'Miami, FL',
-    interests: ['DJing', 'production', 'nightlife', 'vinyl', 'electronic music'],
-    music: 'house, techno, everything electronic',
-    personality: {
-      ...DEFAULT_PERSONALITY,
-      extraversion: 60,
-      conscientiousness: 40,
-      verbosity: 'short',
-      formality: 'casual',
-      slang: true,
-    },
-    apps: [
-      { appId: 'myface', username: 'MikeD_Beats', isActive: true, joinedAt: '2020-12-01' },
-      { appId: 'myface-chat', username: 'MikeD_Beats', isActive: true, joinedAt: '2020-12-01' },
-      { appId: 'instasnap', username: 'mikedbeats', isActive: true, joinedAt: '2021-02-15' },
-    ],
-    datingProfiles: [
-      {
-        siteId: 'spark',
-        bio: 'DJ by night, producer by day 🎧 Let me make you a playlist',
-        photos: ['👨', '🎧', '🎚️'],
-        lookingFor: 'Someone who vibes with my energy',
-        promptAnswers: [
-          { prompt: "My ideal date is...", answer: "A rooftop with good music and better company" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-    ],
-    relationshipStatus: 'single',
-    profileCustomization: {
-      backgroundColor: '#1a1a2e',
-      textColor: '#00FFFF',
-    },
-    activeHours: { start: 18, end: 6, timezone: 'America/New_York' }, // Night person
-    flags: {
-      canInitiateConversations: false,
-      canPostFreely: true,
-      canSendImages: true,
-      isActiveHoursAware: true,
-    },
-    isGenerated: false,
-  },
-  {
-    id: 'npc_luna',
-    name: 'Luna',
-    username: 'AlexWonders',
-    avatar: '👩‍🎤',
-    age: 25,
-    gender: 'non-binary',
-    pronouns: 'they/them',
-    bio: 'artist | free spirit | collector of sunsets 🌅',
-    occupation: 'Visual Artist',
-    location: 'Portland, OR',
-    interests: ['art', 'nature', 'meditation', 'travel', 'philosophy'],
-    music: 'ambient and lo-fi beats',
-    personality: {
-      ...DEFAULT_PERSONALITY,
-      openness: 95,
-      agreeableness: 80,
-      extraversion: 35,
-      verbosity: 'long',
-      emojiUsage: 'moderate',
-      formality: 'normal',
-    },
-    apps: [
-      { appId: 'myface', username: 'AlexWonders', isActive: true, joinedAt: '2022-04-01' },
-      { appId: 'myface-chat', username: 'AlexWonders', isActive: true, joinedAt: '2022-04-01' },
-      { appId: 'instasnap', username: 'lunawonders', isActive: true, joinedAt: '2022-05-10' },
-      { appId: 'messages', username: 'luna', isActive: true, joinedAt: '2024-01-01' },
-    ],
-    datingProfiles: [
-      {
-        siteId: 'spark',
-        bio: 'Artist seeking a beautiful soul 🌅 Let\'s watch sunsets and talk about the universe',
-        photos: ['👩‍🎤', '🎨', '🌅', '🌿'],
-        lookingFor: 'Authentic connection, not small talk',
-        promptAnswers: [
-          { prompt: "I'm passionate about...", answer: "Art, nature, and finding beauty in unexpected places" },
-          { prompt: "A life goal of mine...", answer: "To travel the world and create art inspired by every place I visit" },
-        ],
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-      {
-        siteId: 'myface-dating',
-        bio: 'Free spirit with paint-stained hands 🎨 Looking for deep conversations',
-        photos: ['👩‍🎤', '🎨'],
-        lookingFor: 'Someone genuine',
-        isActive: true,
-        lastActive: new Date().toISOString(),
-      },
-    ],
-    relationshipStatus: 'single',
-    profileCustomization: {
-      backgroundColor: '#FFF8DC',
-      textColor: '#556B2F',
-    },
-    activeHours: { start: 6, end: 22, timezone: 'America/Los_Angeles' },
-    flags: {
-      canInitiateConversations: true,
-      canPostFreely: true,
-      canSendImages: true,
-      isActiveHoursAware: true,
-    },
-    isGenerated: false,
-  },
-]
+  }
+}
 
 // ============================================================================
 // Store State
@@ -482,7 +266,7 @@ interface NPCState {
   npcs: Record<string, NPC>
 
   // Actions
-  initialize: () => void
+  initialize: () => Promise<void>
   getNPC: (id: string) => NPC | undefined
   getAllNPCs: () => NPC[]
 
@@ -549,24 +333,28 @@ export const useNPCStore = create<NPCState>()(
     (set, get) => ({
       npcs: {},
 
-      initialize: () => {
+      initialize: async () => {
         const { npcs } = get()
+        if (Object.keys(npcs).length > 0) return // Already populated
 
-        // Only initialize if empty
-        if (Object.keys(npcs).length > 0) return
+        try {
+          const { request, connected } = useWSStore.getState()
+          if (!connected) return
 
-        // Create NPCs from presets
-        const initialNPCs: Record<string, NPC> = {}
+          const serverNPCs = await request<any, any[]>('npc:getAll', {})
+          if (Array.isArray(serverNPCs) && serverNPCs.length > 0) {
+            const clientNPCs: Record<string, NPC> = {}
+            for (const sNPC of serverNPCs) {
+              clientNPCs[sNPC.id] = serverToClientNPC(sNPC)
+            }
+            set({ npcs: clientNPCs })
 
-        for (const preset of PRESET_NPCS) {
-          initialNPCs[preset.id] = {
-            ...preset,
-            relationship: createDefaultRelationship(),
-            createdAt: new Date().toISOString(),
+            // Overlay real relationship data from server
+            get().loadRelationshipsFromServer()
           }
+        } catch (err) {
+          console.warn('[NPC Store] Server fetch failed, store will remain empty:', err)
         }
-
-        set({ npcs: initialNPCs })
       },
 
       getNPC: (id) => get().npcs[id],
@@ -762,6 +550,8 @@ export const useNPCStore = create<NPCState>()(
     }),
     {
       name: 'engaige-npcs',
+      version: 2,
+      migrate: () => ({ npcs: {} }),
       partialize: (state) => ({
         npcs: state.npcs,
       }),

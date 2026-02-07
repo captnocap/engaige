@@ -223,8 +223,8 @@ export function deleteNPC(id: string): boolean {
   return result.changes > 0;
 }
 
-// Helper to parse NPC data
-function parseNPC(npc: any): NPC {
+// Helper to parse NPC data from DB row
+function parseNPC(npc: any): NPC & Record<string, any> {
   return {
     id: npc.id,
     username: npc.username,
@@ -236,8 +236,17 @@ function parseNPC(npc: any): NPC {
     age: npc.age,
     gender: npc.gender,
     occupation: npc.occupation,
+    location: npc.location || null,
     interests: JSON.parse(npc.interests || '[]'),
     social_media_handles: JSON.parse(npc.social_media_handles || '{}'),
+    // Lore NPC fields (JSON stored in DB)
+    personality_traits: npc.personality_traits ? JSON.parse(npc.personality_traits) : null,
+    personality_flags: npc.personality_flags ? JSON.parse(npc.personality_flags) : null,
+    behavior_flags: npc.behavior_flags ? JSON.parse(npc.behavior_flags) : null,
+    communication_quirks: npc.communication_quirks ? JSON.parse(npc.communication_quirks) : null,
+    message_patterns: npc.message_patterns ? JSON.parse(npc.message_patterns) : null,
+    hobbies: npc.hobbies ? JSON.parse(npc.hobbies) : [],
+    image_generation_prompt: npc.image_generation_prompt || null,
     model_provider: npc.model_provider as AIProvider,
     model_name: npc.model_name,
     model_base_url: npc.model_base_url,
