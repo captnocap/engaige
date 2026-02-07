@@ -1,12 +1,16 @@
 /**
- * PinballGame - React wrapper: game loop, keyboard input, server integration
+ * PinballGame - React integration for Planck/PixiJS/GSAP/Howler pinball engine
+ *
+ * Mounts PixiJS to a container div, drives the game loop via PixiJS ticker,
+ * handles keyboard input, WebSocket communication, and parent callbacks.
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useWSRequest } from '../../stores/wsStore.js';
-import * as Physics from './PinballPhysics.js';
-import * as Renderer from './PinballRenderer.js';
-import { TABLE_WIDTH, TABLE_HEIGHT, BALLS_PER_GAME } from './PinballTable.js';
+import { createEngine, type PinballEngine } from './PinballEngine.js';
+import { createScene, type PinballScene } from './PinballScene.js';
+import { createAudio, type PinballAudio } from './PinballAudio.js';
+import { BALLS_PER_GAME } from './PinballTable.js';
 
 interface GameDisplayState {
   score: number;
@@ -21,25 +25,42 @@ interface PinballGameProps {
   onScoreUpdate?: (state: GameDisplayState) => void;
 }
 
+const TABLE_RENDER_WIDTH = 600;
+const TABLE_RENDER_HEIGHT = 1050;
+const PHYSICS_DT = 1 / 60;
+
 export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { request } = useWSRequest();
-  const engineRef = useRef<ReturnType<typeof Physics.createPhysicsEngine> | null>(null);
+
+  // Refs for engine/scene/audio (not React state - they live outside React lifecycle)
+  const engineRef = useRef<PinballEngine | null>(null);
+  const sceneRef = useRef<PinballScene | null>(null);
+  const audioRef = useRef<PinballAudio | null>(null);
   const gameIdRef = useRef<string | null>(null);
-  const animFrameRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const keysRef = useRef<Set<string>>(new Set());
   const benchmarkRef = useRef<number>(500000);
   const onScoreUpdateRef = useRef(onScoreUpdate);
   onScoreUpdateRef.current = onScoreUpdate;
+  const onGameEndRef = useRef(onGameEnd);
+  onGameEndRef.current = onGameEnd;
+
+  // Track flipper state to avoid redundant audio
+  const leftFlipperActiveRef = useRef(false);
+  const rightFlipperActiveRef = useRef(false);
+
+  // Drain respawn state
+  const drainHandledRef = useRef(false);
+  const respawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [gameState, setGameState] = useState<'idle' | 'playing' | 'over'>('idle');
-  const [displayScore, setDisplayScore] = useState(0);
+  const gameStateRef = useRef<'idle' | 'playing' | 'over'>('idle');
+
   const [message, setMessage] = useState('Press SPACE to start');
 
-  // Push display state to parent
+  // ── Push display state ──
+
   const pushDisplayState = useCallback((
     score: number,
     ballsRemaining: number,
@@ -55,44 +76,7 @@ export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
     });
   }, []);
 
-  // Push idle state on mount
-  useEffect(() => {
-    pushDisplayState(0, BALLS_PER_GAME, 0, 'idle');
-  }, [pushDisplayState]);
-
-  const startNewGame = useCallback(async () => {
-    if (gameState === 'playing') return;
-
-    try {
-      const game = await request<{}, any>('pinball:startGame', {});
-      if (!game) return;
-
-      gameIdRef.current = game.id;
-      benchmarkRef.current = game.benchmark_score;
-      startTimeRef.current = Date.now();
-
-      // Create or reset physics
-      if (engineRef.current) {
-        Physics.destroyEngine(engineRef.current.objects.engine);
-      }
-      const { objects, state } = Physics.createPhysicsEngine();
-      engineRef.current = { objects, state };
-
-      // Spawn first ball
-      const ball = Physics.spawnBall(objects, objects.engine);
-      state.ballInPlay = true;
-      state.ballsRemaining = BALLS_PER_GAME - 1;
-
-      Renderer.clearTrail();
-      setGameState('playing');
-      setDisplayScore(0);
-      setMessage('');
-      pushDisplayState(0, BALLS_PER_GAME - 1, 0, 'playing');
-    } catch (err) {
-      console.error('Failed to start pinball game:', err);
-      setMessage('Failed to connect to server');
-    }
-  }, [gameState, request, pushDisplayState]);
+  // ── End game ──
 
   const endGame = useCallback(async (score: number, maxCombo: number) => {
     if (!gameIdRef.current) return;
@@ -110,204 +94,234 @@ export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
 
       if (result) {
         const eloChange = result.elo_change || 0;
-        setMessage(
+        const msg =
           `GAME OVER! Score: ${score.toLocaleString()} ` +
           `(${score >= benchmarkRef.current ? 'BEAT' : 'MISSED'} benchmark) ` +
           `${eloChange >= 0 ? '+' : ''}${eloChange} ELO\n` +
-          `Press SPACE to play again`
-        );
-        onGameEnd?.({ score, eloChange, result: result.result });
+          `Press SPACE to play again`;
+        setMessage(msg);
+        sceneRef.current?.showGameOverScreen(msg);
+        onGameEndRef.current?.({ score, eloChange, result: result.result });
       }
     } catch (err) {
-      console.error('Failed to end pinball game:', err);
-      setMessage('Score: ' + score.toLocaleString() + '\nPress SPACE to play again');
+      const msg = 'Score: ' + score.toLocaleString() + '\nPress SPACE to play again';
+      setMessage(msg);
+      sceneRef.current?.showGameOverScreen(msg);
     }
 
     gameIdRef.current = null;
     setGameState('over');
+    gameStateRef.current = 'over';
     pushDisplayState(score, 0, 0, 'over');
-  }, [request, onGameEnd, pushDisplayState]);
 
-  // Game loop
-  useEffect(() => {
-    if (gameState !== 'playing' || !engineRef.current) return;
+    audioRef.current?.play('drain');
+  }, [request, pushDisplayState]);
 
-    const loop = (timestamp: number) => {
-      if (!engineRef.current) return;
+  const endGameRef = useRef(endGame);
+  endGameRef.current = endGame;
 
-      const { objects, state } = engineRef.current;
-      const delta = lastTimeRef.current ? Math.min(timestamp - lastTimeRef.current, 33) : 16.67;
-      lastTimeRef.current = timestamp;
+  // ── Start new game ──
 
-      // Handle plunger charging
-      if (keysRef.current.has(' ') && state.ballInPlay && objects.ball) {
-        state.isPlungerCharging = true;
-        state.plungerCharge = Math.min(state.plungerCharge + delta * 0.001, 1);
+  const startNewGame = useCallback(async () => {
+    if (gameStateRef.current === 'playing') return;
+
+    try {
+      const game = await request<{}, any>('pinball:startGame', {});
+      if (!game) return;
+
+      gameIdRef.current = game.id;
+      benchmarkRef.current = game.benchmark_score;
+      startTimeRef.current = Date.now();
+
+      // Reset or create engine
+      if (engineRef.current) {
+        engineRef.current.destroy();
       }
+      const engine = createEngine();
+      engineRef.current = engine;
 
-      // Handle flippers
-      if (keysRef.current.has('z') || keysRef.current.has('arrowleft')) {
-        Physics.activateFlipper(objects.leftFlipper, true);
-      } else {
-        Physics.deactivateFlipper(objects.leftFlipper, true);
-      }
+      // Spawn first ball
+      engine.spawnBall();
+      const state = engine.getState();
+      state.ballInPlay = true;
+      state.ballsRemaining = BALLS_PER_GAME - 1;
 
-      if (keysRef.current.has('/') || keysRef.current.has('arrowright')) {
-        Physics.activateFlipper(objects.rightFlipper, false);
-      } else {
-        Physics.deactivateFlipper(objects.rightFlipper, false);
-      }
+      drainHandledRef.current = false;
 
-      // Step physics (with velocity clamping + bounds check)
-      Physics.stepEngine(objects.engine, delta, objects, state);
+      sceneRef.current?.clearTrail();
+      sceneRef.current?.hideOverlay();
 
-      // Check if ball drained
-      if (!state.ballInPlay && !state.gameOver) {
-        if (state.ballsRemaining > 0) {
-          // Respawn ball after brief delay
-          setTimeout(() => {
-            if (!engineRef.current) return;
-            const { objects: o, state: s } = engineRef.current;
-            const newBall = Physics.spawnBall(o, o.engine);
-            s.ballInPlay = true;
-            s.ballsRemaining--;
-            Renderer.clearTrail();
-            Physics.resetDropTargets(s, o);
-          }, 800);
-          state.ballInPlay = true; // Prevent multiple respawns
-          state.ballsRemaining = -99; // Temp flag
-        } else if (state.ballsRemaining !== -99) {
-          state.gameOver = true;
-          endGame(state.score, state.maxCombo);
-        }
-      }
-
-      // Fix respawn flag
-      if (state.ballsRemaining === -99 && objects.ball && state.ballInPlay) {
-        // Will be set properly in the setTimeout callback
-      }
-
-      // Update display score
-      setDisplayScore(state.score);
-      pushDisplayState(state.score, Math.max(0, state.ballsRemaining), state.combo, 'playing');
-
-      // Render
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          Renderer.render(
-            ctx,
-            canvas.width,
-            canvas.height,
-            state,
-            objects.ball,
-            objects.leftFlipper,
-            objects.rightFlipper,
-            objects.bumperBodies,
-            objects.dropTargetBodies,
-            benchmarkRef.current,
-          );
-        }
-      }
-
-      animFrameRef.current = requestAnimationFrame(loop);
-    };
-
-    animFrameRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
-      }
-    };
-  }, [gameState, endGame, pushDisplayState]);
-
-  // Render idle/over state
-  useEffect(() => {
-    if (gameState === 'playing') return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Draw static table with message
-    if (engineRef.current) {
-      const { objects, state } = engineRef.current;
-      Renderer.render(
-        ctx, canvas.width, canvas.height, state,
-        objects.ball, objects.leftFlipper, objects.rightFlipper,
-        objects.bumperBodies, objects.dropTargetBodies, benchmarkRef.current,
-      );
-    } else {
-      // Initial empty state
-      const scaleX = canvas.width / TABLE_WIDTH;
-      const scaleY = canvas.height / TABLE_HEIGHT;
-      ctx.save();
-      ctx.scale(scaleX, scaleY);
-
-      const grad = ctx.createLinearGradient(0, 0, 0, TABLE_HEIGHT);
-      grad.addColorStop(0, '#0a0a1a');
-      grad.addColorStop(1, '#050510');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, TABLE_WIDTH, TABLE_HEIGHT);
-      ctx.restore();
+      setGameState('playing');
+      gameStateRef.current = 'playing';
+      setMessage('');
+      pushDisplayState(0, BALLS_PER_GAME - 1, 0, 'playing');
+    } catch (err) {
+      setMessage('Failed to connect to server');
     }
+  }, [request, pushDisplayState]);
 
-    // Overlay message
-    const scale = canvas.width / TABLE_WIDTH;
-    ctx.save();
-    ctx.scale(scale, scale);
+  // ── Initialize scene + audio on mount ──
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(50, TABLE_HEIGHT / 2 - 60, TABLE_WIDTH - 100, 130);
+  useEffect(() => {
+    let mounted = true;
 
-    ctx.fillStyle = '#00ff88';
-    ctx.font = 'bold 20px monospace';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = '#00ff88';
-    ctx.shadowBlur = 10;
+    async function init() {
+      if (!containerRef.current) return;
 
-    if (gameState === 'idle') {
-      ctx.fillText('COB CADET', TABLE_WIDTH / 2, TABLE_HEIGHT / 2 - 20);
-      ctx.fillText('PINBALL', TABLE_WIDTH / 2, TABLE_HEIGHT / 2 + 10);
-      ctx.fillStyle = '#888';
-      ctx.font = '11px monospace';
-      ctx.shadowBlur = 0;
-      ctx.fillText('Press SPACE to start', TABLE_WIDTH / 2, TABLE_HEIGHT / 2 + 40);
-      ctx.fillStyle = '#555';
-      ctx.font = '8px monospace';
-      ctx.fillText('Z/\u2190 Left  \u2022  //\u2192 Right  \u2022  N Nudge', TABLE_WIDTH / 2, TABLE_HEIGHT / 2 + 58);
-    } else {
-      const lines = message.split('\n');
-      lines.forEach((line, i) => {
-        ctx.fillStyle = i === 0 ? '#ffaa00' : '#888';
-        ctx.font = i === 0 ? 'bold 12px monospace' : '10px monospace';
-        ctx.shadowBlur = i === 0 ? 6 : 0;
-        ctx.fillText(line, TABLE_WIDTH / 2, TABLE_HEIGHT / 2 - 15 + i * 22);
+      // Create PixiJS scene
+      const scene = await createScene(TABLE_RENDER_WIDTH, TABLE_RENDER_HEIGHT);
+      if (!mounted) {
+        scene.destroy();
+        return;
+      }
+      sceneRef.current = scene;
+      scene.mount(containerRef.current);
+
+      // Style the canvas
+      const canvas = scene.app.canvas as HTMLCanvasElement;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      canvas.style.objectFit = 'contain';
+
+      // Create audio
+      const audio = createAudio();
+      audioRef.current = audio;
+
+      // Show idle screen
+      scene.showIdleScreen();
+      pushDisplayState(0, BALLS_PER_GAME, 0, 'idle');
+
+      // ── Game loop via PixiJS ticker ──
+      let accumulator = 0;
+
+      scene.app.ticker.add((ticker) => {
+        if (gameStateRef.current !== 'playing' || !engineRef.current) return;
+
+        const engine = engineRef.current;
+        const state = engine.getState();
+
+        // Fixed timestep accumulation
+        const dtSec = ticker.deltaMS / 1000;
+        accumulator += Math.min(dtSec, 0.05); // Cap to prevent spiral of death
+
+        while (accumulator >= PHYSICS_DT) {
+          // Handle flippers
+          const leftActive = keysRef.current.has('z') || keysRef.current.has('arrowleft');
+          const rightActive = keysRef.current.has('/') || keysRef.current.has('arrowright');
+
+          if (leftActive) {
+            engine.activateFlipper(true);
+            if (!leftFlipperActiveRef.current) {
+              audio.play('flipperUp');
+              leftFlipperActiveRef.current = true;
+            }
+          } else {
+            engine.deactivateFlipper(true);
+            if (leftFlipperActiveRef.current) {
+              audio.play('flipperDown');
+              leftFlipperActiveRef.current = false;
+            }
+          }
+
+          if (rightActive) {
+            engine.activateFlipper(false);
+            if (!rightFlipperActiveRef.current) {
+              audio.play('flipperUp');
+              rightFlipperActiveRef.current = true;
+            }
+          } else {
+            engine.deactivateFlipper(false);
+            if (rightFlipperActiveRef.current) {
+              audio.play('flipperDown');
+              rightFlipperActiveRef.current = false;
+            }
+          }
+
+          // Handle plunger charging
+          if (keysRef.current.has(' ') && state.ballInPlay) {
+            state.isPlungerCharging = true;
+            state.plungerCharge = Math.min(state.plungerCharge + PHYSICS_DT * 1.0, 1);
+          }
+
+          engine.step(PHYSICS_DT);
+          accumulator -= PHYSICS_DT;
+        }
+
+        // ── Audio for bumper/slingshot hits ──
+        // Check flash times to detect new hits
+        for (let i = 0; i < state.bumperFlashTimes.length; i++) {
+          if (state.bumperFlashTimes[i] > 0 && Date.now() - state.bumperFlashTimes[i] < 50) {
+            audio.play('bumperHit');
+          }
+        }
+        for (let i = 0; i < state.slingshotFlashTimes.length; i++) {
+          if (state.slingshotFlashTimes[i] > 0 && Date.now() - state.slingshotFlashTimes[i] < 50) {
+            audio.play('slingshotHit');
+          }
+        }
+
+        // ── Check drain ──
+        if (!state.ballInPlay && !state.gameOver && !drainHandledRef.current) {
+          drainHandledRef.current = true;
+
+          if (state.ballsRemaining > 0) {
+            respawnTimerRef.current = setTimeout(() => {
+              if (!engineRef.current || gameStateRef.current !== 'playing') return;
+              const e = engineRef.current;
+              const s = e.getState();
+              e.spawnBall();
+              s.ballInPlay = true;
+              s.ballsRemaining--;
+              drainHandledRef.current = false;
+              sceneRef.current?.clearTrail();
+              e.resetDropTargets();
+            }, 800);
+          } else {
+            state.gameOver = true;
+            endGameRef.current(state.score, state.maxCombo);
+          }
+        }
+
+        // ── Update scene ──
+        const positions = engine.getPositions();
+        scene.update(state, positions);
+
+        // ── Push state to parent ──
+        pushDisplayState(state.score, Math.max(0, state.ballsRemaining), state.combo, 'playing');
       });
     }
 
-    ctx.restore();
-  }, [gameState, message]);
+    init();
 
-  // Keyboard handlers
+    return () => {
+      mounted = false;
+      if (respawnTimerRef.current) clearTimeout(respawnTimerRef.current);
+      engineRef.current?.destroy();
+      sceneRef.current?.destroy();
+      audioRef.current?.destroy();
+      engineRef.current = null;
+      sceneRef.current = null;
+      audioRef.current = null;
+    };
+  }, [pushDisplayState]);
+
+  // ── Keyboard handlers ──
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       keysRef.current.add(key);
 
       // Start game on space when idle/over
-      if (key === ' ' && (gameState === 'idle' || gameState === 'over')) {
+      if (key === ' ' && (gameStateRef.current === 'idle' || gameStateRef.current === 'over')) {
         e.preventDefault();
         startNewGame();
         return;
       }
 
       // Nudge
-      if (key === 'n' && gameState === 'playing' && engineRef.current) {
-        Physics.nudgeTable(engineRef.current.objects.ball);
+      if (key === 'n' && gameStateRef.current === 'playing' && engineRef.current) {
+        engineRef.current.nudge();
       }
 
       // Prevent scrolling
@@ -321,12 +335,13 @@ export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
       keysRef.current.delete(key);
 
       // Launch ball on space release
-      if (key === ' ' && gameState === 'playing' && engineRef.current) {
-        const { objects, state } = engineRef.current;
-        if (state.isPlungerCharging && objects.ball) {
-          Physics.launchBall(objects.ball, state.plungerCharge);
+      if (key === ' ' && gameStateRef.current === 'playing' && engineRef.current) {
+        const state = engineRef.current.getState();
+        if (state.isPlungerCharging) {
+          engineRef.current.launchBall(state.plungerCharge);
           state.isPlungerCharging = false;
           state.plungerCharge = 0;
+          audioRef.current?.play('plungerRelease');
         }
       }
     };
@@ -338,38 +353,14 @@ export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gameState, startNewGame]);
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (engineRef.current) {
-        Physics.destroyEngine(engineRef.current.objects.engine);
-      }
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
-      }
-    };
-  }, []);
+  }, [startNewGame]);
 
   return (
     <div
       ref={containerRef}
       className="h-full w-full flex items-center justify-center"
       style={{ background: '#0a0a12', overflow: 'hidden' }}
-    >
-      <canvas
-        ref={canvasRef}
-        width={TABLE_WIDTH * 1.5}
-        height={TABLE_HEIGHT * 1.5}
-        style={{
-          imageRendering: 'auto',
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-        }}
-        tabIndex={0}
-      />
-    </div>
+      tabIndex={0}
+    />
   );
 }

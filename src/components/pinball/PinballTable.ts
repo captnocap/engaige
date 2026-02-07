@@ -10,7 +10,7 @@ export const TABLE_HEIGHT = 700;
 
 export const BALL_RADIUS = 8;
 
-// Wall definitions (arrays of vertices for Matter.js Bodies.fromVertices or rectangles)
+// Wall definitions (rectangles with position, size, and optional angle)
 export const walls = {
   // Outer walls
   left: { x: 5, y: 350, width: 10, height: 700 },
