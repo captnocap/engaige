@@ -604,10 +604,10 @@ export function Desktop() {
   const isDesktopSurface = useCallback((target: HTMLElement): boolean => {
     if (target === desktopRef.current) return true
     if (target.dataset.desktopArea === 'true') return true
-    // Walk up to see if we're inside a window or icon — if so, not desktop surface
+    // Walk up to see if we're inside a window, icon, or other interactive element
     let el: HTMLElement | null = target
     while (el && el !== desktopRef.current) {
-      if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'dialog') return false
+      if (el.tagName === 'BUTTON' || el.dataset.window === 'true') return false
       if (el.dataset.desktopArea === 'true') return true
       el = el.parentElement
     }

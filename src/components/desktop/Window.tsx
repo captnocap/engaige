@@ -136,11 +136,8 @@ export function Window({
     const vH = window.innerHeight
     const maxY = vH - 48 - 36 // keep title bar above taskbar (48 = taskbar height)
 
-    console.log(`[SNAP-DEBUG] titlebar mousedown: window="${id}" mouse=(${e.clientX},${e.clientY}) windowPos=(${state.x},${state.y}) windowSize=(${state.width}x${state.height}) viewport=(${vW}x${vH})`)
-
     let hasRestored = false
     let currentSnapZone: SnapZone = null
-    let moveCount = 0
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return
@@ -193,24 +190,16 @@ export function Window({
         if (unclampedY < 0) snapY = 0                          // window hit top wall
         const zone = detectSnapZone(snapX, snapY, vW, vH)
 
-        moveCount++
-        if (moveCount % 10 === 0) {
-          console.log(`[SNAP-DEBUG] dragging: mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) windowPos=(${Math.round(newX)},${Math.round(newY)}) snapCoords=(${snapX},${snapY}) zone=${zone}`)
-        }
-
         if (zone !== currentSnapZone) {
           currentSnapZone = zone
-          console.log(`[SNAP-DEBUG] snap zone changed: ${zone} at unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) snapCoords=(${snapX},${snapY})`)
           onSnapZoneChange?.(zone)
         }
       }
     }
 
-    const handleMouseUp = (e: MouseEvent) => {
-      console.log(`[SNAP-DEBUG] mouseup: mouse=(${e.clientX},${e.clientY}) snapZone=${currentSnapZone}`)
+    const handleMouseUp = (_e: MouseEvent) => {
       // If releasing over a snap zone, apply it
       if (currentSnapZone) {
-        console.log(`[SNAP-DEBUG] applying snap zone: ${currentSnapZone}`)
         // Tell Desktop first (so it saves pre-snap size from current geometry)
         onSnapApply?.(currentSnapZone)
         // Apply snap geometry directly to our own state
@@ -308,6 +297,7 @@ export function Window({
   return (
     <div
       ref={windowRef}
+      data-window="true"
       className={`absolute flex flex-col ${className ?? ''}`}
       style={{
         left: state.x,
