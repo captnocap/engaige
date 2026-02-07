@@ -1,5 +1,5 @@
 import { getDB, generateId, now } from '../db/index.js';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 
@@ -30,8 +30,8 @@ export interface MediaFile {
   uploaded_at: number;
 }
 
-// Base media directory (relative to server)
-const MEDIA_DIR = join(process.cwd(), '../data/media');
+// Base media directory (relative to this source file → server/data/media)
+const MEDIA_DIR = join(dirname(import.meta.url.replace('file://', '')), '../../data/media');
 
 // Ensure media directories exist
 async function ensureMediaDirs() {
