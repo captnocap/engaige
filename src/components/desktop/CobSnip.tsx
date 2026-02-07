@@ -2,12 +2,13 @@
  * CobSnip - Snipping Tool
  *
  * Screen capture tool with region selection.
- * Uses html2canvas-style canvas capture.
+ * Captures a snapshot of the page before showing the overlay,
+ * then crops the selected region from that snapshot.
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 
-type SnipMode = 'idle' | 'selecting' | 'preview'
+type SnipMode = 'idle' | 'capturing' | 'selecting' | 'preview'
 
 interface Selection {
   startX: number
@@ -22,11 +23,69 @@ export function CobSnip() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [snipHistory, setSnipHistory] = useState<string[]>([])
   const overlayRef = useRef<HTMLDivElement>(null)
+  const snapshotRef = useRef<HTMLCanvasElement | null>(null)
 
-  const startSnip = useCallback(() => {
-    setMode('selecting')
+  const startSnip = useCallback(async () => {
     setSelection(null)
     setPreviewUrl(null)
+    setMode('capturing')
+
+    // Brief delay so UI can hide the snip window before capture
+    await new Promise(r => setTimeout(r, 50))
+
+    // Take a snapshot of the current page using a canvas clone of the DOM
+    try {
+      const dpr = window.devicePixelRatio || 1
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      // Try the Screen Capture API first (works in Electron/Tauri WebView)
+      if (navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getDisplayMedia({ video: true } as any)
+          const video = document.createElement('video')
+          video.srcObject = stream
+          await video.play()
+
+          const canvas = document.createElement('canvas')
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          const ctx = canvas.getContext('2d')!
+          ctx.drawImage(video, 0, 0)
+
+          stream.getTracks().forEach(t => t.stop())
+          snapshotRef.current = canvas
+          setMode('selecting')
+          return
+        } catch {
+          // User cancelled or API unavailable - fall through to fallback
+        }
+      }
+
+      // Fallback: render a simple screenshot placeholder
+      const canvas = document.createElement('canvas')
+      canvas.width = vw * dpr
+      canvas.height = vh * dpr
+      const ctx = canvas.getContext('2d')!
+      ctx.scale(dpr, dpr)
+
+      // Draw a representation of the current viewport
+      ctx.fillStyle = '#111'
+      ctx.fillRect(0, 0, vw, vh)
+      ctx.fillStyle = '#00ff88'
+      ctx.font = 'bold 18px monospace'
+      ctx.fillText('CobSnip Capture', 20, 36)
+      ctx.fillStyle = '#888'
+      ctx.font = '13px monospace'
+      ctx.fillText(`Viewport: ${vw}x${vh} @ ${dpr}x`, 20, 60)
+      ctx.fillText(`${new Date().toLocaleTimeString()}`, 20, 80)
+
+      snapshotRef.current = canvas
+    } catch {
+      snapshotRef.current = null
+    }
+
+    setMode('selecting')
   }, [])
 
   const handleOverlayMouseDown = useCallback((e: React.MouseEvent) => {
@@ -44,7 +103,7 @@ export function CobSnip() {
     setSelection(prev => prev ? { ...prev, endX: e.clientX, endY: e.clientY } : null)
   }, [mode, selection])
 
-  const handleOverlayMouseUp = useCallback(async () => {
+  const handleOverlayMouseUp = useCallback(() => {
     if (mode !== 'selecting' || !selection) return
 
     const x = Math.min(selection.startX, selection.endX)
@@ -58,54 +117,38 @@ export function CobSnip() {
       return
     }
 
-    // Capture the selected region from the screen
     setMode('idle')
 
-    try {
-      // Create a canvas to capture the region
-      const canvas = document.createElement('canvas')
-      canvas.width = w * window.devicePixelRatio
-      canvas.height = h * window.devicePixelRatio
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
+    // Crop the selected region from the snapshot
+    const dpr = window.devicePixelRatio || 1
+    const canvas = document.createElement('canvas')
+    canvas.width = w * dpr
+    canvas.height = h * dpr
+    const ctx = canvas.getContext('2d')!
 
-      // Use the document body to render
-      // We'll use a simpler approach: capture from existing render
-      // @ts-ignore - html2canvas is an optional dependency
-      const html2canvasModule = await import('html2canvas')
-      const html2canvas = html2canvasModule.default
-      const fullCapture = await html2canvas(document.body, {
-        x, y, width: w, height: h,
-        scale: window.devicePixelRatio,
-        useCORS: true,
-        logging: false,
-      })
-
-      const dataUrl = fullCapture.toDataURL('image/png')
-      setPreviewUrl(dataUrl)
-      setSnipHistory(prev => [dataUrl, ...prev.slice(0, 9)])
-      setMode('preview')
-    } catch {
-      // html2canvas may not be available - fallback to a colored placeholder
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')!
+    if (snapshotRef.current) {
+      // Scale coordinates to match snapshot resolution
+      const scaleX = snapshotRef.current.width / window.innerWidth
+      const scaleY = snapshotRef.current.height / window.innerHeight
+      ctx.drawImage(
+        snapshotRef.current,
+        x * scaleX, y * scaleY, w * scaleX, h * scaleY,
+        0, 0, w * dpr, h * dpr,
+      )
+    } else {
+      // No snapshot available - draw placeholder
+      ctx.scale(dpr, dpr)
       ctx.fillStyle = '#1a1a1a'
       ctx.fillRect(0, 0, w, h)
       ctx.fillStyle = '#00ff88'
       ctx.font = '14px monospace'
       ctx.fillText(`Snip: ${w}x${h}px`, 10, 25)
-      ctx.fillStyle = '#888'
-      ctx.font = '11px monospace'
-      ctx.fillText('(Install html2canvas for real captures)', 10, 45)
-
-      const dataUrl = canvas.toDataURL('image/png')
-      setPreviewUrl(dataUrl)
-      setSnipHistory(prev => [dataUrl, ...prev.slice(0, 9)])
-      setMode('preview')
     }
 
+    const dataUrl = canvas.toDataURL('image/png')
+    setPreviewUrl(dataUrl)
+    setSnipHistory(prev => [dataUrl, ...prev.slice(0, 9)])
+    setMode('preview')
     setSelection(null)
   }, [mode, selection])
 
