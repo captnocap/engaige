@@ -806,6 +806,27 @@ export function Desktop() {
     else minimizeWindow(windowId)
   }, [windowStates, activeWindow, focusWindow, minimizeWindow])
 
+  // Show Desktop: minimize all open windows
+  const handleShowDesktop = useCallback(() => {
+    openWindows.forEach(windowId => minimizeWindow(windowId))
+  }, [openWindows, minimizeWindow])
+
+  // Snap to Grid: reset all icon positions to default column layout
+  const handleSnapToGrid = useCallback(() => {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const allIconIds = desktopIcons.map(i => i.id)
+    const gridPixels: Record<string, IconPosition> = {}
+    const gridNormalized: Record<string, IconPosition> = {}
+    allIconIds.forEach((id, index) => {
+      const pos = getDefaultIconPosition(index, vw, vh)
+      gridPixels[id] = pos
+      gridNormalized[id] = pixelToNormalized(pos, vw, vh)
+    })
+    setIconPixelPositions(gridPixels)
+    setDesktopLayout({ iconPositions: gridNormalized, snapshots: {} })
+  }, [desktopIcons, setDesktopLayout])
+
   // Count open windows per base type for display numbering
   const openWindowsByType = new Map<string, string[]>()
   Array.from(openWindows).forEach(id => {
@@ -991,6 +1012,8 @@ export function Desktop() {
         onOpenApp={openWindow}
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
+        onShowDesktop={handleShowDesktop}
+        onSnapToGrid={handleSnapToGrid}
         onOpenNPCConversation={(npcId) => {
           setMessengerTargetNPC(npcId)
           openWindow('myface-messenger')

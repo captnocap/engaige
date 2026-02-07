@@ -27,6 +27,8 @@ export interface TaskbarProps {
   phoneVisible?: boolean
   onPhoneToggle?: () => void
   onOpenNPCConversation?: (npcId: string) => void
+  onShowDesktop?: () => void
+  onSnapToGrid?: () => void
   className?: string
 }
 

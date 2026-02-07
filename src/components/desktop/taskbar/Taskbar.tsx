@@ -9,6 +9,7 @@
  */
 
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { Tooltip } from '../../ui/Tooltip.js'
 import { useOSThemeStore } from '../../../stores/osThemeStore.js'
 import type { TaskbarProps } from './types.js'
 import { TaskbarSimsHub } from './TaskbarSimsHub.js'
@@ -26,6 +27,8 @@ export function Taskbar({
   phoneVisible,
   onPhoneToggle,
   onOpenNPCConversation,
+  onShowDesktop,
+  onSnapToGrid,
   className,
 }: TaskbarProps) {
   const showHub = useOSThemeStore(s => s.taskbar.showHub)
@@ -52,10 +55,38 @@ export function Taskbar({
         ${className ?? ''}
       `}
     >
-      {/* Zone A: Plumbob + Start */}
+      {/* Zone A: Plumbob + Start + Desktop utils */}
       <div className="flex items-center gap-1 shrink-0">
         {showHub && <TaskbarSimsHub />}
         <TaskbarStartButton apps={apps} onAppClick={onOpenApp} />
+
+        <Tooltip content="Show Desktop" placement="top">
+          <button
+            onClick={onShowDesktop}
+            className="p-1.5 rounded-md text-white/50 hover:text-white/80 hover:bg-white/8 transition-colors duration-150 cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="2" width="14" height="10" rx="1" />
+              <line x1="5" y1="14" x2="11" y2="14" />
+            </svg>
+          </button>
+        </Tooltip>
+
+        <Tooltip content="Snap Icons to Grid" placement="top">
+          <button
+            onClick={onSnapToGrid}
+            className="p-1.5 rounded-md text-white/50 hover:text-white/80 hover:bg-white/8 transition-colors duration-150 cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="1" width="4" height="4" rx="0.5" />
+              <rect x="1" y="11" width="4" height="4" rx="0.5" />
+              <rect x="6" y="1" width="4" height="4" rx="0.5" />
+              <rect x="6" y="11" width="4" height="4" rx="0.5" />
+              <rect x="11" y="1" width="4" height="4" rx="0.5" />
+              <rect x="11" y="11" width="4" height="4" rx="0.5" />
+            </svg>
+          </button>
+        </Tooltip>
       </div>
 
       <div className="w-px h-6 bg-white/10 shrink-0" />
