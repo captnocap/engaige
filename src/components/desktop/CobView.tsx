@@ -3,10 +3,14 @@
  *
  * Image gallery viewer that fetches media from the server.
  * Dark background, zoom controls, thumbnail strip.
+ * Right-click context menu for image operations.
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { useWSRequest } from '../../stores/wsStore.js'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { imageViewerPreset } from '../../hooks/useContextMenuPresets.js'
 
 interface MediaFile {
   id: string
@@ -25,6 +29,7 @@ export function CobView() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [zoom, setZoom] = useState<'fit' | 'actual' | number>('fit')
   const [loading, setLoading] = useState(true)
+  const ctx = useContextMenu()
 
   useEffect(() => {
     if (!connected) return
@@ -53,23 +58,49 @@ export function CobView() {
     setZoom('fit')
   }, [images.length])
 
+  const handleZoomIn = useCallback(() => {
+    setZoom(prev => typeof prev === 'number' ? Math.min(prev + 0.25, 5) : 1.25)
+  }, [])
+
+  const handleZoomOut = useCallback(() => {
+    setZoom(prev => typeof prev === 'number' ? Math.max(prev - 0.25, 0.25) : 0.75)
+  }, [])
+
   // Keyboard nav
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') navigate(-1)
       else if (e.key === 'ArrowRight') navigate(1)
-      else if (e.key === '+' || e.key === '=') setZoom(prev => typeof prev === 'number' ? Math.min(prev + 0.25, 5) : 1.25)
-      else if (e.key === '-') setZoom(prev => typeof prev === 'number' ? Math.max(prev - 0.25, 0.25) : 0.75)
+      else if (e.key === '+' || e.key === '=') handleZoomIn()
+      else if (e.key === '-') handleZoomOut()
       else if (e.key === '0') setZoom('fit')
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [navigate])
+  }, [navigate, handleZoomIn, handleZoomOut])
 
   const getImageSrc = (file: MediaFile) => {
-    // Use the file path directly - server serves static files
     return `http://localhost:4269/media/${file.id}`
   }
+
+  const handleSaveImage = useCallback(() => {
+    if (!currentImage) return
+    const link = document.createElement('a')
+    link.href = getImageSrc(currentImage)
+    link.download = currentImage.filename
+    link.click()
+  }, [currentImage])
+
+  const handleCopyImage = useCallback(async () => {
+    if (!currentImage) return
+    try {
+      const response = await fetch(getImageSrc(currentImage))
+      const blob = await response.blob()
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+    } catch {
+      // Clipboard API may not support images in all contexts
+    }
+  }, [currentImage])
 
   if (loading) {
     return (
@@ -92,7 +123,7 @@ export function CobView() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#111]">
+    <div className="flex flex-col h-full bg-[#111]" onContextMenu={(e) => ctx.show(e)}>
       {/* Toolbar */}
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#333] bg-[#1a1a1a]">
         <div className="text-sm text-[var(--color-textSecondary)] truncate max-w-[300px]">
@@ -107,9 +138,9 @@ export function CobView() {
             className={`px-2 py-0.5 text-xs rounded ${zoom === 'actual' ? 'bg-[#333] text-white' : 'text-[#888] hover:text-white'}`}>
             100%
           </button>
-          <button onClick={() => setZoom(prev => typeof prev === 'number' ? Math.min(prev + 0.25, 5) : 1.5)}
+          <button onClick={handleZoomIn}
             className="px-2 py-0.5 text-xs text-[#888] hover:text-white">+</button>
-          <button onClick={() => setZoom(prev => typeof prev === 'number' ? Math.max(prev - 0.25, 0.25) : 0.75)}
+          <button onClick={handleZoomOut}
             className="px-2 py-0.5 text-xs text-[#888] hover:text-white">-</button>
           <span className="text-xs text-[#666] ml-2">
             {selectedIndex + 1} / {images.length}
@@ -176,6 +207,27 @@ export function CobView() {
             </button>
           ))}
         </div>
+      )}
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={imageViewerPreset({
+            filename: currentImage?.filename,
+            onCopyImage: handleCopyImage,
+            onSaveImage: handleSaveImage,
+            onZoomFit: () => setZoom('fit'),
+            onZoomActual: () => setZoom('actual'),
+            onZoomIn: handleZoomIn,
+            onZoomOut: handleZoomOut,
+            onPrev: () => navigate(-1),
+            onNext: () => navigate(1),
+            hasMultiple: images.length > 1,
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
       )}
     </div>
   )

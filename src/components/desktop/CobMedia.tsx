@@ -2,10 +2,14 @@
  * CobMedia - Media Player
  *
  * Music player with playlist sidebar featuring game-world tracks.
- * Uses HTML5 <audio> for playback simulation.
+ * Simulates playback with progress timer.
+ * Right-click context menus on tracks and player area.
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { mediaPlayerTrackPreset, mediaPlayerPreset } from '../../hooks/useContextMenuPresets.js'
 
 interface Track {
   id: string
@@ -45,40 +49,14 @@ export function CobMedia() {
   const [shuffle, setShuffle] = useState(false)
   const [repeat, setRepeat] = useState(false)
   const progressInterval = useRef<number>(0)
-
-  // Simulate playback with progress timer
-  useEffect(() => {
-    if (playing && currentTrack) {
-      const stepMs = 100
-      const increment = stepMs / (currentTrack.duration * 1000)
-      progressInterval.current = window.setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 1) {
-            handleNext()
-            return 0
-          }
-          return Math.min(prev + increment, 1)
-        })
-      }, stepMs)
-      return () => clearInterval(progressInterval.current)
-    } else {
-      clearInterval(progressInterval.current)
-    }
-  }, [playing, currentTrack])
+  const trackCtx = useContextMenu<Track>()
+  const playerCtx = useContextMenu()
 
   const playTrack = useCallback((track: Track) => {
     setCurrentTrack(track)
     setProgress(0)
     setPlaying(true)
   }, [])
-
-  const togglePlay = useCallback(() => {
-    if (!currentTrack && PLAYLIST.length > 0) {
-      playTrack(PLAYLIST[0])
-    } else {
-      setPlaying(prev => !prev)
-    }
-  }, [currentTrack, playTrack])
 
   const handleNext = useCallback(() => {
     if (!currentTrack) return
@@ -105,6 +83,38 @@ export function CobMedia() {
     playTrack(PLAYLIST[prevIdx])
   }, [currentTrack, progress, playTrack])
 
+  const togglePlay = useCallback(() => {
+    if (!currentTrack && PLAYLIST.length > 0) {
+      playTrack(PLAYLIST[0])
+    } else {
+      setPlaying(prev => !prev)
+    }
+  }, [currentTrack, playTrack])
+
+  // Simulate playback with progress timer
+  useEffect(() => {
+    if (playing && currentTrack) {
+      const stepMs = 100
+      const increment = stepMs / (currentTrack.duration * 1000)
+      progressInterval.current = window.setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 1) {
+            handleNext()
+            return 0
+          }
+          return Math.min(prev + increment, 1)
+        })
+      }, stepMs)
+      return () => clearInterval(progressInterval.current)
+    } else {
+      clearInterval(progressInterval.current)
+    }
+  }, [playing, currentTrack, handleNext])
+
+  const handleCopyTrackInfo = useCallback((track: Track) => {
+    navigator.clipboard.writeText(`${track.title} - ${track.artist} (${track.album})`).catch(() => {})
+  }, [])
+
   const currentTime = currentTrack ? Math.floor(progress * currentTrack.duration) : 0
 
   return (
@@ -120,6 +130,10 @@ export function CobMedia() {
             <button
               key={track.id}
               onClick={() => playTrack(track)}
+              onContextMenu={(e) => {
+                e.stopPropagation()
+                trackCtx.show(e, track)
+              }}
               className={`w-full text-left px-3 py-2 flex items-center gap-3 hover:bg-[#1a1a1a] transition-colors ${
                 currentTrack?.id === track.id ? 'bg-[#1a1a1a] border-l-2 border-[#00ff88]' : ''
               }`}
@@ -140,7 +154,10 @@ export function CobMedia() {
       </div>
 
       {/* Main player area */}
-      <div className="flex-1 flex flex-col">
+      <div
+        className="flex-1 flex flex-col"
+        onContextMenu={(e) => playerCtx.show(e)}
+      >
         {/* Album art / now playing */}
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           {currentTrack ? (
@@ -228,6 +245,39 @@ export function CobMedia() {
           </div>
         </div>
       </div>
+
+      {/* Track Context Menu */}
+      {trackCtx.visible && trackCtx.data && (
+        <ContextMenu
+          items={mediaPlayerTrackPreset({
+            trackTitle: trackCtx.data.title,
+            onPlay: () => playTrack(trackCtx.data!),
+            onCopyTrackInfo: () => handleCopyTrackInfo(trackCtx.data!),
+          })}
+          x={trackCtx.x}
+          y={trackCtx.y}
+          onClose={trackCtx.hide}
+        />
+      )}
+
+      {/* Player Context Menu */}
+      {playerCtx.visible && !trackCtx.visible && (
+        <ContextMenu
+          items={mediaPlayerPreset({
+            isPlaying: playing,
+            shuffle,
+            repeat,
+            onTogglePlay: togglePlay,
+            onToggleShuffle: () => setShuffle(prev => !prev),
+            onToggleRepeat: () => setRepeat(prev => !prev),
+            onNext: currentTrack ? handleNext : undefined,
+            onPrev: currentTrack ? handlePrev : undefined,
+          })}
+          x={playerCtx.x}
+          y={playerCtx.y}
+          onClose={playerCtx.hide}
+        />
+      )}
     </div>
   )
 }

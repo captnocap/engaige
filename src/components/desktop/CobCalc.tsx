@@ -3,9 +3,13 @@
  *
  * Standard desktop calculator with display + 4x5 button grid.
  * Supports keyboard input (0-9, operators, Enter, Escape).
+ * Right-click context menu for copy/clear.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { calculatorPreset } from '../../hooks/useContextMenuPresets.js'
 
 type Operation = '+' | '-' | '×' | '÷' | null
 
@@ -16,6 +20,7 @@ export function CobCalc() {
   const [newNumber, setNewNumber] = useState(true)
   const [memory, setMemory] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
+  const ctx = useContextMenu()
 
   const calculate = useCallback((a: number, op: Operation, b: number): number => {
     switch (op) {
@@ -101,6 +106,10 @@ export function CobCalc() {
     setDisplay(prev => prev.startsWith('-') ? prev.slice(1) : '-' + prev)
   }, [display])
 
+  const handleCopyResult = useCallback(() => {
+    navigator.clipboard.writeText(display).catch(() => {})
+  }, [display])
+
   // Keyboard support
   useEffect(() => {
     const el = containerRef.current
@@ -140,11 +149,19 @@ export function CobCalc() {
     </button>
   )
 
+  const opBtnClass = (op: Operation) => {
+    const isActive = operation === op && newNumber
+    return isActive
+      ? 'bg-[#00ff88] text-[#0a0a0a] font-bold hover:bg-[#00dd77]'
+      : 'bg-[#1a3a2a] text-[#00ff88] hover:bg-[#1a4a2a]'
+  }
+
   return (
     <div
       ref={containerRef}
       tabIndex={0}
       className="flex flex-col h-full bg-[var(--color-bg)] p-3 outline-none"
+      onContextMenu={(e) => ctx.show(e)}
     >
       {/* Display */}
       <div className="bg-[var(--color-bgSecondary)] rounded-lg p-4 mb-3 border border-[var(--color-border)]">
@@ -159,9 +176,9 @@ export function CobCalc() {
       {/* Memory row */}
       <div className="grid grid-cols-4 gap-1.5 mb-1.5">
         <Button label="MC" onClick={() => setMemory(0)}
-          className="text-sm bg-[var(--color-bgSecondary)] text-[var(--color-textSecondary)] hover:bg-[var(--color-border)]" />
+          className={`text-sm hover:bg-[var(--color-border)] ${memory !== 0 ? 'bg-[var(--color-border)] text-[var(--color-text)]' : 'bg-[var(--color-bgSecondary)] text-[var(--color-textSecondary)]'}`} />
         <Button label="MR" onClick={() => { setDisplay(formatDisplay(memory)); setNewNumber(true) }}
-          className="text-sm bg-[var(--color-bgSecondary)] text-[var(--color-textSecondary)] hover:bg-[var(--color-border)]" />
+          className={`text-sm hover:bg-[var(--color-border)] ${memory !== 0 ? 'bg-[var(--color-bgSecondary)] text-[var(--color-text)]' : 'bg-[var(--color-bgSecondary)] text-[var(--color-textSecondary)]'}`} />
         <Button label="M+" onClick={() => setMemory(prev => prev + parseFloat(display))}
           className="text-sm bg-[var(--color-bgSecondary)] text-[var(--color-textSecondary)] hover:bg-[var(--color-border)]" />
         <Button label="M-" onClick={() => setMemory(prev => prev - parseFloat(display))}
@@ -186,7 +203,7 @@ export function CobCalc() {
         <Button label="9" onClick={() => handleNumber('9')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
         <Button label="÷" onClick={() => handleOperator('÷')}
-          className="bg-[#1a3a2a] text-[#00ff88] hover:bg-[#1a4a2a]" />
+          className={opBtnClass('÷')} />
 
         <Button label="4" onClick={() => handleNumber('4')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
@@ -195,7 +212,7 @@ export function CobCalc() {
         <Button label="6" onClick={() => handleNumber('6')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
         <Button label="×" onClick={() => handleOperator('×')}
-          className="bg-[#1a3a2a] text-[#00ff88] hover:bg-[#1a4a2a]" />
+          className={opBtnClass('×')} />
 
         <Button label="1" onClick={() => handleNumber('1')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
@@ -204,7 +221,7 @@ export function CobCalc() {
         <Button label="3" onClick={() => handleNumber('3')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
         <Button label="-" onClick={() => handleOperator('-')}
-          className="bg-[#1a3a2a] text-[#00ff88] hover:bg-[#1a4a2a]" />
+          className={opBtnClass('-')} />
 
         <Button label="±" onClick={handleNegate}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
@@ -213,11 +230,26 @@ export function CobCalc() {
         <Button label="." onClick={() => handleNumber('.')}
           className="bg-[var(--color-bgSecondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]" />
         <Button label="+" onClick={() => handleOperator('+')}
-          className="bg-[#1a3a2a] text-[#00ff88] hover:bg-[#1a4a2a]" />
+          className={opBtnClass('+')} />
 
         <Button label="=" onClick={handleEquals} span={2}
           className="col-span-4 bg-[#00ff88] text-[#0a0a0a] font-bold hover:bg-[#00dd77]" />
       </div>
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={calculatorPreset({
+            displayValue: display,
+            onCopyResult: handleCopyResult,
+            onClear: handleClear,
+            onClearHistory: () => setMemory(0),
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
+      )}
     </div>
   )
 }

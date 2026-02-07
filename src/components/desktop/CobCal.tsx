@@ -7,6 +7,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useWSRequest } from '../../stores/wsStore.js'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { calendarPreset } from '../../hooks/useContextMenuPresets.js'
 
 interface CalendarEvent {
   id: string
@@ -42,6 +45,7 @@ export function CobCal() {
   const [month, setMonth] = useState(now.getMonth())
   const [selectedDay, setSelectedDay] = useState<number | null>(now.getDate())
   const [events, setEvents] = useState<CalendarEvent[]>([])
+  const ctx = useContextMenu()
 
   useEffect(() => {
     if (!connected) return
@@ -123,8 +127,18 @@ export function CobCal() {
   const nextMonth = month === 11 ? 0 : month + 1
   const nextYear = month === 11 ? year + 1 : year
 
+  const selectedDateStr = selectedDay
+    ? `${MONTHS[month]} ${selectedDay}, ${year}`
+    : undefined
+
+  const handleCopyDate = useCallback(() => {
+    if (selectedDateStr) {
+      navigator.clipboard.writeText(selectedDateStr).catch(() => {})
+    }
+  }, [selectedDateStr])
+
   return (
-    <div className="flex h-full bg-[var(--color-bg)]">
+    <div className="flex h-full bg-[var(--color-bg)]" onContextMenu={(e) => ctx.show(e)}>
       {/* Sidebar */}
       <div className="w-48 border-r border-[var(--color-border)] p-3 flex flex-col">
         <button
@@ -241,6 +255,20 @@ export function CobCal() {
           ))}
         </div>
       </div>
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={calendarPreset({
+            selectedDate: selectedDateStr,
+            onCopyDate: handleCopyDate,
+            onGoToToday: goToToday,
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
+      )}
     </div>
   )
 }

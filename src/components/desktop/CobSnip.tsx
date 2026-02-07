@@ -4,9 +4,13 @@
  * Screen capture tool with region selection.
  * Captures a snapshot of the page before showing the overlay,
  * then crops the selected region from that snapshot.
+ * Right-click context menu for copy/save/delete.
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { snipPreset } from '../../hooks/useContextMenuPresets.js'
 
 type SnipMode = 'idle' | 'capturing' | 'selecting' | 'preview'
 
@@ -24,6 +28,7 @@ export function CobSnip() {
   const [snipHistory, setSnipHistory] = useState<string[]>([])
   const overlayRef = useRef<HTMLDivElement>(null)
   const snapshotRef = useRef<HTMLCanvasElement | null>(null)
+  const ctx = useContextMenu<number | null>()
 
   const startSnip = useCallback(async () => {
     setSelection(null)
@@ -66,19 +71,19 @@ export function CobSnip() {
       const canvas = document.createElement('canvas')
       canvas.width = vw * dpr
       canvas.height = vh * dpr
-      const ctx = canvas.getContext('2d')!
-      ctx.scale(dpr, dpr)
+      const canvasCtx = canvas.getContext('2d')!
+      canvasCtx.scale(dpr, dpr)
 
       // Draw a representation of the current viewport
-      ctx.fillStyle = '#111'
-      ctx.fillRect(0, 0, vw, vh)
-      ctx.fillStyle = '#00ff88'
-      ctx.font = 'bold 18px monospace'
-      ctx.fillText('CobSnip Capture', 20, 36)
-      ctx.fillStyle = '#888'
-      ctx.font = '13px monospace'
-      ctx.fillText(`Viewport: ${vw}x${vh} @ ${dpr}x`, 20, 60)
-      ctx.fillText(`${new Date().toLocaleTimeString()}`, 20, 80)
+      canvasCtx.fillStyle = '#111'
+      canvasCtx.fillRect(0, 0, vw, vh)
+      canvasCtx.fillStyle = '#00ff88'
+      canvasCtx.font = 'bold 18px monospace'
+      canvasCtx.fillText('CobSnip Capture', 20, 36)
+      canvasCtx.fillStyle = '#888'
+      canvasCtx.font = '13px monospace'
+      canvasCtx.fillText(`Viewport: ${vw}x${vh} @ ${dpr}x`, 20, 60)
+      canvasCtx.fillText(`${new Date().toLocaleTimeString()}`, 20, 80)
 
       snapshotRef.current = canvas
     } catch {
@@ -124,25 +129,25 @@ export function CobSnip() {
     const canvas = document.createElement('canvas')
     canvas.width = w * dpr
     canvas.height = h * dpr
-    const ctx = canvas.getContext('2d')!
+    const canvasCtx = canvas.getContext('2d')!
 
     if (snapshotRef.current) {
       // Scale coordinates to match snapshot resolution
       const scaleX = snapshotRef.current.width / window.innerWidth
       const scaleY = snapshotRef.current.height / window.innerHeight
-      ctx.drawImage(
+      canvasCtx.drawImage(
         snapshotRef.current,
         x * scaleX, y * scaleY, w * scaleX, h * scaleY,
         0, 0, w * dpr, h * dpr,
       )
     } else {
       // No snapshot available - draw placeholder
-      ctx.scale(dpr, dpr)
-      ctx.fillStyle = '#1a1a1a'
-      ctx.fillRect(0, 0, w, h)
-      ctx.fillStyle = '#00ff88'
-      ctx.font = '14px monospace'
-      ctx.fillText(`Snip: ${w}x${h}px`, 10, 25)
+      canvasCtx.scale(dpr, dpr)
+      canvasCtx.fillStyle = '#1a1a1a'
+      canvasCtx.fillRect(0, 0, w, h)
+      canvasCtx.fillStyle = '#00ff88'
+      canvasCtx.font = '14px monospace'
+      canvasCtx.fillText(`Snip: ${w}x${h}px`, 10, 25)
     }
 
     const dataUrl = canvas.toDataURL('image/png')
@@ -152,24 +157,34 @@ export function CobSnip() {
     setSelection(null)
   }, [mode, selection])
 
-  const handleSave = useCallback(() => {
-    if (!previewUrl) return
+  const handleSave = useCallback((url?: string) => {
+    const target = url || previewUrl
+    if (!target) return
     const link = document.createElement('a')
     link.download = `cobsnip-${Date.now()}.png`
-    link.href = previewUrl
+    link.href = target
     link.click()
   }, [previewUrl])
 
-  const handleCopy = useCallback(async () => {
-    if (!previewUrl) return
+  const handleCopy = useCallback(async (url?: string) => {
+    const target = url || previewUrl
+    if (!target) return
     try {
-      const response = await fetch(previewUrl)
+      const response = await fetch(target)
       const blob = await response.blob()
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
     } catch {
       // Clipboard API may not be available
     }
   }, [previewUrl])
+
+  const handleDeleteFromHistory = useCallback((index: number) => {
+    setSnipHistory(prev => prev.filter((_, i) => i !== index))
+    if (previewUrl === snipHistory[index]) {
+      setPreviewUrl(null)
+      setMode('idle')
+    }
+  }, [previewUrl, snipHistory])
 
   // ESC to cancel
   useEffect(() => {
@@ -194,7 +209,10 @@ export function CobSnip() {
   return (
     <>
       {/* Main toolbar window */}
-      <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <div
+        className="flex flex-col h-full bg-[var(--color-bg)]"
+        onContextMenu={(e) => ctx.show(e, null)}
+      >
         <div className="p-4 flex flex-col items-center gap-4">
           <div className="text-4xl">✂️</div>
           <button
@@ -215,11 +233,11 @@ export function CobSnip() {
               <img src={previewUrl} alt="Snip" className="max-w-full max-h-full object-contain" />
             </div>
             <div className="flex gap-2 mt-2 justify-center">
-              <button onClick={handleSave}
+              <button onClick={() => handleSave()}
                 className="px-4 py-1.5 text-sm bg-[var(--color-bgSecondary)] border border-[var(--color-border)] rounded hover:bg-[var(--color-border)]">
                 Save
               </button>
-              <button onClick={handleCopy}
+              <button onClick={() => handleCopy()}
                 className="px-4 py-1.5 text-sm bg-[var(--color-bgSecondary)] border border-[var(--color-border)] rounded hover:bg-[var(--color-border)]">
                 Copy
               </button>
@@ -240,6 +258,10 @@ export function CobSnip() {
                 <button
                   key={i}
                   onClick={() => { setPreviewUrl(url); setMode('preview') }}
+                  onContextMenu={(e) => {
+                    e.stopPropagation()
+                    ctx.show(e, i)
+                  }}
                   className="w-12 h-12 rounded border border-[var(--color-border)] overflow-hidden hover:border-[#00ff88]"
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
@@ -285,9 +307,27 @@ export function CobSnip() {
 
           {/* Instructions */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white bg-black/70 px-4 py-2 rounded-lg text-sm">
-            Click and drag to select • ESC to cancel
+            Click and drag to select · ESC to cancel
           </div>
         </div>
+      )}
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={snipPreset({
+            onNewSnip: startSnip,
+            onCopy: previewUrl ? () => handleCopy() : undefined,
+            onSave: previewUrl ? () => handleSave() : undefined,
+            hasPreview: !!previewUrl && mode === 'preview',
+            onDeleteFromHistory: ctx.data !== null && ctx.data !== undefined
+              ? () => handleDeleteFromHistory(ctx.data as number)
+              : undefined,
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
       )}
     </>
   )

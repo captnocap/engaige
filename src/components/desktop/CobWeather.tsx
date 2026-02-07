@@ -5,8 +5,11 @@
  * current conditions, and a 5-day forecast.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useWSRequest } from '../../stores/wsStore.js'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { weatherPreset } from '../../hooks/useContextMenuPresets.js'
 
 interface CurrentWeather {
   temp: number
@@ -38,14 +41,19 @@ export function CobWeather() {
   const { request, connected } = useWSRequest()
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
+  const ctx = useContextMenu()
 
-  useEffect(() => {
+  const fetchWeather = useCallback(() => {
     if (!connected) return
     setLoading(true)
     request<void, WeatherData>('weather:get')
       .then(data => { setWeather(data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [connected, request])
+
+  useEffect(() => {
+    fetchWeather()
+  }, [fetchWeather])
 
   if (loading || !weather) {
     return (
@@ -57,8 +65,13 @@ export function CobWeather() {
 
   const { current, forecast, location } = weather
 
+  const handleCopyConditions = useCallback(() => {
+    const text = `${location}: ${current.temp}°F, ${current.condition} (Feels like ${current.feelsLike}°F, Humidity: ${current.humidity}%, Wind: ${current.windSpeed} mph)`
+    navigator.clipboard.writeText(text).catch(() => {})
+  }, [current, location])
+
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden" onContextMenu={(e) => ctx.show(e)}>
       {/* Current weather - gradient hero */}
       <div
         className="flex-1 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden"
@@ -107,6 +120,19 @@ export function CobWeather() {
           ))}
         </div>
       </div>
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={weatherPreset({
+            onRefresh: fetchWeather,
+            onCopyConditions: handleCopyConditions,
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
+      )}
     </div>
   )
 }

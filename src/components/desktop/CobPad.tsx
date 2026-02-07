@@ -6,6 +6,9 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { textEditorPreset } from '../../hooks/useContextMenuPresets.js'
 
 interface CobPadDocument {
   name: string
@@ -66,6 +69,7 @@ export function CobPad() {
   const [dirty, setDirty] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const findRef = useRef<HTMLInputElement>(null)
+  const ctx = useContextMenu()
 
   const currentDoc = documents[currentDocIndex] ?? documents[0]
 
@@ -235,6 +239,7 @@ export function CobPad() {
         ref={textareaRef}
         value={currentDoc.content}
         onChange={e => updateContent(e.target.value)}
+        onContextMenu={(e) => ctx.show(e)}
         spellCheck={false}
         className="flex-1 resize-none bg-[var(--color-bg)] text-[var(--color-text)] p-4 outline-none font-mono border-none"
         style={{
@@ -250,6 +255,22 @@ export function CobPad() {
         <span>{currentDoc.name}{dirty ? ' •' : ''}</span>
         <span>Ln {lineCount} | Ch {charCount} | {fontSize}px</span>
       </div>
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={textEditorPreset({
+            onNew: handleNew,
+            onSave: handleSave,
+            onFind: () => setShowFind(true),
+            wordWrap,
+            onToggleWordWrap: () => setWordWrap(prev => !prev),
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
+      )}
     </div>
   )
 }

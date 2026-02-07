@@ -2,9 +2,13 @@
  * CobClock - Clock / Stopwatch / Timer
  *
  * Three tabs: Analog+Digital clock, Stopwatch with laps, Countdown timer.
+ * Right-click context menu for copy time, reset actions.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { clockPreset } from '../../hooks/useContextMenuPresets.js'
 
 type Tab = 'clock' | 'stopwatch' | 'timer'
 
@@ -92,7 +96,7 @@ function ClockTab() {
   )
 }
 
-function StopwatchTab() {
+function StopwatchTab({ resetRef }: { resetRef: React.MutableRefObject<(() => void) | null> }) {
   const [elapsed, setElapsed] = useState(0)
   const [running, setRunning] = useState(false)
   const [laps, setLaps] = useState<number[]>([])
@@ -124,6 +128,9 @@ function StopwatchTab() {
   const lap = useCallback(() => {
     setLaps(prev => [elapsed, ...prev])
   }, [elapsed])
+
+  // Expose reset to parent
+  resetRef.current = reset
 
   useEffect(() => {
     return () => cancelAnimationFrame(rafRef.current)
@@ -169,7 +176,7 @@ function StopwatchTab() {
   )
 }
 
-function TimerTab() {
+function TimerTab({ resetRef }: { resetRef: React.MutableRefObject<(() => void) | null> }) {
   const [inputMin, setInputMin] = useState(5)
   const [inputSec, setInputSec] = useState(0)
   const [remaining, setRemaining] = useState(0)
@@ -209,6 +216,9 @@ function TimerTab() {
     setRemaining(0)
     setFinished(false)
   }, [pause])
+
+  // Expose reset to parent
+  resetRef.current = reset
 
   useEffect(() => {
     return () => cancelAnimationFrame(rafRef.current)
@@ -271,9 +281,19 @@ function TimerTab() {
 
 export function CobClock() {
   const [tab, setTab] = useState<Tab>('clock')
+  const ctx = useContextMenu()
+  const stopwatchResetRef = useRef<(() => void) | null>(null)
+  const timerResetRef = useRef<(() => void) | null>(null)
+
+  const handleCopyTime = useCallback(() => {
+    navigator.clipboard.writeText(new Date().toLocaleTimeString()).catch(() => {})
+  }, [])
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <div
+      className="flex flex-col h-full bg-[var(--color-bg)]"
+      onContextMenu={(e) => ctx.show(e)}
+    >
       {/* Tab bar */}
       <div className="flex border-b border-[var(--color-border)]">
         {(['clock', 'stopwatch', 'timer'] as Tab[]).map(t => (
@@ -294,9 +314,24 @@ export function CobClock() {
       {/* Tab content */}
       <div className="flex-1 flex">
         {tab === 'clock' && <ClockTab />}
-        {tab === 'stopwatch' && <StopwatchTab />}
-        {tab === 'timer' && <TimerTab />}
+        {tab === 'stopwatch' && <StopwatchTab resetRef={stopwatchResetRef} />}
+        {tab === 'timer' && <TimerTab resetRef={timerResetRef} />}
       </div>
+
+      {/* Context Menu */}
+      {ctx.visible && (
+        <ContextMenu
+          items={clockPreset({
+            onCopyTime: handleCopyTime,
+            activeTab: tab,
+            onResetStopwatch: stopwatchResetRef.current ? () => stopwatchResetRef.current?.() : undefined,
+            onResetTimer: timerResetRef.current ? () => timerResetRef.current?.() : undefined,
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
+      )}
     </div>
   )
 }

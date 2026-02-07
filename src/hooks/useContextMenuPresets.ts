@@ -532,3 +532,429 @@ export function fileManagerEmptyPreset(opts: { onNewFolder?: () => void } = {}):
     clipboardPreset(),
   )
 }
+
+// ---------------------------------------------------------------------------
+// Layer 3: Calculator
+// ---------------------------------------------------------------------------
+
+interface CalculatorOptions {
+  displayValue?: string
+  onCopyResult?: () => void
+  onClear?: () => void
+  onClearHistory?: () => void
+}
+
+export function calculatorPreset(opts: CalculatorOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Copy Result',
+        shortcut: 'Ctrl+C',
+        onClick: () => opts.onCopyResult?.(),
+        visible: !!opts.onCopyResult,
+        disabled: !opts.displayValue || opts.displayValue === '0',
+      },
+    ],
+    [
+      {
+        label: 'Clear',
+        shortcut: 'Esc',
+        onClick: () => opts.onClear?.(),
+        visible: !!opts.onClear,
+      },
+      {
+        label: 'Clear Memory',
+        onClick: () => opts.onClearHistory?.(),
+        visible: !!opts.onClearHistory,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Text Editor
+// ---------------------------------------------------------------------------
+
+interface TextEditorOptions {
+  onNew?: () => void
+  onSave?: () => void
+  onFind?: () => void
+  wordWrap?: boolean
+  onToggleWordWrap?: () => void
+}
+
+export function textEditorPreset(opts: TextEditorOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    clipboardPreset(),
+    [
+      {
+        label: 'Find',
+        shortcut: 'Ctrl+F',
+        onClick: () => opts.onFind?.(),
+        visible: !!opts.onFind,
+      },
+    ],
+    [
+      {
+        label: 'Word Wrap',
+        checked: opts.wordWrap,
+        onClick: () => opts.onToggleWordWrap?.(),
+        visible: opts.onToggleWordWrap !== undefined,
+      },
+    ],
+    [
+      {
+        label: 'New Document',
+        shortcut: 'Ctrl+N',
+        onClick: () => opts.onNew?.(),
+        visible: !!opts.onNew,
+      },
+      {
+        label: 'Save',
+        shortcut: 'Ctrl+S',
+        onClick: () => opts.onSave?.(),
+        visible: !!opts.onSave,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Clock / Timer
+// ---------------------------------------------------------------------------
+
+interface ClockOptions {
+  currentTime?: string
+  onCopyTime?: () => void
+  activeTab?: string
+  onResetStopwatch?: () => void
+  onResetTimer?: () => void
+}
+
+export function clockPreset(opts: ClockOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Copy Time',
+        onClick: () => opts.onCopyTime?.(),
+        visible: !!opts.onCopyTime,
+      },
+    ],
+    [
+      {
+        label: 'Reset Stopwatch',
+        onClick: () => opts.onResetStopwatch?.(),
+        visible: opts.activeTab === 'stopwatch' && !!opts.onResetStopwatch,
+        danger: true,
+      },
+      {
+        label: 'Reset Timer',
+        onClick: () => opts.onResetTimer?.(),
+        visible: opts.activeTab === 'timer' && !!opts.onResetTimer,
+        danger: true,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Sticky Note
+// ---------------------------------------------------------------------------
+
+interface StickyNoteOptions {
+  noteId?: string
+  onDuplicate?: () => void
+  onDelete?: () => void
+  colors?: { label: string; value: string }[]
+  onChangeColor?: (color: string) => void
+}
+
+export function stickyNotePreset(opts: StickyNoteOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Duplicate Note',
+        onClick: () => opts.onDuplicate?.(),
+        visible: !!opts.onDuplicate,
+      },
+    ],
+    [
+      {
+        label: 'Change Color',
+        visible: !!opts.colors && opts.colors.length > 0 && !!opts.onChangeColor,
+        children: (opts.colors ?? []).map(c => ({
+          label: c.label,
+          onClick: () => opts.onChangeColor?.(c.value),
+        })),
+      },
+    ],
+    [
+      {
+        label: 'Delete Note',
+        onClick: () => opts.onDelete?.(),
+        danger: true,
+        visible: !!opts.onDelete,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Image Viewer
+// ---------------------------------------------------------------------------
+
+interface ImageViewerOptions {
+  filename?: string
+  onCopyImage?: () => void
+  onSaveImage?: () => void
+  onZoomFit?: () => void
+  onZoomActual?: () => void
+  onZoomIn?: () => void
+  onZoomOut?: () => void
+  onPrev?: () => void
+  onNext?: () => void
+  hasMultiple?: boolean
+}
+
+export function imageViewerPreset(opts: ImageViewerOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Copy Image',
+        onClick: () => opts.onCopyImage?.(),
+        visible: !!opts.onCopyImage,
+      },
+      {
+        label: 'Save Image As...',
+        onClick: () => opts.onSaveImage?.(),
+        visible: !!opts.onSaveImage,
+      },
+    ],
+    [
+      {
+        label: 'Zoom to Fit',
+        shortcut: '0',
+        onClick: () => opts.onZoomFit?.(),
+        visible: !!opts.onZoomFit,
+      },
+      {
+        label: 'Actual Size',
+        onClick: () => opts.onZoomActual?.(),
+        visible: !!opts.onZoomActual,
+      },
+      {
+        label: 'Zoom In',
+        shortcut: '+',
+        onClick: () => opts.onZoomIn?.(),
+        visible: !!opts.onZoomIn,
+      },
+      {
+        label: 'Zoom Out',
+        shortcut: '-',
+        onClick: () => opts.onZoomOut?.(),
+        visible: !!opts.onZoomOut,
+      },
+    ],
+    [
+      {
+        label: 'Previous Image',
+        shortcut: '\u2190',
+        onClick: () => opts.onPrev?.(),
+        visible: !!opts.hasMultiple && !!opts.onPrev,
+      },
+      {
+        label: 'Next Image',
+        shortcut: '\u2192',
+        onClick: () => opts.onNext?.(),
+        visible: !!opts.hasMultiple && !!opts.onNext,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Calendar
+// ---------------------------------------------------------------------------
+
+interface CalendarOptions {
+  selectedDate?: string
+  onCopyDate?: () => void
+  onGoToToday?: () => void
+}
+
+export function calendarPreset(opts: CalendarOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Go to Today',
+        onClick: () => opts.onGoToToday?.(),
+        visible: !!opts.onGoToToday,
+      },
+    ],
+    [
+      {
+        label: 'Copy Date',
+        onClick: () => opts.onCopyDate?.(),
+        visible: !!opts.onCopyDate && !!opts.selectedDate,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Weather
+// ---------------------------------------------------------------------------
+
+interface WeatherOptions {
+  onRefresh?: () => void
+  onCopyConditions?: () => void
+}
+
+export function weatherPreset(opts: WeatherOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Refresh Weather',
+        shortcut: 'F5',
+        onClick: () => opts.onRefresh?.(),
+        visible: !!opts.onRefresh,
+      },
+    ],
+    [
+      {
+        label: 'Copy Conditions',
+        onClick: () => opts.onCopyConditions?.(),
+        visible: !!opts.onCopyConditions,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Media Player
+// ---------------------------------------------------------------------------
+
+interface MediaPlayerTrackOptions {
+  trackTitle?: string
+  onPlay?: () => void
+  onCopyTrackInfo?: () => void
+  onRemoveFromPlaylist?: () => void
+}
+
+export function mediaPlayerTrackPreset(opts: MediaPlayerTrackOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'Play',
+        onClick: () => opts.onPlay?.(),
+        visible: !!opts.onPlay,
+      },
+      {
+        label: 'Copy Track Info',
+        onClick: () => opts.onCopyTrackInfo?.(),
+        visible: !!opts.onCopyTrackInfo,
+      },
+    ],
+    [
+      {
+        label: 'Remove from Playlist',
+        onClick: () => opts.onRemoveFromPlaylist?.(),
+        danger: true,
+        visible: !!opts.onRemoveFromPlaylist,
+      },
+    ],
+  )
+}
+
+interface MediaPlayerOptions {
+  isPlaying?: boolean
+  shuffle?: boolean
+  repeat?: boolean
+  onTogglePlay?: () => void
+  onToggleShuffle?: () => void
+  onToggleRepeat?: () => void
+  onNext?: () => void
+  onPrev?: () => void
+}
+
+export function mediaPlayerPreset(opts: MediaPlayerOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: opts.isPlaying ? 'Pause' : 'Play',
+        onClick: () => opts.onTogglePlay?.(),
+        visible: !!opts.onTogglePlay,
+      },
+      {
+        label: 'Previous Track',
+        onClick: () => opts.onPrev?.(),
+        visible: !!opts.onPrev,
+      },
+      {
+        label: 'Next Track',
+        onClick: () => opts.onNext?.(),
+        visible: !!opts.onNext,
+      },
+    ],
+    [
+      {
+        label: 'Shuffle',
+        checked: opts.shuffle,
+        onClick: () => opts.onToggleShuffle?.(),
+        visible: !!opts.onToggleShuffle,
+      },
+      {
+        label: 'Repeat',
+        checked: opts.repeat,
+        onClick: () => opts.onToggleRepeat?.(),
+        visible: !!opts.onToggleRepeat,
+      },
+    ],
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3: Snipping Tool
+// ---------------------------------------------------------------------------
+
+interface SnipOptions {
+  onNewSnip?: () => void
+  onCopy?: () => void
+  onSave?: () => void
+  onDeleteFromHistory?: () => void
+  hasPreview?: boolean
+}
+
+export function snipPreset(opts: SnipOptions = {}): ContextMenuItem[] {
+  return composeLayers(
+    [
+      {
+        label: 'New Snip',
+        onClick: () => opts.onNewSnip?.(),
+        visible: !!opts.onNewSnip,
+      },
+    ],
+    [
+      {
+        label: 'Copy to Clipboard',
+        shortcut: 'Ctrl+C',
+        onClick: () => opts.onCopy?.(),
+        visible: !!opts.hasPreview && !!opts.onCopy,
+      },
+      {
+        label: 'Save As...',
+        shortcut: 'Ctrl+S',
+        onClick: () => opts.onSave?.(),
+        visible: !!opts.hasPreview && !!opts.onSave,
+      },
+    ],
+    [
+      {
+        label: 'Delete from History',
+        onClick: () => opts.onDeleteFromHistory?.(),
+        danger: true,
+        visible: !!opts.onDeleteFromHistory,
+      },
+    ],
+  )
+}

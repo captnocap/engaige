@@ -3,10 +3,14 @@
  *
  * Colored sticky notes that live on the desktop surface.
  * Draggable, editable, right-click for color/delete.
+ * Uses the shared ContextMenu component.
  * Persisted to localStorage.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { ContextMenu } from '../ui/ContextMenu.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { stickyNotePreset } from '../../hooks/useContextMenuPresets.js'
 
 export interface StickyNote {
   id: string
@@ -61,7 +65,7 @@ interface CobNotesProps {
 
 export function CobNotes({ notes, onNotesChange }: CobNotesProps) {
   const [dragging, setDragging] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null)
-  const [contextMenu, setContextMenu] = useState<{ noteId: string; x: number; y: number } | null>(null)
+  const ctx = useContextMenu<string>()
 
   useEffect(() => {
     saveNotes(notes)
@@ -73,12 +77,22 @@ export function CobNotes({ notes, onNotesChange }: CobNotesProps) {
 
   const deleteNote = useCallback((id: string) => {
     onNotesChange(notes.filter(n => n.id !== id))
-    setContextMenu(null)
+  }, [notes, onNotesChange])
+
+  const duplicateNote = useCallback((id: string) => {
+    const source = notes.find(n => n.id === id)
+    if (!source) return
+    const dup: StickyNote = {
+      ...source,
+      id: `note-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      x: source.x + 20,
+      y: source.y + 20,
+    }
+    onNotesChange([...notes, dup])
   }, [notes, onNotesChange])
 
   const changeColor = useCallback((id: string, color: string) => {
     updateNote(id, { color })
-    setContextMenu(null)
   }, [updateNote])
 
   // Mouse move/up for dragging
@@ -102,14 +116,6 @@ export function CobNotes({ notes, onNotesChange }: CobNotesProps) {
     }
   }, [dragging, updateNote])
 
-  // Close context menu on click outside
-  useEffect(() => {
-    if (!contextMenu) return
-    const close = () => setContextMenu(null)
-    window.addEventListener('click', close)
-    return () => window.removeEventListener('click', close)
-  }, [contextMenu])
-
   if (notes.length === 0) return null
 
   return (
@@ -129,7 +135,7 @@ export function CobNotes({ notes, onNotesChange }: CobNotesProps) {
           onContextMenu={(e) => {
             e.preventDefault()
             e.stopPropagation()
-            setContextMenu({ noteId: note.id, x: e.clientX, y: e.clientY })
+            ctx.show(e, note.id)
           }}
         >
           {/* Drag handle */}
@@ -168,33 +174,20 @@ export function CobNotes({ notes, onNotesChange }: CobNotesProps) {
         </div>
       ))}
 
-      {/* Context menu */}
-      {contextMenu && (
-        <div
-          className="fixed bg-[var(--color-bg)] border border-[var(--color-border)] rounded-md shadow-xl py-1 min-w-[140px]"
-          style={{ left: contextMenu.x, top: contextMenu.y, zIndex: 9999 }}
-          onClick={e => e.stopPropagation()}
-        >
-          <div className="px-3 py-1 text-xs text-[var(--color-textSecondary)]">Color</div>
-          <div className="flex gap-1 px-3 py-1.5">
-            {NOTE_COLORS.map(c => (
-              <button
-                key={c.value}
-                onClick={() => changeColor(contextMenu.noteId, c.value)}
-                className="w-5 h-5 rounded-full border border-black/20 hover:scale-125 transition-transform"
-                style={{ backgroundColor: c.value }}
-                title={c.label}
-              />
-            ))}
-          </div>
-          <div className="border-t border-[var(--color-border)] my-1" />
-          <button
-            onClick={() => deleteNote(contextMenu.noteId)}
-            className="w-full text-left px-3 py-1.5 text-sm text-red-400 hover:bg-[var(--color-bgSecondary)]"
-          >
-            Delete Note
-          </button>
-        </div>
+      {/* Context Menu */}
+      {ctx.visible && ctx.data && (
+        <ContextMenu
+          items={stickyNotePreset({
+            noteId: ctx.data,
+            onDuplicate: () => duplicateNote(ctx.data!),
+            onDelete: () => deleteNote(ctx.data!),
+            colors: NOTE_COLORS,
+            onChangeColor: (color) => changeColor(ctx.data!, color),
+          })}
+          x={ctx.x}
+          y={ctx.y}
+          onClose={ctx.hide}
+        />
       )}
     </>
   )
