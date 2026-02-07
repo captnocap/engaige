@@ -414,9 +414,9 @@ export function Desktop() {
 
   const handleSnapApply = useCallback((windowId: string, zone: SnapZone) => {
     if (zone) {
-      const geo = getSnapGeometry(zone, window.innerWidth, window.innerHeight)
       // Save current geometry before snapping — only if not already snapped
       // (re-snapping preserves the original pre-snap size)
+      // Window applies snap geometry to itself directly; we just track pre-snap sizes
       setSnapPreSnapSizes(prev => {
         if (prev[windowId]) return prev
         const ws = windowStatesRef.current[windowId]
@@ -430,11 +430,6 @@ export function Desktop() {
           },
         }
       })
-      // Apply snap geometry
-      setWindowStates(prev => ({
-        ...prev,
-        [windowId]: { ...prev[windowId], ...geo, isMaximized: false },
-      }))
     } else {
       // Un-snap: clear pre-snap data
       setSnapPreSnapSizes(prev => {

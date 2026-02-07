@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
-import { detectSnapZone, type SnapZone } from './windowSnap.js'
+import { detectSnapZone, getSnapGeometry, type SnapZone } from './windowSnap.js'
 
 export interface WindowState {
   x: number
@@ -211,7 +211,11 @@ export function Window({
       // If releasing over a snap zone, apply it
       if (currentSnapZone) {
         console.log(`[SNAP-DEBUG] applying snap zone: ${currentSnapZone}`)
+        // Tell Desktop first (so it saves pre-snap size from current geometry)
         onSnapApply?.(currentSnapZone)
+        // Apply snap geometry directly to our own state
+        const geo = getSnapGeometry(currentSnapZone, vW, vH)
+        updateState({ ...geo, isMaximized: false })
       }
       // Always clear the preview
       onSnapZoneChange?.(null)
