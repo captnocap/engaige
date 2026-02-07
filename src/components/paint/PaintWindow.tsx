@@ -8,6 +8,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { PaintToolbar, type PaintTool } from './PaintTools.js'
 import { PaintCanvas } from './PaintCanvas.js'
 import { useWSRequest } from '../../stores/wsStore.js'
+import { generateFilename } from '../../lib/filenames.js'
 
 export function PaintWindow() {
   const [tool, setTool] = useState<PaintTool>('pencil')
@@ -61,7 +62,7 @@ export function PaintWindow() {
 
   const handleSaveClick = useCallback(() => {
     if (!canvasRef.current || saving) return
-    setSaveFilename(`painting-${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).replace(' ', '-').toLowerCase()}`)
+    setSaveFilename(generateFilename())
     setSaveStatus('idle')
     setSaveDialog(true)
   }, [saving])
