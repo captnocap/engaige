@@ -34,6 +34,8 @@ import { interactionHandlers } from './interaction.js';
 import { sitesHandlers } from './sites.js';
 import { newsHandlers } from './news.js';
 import { pinballHandlers } from './pinball.js';
+import { calendarHandlers } from './calendar.js';
+import { weatherHandlers } from './weather.js';
 
 // Re-export broadcast functions for external use
 export { broadcastThought, broadcastDeliberationStarted, broadcastDeliberationCompleted } from './thoughts.js';
@@ -69,6 +71,8 @@ export const handlers = {
   ...sitesHandlers,
   ...newsHandlers,
   ...pinballHandlers,
+  ...calendarHandlers,
+  ...weatherHandlers,
 };
 
 // Export individual handler maps for testing or selective imports
@@ -100,4 +104,6 @@ export {
   sitesHandlers,
   newsHandlers,
   pinballHandlers,
+  calendarHandlers,
+  weatherHandlers,
 };

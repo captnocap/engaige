@@ -21,6 +21,17 @@ import { Browser } from '../browser/Browser.js'
 import { WorldWindow } from '../world/index.js'
 import { CreativeStudioWindow } from '../studio/index.js'
 import { CobHubIDE } from '../ide/index.js'
+import { CobCalc } from './CobCalc.js'
+import { CobPad } from './CobPad.js'
+import { CobClock } from './CobClock.js'
+import { CobNotes, createNewNote, type StickyNote } from './CobNotes.js'
+import { CobView } from './CobView.js'
+import { CobCal } from './CobCal.js'
+import { CobWeather } from './CobWeather.js'
+import { CobMedia } from './CobMedia.js'
+import { SolitaireWindow } from '../solitaire/SolitaireWindow.js'
+import { PaintWindow } from '../paint/PaintWindow.js'
+import { CobSnip } from './CobSnip.js'
 import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
 import { ContextMenu } from '../ui/ContextMenu.js'
 import { useContextMenu } from '../../hooks/useContextMenu.js'
@@ -83,6 +94,15 @@ export function Desktop() {
   const [phoneVisible, setPhoneVisible] = useState(false)
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
   const [settingsRequestedTab, setSettingsRequestedTab] = useState<string | null>(null)
+
+  // Sticky notes state
+  const [stickyNotes, setStickyNotes] = useState<StickyNote[]>(() => {
+    try {
+      const stored = localStorage.getItem('cobnotes-data')
+      if (stored) return JSON.parse(stored)
+    } catch { /* ignore */ }
+    return []
+  })
 
   // Snap/tile state
   const [activeSnapZone, setActiveSnapZone] = useState<SnapZone>(null)
@@ -221,6 +241,76 @@ export function Desktop() {
       component: () => <PinballWindow />,
       defaultState: { x: 200, y: 10, width: 460, height: 880 },
     },
+    {
+      id: 'cobcalc',
+      title: 'CobCalc',
+      icon: '🔢',
+      component: <CobCalc />,
+      defaultState: { x: 400, y: 100, width: 320, height: 480 },
+    },
+    {
+      id: 'cobpad',
+      title: 'CobPad',
+      icon: '📝',
+      component: <CobPad />,
+      defaultState: { x: 150, y: 60, width: 650, height: 450 },
+    },
+    {
+      id: 'cobclock',
+      title: 'CobClock',
+      icon: '🕐',
+      component: <CobClock />,
+      defaultState: { x: 350, y: 80, width: 350, height: 400 },
+    },
+    {
+      id: 'cobview',
+      title: 'CobView',
+      icon: '🖼️',
+      component: <CobView />,
+      defaultState: { x: 80, y: 40, width: 800, height: 600 },
+    },
+    {
+      id: 'cobcal',
+      title: 'CobCal',
+      icon: '📅',
+      component: <CobCal />,
+      defaultState: { x: 100, y: 30, width: 800, height: 600 },
+    },
+    {
+      id: 'cobweather',
+      title: 'CobWeather',
+      icon: '🌤️',
+      component: <CobWeather />,
+      defaultState: { x: 300, y: 50, width: 400, height: 550 },
+    },
+    {
+      id: 'cobmedia',
+      title: 'CobMedia',
+      icon: '🎵',
+      component: <CobMedia />,
+      defaultState: { x: 120, y: 40, width: 700, height: 500 },
+    },
+    {
+      id: 'solitaire',
+      title: 'Cob Solitaire',
+      icon: '🃏',
+      component: <SolitaireWindow />,
+      defaultState: { x: 80, y: 20, width: 800, height: 600 },
+    },
+    {
+      id: 'cobpaint',
+      title: 'CobPaint',
+      icon: '🖌️',
+      component: <PaintWindow />,
+      defaultState: { x: 50, y: 20, width: 900, height: 650 },
+    },
+    {
+      id: 'cobsnip',
+      title: 'CobSnip',
+      icon: '✂️',
+      component: <CobSnip />,
+      defaultState: { x: 400, y: 150, width: 400, height: 300 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
@@ -234,6 +324,17 @@ export function Desktop() {
     { id: 'studio', icon: '🎨', label: 'Creative Suite', opensWindow: 'studio' },
     { id: 'cobhub-ide', icon: '🌽', label: 'CobHub IDE', opensWindow: 'cobhub-ide' },
     { id: 'pinball', icon: '🪩', label: 'Cob Cadet', opensWindow: 'pinball' },
+    { id: 'cobcalc', icon: '🔢', label: 'CobCalc', opensWindow: 'cobcalc' },
+    { id: 'cobpad', icon: '📝', label: 'CobPad', opensWindow: 'cobpad' },
+    { id: 'cobclock', icon: '🕐', label: 'CobClock', opensWindow: 'cobclock' },
+    { id: 'cobnotes', icon: '📋', label: 'Sticky Notes', action: () => setStickyNotes(prev => [...prev, createNewNote(prev)]) },
+    { id: 'cobview', icon: '🖼️', label: 'CobView', opensWindow: 'cobview' },
+    { id: 'cobcal', icon: '📅', label: 'CobCal', opensWindow: 'cobcal' },
+    { id: 'cobweather', icon: '🌤️', label: 'CobWeather', opensWindow: 'cobweather' },
+    { id: 'cobmedia', icon: '🎵', label: 'CobMedia', opensWindow: 'cobmedia' },
+    { id: 'solitaire', icon: '🃏', label: 'Solitaire', opensWindow: 'solitaire' },
+    { id: 'cobpaint', icon: '🖌️', label: 'CobPaint', opensWindow: 'cobpaint' },
+    { id: 'cobsnip', icon: '✂️', label: 'CobSnip', opensWindow: 'cobsnip' },
   ]
 
   // Build start menu app list from desktop icons
@@ -668,6 +769,9 @@ export function Desktop() {
             />
           )
         })}
+
+        {/* Sticky Notes Layer */}
+        <CobNotes notes={stickyNotes} onNotesChange={setStickyNotes} />
 
         {/* Selection Box */}
         {selectionRect && selectionRect.width > 5 && selectionRect.height > 5 && (
