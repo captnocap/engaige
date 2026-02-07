@@ -131,14 +131,22 @@ export function Desktop() {
     setWindowInstanceCounter(2)
   }, [setCompleted, activeAccountId, markOnboardingComplete])
 
+  // Ref to hold icon IDs for keyboard handler (desktopIcons is declared below)
+  const desktopIconIdsRef = useRef<string[]>([])
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       if (e.key.toLowerCase() === 'p' && !e.metaKey && !e.ctrlKey) setPhoneVisible(prev => !prev)
+      // Ctrl+A / Cmd+A: select all desktop icons (only when no window is focused)
+      if (e.key.toLowerCase() === 'a' && (e.ctrlKey || e.metaKey) && !activeWindow) {
+        e.preventDefault()
+        setSelectedIcons(new Set(desktopIconIdsRef.current))
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [activeWindow])
 
   // Initialize drama automation stores
   useEffect(() => {
@@ -342,6 +350,9 @@ export function Desktop() {
     { id: 'cobpaint', icon: '🖌️', label: 'CobPaint', opensWindow: 'cobpaint' },
     { id: 'cobsnip', icon: '✂️', label: 'CobSnip', opensWindow: 'cobsnip' },
   ]
+
+  // Keep ref in sync for keyboard handler
+  desktopIconIdsRef.current = desktopIcons.map(i => i.id)
 
   // Build start menu app list from desktop icons
   const startMenuApps: StartMenuApp[] = desktopIcons.map(icon => ({
@@ -589,10 +600,24 @@ export function Desktop() {
     }
   }, [desktopIcons, getIconPosition])
 
+  // Check if a mousedown target is empty desktop space (not an icon, window, or other interactive element)
+  const isDesktopSurface = useCallback((target: HTMLElement): boolean => {
+    if (target === desktopRef.current) return true
+    if (target.dataset.desktopArea === 'true') return true
+    // Walk up to see if we're inside a window or icon — if so, not desktop surface
+    let el: HTMLElement | null = target
+    while (el && el !== desktopRef.current) {
+      if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'dialog') return false
+      if (el.dataset.desktopArea === 'true') return true
+      el = el.parentElement
+    }
+    return false
+  }, [])
+
   // Handle desktop mouse down for rubber-band selection
   const handleDesktopMouseDown = useCallback((e: React.MouseEvent) => {
     // Only start selection if clicking on empty desktop area
-    if (e.target === desktopRef.current || (e.target as HTMLElement).dataset.desktopArea === 'true') {
+    if (isDesktopSurface(e.target as HTMLElement)) {
       // Clear selection if not holding Ctrl
       if (!e.ctrlKey && !e.metaKey) {
         setSelectedIcons(new Set())
@@ -606,7 +631,7 @@ export function Desktop() {
         currentY: e.clientY,
       })
     }
-  }, [])
+  }, [isDesktopSurface])
 
   // Handle mouse move for both icon dragging and selection box
   useEffect(() => {
@@ -649,13 +674,33 @@ export function Desktop() {
         }
       }
 
-      // Handle selection box
+      // Handle selection box — update position and live-select icons inside it
       if (selectionBox) {
-        setSelectionBox(prev => prev ? {
-          ...prev,
+        const updated = {
+          ...selectionBox,
           currentX: e.clientX,
           currentY: e.clientY,
-        } : null)
+        }
+        setSelectionBox(updated)
+
+        // Live selection: find icons overlapping the rubber-band rect
+        const rect = {
+          left: Math.min(updated.startX, updated.currentX),
+          right: Math.max(updated.startX, updated.currentX),
+          top: Math.min(updated.startY, updated.currentY),
+          bottom: Math.max(updated.startY, updated.currentY),
+        }
+        const iconsInBox = new Set<string>()
+        desktopIcons.forEach((icon, index) => {
+          const pos = getIconPosition(icon.id, index)
+          if (!(pos.x + ICON_SIZE < rect.left ||
+                pos.x > rect.right ||
+                pos.y + ICON_SIZE < rect.top ||
+                pos.y > rect.bottom)) {
+            iconsInBox.add(icon.id)
+          }
+        })
+        setSelectedIcons(iconsInBox)
       }
     }
 
@@ -696,43 +741,8 @@ export function Desktop() {
       dragStartRef.current = null
       dragInitiatorRef.current = null
 
-      // End selection box and select icons within it
+      // End selection box (live selection already applied during mousemove)
       if (selectionBox) {
-        const rect = {
-          left: Math.min(selectionBox.startX, selectionBox.currentX),
-          right: Math.max(selectionBox.startX, selectionBox.currentX),
-          top: Math.min(selectionBox.startY, selectionBox.currentY),
-          bottom: Math.max(selectionBox.startY, selectionBox.currentY),
-        }
-
-        // Find icons within the selection box
-        const iconsInBox: string[] = []
-        desktopIcons.forEach((icon, index) => {
-          const pos = getIconPosition(icon.id, index)
-          const iconRect = {
-            left: pos.x,
-            right: pos.x + ICON_SIZE,
-            top: pos.y,
-            bottom: pos.y + ICON_SIZE,
-          }
-
-          // Check if icon overlaps with selection box
-          if (!(iconRect.right < rect.left ||
-                iconRect.left > rect.right ||
-                iconRect.bottom < rect.top ||
-                iconRect.top > rect.bottom)) {
-            iconsInBox.push(icon.id)
-          }
-        })
-
-        if (iconsInBox.length > 0) {
-          setSelectedIcons(prev => {
-            const next = new Set(prev)
-            iconsInBox.forEach(id => next.add(id))
-            return next
-          })
-        }
-
         setSelectionBox(null)
       }
     }
@@ -748,12 +758,12 @@ export function Desktop() {
 
   const handleDesktopClick = useCallback((e: React.MouseEvent) => {
     // Only clear selection if clicking on empty desktop (not on icon)
-    if (e.target === desktopRef.current || (e.target as HTMLElement).dataset.desktopArea === 'true') {
+    if (isDesktopSurface(e.target as HTMLElement)) {
       if (!e.ctrlKey && !e.metaKey) {
         setSelectedIcons(new Set())
       }
     }
-  }, [])
+  }, [isDesktopSurface])
 
   // Context menu handlers
   const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
