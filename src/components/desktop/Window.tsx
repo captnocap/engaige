@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
+import { detectSnapZone, type SnapZone } from './windowSnap.js'
 
 export interface WindowState {
   x: number
@@ -25,6 +26,9 @@ interface WindowProps {
   onClose?: () => void
   onMinimize?: () => void
   onStateChange?: (state: WindowState) => void
+  onSnapZoneChange?: (zone: SnapZone) => void
+  onSnapApply?: (zone: SnapZone) => void
+  preSnapSize?: { width: number; height: number }
   showControls?: boolean
   resizable?: boolean
   className?: string
@@ -54,6 +58,9 @@ export function Window({
   onClose,
   onMinimize,
   onStateChange,
+  onSnapZoneChange,
+  onSnapApply,
+  preSnapSize,
   showControls = true,
   resizable = true,
   className,
@@ -110,8 +117,10 @@ export function Window({
 
     // If maximized, we'll restore on first move
     const wasMaximized = state.isMaximized
-    const restoreWidth = restoreStateRef.current?.width ?? DEFAULT_STATE.width
-    const restoreHeight = restoreStateRef.current?.height ?? DEFAULT_STATE.height
+    // If snapped (has preSnapSize), we'll un-snap on first move
+    const wasSnapped = !!preSnapSize
+    const restoreWidth = preSnapSize?.width ?? restoreStateRef.current?.width ?? DEFAULT_STATE.width
+    const restoreHeight = preSnapSize?.height ?? restoreStateRef.current?.height ?? DEFAULT_STATE.height
 
     dragRef.current = {
       startX: e.clientX,
@@ -121,23 +130,21 @@ export function Window({
     }
 
     let hasRestored = false
+    let currentSnapZone: SnapZone = null
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return
       const dx = e.clientX - dragRef.current.startX
       const dy = e.clientY - dragRef.current.startY
 
-      // If maximized and user starts dragging, restore the window
-      if (wasMaximized && !hasRestored && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+      // If maximized/snapped and user starts dragging, restore the window
+      if ((wasMaximized || wasSnapped) && !hasRestored && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
         hasRestored = true
 
-        // Calculate where to position the restored window so cursor stays proportionally on titlebar
-        // Place the window so the cursor is at the same relative X position it was on the maximized titlebar
-        const cursorRatioX = e.clientX / window.innerWidth
-        const newX = e.clientX - (restoreWidth * cursorRatioX)
-        const newY = e.clientY - 15 // Keep cursor near top of titlebar
+        const cursorRatioX = e.clientX / (wasMaximized ? window.innerWidth : state.width)
+        const newX = e.clientX - (restoreWidth * Math.min(cursorRatioX, 1))
+        const newY = e.clientY - 15
 
-        // Update the drag reference to the new position
         dragRef.current.startX = e.clientX
         dragRef.current.startY = e.clientY
         dragRef.current.startPosX = newX
@@ -151,19 +158,34 @@ export function Window({
           isMaximized: false,
         })
         restoreStateRef.current = null
+        // Clear snap state
+        if (wasSnapped) onSnapApply?.(null)
         return
       }
 
-      // Normal dragging (not maximized or already restored)
-      if (!wasMaximized || hasRestored) {
+      // Normal dragging (not maximized/snapped or already restored)
+      if ((!wasMaximized && !wasSnapped) || hasRestored) {
         updateState({
           x: Math.max(0, dragRef.current.startPosX + dx),
           y: Math.max(0, dragRef.current.startPosY + dy),
         })
+
+        // Detect snap zone
+        const zone = detectSnapZone(e.clientX, e.clientY, window.innerWidth, window.innerHeight)
+        if (zone !== currentSnapZone) {
+          currentSnapZone = zone
+          onSnapZoneChange?.(zone)
+        }
       }
     }
 
     const handleMouseUp = () => {
+      // If releasing over a snap zone, apply it
+      if (currentSnapZone) {
+        onSnapApply?.(currentSnapZone)
+      }
+      // Always clear the preview
+      onSnapZoneChange?.(null)
       dragRef.current = null
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)

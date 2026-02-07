@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { Window, type WindowState } from './Window'
+import { getSnapGeometry, type SnapZone } from './windowSnap.js'
 import { Taskbar, type TaskbarWindow, type StartMenuApp } from './taskbar'
 import { DesktopIcon } from './DesktopIcon'
 import { Onboarding, type OnboardingData } from '../onboarding'
@@ -83,6 +84,10 @@ export function Desktop() {
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
   const [settingsRequestedTab, setSettingsRequestedTab] = useState<string | null>(null)
 
+  // Snap/tile state
+  const [activeSnapZone, setActiveSnapZone] = useState<SnapZone>(null)
+  const [snapPreSnapSizes, setSnapPreSnapSizes] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
+
   // Context menu state
   const desktopCtx = useContextMenu<{ type: 'desktop' } | { type: 'icon'; iconId: string }>()
 
@@ -126,6 +131,21 @@ export function Desktop() {
       console.log('[Desktop] Drama automation stores initialized')
     }
   }, [onboardingCompleted])
+
+  // Recalculate snapped windows on viewport resize
+  useEffect(() => {
+    const snappedIds = Object.keys(snapPreSnapSizes)
+    if (snappedIds.length === 0) return
+
+    const handleResize = () => {
+      // We don't know which zone each window is in, so we just leave them as-is.
+      // The Window component's own resize handler covers maximized windows.
+      // Snapped windows keep their pixel positions — acceptable for now.
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [snapPreSnapSizes])
 
   const CornCobIcon = <img src={cornCobIcon} alt="" className="w-5 h-5" />
   const CornCobIconLarge = <img src={cornCobIcon} alt="" className="w-12 h-12" />
@@ -246,6 +266,13 @@ export function Desktop() {
       next.delete(windowId)
       return next
     })
+    // Clean up snap data for closed window
+    setSnapPreSnapSizes(prev => {
+      if (!(windowId in prev)) return prev
+      const next = { ...prev }
+      delete next[windowId]
+      return next
+    })
     if (activeWindow === windowId) setActiveWindow(null)
   }, [activeWindow])
 
@@ -271,6 +298,39 @@ export function Desktop() {
   const handleWindowStateChange = useCallback((windowId: string, state: WindowState) => {
     setWindowStates(prev => ({ ...prev, [windowId]: state }))
   }, [])
+
+  const handleSnapZoneChange = useCallback((_zone: SnapZone) => {
+    setActiveSnapZone(_zone)
+  }, [])
+
+  const handleSnapApply = useCallback((windowId: string, zone: SnapZone) => {
+    if (zone) {
+      const geo = getSnapGeometry(zone, window.innerWidth, window.innerHeight)
+      // Save current geometry before snapping
+      setSnapPreSnapSizes(prev => ({
+        ...prev,
+        [windowId]: {
+          x: windowStates[windowId]?.x ?? 100,
+          y: windowStates[windowId]?.y ?? 50,
+          width: windowStates[windowId]?.width ?? 900,
+          height: windowStates[windowId]?.height ?? 600,
+        },
+      }))
+      // Apply snap geometry
+      setWindowStates(prev => ({
+        ...prev,
+        [windowId]: { ...prev[windowId], ...geo, isMaximized: false },
+      }))
+    } else {
+      // Un-snap: clear pre-snap data
+      setSnapPreSnapSizes(prev => {
+        const next = { ...prev }
+        delete next[windowId]
+        return next
+      })
+    }
+    setActiveSnapZone(null)
+  }, [windowStates])
 
   const handleIconDoubleClick = useCallback((icon: DesktopIconConfig) => {
     if (icon.opensWindow) {
@@ -622,6 +682,23 @@ export function Desktop() {
           />
         )}
 
+        {/* Snap Preview Overlay */}
+        {activeSnapZone && (() => {
+          const geo = getSnapGeometry(activeSnapZone, window.innerWidth, window.innerHeight)
+          return (
+            <div
+              className="fixed bg-white/10 border-2 border-white/20 rounded-lg backdrop-blur-sm pointer-events-none transition-all duration-150"
+              style={{
+                left: geo.x,
+                top: geo.y,
+                width: geo.width,
+                height: geo.height,
+                zIndex: nextZIndex + 1,
+              }}
+            />
+          )
+        })()}
+
         {Array.from(openWindows).map(windowId => {
           const baseType = windowId.replace(/-\d+$/, '')
           const config = windows.find(w => w.id === baseType)
@@ -652,6 +729,9 @@ export function Desktop() {
               onClose={() => closeWindow(windowId)}
               onMinimize={() => minimizeWindow(windowId)}
               onStateChange={s => handleWindowStateChange(windowId, s)}
+              onSnapZoneChange={handleSnapZoneChange}
+              onSnapApply={zone => handleSnapApply(windowId, zone)}
+              preSnapSize={snapPreSnapSizes[windowId] ? { width: snapPreSnapSizes[windowId].width, height: snapPreSnapSizes[windowId].height } : undefined}
             >
               {typeof config.component === 'function'
                 ? config.component({ onClose: () => closeWindow(windowId) })
