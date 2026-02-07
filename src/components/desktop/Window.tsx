@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
-import { detectSnapZone, TASKBAR_HEIGHT, type SnapZone } from './windowSnap.js'
+import { detectSnapZone, type SnapZone } from './windowSnap.js'
 
 export interface WindowState {
   x: number
@@ -134,7 +134,7 @@ export function Window({
     let dragWidth = state.width
     const vW = window.innerWidth
     const vH = window.innerHeight
-    const maxY = vH - TASKBAR_HEIGHT - 36 // keep title bar above taskbar
+    const maxY = vH - 48 - 36 // keep title bar above taskbar (48 = taskbar height)
 
     console.log(`[SNAP-DEBUG] titlebar mousedown: window="${id}" mouse=(${e.clientX},${e.clientY}) windowPos=(${state.x},${state.y}) windowSize=(${state.width}x${state.height}) viewport=(${vW}x${vH})`)
 
@@ -184,17 +184,23 @@ export function Window({
         const newY = Math.max(0, Math.min(maxY, unclampedY))
         updateState({ x: newX, y: newY })
 
-        // Detect snap zone based on window hitting desktop boundaries
-        const zone = detectSnapZone(unclampedX, unclampedY, e.clientX, e.clientY, dragWidth, vW, vH)
+        // Detect snap zone: when the window hits a desktop boundary,
+        // feed detectSnapZone coordinates that are at the edge
+        let snapX = e.clientX
+        let snapY = e.clientY
+        if (unclampedX < 0) snapX = 0                          // window hit left wall
+        if (unclampedX + dragWidth > vW) snapX = vW            // window hit right wall
+        if (unclampedY < 0) snapY = 0                          // window hit top wall
+        const zone = detectSnapZone(snapX, snapY, vW, vH)
 
         moveCount++
         if (moveCount % 10 === 0) {
-          console.log(`[SNAP-DEBUG] dragging: mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) windowPos=(${Math.round(newX)},${Math.round(newY)}) zone=${zone}`)
+          console.log(`[SNAP-DEBUG] dragging: mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) windowPos=(${Math.round(newX)},${Math.round(newY)}) snapCoords=(${snapX},${snapY}) zone=${zone}`)
         }
 
         if (zone !== currentSnapZone) {
           currentSnapZone = zone
-          console.log(`[SNAP-DEBUG] snap zone changed: ${zone} at mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)})`)
+          console.log(`[SNAP-DEBUG] snap zone changed: ${zone} at unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) snapCoords=(${snapX},${snapY})`)
           onSnapZoneChange?.(zone)
         }
       }

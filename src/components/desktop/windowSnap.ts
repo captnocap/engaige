@@ -8,59 +8,45 @@ export type SnapZone =
   | 'bottom-right'
   | null
 
-export const TASKBAR_HEIGHT = 48
+const EDGE_THRESHOLD = 8
+const CORNER_SIZE = 150
+const TASKBAR_HEIGHT = 48
 const SNAP_GAP = 4
 
 /**
- * Detect snap zone based on the window hitting the desktop boundaries.
- *
- * Uses the unclamped (raw) window position to detect when the window
- * is being pushed against a desktop edge. The mouse position is used
- * to distinguish corners from edges (e.g., left-edge + mouse near top = top-left).
+ * Detect which snap zone the cursor is in based on screen position.
+ * Corners take priority over edges.
  */
 export function detectSnapZone(
-  unclampedX: number,
-  unclampedY: number,
-  mouseX: number,
-  mouseY: number,
-  windowWidth: number,
+  clientX: number,
+  clientY: number,
   viewportW: number,
   viewportH: number,
 ): SnapZone {
-  const usableH = viewportH - TASKBAR_HEIGHT
+  const bottomBound = viewportH - TASKBAR_HEIGHT
 
-  // Window is being pushed against a desktop boundary
-  const atLeft = unclampedX < 0
-  const atRight = unclampedX + windowWidth > viewportW
-  const atTop = unclampedY < 0
+  // Must be near an edge to trigger any zone
+  const nearLeft = clientX <= EDGE_THRESHOLD
+  const nearRight = clientX >= viewportW - EDGE_THRESHOLD
+  const nearTop = clientY <= EDGE_THRESHOLD
+  const nearBottom = clientY >= bottomBound - EDGE_THRESHOLD
 
-  if (!atLeft && !atRight && !atTop) return null
+  // Corner detection (corners take priority)
+  if (nearLeft && clientY < CORNER_SIZE) return 'top-left'
+  if (nearRight && clientY < CORNER_SIZE) return 'top-right'
+  if (nearLeft && clientY > bottomBound - CORNER_SIZE) return 'bottom-left'
+  if (nearRight && clientY > bottomBound - CORNER_SIZE) return 'bottom-right'
 
-  // Use mouse position to determine corner vs edge.
-  // Corners = mouse in top/bottom 30% of usable height, or left/right 30% of width.
-  const cornerH = usableH * 0.3
-  const cornerW = viewportW * 0.3
-  const mouseNearTop = mouseY < cornerH
-  const mouseNearBottom = mouseY > usableH - cornerH
-  const mouseNearLeft = mouseX < cornerW
-  const mouseNearRight = mouseX > viewportW - cornerW
+  // Also detect corners from top/bottom edges
+  if (nearTop && clientX < CORNER_SIZE) return 'top-left'
+  if (nearTop && clientX > viewportW - CORNER_SIZE) return 'top-right'
+  if (nearBottom && clientX < CORNER_SIZE) return 'bottom-left'
+  if (nearBottom && clientX > viewportW - CORNER_SIZE) return 'bottom-right'
 
-  // Multiple edges hit simultaneously → definite corner
-  if (atLeft && atTop) return 'top-left'
-  if (atRight && atTop) return 'top-right'
-
-  // Single edge + mouse position → corner or edge
-  if (atLeft && mouseNearTop) return 'top-left'
-  if (atLeft && mouseNearBottom) return 'bottom-left'
-  if (atRight && mouseNearTop) return 'top-right'
-  if (atRight && mouseNearBottom) return 'bottom-right'
-  if (atTop && mouseNearLeft) return 'top-left'
-  if (atTop && mouseNearRight) return 'top-right'
-
-  // Pure edges
-  if (atLeft) return 'left'
-  if (atRight) return 'right'
-  if (atTop) return 'top'
+  // Edge detection
+  if (nearLeft) return 'left'
+  if (nearRight) return 'right'
+  if (nearTop) return 'top'
 
   return null
 }
