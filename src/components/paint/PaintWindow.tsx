@@ -76,16 +76,17 @@ export function PaintWindow() {
         onSave={handleSave}
         canUndo={historyIndexRef.current > 0}
         canRedo={historyIndexRef.current < historyRef.current.length - 1}
-      />
-      <PaintCanvas
-        tool={tool}
-        color={color}
-        brushSize={brushSize}
-        historyRef={historyRef}
-        historyIndexRef={historyIndexRef}
-        canvasRef={canvasRef}
-        onHistoryChange={triggerUpdate}
-      />
+      >
+        <PaintCanvas
+          tool={tool}
+          color={color}
+          brushSize={brushSize}
+          historyRef={historyRef}
+          historyIndexRef={historyIndexRef}
+          canvasRef={canvasRef}
+          onHistoryChange={triggerUpdate}
+        />
+      </PaintToolbar>
     </div>
   )
 }

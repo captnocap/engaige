@@ -37,12 +37,13 @@ interface ToolbarProps {
   onSave: () => void
   canUndo: boolean
   canRedo: boolean
+  children?: React.ReactNode
 }
 
 export function PaintToolbar({
   activeTool, onToolChange, color, onColorChange,
   brushSize, onBrushSizeChange, onUndo, onRedo, onClear, onSave,
-  canUndo, canRedo,
+  canUndo, canRedo, children,
 }: ToolbarProps) {
   return (
     <div className="flex flex-col h-full">
@@ -99,9 +100,9 @@ export function PaintToolbar({
         </button>
       </div>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0">
         {/* Left tool panel */}
-        <div className="w-12 border-r border-[var(--color-border)] bg-[var(--color-bgSecondary)] flex flex-col items-center py-2 gap-1">
+        <div className="w-12 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bgSecondary)] flex flex-col items-center py-2 gap-1">
           {TOOLS.map(tool => (
             <button
               key={tool.id}
@@ -125,6 +126,9 @@ export function PaintToolbar({
             />
           </div>
         </div>
+
+        {/* Canvas area */}
+        {children}
       </div>
     </div>
   )
