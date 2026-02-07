@@ -4,7 +4,7 @@
  * Main layout combining toolbar and canvas.
  */
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { PaintToolbar, type PaintTool } from './PaintTools.js'
 import { PaintCanvas } from './PaintCanvas.js'
 import { useWSRequest } from '../../stores/wsStore.js'
@@ -15,9 +15,13 @@ export function PaintWindow() {
   const [brushSize, setBrushSize] = useState(3)
   const [, forceUpdate] = useState(0)
   const [saving, setSaving] = useState(false)
+  const [saveDialog, setSaveDialog] = useState(false)
+  const [saveFilename, setSaveFilename] = useState('')
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const historyRef = useRef<ImageData[]>([])
   const historyIndexRef = useRef(0)
+  const filenameInputRef = useRef<HTMLInputElement>(null)
   const { request } = useWSRequest()
 
   const triggerUpdate = useCallback(() => forceUpdate(n => n + 1), [])
@@ -55,17 +59,22 @@ export function PaintWindow() {
     triggerUpdate()
   }, [triggerUpdate])
 
-  const handleSave = useCallback(() => {
+  const handleSaveClick = useCallback(() => {
+    if (!canvasRef.current || saving) return
+    setSaveFilename(`painting-${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).replace(' ', '-').toLowerCase()}`)
+    setSaveStatus('idle')
+    setSaveDialog(true)
+  }, [saving])
+
+  const handleSaveConfirm = useCallback(() => {
     const canvas = canvasRef.current
-    if (!canvas || saving) return
+    if (!canvas || !saveFilename.trim()) return
 
-    const filename = prompt('Save as:', `painting-${Date.now()}.png`)
-    if (!filename) return
-
-    const name = filename.endsWith('.png') ? filename : `${filename}.png`
+    const name = saveFilename.trim().endsWith('.png') ? saveFilename.trim() : `${saveFilename.trim()}.png`
     const dataUrl = canvas.toDataURL('image/png')
 
     setSaving(true)
+    setSaveStatus('saving')
     request('media:save', {
       data: dataUrl,
       filename: name,
@@ -73,13 +82,23 @@ export function PaintWindow() {
       category: 'upload',
       description: 'Created in CobPaint',
     })
-      .then(() => alert(`Saved "${name}" to Files`))
-      .catch(() => alert('Failed to save'))
+      .then(() => {
+        setSaveStatus('saved')
+        setTimeout(() => setSaveDialog(false), 1200)
+      })
+      .catch(() => setSaveStatus('error'))
       .finally(() => setSaving(false))
-  }, [saving, request])
+  }, [saveFilename, request])
+
+  // Focus input when dialog opens
+  useEffect(() => {
+    if (saveDialog) {
+      requestAnimationFrame(() => filenameInputRef.current?.select())
+    }
+  }, [saveDialog])
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <div className="flex flex-col h-full bg-[var(--color-bg)] relative">
       <PaintToolbar
         activeTool={tool}
         onToolChange={setTool}
@@ -90,7 +109,7 @@ export function PaintWindow() {
         onUndo={handleUndo}
         onRedo={handleRedo}
         onClear={handleClear}
-        onSave={handleSave}
+        onSave={handleSaveClick}
         canUndo={historyIndexRef.current > 0}
         canRedo={historyIndexRef.current < historyRef.current.length - 1}
       >
@@ -104,6 +123,70 @@ export function PaintWindow() {
           onHistoryChange={triggerUpdate}
         />
       </PaintToolbar>
+
+      {/* Save Dialog */}
+      {saveDialog && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+          <div
+            className="w-80 rounded-lg border shadow-2xl overflow-hidden"
+            style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+          >
+            <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--color-border)', background: 'var(--color-bgSecondary)' }}>
+              <div className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>Save to Files</div>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--color-textSecondary)' }}>Filename</label>
+                <div className="flex items-center gap-1">
+                  <input
+                    ref={filenameInputRef}
+                    type="text"
+                    value={saveFilename}
+                    onChange={e => setSaveFilename(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSaveConfirm(); if (e.key === 'Escape') setSaveDialog(false); }}
+                    disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+                    className="flex-1 px-3 py-1.5 rounded text-sm outline-none"
+                    style={{
+                      background: 'var(--color-bgSecondary)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text)',
+                    }}
+                  />
+                  <span className="text-xs" style={{ color: 'var(--color-textMuted)' }}>.png</span>
+                </div>
+              </div>
+
+              {saveStatus === 'saved' && (
+                <div className="text-xs text-center py-1" style={{ color: '#00ff88' }}>
+                  Saved to My Files
+                </div>
+              )}
+              {saveStatus === 'error' && (
+                <div className="text-xs text-center py-1" style={{ color: 'var(--color-error)' }}>
+                  Save failed. Try again.
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-2 px-4 py-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
+              <button
+                onClick={() => setSaveDialog(false)}
+                className="px-4 py-1.5 rounded text-sm"
+                style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveConfirm}
+                disabled={!saveFilename.trim() || saveStatus === 'saving' || saveStatus === 'saved'}
+                className="px-4 py-1.5 rounded text-sm font-medium disabled:opacity-40"
+                style={{ background: '#00ff88', color: '#000' }}
+              >
+                {saveStatus === 'saving' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
