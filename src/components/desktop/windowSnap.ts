@@ -1,6 +1,7 @@
 export type SnapZone =
   | 'left'
   | 'right'
+  | 'top'
   | 'top-left'
   | 'top-right'
   | 'bottom-left'
@@ -45,6 +46,7 @@ export function detectSnapZone(
   // Edge detection
   if (nearLeft) return 'left'
   if (nearRight) return 'right'
+  if (nearTop) return 'top'
 
   return null
 }
@@ -60,19 +62,23 @@ export function getSnapGeometry(
   const usableH = viewportH - TASKBAR_HEIGHT
   const halfW = Math.floor(viewportW / 2)
   const halfH = Math.floor(usableH / 2)
+  const g = SNAP_GAP       // outer gap (from viewport edge)
+  const hg = SNAP_GAP / 2  // half gap (between adjacent snapped windows)
 
   switch (zone) {
     case 'left':
-      return { x: SNAP_GAP, y: SNAP_GAP, width: halfW - SNAP_GAP * 2, height: usableH - SNAP_GAP * 2 }
+      return { x: g, y: g, width: halfW - g - hg, height: usableH - g * 2 }
     case 'right':
-      return { x: halfW + SNAP_GAP, y: SNAP_GAP, width: halfW - SNAP_GAP * 2, height: usableH - SNAP_GAP * 2 }
+      return { x: halfW + hg, y: g, width: halfW - hg - g, height: usableH - g * 2 }
+    case 'top':
+      return { x: g, y: g, width: viewportW - g * 2, height: usableH - g * 2 }
     case 'top-left':
-      return { x: SNAP_GAP, y: SNAP_GAP, width: halfW - SNAP_GAP * 2, height: halfH - SNAP_GAP * 2 }
+      return { x: g, y: g, width: halfW - g - hg, height: halfH - g - hg }
     case 'top-right':
-      return { x: halfW + SNAP_GAP, y: SNAP_GAP, width: halfW - SNAP_GAP * 2, height: halfH - SNAP_GAP * 2 }
+      return { x: halfW + hg, y: g, width: halfW - hg - g, height: halfH - g - hg }
     case 'bottom-left':
-      return { x: SNAP_GAP, y: halfH + SNAP_GAP, width: halfW - SNAP_GAP * 2, height: halfH - SNAP_GAP * 2 }
+      return { x: g, y: halfH + hg, width: halfW - g - hg, height: halfH - hg - g }
     case 'bottom-right':
-      return { x: halfW + SNAP_GAP, y: halfH + SNAP_GAP, width: halfW - SNAP_GAP * 2, height: halfH - SNAP_GAP * 2 }
+      return { x: halfW + hg, y: halfH + hg, width: halfW - hg - g, height: halfH - hg - g }
   }
 }

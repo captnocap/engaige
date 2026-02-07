@@ -142,8 +142,8 @@ export function Window({
       if ((wasMaximized || wasSnapped) && !hasRestored && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
         hasRestored = true
 
-        const cursorRatioX = e.clientX / (wasMaximized ? window.innerWidth : state.width)
-        const newX = e.clientX - (restoreWidth * Math.min(cursorRatioX, 1))
+        const cursorRatioX = (e.clientX - (wasMaximized ? 0 : state.x)) / (wasMaximized ? window.innerWidth : state.width)
+        const newX = e.clientX - (restoreWidth * Math.min(Math.max(cursorRatioX, 0), 1))
         const newY = e.clientY - 15
 
         dragRef.current.startX = e.clientX
@@ -151,9 +151,11 @@ export function Window({
         dragRef.current.startPosX = newX
         dragRef.current.startPosY = newY
 
+        const clampedX = Math.max(0, Math.min(window.innerWidth - 100, newX))
+        const clampedY = Math.max(0, Math.min(window.innerHeight - 48 - 36, newY))
         updateState({
-          x: Math.max(0, newX),
-          y: Math.max(0, newY),
+          x: clampedX,
+          y: clampedY,
           width: restoreWidth,
           height: restoreHeight,
           isMaximized: false,
@@ -167,8 +169,8 @@ export function Window({
       // Normal dragging (not maximized/snapped or already restored)
       if ((!wasMaximized && !wasSnapped) || hasRestored) {
         updateState({
-          x: Math.max(0, dragRef.current.startPosX + dx),
-          y: Math.max(0, dragRef.current.startPosY + dy),
+          x: Math.max(0, Math.min(window.innerWidth - 100, dragRef.current.startPosX + dx)),
+          y: Math.max(0, Math.min(window.innerHeight - 48 - 36, dragRef.current.startPosY + dy)),
         })
 
         // Detect snap zone
@@ -201,6 +203,12 @@ export function Window({
     e.preventDefault()
     e.stopPropagation()
     onFocus?.()
+
+    // If resizing a snapped window, clear the snap state
+    // so the user's resize is treated as the new "real" size
+    if (preSnapSize) {
+      onSnapApply?.(null)
+    }
 
     resizeRef.current = {
       startX: e.clientX,
