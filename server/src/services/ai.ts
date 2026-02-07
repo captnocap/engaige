@@ -131,6 +131,7 @@ export function buildNPCSystemPrompt(npc: {
   interests: string;
   system_prompt: string;
   personality_traits?: string;
+  core_knowledge?: string;
 }): string {
   const interests = JSON.parse(npc.interests || '[]');
   const personalityTraits = npc.personality_traits ? JSON.parse(npc.personality_traits) : {};
@@ -140,13 +141,18 @@ export function buildNPCSystemPrompt(npc: {
     personalitySection = `## Personality\n${personalityTraits.personality_style}\n\n`;
   }
 
+  let coreKnowledgeSection = '';
+  if (npc.core_knowledge) {
+    coreKnowledgeSection = `## Core Knowledge (things you always know and remember)\n${npc.core_knowledge}\n\n`;
+  }
+
   return `
 You are ${npc.display_name}.
 
 ## Your Identity
 ${npc.system_prompt}
 
-${personalitySection}## Background
+${personalitySection}${coreKnowledgeSection}## Background
 ${npc.bio}
 
 ## Occupation

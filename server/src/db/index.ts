@@ -261,6 +261,11 @@ function initializeSchema(type: 'user' | 'game' | 'npc') {
         -- === SYSTEM PROMPT ===
         system_prompt TEXT NOT NULL,
 
+        -- === CORE KNOWLEDGE (Permanent lore / facts this NPC always knows) ===
+        -- Unlike memories (game.db, decayable), this persists across game resets.
+        -- NULL for procedurally-generated NPCs; populated for lore characters.
+        core_knowledge TEXT,
+
         -- === SOCIAL MEDIA ===
         social_media_handles TEXT, -- JSON object
 
