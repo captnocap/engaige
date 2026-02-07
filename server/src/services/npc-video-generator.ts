@@ -18,6 +18,8 @@ import { generateNPCPost } from './ai.js';
 import { getNPCById } from './npc.js';
 import { aiQueue, Priority } from './ai-queue.js';
 import type { NPC } from './npc.js';
+import { QUIZ_PROMPT_INSTRUCTIONS, type QuizAnswers } from './video-quiz.js';
+import { resolveQuiz, resolveOverlay, resolveTextStyle } from './video-quiz-resolver.js';
 
 // ============================================================================
 // SIMPLIFIED NPC CONFIG SCHEMA
@@ -92,6 +94,109 @@ export type TextEffectName =
   | 'none' | 'fade_in' | 'typewriter' | 'word_by_word' | 'slam' | 'bounce'
   | 'slide_up' | 'slide_down' | 'zoom_in' | 'zoom_out'
   | 'shake' | 'pulse' | 'rainbow' | 'glitch' | 'float';
+
+// ============================================================================
+// QUIZ-BASED NPC CONFIG (NEW)
+// ============================================================================
+
+export interface NPCVideoQuizConfig {
+  mood: QuizAnswers['mood'];
+  aesthetic: QuizAnswers['aesthetic'];
+  intensity: QuizAnswers['intensity'];
+  texture: QuizAnswers['texture'];
+  temperature: QuizAnswers['temperature'];
+  text: TextSegmentConfig[];
+}
+
+const VALID_MOODS = new Set(['contemplative', 'joyful', 'intense', 'chaotic', 'melancholic']);
+const VALID_AESTHETICS = new Set(['cosmic', 'organic', 'geometric', 'terrain', 'digital']);
+const VALID_INTENSITIES = new Set(['whisper', 'conversation', 'shout', 'scream']);
+const VALID_TEXTURES = new Set(['smooth', 'gritty', 'crystalline', 'hazy']);
+const VALID_TEMPERATURES = new Set(['warm', 'cool', 'neutral', 'shifting']);
+
+export function validateQuizConfig(config: unknown): { valid: boolean; errors: string[]; config?: NPCVideoQuizConfig } {
+  const errors: string[] = [];
+  if (!config || typeof config !== 'object') {
+    return { valid: false, errors: ['Config must be an object'] };
+  }
+
+  const c = config as Record<string, unknown>;
+
+  if (!VALID_MOODS.has(c.mood as string)) errors.push(`Invalid mood: ${c.mood}`);
+  if (!VALID_AESTHETICS.has(c.aesthetic as string)) errors.push(`Invalid aesthetic: ${c.aesthetic}`);
+  if (!VALID_INTENSITIES.has(c.intensity as string)) errors.push(`Invalid intensity: ${c.intensity}`);
+  if (!VALID_TEXTURES.has(c.texture as string)) errors.push(`Invalid texture: ${c.texture}`);
+  if (!VALID_TEMPERATURES.has(c.temperature as string)) errors.push(`Invalid temperature: ${c.temperature}`);
+
+  if (!Array.isArray(c.text) || c.text.length === 0) {
+    errors.push('Missing or empty text array');
+  } else {
+    (c.text as unknown[]).forEach((seg, i) => {
+      if (!seg || typeof seg !== 'object') {
+        errors.push(`text[${i}] must be an object`);
+        return;
+      }
+      const s = seg as Record<string, unknown>;
+      if (typeof s.text !== 'string') errors.push(`text[${i}].text must be string`);
+      if (typeof s.start !== 'number') errors.push(`text[${i}].start must be number`);
+      if (!['top', 'center', 'bottom'].includes(s.position as string)) {
+        errors.push(`text[${i}].position must be top/center/bottom`);
+      }
+      if (!VALID_TEXT_EFFECTS.has(s.effect as string)) {
+        errors.push(`text[${i}].effect invalid: ${s.effect}`);
+      }
+    });
+  }
+
+  if (errors.length > 0) return { valid: false, errors };
+  return { valid: true, errors: [], config: c as unknown as NPCVideoQuizConfig };
+}
+
+/**
+ * Expand quiz answers to a full render config using the GenArt system.
+ */
+export function expandQuizToRenderConfig(
+  quizConfig: NPCVideoQuizConfig,
+  platform: PlatformType,
+  duration: number = 10,
+  loop: boolean = true
+): object {
+  const aspect = PLATFORM_ASPECTS[platform] || '9:16';
+  const genArtConfig = resolveQuiz(quizConfig);
+  const overlay = resolveOverlay(quizConfig);
+  const textStyle = resolveTextStyle(quizConfig);
+
+  // Look up overlay preset
+  const overlayConfig = OVERLAY_PRESETS[overlay as OverlayPresetName] || OVERLAY_PRESETS.clean;
+  const textStyleConfig = TEXT_STYLE_PRESETS[textStyle as TextStylePresetName] || TEXT_STYLE_PRESETS.tiktok_caption;
+
+  return {
+    render_type: 'video',
+    viewport: {
+      aspect,
+      platform_hint: platform,
+      fit: 'cover',
+    },
+    duration,
+    loop,
+    layers: {
+      base: {
+        type: 'genart',
+        config: genArtConfig,
+      },
+      overlay: overlayConfig,
+      text: {
+        default_style: textStyleConfig,
+        segments: quizConfig.text.map(seg => ({
+          start: seg.start,
+          text: seg.text,
+          position: seg.position,
+          enter_effect: seg.effect,
+        })),
+      },
+    },
+  };
+}
 
 // ============================================================================
 // PROMPT INSTRUCTIONS FOR NPCs
@@ -378,6 +483,7 @@ export interface VideoGenerationOptions {
   context?: string; // Additional context (recent events, relationship state)
   platform?: PlatformType; // Override platform
   featureCategory?: string;
+  useQuiz?: boolean; // Use quiz-based generation (default: true)
 }
 
 /**
@@ -387,7 +493,7 @@ export interface VideoGenerationOptions {
 export async function generateNPCVideo(
   npcId: string,
   options: VideoGenerationOptions = {}
-): Promise<{ success: boolean; renderConfig?: object; npcConfig?: NPCVideoConfig; error?: string }> {
+): Promise<{ success: boolean; renderConfig?: object; npcConfig?: NPCVideoConfig; quizConfig?: NPCVideoQuizConfig; error?: string }> {
   const npc = getNPCById(npcId);
   if (!npc) {
     return { success: false, error: `NPC ${npcId} not found` };
@@ -395,31 +501,30 @@ export async function generateNPCVideo(
 
   const featureCategory = options.featureCategory || 'autonomous_posts';
   const platform = options.platform || 'instasnap_story';
+  const useQuiz = options.useQuiz !== false; // Default to quiz-based
 
   try {
-    // Build a special prompt that asks for JSON output
-    const videoPrompt = buildVideoPrompt(npc, platform, options);
+    // Build the appropriate prompt
+    const videoPrompt = useQuiz
+      ? buildQuizPrompt(npc, platform, options)
+      : buildVideoPrompt(npc, platform, options);
 
-    // Use the existing generateNPCPost which handles all the AI provider logic
-    // We pass a custom prompt that asks for JSON video config
     const response = await generateNPCPost(
       npcId,
       platform,
       videoPrompt,
       featureCategory,
-      { enable_validation: false } // Skip validation since we're getting JSON, not regular text
+      { enable_validation: false }
     );
 
-    // Extract JSON from response (AI might wrap it in markdown code blocks)
+    // Extract JSON from response
     const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, response];
     const jsonStr = jsonMatch[1]?.trim() || response.trim();
 
-    // Parse JSON
     let parsed: unknown;
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
-      // Try to find JSON object in the response
       const objectMatch = jsonStr.match(/\{[\s\S]*\}/);
       if (objectMatch) {
         try {
@@ -432,17 +537,37 @@ export async function generateNPCVideo(
       }
     }
 
-    // Validate
+    // Try quiz validation first if quiz mode
+    if (useQuiz) {
+      const quizValidation = validateQuizConfig(parsed);
+      if (quizValidation.valid) {
+        const renderConfig = expandQuizToRenderConfig(quizValidation.config!, platform);
+
+        eventBus.fire(EventTypes.SOCIAL_POST_CREATED, {
+          npc_id: npcId,
+          content_type: 'video',
+          platform,
+          intent: quizValidation.config!.mood,
+        }, {
+          source: 'npc-video-generator',
+          npc_id: npcId,
+          importance: 0.6,
+        });
+
+        return { success: true, renderConfig, quizConfig: quizValidation.config };
+      }
+      // Fall through to legacy validation
+    }
+
+    // Legacy preset-based validation
     const validation = validateNPCVideoConfig(parsed);
     if (!validation.valid) {
       console.log('[Video Gen] Validation failed:', validation.errors);
       return { success: false, error: `Invalid config: ${validation.errors.join(', ')}` };
     }
 
-    // Expand to full render config
     const renderConfig = expandToRenderConfig(validation.config!);
 
-    // Emit event
     eventBus.fire(EventTypes.SOCIAL_POST_CREATED, {
       npc_id: npcId,
       content_type: 'video',
@@ -454,11 +579,7 @@ export async function generateNPCVideo(
       importance: 0.6,
     });
 
-    return {
-      success: true,
-      renderConfig,
-      npcConfig: validation.config,
-    };
+    return { success: true, renderConfig, npcConfig: validation.config };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     eventBus.fire(EventTypes.AI_ERROR, {
@@ -498,6 +619,31 @@ Consider your personality when choosing styles. The video should feel authentic 
   return prompt;
 }
 
+function buildQuizPrompt(npc: NPC, platform: PlatformType, options: VideoGenerationOptions): string {
+  let prompt = `Create a short video for ${platform}. Output ONLY valid JSON matching the quiz format below.
+
+${QUIZ_PROMPT_INSTRUCTIONS}
+
+Answer the 5 questions based on your current personality, mood, and what you want to express. The answers will generate a unique visual background for your video. Then write the text content that appears on top.`;
+
+  if (options.prompt) {
+    prompt += `\n\nContent direction: ${options.prompt}`;
+  }
+
+  if (options.context) {
+    prompt += `\n\nCurrent context: ${options.context}`;
+  }
+
+  prompt += `\n\nRemember to:
+1. Answer the quiz honestly based on YOUR personality and current mood
+2. Write text that sounds like YOU, not generic
+3. Time your text segments so they display nicely (3-8 seconds per segment)
+4. Choose text effects that match the energy of your answer
+5. Output ONLY the JSON quiz config, nothing else`;
+
+  return prompt;
+}
+
 // ============================================================================
 // QUEUED VERSION
 // ============================================================================
@@ -515,7 +661,7 @@ export async function queuedGenerateNPCVideo(
 ): Promise<QueuedVideoResult> {
   const priority = options.priority ?? Priority.MEDIUM;
 
-  const result = await aiQueue.enqueue<{ success: boolean; renderConfig?: object; npcConfig?: NPCVideoConfig; error?: string }>({
+  const result = await aiQueue.enqueue<{ success: boolean; renderConfig?: object; npcConfig?: NPCVideoConfig; quizConfig?: NPCVideoQuizConfig; error?: string }>({
     type: 'npc_video',
     execute: async () => generateNPCVideo(npcId, options),
     priority,
@@ -579,7 +725,10 @@ export default {
   generateNPCVideo,
   queuedGenerateNPCVideo,
   validateNPCVideoConfig,
+  validateQuizConfig,
   expandToRenderConfig,
+  expandQuizToRenderConfig,
   storeVideoContent,
   VIDEO_CREATION_INSTRUCTIONS,
+  QUIZ_PROMPT_INSTRUCTIONS,
 };
