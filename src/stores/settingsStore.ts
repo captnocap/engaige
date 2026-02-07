@@ -50,6 +50,7 @@ export interface IconPosition {
 
 export interface DesktopLayoutSettings {
   iconPositions: Record<string, IconPosition>
+  viewportRef: { width: number; height: number } | null
 }
 
 export type ContentRating = 'harsh' | 'strict' | 'normal' | 'relaxed' | 'none'
@@ -132,6 +133,7 @@ const defaultContentRating: ContentRatingSettings = {
 
 const defaultDesktopLayout: DesktopLayoutSettings = {
   iconPositions: {},
+  viewportRef: null,
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -193,6 +195,7 @@ export const useSettingsStore = create<SettingsState>()(
               ...state.desktopLayout.iconPositions,
               [iconId]: position,
             },
+            viewportRef: { width: window.innerWidth, height: window.innerHeight },
           },
         }))
       },
@@ -205,6 +208,7 @@ export const useSettingsStore = create<SettingsState>()(
               ...state.desktopLayout.iconPositions,
               ...positions,
             },
+            viewportRef: { width: window.innerWidth, height: window.innerHeight },
           },
         }))
       },

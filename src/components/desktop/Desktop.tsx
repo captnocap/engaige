@@ -8,6 +8,7 @@ import { useOnboardingStore } from '../../stores/onboardingStore'
 import { useAccountStore } from '../../stores/accountStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useSettingsStore, type IconPosition } from '../../stores/settingsStore.js'
+import { ICON_SIZE, TASKBAR_RESERVE, getDefaultIconPosition, reflowIcons } from './iconReflow.js'
 import { useAwarenessStore } from '../../stores/awarenessStore.js'
 import { useSocialStore } from '../../stores/socialStore.js'
 import { FilesWindow } from './FilesWindow'
@@ -61,24 +62,6 @@ interface SelectionBox {
   startY: number
   currentX: number
   currentY: number
-}
-
-// Default icon positions (multi-column layout that wraps within viewport)
-const ICON_SIZE = 80 // Width of icon
-const ICON_GAP = 8 // Gap between icons
-const ICON_PADDING = 16 // Padding from edge
-const TASKBAR_RESERVE = 60 // Taskbar height + margin
-const COLUMN_WIDTH = ICON_SIZE + ICON_GAP // Horizontal spacing between columns
-
-function getDefaultIconPosition(index: number): IconPosition {
-  const availableHeight = (typeof window !== 'undefined' ? window.innerHeight : 800) - TASKBAR_RESERVE - ICON_PADDING * 2
-  const iconsPerColumn = Math.max(1, Math.floor(availableHeight / (ICON_SIZE + ICON_GAP)))
-  const column = Math.floor(index / iconsPerColumn)
-  const row = index % iconsPerColumn
-  return {
-    x: ICON_PADDING + column * COLUMN_WIDTH,
-    y: ICON_PADDING + row * (ICON_SIZE + ICON_GAP),
-  }
 }
 
 export function Desktop() {
@@ -356,6 +339,41 @@ export function Desktop() {
   const getIconPosition = useCallback((iconId: string, index: number): IconPosition => {
     return desktopLayout.iconPositions[iconId] ?? getDefaultIconPosition(index)
   }, [desktopLayout.iconPositions])
+
+  // On mount: reflow icons that may be out of bounds from a different viewport size
+  useEffect(() => {
+    const allIconIds = desktopIcons.map(i => i.id)
+    const currentPositions: Record<string, IconPosition> = {}
+    allIconIds.forEach((id, index) => {
+      currentPositions[id] = desktopLayout.iconPositions[id] ?? getDefaultIconPosition(index)
+    })
+    const result = reflowIcons(currentPositions, allIconIds, window.innerWidth, window.innerHeight)
+    if (result) setIconPositions(result)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run only on mount
+  }, [])
+
+  // On viewport resize: reflow out-of-bounds icons (debounced)
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const handleResize = () => {
+      if (timeoutId) clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        const { desktopLayout: layout } = useSettingsStore.getState()
+        const allIconIds = desktopIcons.map(i => i.id)
+        const currentPositions: Record<string, IconPosition> = {}
+        allIconIds.forEach((id, index) => {
+          currentPositions[id] = layout.iconPositions[id] ?? getDefaultIconPosition(index)
+        })
+        const result = reflowIcons(currentPositions, allIconIds, window.innerWidth, window.innerHeight)
+        if (result) setIconPositions(result)
+      }, 150)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [desktopIcons, setIconPositions])
 
   const openWindow = useCallback((windowId: string) => {
     setOpenWindows(prev => new Set([...prev, windowId]))
