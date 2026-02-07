@@ -63,15 +63,21 @@ interface SelectionBox {
   currentY: number
 }
 
-// Default icon positions (column layout like original)
+// Default icon positions (multi-column layout that wraps within viewport)
 const ICON_SIZE = 80 // Width of icon
 const ICON_GAP = 8 // Gap between icons
 const ICON_PADDING = 16 // Padding from edge
+const TASKBAR_RESERVE = 60 // Taskbar height + margin
+const COLUMN_WIDTH = ICON_SIZE + ICON_GAP // Horizontal spacing between columns
 
 function getDefaultIconPosition(index: number): IconPosition {
+  const availableHeight = (typeof window !== 'undefined' ? window.innerHeight : 800) - TASKBAR_RESERVE - ICON_PADDING * 2
+  const iconsPerColumn = Math.max(1, Math.floor(availableHeight / (ICON_SIZE + ICON_GAP)))
+  const column = Math.floor(index / iconsPerColumn)
+  const row = index % iconsPerColumn
   return {
-    x: ICON_PADDING,
-    y: ICON_PADDING + index * (ICON_SIZE + ICON_GAP),
+    x: ICON_PADDING + column * COLUMN_WIDTH,
+    y: ICON_PADDING + row * (ICON_SIZE + ICON_GAP),
   }
 }
 
@@ -544,13 +550,15 @@ export function Desktop() {
             ? selectedIcons
             : new Set([dragInitiatorRef.current])
 
+          const maxX = window.innerWidth - ICON_SIZE
+          const maxY = window.innerHeight - TASKBAR_RESERVE - ICON_SIZE
           const newPositions: Record<string, IconPosition> = {}
           iconsToMove.forEach(iconId => {
             const originalPos = dragStartRef.current!.iconPositions[iconId]
             if (originalPos) {
               newPositions[iconId] = {
-                x: Math.max(0, originalPos.x + dx),
-                y: Math.max(0, originalPos.y + dy),
+                x: Math.min(maxX, Math.max(0, originalPos.x + dx)),
+                y: Math.min(maxY, Math.max(0, originalPos.y + dy)),
               }
             }
           })
