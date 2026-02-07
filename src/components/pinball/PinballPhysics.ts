@@ -29,6 +29,8 @@ export interface PhysicsState {
   dropTargetState: Record<string, boolean[]>;
   plungerCharge: number;
   isPlungerCharging: boolean;
+  bumperFlashTimes: number[];
+  slingshotFlashTimes: number[];
 }
 
 interface PhysicsObjects {
@@ -78,6 +80,8 @@ export function createPhysicsEngine(): { objects: PhysicsObjects; state: Physics
     },
     plungerCharge: 0,
     isPlungerCharging: false,
+    bumperFlashTimes: Table.bumpers.map(() => 0),
+    slingshotFlashTimes: Table.slingshots.map(() => 0),
   };
 
   // Create walls
@@ -304,6 +308,7 @@ function setupCollisions(
       if (bumperIdx >= 0) {
         const pts = Table.bumpers[bumperIdx].points * state.combo;
         addScore(state, pts, other.position.x, other.position.y, `${pts}`);
+        state.bumperFlashTimes[bumperIdx] = now;
         // Apply extra force away from bumper
         const dx = ball.position.x - other.position.x;
         const dy = ball.position.y - other.position.y;
@@ -363,6 +368,7 @@ function setupCollisions(
       if (slingshotIdx >= 0) {
         const pts = 10 * state.combo;
         addScore(state, pts, other.position.x, other.position.y, `${pts}`);
+        state.slingshotFlashTimes[slingshotIdx] = now;
         const dx = ball.position.x - other.position.x;
         const dy = ball.position.y - other.position.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
