@@ -76,16 +76,49 @@ Each NPC has:
 
 ## Documentation
 
-- **CLAUDE.md** - Project architecture and development guide
-- **CONTEXT_SYSTEM.md** - How conversation context works (1-on-1, group chats, comments)
-- **AUTONOMOUS_CONTEXT.md** - Context building for autonomous NPC behavior
-- **OUTPUT_VALIDATION.md** - AI failure detection and fallback system
-- **RUNTIME_TOOLS.md** - Tools NPCs can call during conversations
-- **IMAGE_GENERATION.md** - Flexible image provider configuration
-- **EXAMPLE_CONFIGS.md** - Complete NPC and player configuration examples
-- **NPC_PERSONALITY_SYSTEM.md** - Personality traits and message formatting
-- **FILES_SYSTEM.md** - Media management and export/import workflows
-- **PROXY_SYSTEM.md** - Vision and image generation proxies
+### 🎯 Start Here
+
+New to engAIge? Start with these:
+
+1. **[docs/GAME_SYSTEMS.md](docs/GAME_SYSTEMS.md)** - Complete game overview (everything explained)
+2. **[docs/SYSTEM_INDEX.md](docs/SYSTEM_INDEX.md)** - Master map of all systems and where to find things
+3. **[CLAUDE.md](CLAUDE.md)** - Critical development patterns and project guidelines
+
+### 📚 Core Documentation
+
+**Architecture:**
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - High-level system design
+- [docs/BACKEND.md](docs/BACKEND.md) - Backend services and API
+- [docs/FRONTEND.md](docs/FRONTEND.md) - Frontend architecture
+- [docs/TAURI.md](docs/TAURI.md) - Desktop environment
+
+**Code Guides:**
+- [server/src/README.md](server/src/README.md) - Backend source code guide
+- [server/data/README.md](server/data/README.md) - Database and content structure
+- [src/components/README.md](src/components/README.md) - Frontend components guide
+
+**Completed Systems** (in [docs/completed/](docs/completed/)):
+- [Event Bus](docs/completed/EVENT_BUS_SPEC.md) - Central event system
+- [AI Queue](docs/completed/AI_QUEUE.md) - Priority-based AI requests
+- [NPC Personality](docs/completed/NPC_PERSONALITY_SYSTEM.md) - How NPCs behave
+- [Error Logging](docs/completed/ERROR_LOGGING.md) - Error handling
+- [And 15+ more...](docs/completed/)
+
+**World Content:**
+- [docs/FILLER_SITES.md](docs/FILLER_SITES.md) - 20+ parody websites
+- [docs/WORLD_LORE.md](docs/WORLD_LORE.md) - Fictional universe
+- [docs/completed/NEWS_FEED_SYSTEM.md](docs/completed/NEWS_FEED_SYSTEM.md) - News aggregation
+
+### 🔍 Quick Navigation
+
+**"I want to..."**
+- Understand the game → [GAME_SYSTEMS.md](docs/GAME_SYSTEMS.md)
+- Find specific functionality → [SYSTEM_INDEX.md](docs/SYSTEM_INDEX.md)
+- Start developing → [CLAUDE.md](CLAUDE.md)
+- Understand backend → [server/src/README.md](server/src/README.md)
+- Understand frontend → [src/components/README.md](src/components/README.md)
+- See what's done → [docs/completed/](docs/completed/)
+- Check roadmap → [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ## Getting Started
 
