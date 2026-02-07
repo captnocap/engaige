@@ -27,31 +27,39 @@ export function PaintCanvas({
 
   const getCtx = useCallback(() => canvasRef.current?.getContext('2d') ?? null, [canvasRef])
 
-  // Initialize canvas
+  // Initialize canvas once container has valid dimensions
+  const initializedRef = useRef(false)
+
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const container = canvas?.parentElement
+    if (!canvas || !container) return
 
-    // Size to container
-    const rect = canvas.parentElement?.getBoundingClientRect()
-    if (rect) {
-      canvas.width = rect.width
-      canvas.height = rect.height
-    }
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      const { width, height } = entry.contentRect
+      if (width < 1 || height < 1) return
 
-    // Guard against zero-size canvas (window not yet visible)
-    if (canvas.width < 1 || canvas.height < 1) return
+      if (!initializedRef.current) {
+        // First valid size — initialize canvas
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
 
-    // White background
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Save initial state
-    historyRef.current = [ctx.getImageData(0, 0, canvas.width, canvas.height)]
-    historyIndexRef.current = 0
-    onHistoryChange()
+        historyRef.current = [ctx.getImageData(0, 0, canvas.width, canvas.height)]
+        historyIndexRef.current = 0
+        onHistoryChange()
+        initializedRef.current = true
+      }
+    })
+
+    observer.observe(container)
+    return () => observer.disconnect()
   }, [])
 
   const saveToHistory = useCallback(() => {
