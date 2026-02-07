@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useWSRequest } from '../../stores/wsStore.js';
 
 interface MediaFile {
   id: string;
@@ -9,6 +10,7 @@ interface MediaFile {
   description?: string;
   created_at: number;
   owner_type: string;
+  npc_id?: string;
 }
 
 interface NPCFolder {
@@ -20,27 +22,46 @@ interface NPCFolder {
   files: MediaFile[];
 }
 
+interface FilesystemData {
+  myFiles: MediaFile[];
+  npcs: NPCFolder[];
+}
+
 export function FilesWindow() {
+  const { request, connected } = useWSRequest();
   const [currentPath, setCurrentPath] = useState<string[]>(['My Files']);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filesystem, setFilesystem] = useState<FilesystemData>({ myFiles: [], npcs: [] });
+  const [searchResults, setSearchResults] = useState<MediaFile[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for now - will be replaced with API calls
-  const mockFiles: MediaFile[] = [
-    {
-      id: '1',
-      filename: 'sunset.jpg',
-      file_url: '/media/uploads/sunset.jpg',
-      file_type: 'jpg',
-      category: 'upload',
-      description: 'Beautiful sunset photo',
-      created_at: Date.now() / 1000,
-      owner_type: 'player',
-    },
-  ];
+  const fetchFilesystem = useCallback(() => {
+    if (!connected) return;
+    setLoading(true);
+    request<void, FilesystemData>('media:filesystem')
+      .then(data => { setFilesystem(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [connected, request]);
 
-  const mockNPCFolders: NPCFolder[] = [];
+  useEffect(() => {
+    fetchFilesystem();
+  }, [fetchFilesystem]);
+
+  // Search with debounce
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      request<any, { files: MediaFile[] }>('media:getAll', {
+        filters: { search: searchQuery },
+      }).then(data => setSearchResults(data.files)).catch(() => {});
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, request]);
 
   const handleNavigate = (path: string) => {
     if (path === '..') {
@@ -51,24 +72,27 @@ export function FilesWindow() {
     setSelectedFile(null);
   };
 
-  const handleUpload = () => {
-    // TODO: Implement file upload
-    console.log('Upload file');
-  };
-
-  const handleExportConfig = (npcId: string) => {
-    // TODO: Export NPC config
-    console.log('Export config for NPC:', npcId);
-  };
-
-  const handleExportMemory = (npcId: string) => {
-    // TODO: Export NPC memory log
-    console.log('Export memory log for NPC:', npcId);
-  };
+  const handleDelete = useCallback((fileId: string) => {
+    request('media:delete', { id: fileId })
+      .then(() => {
+        setSelectedFile(null);
+        fetchFilesystem();
+      })
+      .catch(() => {});
+  }, [request, fetchFilesystem]);
 
   const currentFolder = currentPath[currentPath.length - 1];
   const isRootLevel = currentPath.length === 1;
-  const isNPCFolder = currentPath[0] === 'NPCs' && currentPath.length === 2;
+  const isNPCFolder = currentPath.length >= 2 && currentPath[1] === 'NPCs';
+  const selectedNPCName = isNPCFolder && currentPath.length === 3 ? currentPath[2] : null;
+  const selectedNPCFolder = selectedNPCName
+    ? filesystem.npcs.find(n => n.npc.display_name === selectedNPCName)
+    : null;
+
+  // Determine which files to display
+  const displayFiles = searchResults
+    ?? (currentFolder === 'My Uploads' ? filesystem.myFiles : []);
+  const npcFiles = selectedNPCFolder?.files ?? [];
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--color-bg)' }}>
@@ -135,13 +159,13 @@ export function FilesWindow() {
           </button>
         </div>
 
-        {/* Upload Button */}
+        {/* Refresh */}
         <button
-          onClick={handleUpload}
-          className="px-4 py-1 rounded text-sm font-medium transition-colors"
-          style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
+          onClick={fetchFilesystem}
+          className="px-3 py-1 rounded text-sm transition-colors"
+          style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}
         >
-          + Upload
+          Refresh
         </button>
       </div>
 
@@ -149,70 +173,18 @@ export function FilesWindow() {
       <div className="flex-1 flex overflow-hidden">
         {/* File List/Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          {currentFolder === 'My Files' && (
-            <>
-              {/* Root folders */}
-              <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
-                <FolderItem
-                  name="My Uploads"
-                  icon="📁"
-                  count={mockFiles.length}
-                  onClick={() => handleNavigate('My Uploads')}
-                  viewMode={viewMode}
-                />
-                <FolderItem
-                  name="NPCs"
-                  icon="👥"
-                  count={mockNPCFolders.length}
-                  onClick={() => handleNavigate('NPCs')}
-                  viewMode={viewMode}
-                />
-              </div>
-            </>
-          )}
-
-          {currentFolder === 'NPCs' && (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
-              {mockNPCFolders.map((npcFolder) => (
-                <NPCFolderItem
-                  key={npcFolder.npc.id}
-                  npc={npcFolder.npc}
-                  fileCount={npcFolder.files.length}
-                  onClick={() => handleNavigate(npcFolder.npc.display_name)}
-                  viewMode={viewMode}
-                />
-              ))}
-              {mockNPCFolders.length === 0 && (
-                <div className="col-span-4 text-center py-12" style={{ color: 'var(--color-textMuted)' }}>
-                  No NPCs yet. Create some NPCs to see their files here!
-                </div>
-              )}
+          {loading ? (
+            <div className="flex items-center justify-center h-full" style={{ color: 'var(--color-textMuted)' }}>
+              Loading files...
             </div>
-          )}
-
-          {isNPCFolder && (
+          ) : searchResults ? (
+            // Search results view
             <div>
-              {/* NPC folder actions */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => handleExportConfig('npc-id')}
-                  className="px-3 py-1 rounded text-sm transition-colors"
-                  style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}
-                >
-                  📄 Export Config
-                </button>
-                <button
-                  onClick={() => handleExportMemory('npc-id')}
-                  className="px-3 py-1 rounded text-sm transition-colors"
-                  style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}
-                >
-                  📝 Export Memory Log
-                </button>
+              <div className="text-xs mb-3" style={{ color: 'var(--color-textMuted)' }}>
+                {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
               </div>
-
-              {/* Files */}
               <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
-                {mockFiles.map((file) => (
+                {searchResults.map((file) => (
                   <FileItem
                     key={file.id}
                     file={file}
@@ -221,13 +193,50 @@ export function FilesWindow() {
                     viewMode={viewMode}
                   />
                 ))}
+                {searchResults.length === 0 && (
+                  <div className="col-span-4 text-center py-12" style={{ color: 'var(--color-textMuted)' }}>
+                    No files match your search.
+                  </div>
+                )}
               </div>
             </div>
-          )}
-
-          {currentFolder === 'My Uploads' && (
+          ) : currentFolder === 'My Files' ? (
             <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
-              {mockFiles.map((file) => (
+              <FolderItem
+                name="My Uploads"
+                icon="📁"
+                count={filesystem.myFiles.length}
+                onClick={() => handleNavigate('My Uploads')}
+                viewMode={viewMode}
+              />
+              <FolderItem
+                name="NPCs"
+                icon="👥"
+                count={filesystem.npcs.length}
+                onClick={() => handleNavigate('NPCs')}
+                viewMode={viewMode}
+              />
+            </div>
+          ) : currentFolder === 'NPCs' && !selectedNPCName ? (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
+              {filesystem.npcs.map((npcFolder) => (
+                <NPCFolderItem
+                  key={npcFolder.npc.id}
+                  npc={npcFolder.npc}
+                  fileCount={npcFolder.files.length}
+                  onClick={() => handleNavigate(npcFolder.npc.display_name)}
+                  viewMode={viewMode}
+                />
+              ))}
+              {filesystem.npcs.length === 0 && (
+                <div className="col-span-4 text-center py-12" style={{ color: 'var(--color-textMuted)' }}>
+                  No NPCs yet. Create some NPCs to see their files here!
+                </div>
+              )}
+            </div>
+          ) : selectedNPCName ? (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
+              {npcFiles.map((file) => (
                 <FileItem
                   key={file.id}
                   file={file}
@@ -236,13 +245,30 @@ export function FilesWindow() {
                   viewMode={viewMode}
                 />
               ))}
-              {mockFiles.length === 0 && (
+              {npcFiles.length === 0 && (
                 <div className="col-span-4 text-center py-12" style={{ color: 'var(--color-textMuted)' }}>
-                  No files yet. Click Upload to add files!
+                  No files for this NPC yet.
                 </div>
               )}
             </div>
-          )}
+          ) : currentFolder === 'My Uploads' ? (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-4 gap-3' : 'space-y-1'}>
+              {displayFiles.map((file) => (
+                <FileItem
+                  key={file.id}
+                  file={file}
+                  isSelected={selectedFile?.id === file.id}
+                  onClick={() => setSelectedFile(file)}
+                  viewMode={viewMode}
+                />
+              ))}
+              {displayFiles.length === 0 && (
+                <div className="col-span-4 text-center py-12" style={{ color: 'var(--color-textMuted)' }}>
+                  No files yet. Save something from CobPaint!
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
 
         {/* Preview Panel */}
@@ -290,18 +316,7 @@ export function FilesWindow() {
               {/* Actions */}
               <div className="space-y-2">
                 <button
-                  className="w-full px-3 py-2 rounded text-sm transition-colors"
-                  style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
-                >
-                  Send to NPC
-                </button>
-                <button
-                  className="w-full px-3 py-2 rounded text-sm transition-colors"
-                  style={{ background: 'var(--color-bgTertiary)', color: 'var(--color-text)' }}
-                >
-                  Use as Reference
-                </button>
-                <button
+                  onClick={() => handleDelete(selectedFile.id)}
                   className="w-full px-3 py-2 rounded text-sm transition-colors"
                   style={{ background: 'var(--color-error)', color: 'var(--color-text)' }}
                 >

@@ -7,15 +7,18 @@
 import { useState, useRef, useCallback } from 'react'
 import { PaintToolbar, type PaintTool } from './PaintTools.js'
 import { PaintCanvas } from './PaintCanvas.js'
+import { useWSRequest } from '../../stores/wsStore.js'
 
 export function PaintWindow() {
   const [tool, setTool] = useState<PaintTool>('pencil')
   const [color, setColor] = useState('#000000')
   const [brushSize, setBrushSize] = useState(3)
   const [, forceUpdate] = useState(0)
+  const [saving, setSaving] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const historyRef = useRef<ImageData[]>([])
   const historyIndexRef = useRef(0)
+  const { request } = useWSRequest()
 
   const triggerUpdate = useCallback(() => forceUpdate(n => n + 1), [])
 
@@ -54,12 +57,26 @@ export function PaintWindow() {
 
   const handleSave = useCallback(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const link = document.createElement('a')
-    link.download = `cobpaint-${Date.now()}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-  }, [])
+    if (!canvas || saving) return
+
+    const filename = prompt('Save as:', `painting-${Date.now()}.png`)
+    if (!filename) return
+
+    const name = filename.endsWith('.png') ? filename : `${filename}.png`
+    const dataUrl = canvas.toDataURL('image/png')
+
+    setSaving(true)
+    request('media:save', {
+      data: dataUrl,
+      filename: name,
+      mimeType: 'image/png',
+      category: 'upload',
+      description: 'Created in CobPaint',
+    })
+      .then(() => alert(`Saved "${name}" to Files`))
+      .catch(() => alert('Failed to save'))
+      .finally(() => setSaving(false))
+  }, [saving, request])
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
