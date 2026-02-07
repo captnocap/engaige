@@ -48,30 +48,62 @@ export function getBreakpointKey(vw: number): string {
   return 'xl'
 }
 
-// --- Overlap detection ---
+// --- Conflict detection ---
 
-function iconsOverlapOrOOB(
+// Physics body collision range (must match iconPhysics.ts spacing)
+const PHYSICS_BODY_SIZE = ICON_SIZE + ICON_GAP + 8
+
+/**
+ * Find the set of icon IDs that are in conflict (overlapping or OOB)
+ * plus any neighbors within physics-body range of a conflicting icon.
+ * Returns empty set if no conflicts exist.
+ */
+function findConflictCluster(
   positions: Record<string, { x: number; y: number }>,
   iconIds: string[],
   maxX: number,
   maxY: number,
-): boolean {
-  const size = ICON_SIZE + ICON_GAP
+): Set<string> {
+  const conflicting = new Set<string>()
+
+  // Pass 1: find directly conflicting icons (OOB or overlapping)
   for (let i = 0; i < iconIds.length; i++) {
     const a = positions[iconIds[i]]
     if (!a) continue
 
-    // Out of bounds check
-    if (a.x < 0 || a.x > maxX || a.y < 0 || a.y > maxY) return true
+    if (a.x < 0 || a.x > maxX || a.y < 0 || a.y > maxY) {
+      conflicting.add(iconIds[i])
+    }
 
-    // Overlap check against all subsequent icons
     for (let j = i + 1; j < iconIds.length; j++) {
       const b = positions[iconIds[j]]
       if (!b) continue
-      if (Math.abs(a.x - b.x) < size && Math.abs(a.y - b.y) < size) return true
+      if (Math.abs(a.x - b.x) < PHYSICS_BODY_SIZE && Math.abs(a.y - b.y) < PHYSICS_BODY_SIZE) {
+        conflicting.add(iconIds[i])
+        conflicting.add(iconIds[j])
+      }
     }
   }
-  return false
+
+  if (conflicting.size === 0) return conflicting
+
+  // Pass 2: expand to include any non-conflicting icon within physics range
+  // of a conflicting icon (they'd get pushed by the physics engine anyway)
+  for (const id of iconIds) {
+    if (conflicting.has(id)) continue
+    const a = positions[id]
+    if (!a) continue
+    for (const cid of conflicting) {
+      const b = positions[cid]
+      if (!b) continue
+      if (Math.abs(a.x - b.x) < PHYSICS_BODY_SIZE && Math.abs(a.y - b.y) < PHYSICS_BODY_SIZE) {
+        conflicting.add(id)
+        break
+      }
+    }
+  }
+
+  return conflicting
 }
 
 // --- Auto-grid threshold ---
@@ -163,14 +195,17 @@ export function reflowIcons(
     }
   }
 
-  // Check if physics is needed
-  if (!iconsOverlapOrOOB(startPositions, iconIds, maxX, maxY)) {
-    // Everything's fine — use start positions directly
+  // Find which icons are actually in conflict (overlapping, OOB, or neighbors of those)
+  const conflictSet = findConflictCluster(startPositions, iconIds, maxX, maxY)
+
+  if (conflictSet.size === 0) {
+    // No conflicts — use start positions directly
     return { pixelPositions: startPositions }
   }
 
-  // Run physics settle
-  const physicsInput = iconIds.map(id => ({
+  // Only feed conflicting icons into physics, keep the rest untouched
+  const conflictIds = iconIds.filter(id => conflictSet.has(id))
+  const physicsInput = conflictIds.map(id => ({
     id,
     x: startPositions[id].x,
     y: startPositions[id].y,
@@ -185,8 +220,14 @@ export function reflowIcons(
     ICON_GAP,
   )
 
-  // Check auto-grid threshold
-  if (shouldAutoGrid(startPositions, settled, iconIds)) {
+  // Merge: physics-settled positions for conflicts, original positions for everyone else
+  const merged: Record<string, IconPosition> = {}
+  for (const id of iconIds) {
+    merged[id] = settled[id] ?? startPositions[id]
+  }
+
+  // Check auto-grid threshold (only against the conflict cluster, not all icons)
+  if (shouldAutoGrid(startPositions, merged, conflictIds)) {
     const gridPixels: Record<string, IconPosition> = {}
     const gridNormalized: Record<string, IconPosition> = {}
     for (let i = 0; i < iconIds.length; i++) {
@@ -198,5 +239,5 @@ export function reflowIcons(
     return { pixelPositions: gridPixels, autoGridNormalized: gridNormalized }
   }
 
-  return { pixelPositions: settled }
+  return { pixelPositions: merged }
 }
