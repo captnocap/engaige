@@ -33,6 +33,7 @@ import { CobMedia } from './CobMedia.js'
 import { SolitaireWindow } from '../solitaire/SolitaireWindow.js'
 import { PaintWindow } from '../paint/PaintWindow.js'
 import { CobSnip } from './CobSnip.js'
+import { MyFaceMessenger } from './apps/MyFaceMessenger/index.js'
 import { ServerConnectionOverlay } from '../ui/ServerConnectionOverlay.js'
 import { ContextMenu } from '../ui/ContextMenu.js'
 import { useContextMenu } from '../../hooks/useContextMenu.js'
@@ -83,6 +84,7 @@ export function Desktop() {
   const [phoneVisible, setPhoneVisible] = useState(false)
   const [windowInstanceCounter, setWindowInstanceCounter] = useState(1)
   const [settingsRequestedTab, setSettingsRequestedTab] = useState<string | null>(null)
+  const [messengerTargetNPC, setMessengerTargetNPC] = useState<string | null>(null)
 
   // Sticky notes state
   const [stickyNotes, setStickyNotes] = useState<StickyNote[]>(() => {
@@ -302,10 +304,18 @@ export function Desktop() {
       component: <CobSnip />,
       defaultState: { x: 400, y: 150, width: 400, height: 300 },
     },
+    {
+      id: 'myface-messenger',
+      title: 'MyFace Messenger',
+      icon: '💬',
+      component: <MyFaceMessenger initialNPCId={messengerTargetNPC} />,
+      defaultState: { x: 150, y: 80, width: 750, height: 600 },
+    },
   ]
 
   const desktopIcons: DesktopIconConfig[] = [
     { id: 'browser', icon: CornCobIconLarge, label: 'The Corn Cob', opensWindow: 'browser', allowMultiple: true },
+    { id: 'myface-messenger', icon: '💬', label: 'MyFace Msg', opensWindow: 'myface-messenger' },
     { id: 'files', icon: '📁', label: 'Files', opensWindow: 'files' },
     { id: 'wallet', icon: '💰', label: 'Wallet', opensWindow: 'wallet' },
     { id: 'chess', icon: '♟️', label: 'Chess.cob', opensWindow: 'chess' },
@@ -888,8 +898,10 @@ export function Desktop() {
         phoneVisible={phoneVisible}
         onPhoneToggle={() => setPhoneVisible(prev => !prev)}
         onOpenNPCConversation={(npcId) => {
-          setPhoneVisible(true)
-          console.log('[Desktop] Open conversation with NPC:', npcId)
+          setMessengerTargetNPC(npcId)
+          openWindow('myface-messenger')
+          // Clear target after a tick so re-opening doesn't re-trigger
+          setTimeout(() => setMessengerTargetNPC(null), 100)
         }}
       />
 
