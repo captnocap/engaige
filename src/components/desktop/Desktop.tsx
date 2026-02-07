@@ -806,10 +806,27 @@ export function Desktop() {
     else minimizeWindow(windowId)
   }, [windowStates, activeWindow, focusWindow, minimizeWindow])
 
-  // Show Desktop: minimize all open windows
+  // Show Desktop: toggle — first press minimizes all, second press restores them
+  const showDesktopStashedRef = useRef<Set<string> | null>(null)
+
   const handleShowDesktop = useCallback(() => {
-    openWindows.forEach(windowId => minimizeWindow(windowId))
-  }, [openWindows, minimizeWindow])
+    if (showDesktopStashedRef.current) {
+      // Restore stashed windows
+      showDesktopStashedRef.current.forEach(windowId => focusWindow(windowId))
+      showDesktopStashedRef.current = null
+    } else {
+      // Stash currently visible (non-minimized) windows, then minimize them
+      const visible = new Set<string>()
+      openWindows.forEach(windowId => {
+        if (!windowStates[windowId]?.isMinimized) {
+          visible.add(windowId)
+        }
+      })
+      if (visible.size === 0) return
+      showDesktopStashedRef.current = visible
+      visible.forEach(windowId => minimizeWindow(windowId))
+    }
+  }, [openWindows, windowStates, minimizeWindow, focusWindow])
 
   // Snap to Grid: reset all icon positions to default column layout
   const handleSnapToGrid = useCallback(() => {
