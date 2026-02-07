@@ -458,8 +458,32 @@ export function resetDropTargets(state: PhysicsState, objects: PhysicsObjects) {
   });
 }
 
-export function stepEngine(engine: Matter.Engine, delta: number) {
+const MAX_BALL_SPEED = 12;
+
+export function stepEngine(engine: Matter.Engine, delta: number, objects?: PhysicsObjects, state?: PhysicsState) {
   Engine.update(engine, delta);
+
+  // Clamp ball velocity to prevent tunneling through walls
+  if (objects?.ball) {
+    const ball = objects.ball;
+    const vx = ball.velocity.x;
+    const vy = ball.velocity.y;
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    if (speed > MAX_BALL_SPEED) {
+      const scale = MAX_BALL_SPEED / speed;
+      Body.setVelocity(ball, { x: vx * scale, y: vy * scale });
+    }
+
+    // Bounds check - drain the ball if it escapes the table
+    if (state && (
+      ball.position.x < -10 ||
+      ball.position.x > Table.TABLE_WIDTH + 10 ||
+      ball.position.y < -10 ||
+      ball.position.y > Table.TABLE_HEIGHT + 20
+    )) {
+      state.ballInPlay = false;
+    }
+  }
 }
 
 export function destroyEngine(engine: Matter.Engine) {

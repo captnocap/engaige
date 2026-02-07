@@ -158,8 +158,8 @@ export function PinballGame({ onGameEnd, onScoreUpdate }: PinballGameProps) {
         Physics.deactivateFlipper(objects.rightFlipper, false);
       }
 
-      // Step physics
-      Physics.stepEngine(objects.engine, delta);
+      // Step physics (with velocity clamping + bounds check)
+      Physics.stepEngine(objects.engine, delta, objects, state);
 
       // Check if ball drained
       if (!state.ballInPlay && !state.gameOver) {
