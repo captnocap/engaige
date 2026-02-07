@@ -1,0 +1,233 @@
+#!/bin/bash
+
+# engAIge Documentation Collection Script
+# Collects all documentation into /docs/ while preserving source code READMEs
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+DOCS_ROOT="$PROJECT_ROOT/docs"
+
+echo "================================================"
+echo "  engAIge Documentation Collection Script"
+echo "================================================"
+echo ""
+echo "Project Root: $PROJECT_ROOT"
+echo "Docs Root: $DOCS_ROOT"
+echo ""
+
+# Create code-guides directory structure
+echo "📁 Creating directory structure..."
+mkdir -p "$DOCS_ROOT/code-guides/backend"
+mkdir -p "$DOCS_ROOT/code-guides/frontend"
+mkdir -p "$DOCS_ROOT/export"
+
+# Copy backend source code guides
+echo ""
+echo "📋 Collecting backend documentation..."
+
+if [ -f "$PROJECT_ROOT/server/src/README.md" ]; then
+    cp "$PROJECT_ROOT/server/src/README.md" "$DOCS_ROOT/code-guides/backend/SERVER_SRC_GUIDE.md"
+    echo "  ✓ server/src/README.md → code-guides/backend/SERVER_SRC_GUIDE.md"
+fi
+
+if [ -f "$PROJECT_ROOT/server/src/agents/README.md" ]; then
+    cp "$PROJECT_ROOT/server/src/agents/README.md" "$DOCS_ROOT/code-guides/backend/AGENTS_GUIDE.md"
+    echo "  ✓ server/src/agents/README.md → code-guides/backend/AGENTS_GUIDE.md"
+fi
+
+if [ -f "$PROJECT_ROOT/server/src/services/README.md" ]; then
+    cp "$PROJECT_ROOT/server/src/services/README.md" "$DOCS_ROOT/code-guides/backend/SERVICES_GUIDE.md"
+    echo "  ✓ server/src/services/README.md → code-guides/backend/SERVICES_GUIDE.md"
+fi
+
+if [ -f "$PROJECT_ROOT/server/src/events/README.md" ]; then
+    cp "$PROJECT_ROOT/server/src/events/README.md" "$DOCS_ROOT/code-guides/backend/EVENTS_GUIDE.md"
+    echo "  ✓ server/src/events/README.md → code-guides/backend/EVENTS_GUIDE.md"
+fi
+
+if [ -f "$PROJECT_ROOT/server/src/network/README.md" ]; then
+    cp "$PROJECT_ROOT/server/src/network/README.md" "$DOCS_ROOT/code-guides/backend/NETWORK_GUIDE.md"
+    echo "  ✓ server/src/network/README.md → code-guides/backend/NETWORK_GUIDE.md"
+fi
+
+if [ -f "$PROJECT_ROOT/server/data/README.md" ]; then
+    cp "$PROJECT_ROOT/server/data/README.md" "$DOCS_ROOT/code-guides/backend/DATA_GUIDE.md"
+    echo "  ✓ server/data/README.md → code-guides/backend/DATA_GUIDE.md"
+fi
+
+# Copy frontend source code guides
+echo ""
+echo "📋 Collecting frontend documentation..."
+
+if [ -f "$PROJECT_ROOT/src/components/README.md" ]; then
+    cp "$PROJECT_ROOT/src/components/README.md" "$DOCS_ROOT/code-guides/frontend/COMPONENTS_GUIDE.md"
+    echo "  ✓ src/components/README.md → code-guides/frontend/COMPONENTS_GUIDE.md"
+fi
+
+# Create comprehensive export bundle
+echo ""
+echo "📦 Creating export bundle in docs/export/..."
+
+# Copy all docs to export folder
+cp -r "$DOCS_ROOT"/*.md "$DOCS_ROOT/export/" 2>/dev/null || true
+cp -r "$DOCS_ROOT/completed" "$DOCS_ROOT/export/" 2>/dev/null || true
+cp -r "$DOCS_ROOT/code-guides" "$DOCS_ROOT/export/" 2>/dev/null || true
+
+# Copy root documentation
+cp "$PROJECT_ROOT/README.md" "$DOCS_ROOT/export/ROOT_README.md"
+cp "$PROJECT_ROOT/CLAUDE.md" "$DOCS_ROOT/export/CLAUDE.md"
+
+# Create documentation index
+echo ""
+echo "📝 Creating documentation index..."
+
+cat > "$DOCS_ROOT/code-guides/INDEX.md" << 'EOF'
+# Code Guides Index
+
+This directory contains **copies** of all source code READMEs collected in one place for easy reading. The original READMEs remain in their source directories for developers browsing the code.
+
+---
+
+## Backend Guides
+
+| Guide | Original Location | Purpose |
+|-------|-------------------|---------|
+| [SERVER_SRC_GUIDE.md](backend/SERVER_SRC_GUIDE.md) | `/server/src/README.md` | Backend source code overview |
+| [AGENTS_GUIDE.md](backend/AGENTS_GUIDE.md) | `/server/src/agents/README.md` | Background agents documentation |
+| [SERVICES_GUIDE.md](backend/SERVICES_GUIDE.md) | `/server/src/services/README.md` | Services layer documentation |
+| [EVENTS_GUIDE.md](backend/EVENTS_GUIDE.md) | `/server/src/events/README.md` | Event bus architecture |
+| [NETWORK_GUIDE.md](backend/NETWORK_GUIDE.md) | `/server/src/network/README.md` | Network layer (WebSocket + HTTP) |
+| [DATA_GUIDE.md](backend/DATA_GUIDE.md) | `/server/data/README.md` | Database and content structure |
+
+---
+
+## Frontend Guides
+
+| Guide | Original Location | Purpose |
+|-------|-------------------|---------|
+| [COMPONENTS_GUIDE.md](frontend/COMPONENTS_GUIDE.md) | `/src/components/README.md` | Frontend components documentation |
+
+---
+
+## Usage
+
+**For Reading:**
+- Browse guides in this directory for convenient reading
+- All guides are self-contained with full context
+
+**For Development:**
+- Original READMEs remain in source directories
+- Update the originals when making changes
+- Run `tools/collect-docs.sh` to sync changes here
+
+**For Export:**
+- See `/docs/export/` for complete documentation bundle
+- Includes all master docs, completed docs, and code guides
+
+---
+
+**Last Updated:** Auto-generated by collect-docs.sh
+EOF
+
+echo "  ✓ Created code-guides/INDEX.md"
+
+# Create export manifest
+cat > "$DOCS_ROOT/export/MANIFEST.md" << 'EOF'
+# Documentation Export Manifest
+
+This directory contains a complete copy of all engAIge documentation.
+
+## Contents
+
+### Master Documentation
+- `ROOT_README.md` - Project overview (from root)
+- `CLAUDE.md` - Development guidelines
+- `GAME_SYSTEMS.md` - Complete game overview
+- `SYSTEM_INDEX.md` - Master system map
+- `ARCHITECTURE.md` - High-level architecture
+- `BACKEND.md` - Backend overview
+- `FRONTEND.md` - Frontend overview
+- `TAURI.md` - Desktop integration
+- And 30+ more documentation files...
+
+### Completed Systems (`/completed/`)
+- EVENT_BUS_SPEC.md
+- EVENT_REFERENCE.md
+- ERROR_LOGGING.md
+- AI_QUEUE.md
+- NPC_PERSONALITY_SYSTEM.md
+- And 15+ more completed system docs...
+
+### Code Guides (`/code-guides/`)
+All source code READMEs collected in one place:
+- Backend guides (server/src, agents, services, events, network, data)
+- Frontend guides (components)
+
+## Export Info
+
+**Exported:** $(date)
+**Export Script:** tools/collect-docs.sh
+**Total Files:** $(find "$DOCS_ROOT/export" -type f -name "*.md" | wc -l) markdown files
+
+## Sharing This Export
+
+This export can be:
+- Zipped and shared with team members
+- Uploaded to documentation hosting
+- Archived for reference
+- Used for offline reading
+
+## Updating
+
+To refresh this export:
+```bash
+cd /path/to/engaige
+./tools/collect-docs.sh
+```
+
+The export will be regenerated with latest docs.
+EOF
+
+echo "  ✓ Created export/MANIFEST.md"
+
+# Count documentation
+TOTAL_DOCS=$(find "$DOCS_ROOT" -type f -name "*.md" | wc -l)
+EXPORT_DOCS=$(find "$DOCS_ROOT/export" -type f -name "*.md" | wc -l)
+
+echo ""
+echo "================================================"
+echo "  ✅ Documentation Collection Complete!"
+echo "================================================"
+echo ""
+echo "📊 Statistics:"
+echo "  • Total documentation files: $TOTAL_DOCS"
+echo "  • Files in export bundle: $EXPORT_DOCS"
+echo ""
+echo "📁 Structure:"
+echo "  docs/"
+echo "  ├── *.md                    (Master documentation)"
+echo "  ├── completed/              (Completed system docs)"
+echo "  ├── code-guides/            (Collected source code READMEs)"
+echo "  │   ├── backend/            (Backend guides)"
+echo "  │   ├── frontend/           (Frontend guides)"
+echo "  │   └── INDEX.md            (Code guides index)"
+echo "  └── export/                 (Complete export bundle)"
+echo "      ├── *.md                (All master docs)"
+echo "      ├── completed/          (All completed docs)"
+echo "      ├── code-guides/        (All code guides)"
+echo "      └── MANIFEST.md         (Export manifest)"
+echo ""
+echo "🎯 Quick Links:"
+echo "  • Code Guides Index: docs/code-guides/INDEX.md"
+echo "  • Export Manifest: docs/export/MANIFEST.md"
+echo "  • Export Directory: docs/export/"
+echo ""
+echo "💡 Tips:"
+echo "  • Source code READMEs remain in their original locations"
+echo "  • Code guides are COPIES for convenient reading"
+echo "  • Export bundle in docs/export/ is ready to share/archive"
+echo "  • Run this script again to refresh after documentation updates"
+echo ""
+echo "================================================"
