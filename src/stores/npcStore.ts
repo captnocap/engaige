@@ -214,9 +214,18 @@ function serverToClientNPC(s: any): NPC {
     apps.push({ appId: 'messages', username: s.username, isActive: true, joinedAt })
   }
 
-  // Parse active hours from behavior_flags
+  // Parse active hours from behavior_flags (handles string "10-24", object {start,end}, or array)
   const bf = s.behavior_flags || {}
-  const [startHour, endHour] = (bf.active_hours || '8-22').split('-').map(Number)
+  let startHour = 8, endHour = 22
+  const ah = bf.active_hours
+  if (typeof ah === 'string') {
+    const parts = ah.split('-').map(Number)
+    startHour = parts[0] ?? 8
+    endHour = parts[1] ?? 22
+  } else if (typeof ah === 'object' && ah !== null) {
+    startHour = ah.start ?? ah[0] ?? 8
+    endHour = ah.end ?? ah[1] ?? 22
+  }
 
   // Derive pronouns from gender
   const pronounsMap: Record<string, string> = {
@@ -335,17 +344,22 @@ export const useNPCStore = create<NPCState>()(
 
       initialize: async () => {
         const { npcs } = get()
-        if (Object.keys(npcs).length > 0) return // Already populated
+        if (Object.keys(npcs).length > 0) return
 
         try {
           const { request, connected } = useWSStore.getState()
           if (!connected) return
 
-          const serverNPCs = await request<any, any[]>('npc:getAll', {})
-          if (Array.isArray(serverNPCs) && serverNPCs.length > 0) {
+          const serverNPCs = await request<any, any>('npc:getAll', {})
+          const npcArray = Array.isArray(serverNPCs) ? serverNPCs : serverNPCs?.npcs || []
+          if (npcArray.length > 0) {
             const clientNPCs: Record<string, NPC> = {}
-            for (const sNPC of serverNPCs) {
-              clientNPCs[sNPC.id] = serverToClientNPC(sNPC)
+            for (const sNPC of npcArray) {
+              try {
+                clientNPCs[sNPC.id] = serverToClientNPC(sNPC)
+              } catch {
+                console.warn('[NPC Store] Failed to map NPC:', sNPC.id)
+              }
             }
             set({ npcs: clientNPCs })
 
