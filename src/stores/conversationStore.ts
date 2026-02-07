@@ -483,6 +483,16 @@ export const useConversationStore = create<ConversationState>()(
         conversations: state.conversations,
         messages: state.messages,
       }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<ConversationState> | undefined
+        return {
+          ...current,
+          ...p,
+          // Guard: persisted conversations may not be an array (corrupt localStorage)
+          conversations: Array.isArray(p?.conversations) ? p.conversations : current.conversations,
+          messages: p?.messages && typeof p.messages === 'object' && !Array.isArray(p.messages) ? p.messages : current.messages,
+        }
+      },
     }
   )
 )

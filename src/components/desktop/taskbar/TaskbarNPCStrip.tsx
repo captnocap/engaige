@@ -19,7 +19,8 @@ export function TaskbarNPCStrip({ onOpenNPCConversation }: TaskbarNPCStripProps)
   const showNPCStrip = useOSThemeStore(s => s.taskbar.showNPCStrip)
   const unpinNPC = useOSThemeStore(s => s.unpinNPC)
   const npcs = useNPCStore(s => s.npcs)
-  const conversations = useConversationStore(s => s.conversations)
+  const rawConversations = useConversationStore(s => s.conversations)
+  const conversations = Array.isArray(rawConversations) ? rawConversations : []
 
   if (!showNPCStrip || !pinnedNPCIds || pinnedNPCIds.length === 0) return null
 
