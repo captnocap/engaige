@@ -113,7 +113,6 @@ export function Desktop() {
   // Snap/tile state
   const [activeSnapZone, setActiveSnapZone] = useState<SnapZone>(null)
   const [snapPreSnapSizes, setSnapPreSnapSizes] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
-  const [windowSnapZones, setWindowSnapZones] = useState<Record<string, NonNullable<SnapZone>>>({})
   const windowStatesRef = useRef(windowStates)
   windowStatesRef.current = windowStates
 
@@ -383,12 +382,6 @@ export function Desktop() {
       delete next[windowId]
       return next
     })
-    setWindowSnapZones(prev => {
-      if (!(windowId in prev)) return prev
-      const next = { ...prev }
-      delete next[windowId]
-      return next
-    })
     if (activeWindow === windowId) setActiveWindow(null)
   }, [activeWindow])
 
@@ -442,7 +435,6 @@ export function Desktop() {
         ...prev,
         [windowId]: { ...prev[windowId], ...geo, isMaximized: false },
       }))
-      setWindowSnapZones(prev => ({ ...prev, [windowId]: zone }))
     } else {
       // Un-snap: clear pre-snap data
       setSnapPreSnapSizes(prev => {
@@ -450,50 +442,9 @@ export function Desktop() {
         delete next[windowId]
         return next
       })
-      setWindowSnapZones(prev => {
-        const next = { ...prev }
-        delete next[windowId]
-        return next
-      })
     }
     setActiveSnapZone(null)
   }, [])
-
-  // Keyboard shortcuts for window snapping (Super/Meta + Arrow)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-      if (!e.metaKey || !activeWindow) return
-
-      const key = e.key
-      if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown') {
-        e.preventDefault()
-
-        if (key === 'ArrowLeft') {
-          handleSnapApply(activeWindow, 'left')
-        } else if (key === 'ArrowRight') {
-          handleSnapApply(activeWindow, 'right')
-        } else if (key === 'ArrowUp') {
-          handleSnapApply(activeWindow, 'top')
-        } else if (key === 'ArrowDown') {
-          // Un-snap/restore, or minimize if not snapped
-          const isSnapped = activeWindow in snapPreSnapSizes
-          if (isSnapped) {
-            const pre = snapPreSnapSizes[activeWindow]
-            setWindowStates(prev => ({
-              ...prev,
-              [activeWindow]: { ...prev[activeWindow], ...pre, isMaximized: false },
-            }))
-            handleSnapApply(activeWindow, null)
-          } else {
-            minimizeWindow(activeWindow)
-          }
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeWindow, handleSnapApply, snapPreSnapSizes, minimizeWindow])
 
   const handleIconDoubleClick = useCallback((icon: DesktopIconConfig) => {
     if (icon.opensWindow) {

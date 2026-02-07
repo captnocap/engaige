@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
-import { detectSnapZone, type SnapZone } from './windowSnap.js'
+import { detectSnapZone, TASKBAR_HEIGHT, type SnapZone } from './windowSnap.js'
 
 export interface WindowState {
   x: number
@@ -130,8 +130,17 @@ export function Window({
       startPosY: state.y,
     }
 
+    // Track current width during drag (changes after un-snap restore)
+    let dragWidth = state.width
+    const vW = window.innerWidth
+    const vH = window.innerHeight
+    const maxY = vH - TASKBAR_HEIGHT - 36 // keep title bar above taskbar
+
+    console.log(`[SNAP-DEBUG] titlebar mousedown: window="${id}" mouse=(${e.clientX},${e.clientY}) windowPos=(${state.x},${state.y}) windowSize=(${state.width}x${state.height}) viewport=(${vW}x${vH})`)
+
     let hasRestored = false
     let currentSnapZone: SnapZone = null
+    let moveCount = 0
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return
@@ -141,8 +150,9 @@ export function Window({
       // If maximized/snapped and user starts dragging, restore the window
       if ((wasMaximized || wasSnapped) && !hasRestored && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
         hasRestored = true
+        dragWidth = restoreWidth
 
-        const cursorRatioX = (e.clientX - (wasMaximized ? 0 : state.x)) / (wasMaximized ? window.innerWidth : state.width)
+        const cursorRatioX = (e.clientX - (wasMaximized ? 0 : state.x)) / (wasMaximized ? vW : state.width)
         const newX = e.clientX - (restoreWidth * Math.min(Math.max(cursorRatioX, 0), 1))
         const newY = e.clientY - 15
 
@@ -151,11 +161,10 @@ export function Window({
         dragRef.current.startPosX = newX
         dragRef.current.startPosY = newY
 
-        const clampedX = Math.max(0, Math.min(window.innerWidth - 100, newX))
-        const clampedY = Math.max(0, Math.min(window.innerHeight - 48 - 36, newY))
+        const maxX = Math.max(0, vW - restoreWidth)
         updateState({
-          x: clampedX,
-          y: clampedY,
+          x: Math.max(0, Math.min(maxX, newX)),
+          y: Math.max(0, Math.min(maxY, newY)),
           width: restoreWidth,
           height: restoreHeight,
           isMaximized: false,
@@ -168,23 +177,34 @@ export function Window({
 
       // Normal dragging (not maximized/snapped or already restored)
       if ((!wasMaximized && !wasSnapped) || hasRestored) {
-        updateState({
-          x: Math.max(0, Math.min(window.innerWidth - 100, dragRef.current.startPosX + dx)),
-          y: Math.max(0, Math.min(window.innerHeight - 48 - 36, dragRef.current.startPosY + dy)),
-        })
+        const unclampedX = dragRef.current.startPosX + dx
+        const unclampedY = dragRef.current.startPosY + dy
+        const maxX = Math.max(0, vW - dragWidth)
+        const newX = Math.max(0, Math.min(maxX, unclampedX))
+        const newY = Math.max(0, Math.min(maxY, unclampedY))
+        updateState({ x: newX, y: newY })
 
-        // Detect snap zone
-        const zone = detectSnapZone(e.clientX, e.clientY, window.innerWidth, window.innerHeight)
+        // Detect snap zone based on window hitting desktop boundaries
+        const zone = detectSnapZone(unclampedX, unclampedY, e.clientX, e.clientY, dragWidth, vW, vH)
+
+        moveCount++
+        if (moveCount % 10 === 0) {
+          console.log(`[SNAP-DEBUG] dragging: mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)}) windowPos=(${Math.round(newX)},${Math.round(newY)}) zone=${zone}`)
+        }
+
         if (zone !== currentSnapZone) {
           currentSnapZone = zone
+          console.log(`[SNAP-DEBUG] snap zone changed: ${zone} at mouse=(${e.clientX},${e.clientY}) unclamped=(${Math.round(unclampedX)},${Math.round(unclampedY)})`)
           onSnapZoneChange?.(zone)
         }
       }
     }
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      console.log(`[SNAP-DEBUG] mouseup: mouse=(${e.clientX},${e.clientY}) snapZone=${currentSnapZone}`)
       // If releasing over a snap zone, apply it
       if (currentSnapZone) {
+        console.log(`[SNAP-DEBUG] applying snap zone: ${currentSnapZone}`)
         onSnapApply?.(currentSnapZone)
       }
       // Always clear the preview
