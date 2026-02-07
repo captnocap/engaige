@@ -33,9 +33,10 @@ export function settleIcons(
   const usableW = viewportW
   const usableH = viewportH - taskbarReserve
 
-  // Half-dimensions for the body fixture (includes gap as spacing buffer)
-  const bodyHalfW = (iconSize + iconGap) * S * 0.5
-  const bodyHalfH = (iconSize + iconGap) * S * 0.5
+  // Half-dimensions for the body fixture (includes gap + extra margin as spacing buffer)
+  const spacing = iconGap + 8
+  const bodyHalfW = (iconSize + spacing) * S * 0.5
+  const bodyHalfH = (iconSize + spacing) * S * 0.5
 
   // Wall thickness in world units
   const wallThick = 0.5
