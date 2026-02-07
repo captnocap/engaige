@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
 import { useOSThemeStore, type WindowButtonStyle } from '../../stores/osThemeStore.js'
 import { detectSnapZone, type SnapZone } from './windowSnap.js'
 
@@ -82,6 +82,13 @@ export function Window({
     }
   }, [initialState?.isMinimized])
 
+  // Notify parent of state changes after render commits
+  const onStateChangeRef = useRef(onStateChange)
+  onStateChangeRef.current = onStateChange
+  useEffect(() => {
+    onStateChangeRef.current?.(state)
+  }, [state])
+
   // Update maximized window dimensions when viewport resizes (e.g., fullscreen toggle)
   useEffect(() => {
     if (!state.isMaximized) return
@@ -89,27 +96,21 @@ export function Window({
     const handleResize = () => {
       setState(prev => {
         if (!prev.isMaximized) return prev
-        const next = {
+        return {
           ...prev,
           width: window.innerWidth,
           height: window.innerHeight - 48, // Account for taskbar
         }
-        onStateChange?.(next)
-        return next
       })
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [state.isMaximized, onStateChange])
+  }, [state.isMaximized])
 
-  const updateState = (updates: Partial<WindowState>) => {
-    setState(prev => {
-      const next = { ...prev, ...updates }
-      onStateChange?.(next)
-      return next
-    })
-  }
+  const updateState = useCallback((updates: Partial<WindowState>) => {
+    setState(prev => ({ ...prev, ...updates }))
+  }, [])
 
   const handleTitleBarMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
